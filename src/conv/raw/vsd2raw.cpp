@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "libwpg.h"
+#include "libvisio.h"
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
 

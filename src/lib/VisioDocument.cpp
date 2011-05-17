@@ -24,8 +24,11 @@
  * Corel Corporation or Corel Corporation Limited."
  */
 
-#include <libwpd/libwpd-stream.h>
-#include "VisioDocument.h"
+#include <libwpd-stream/libwpd-stream.h>
+#include <sstream>
+#include <string>
+#include "libvisio.h"
+#include "VSDSVGGenerator.h"
 
 
 /**
@@ -64,7 +67,7 @@ Provided as a convenience function for applications that support SVG internally.
 \param output The output string whose content is the resulting SVG
 \return A value that indicates whether the SVG generation was successful.
 */
-bool libvisio::VisioDocument::generateSVG(::WPXInputStream* input, WPXString& output, libwpg::WPGFileFormat fileFormat)
+bool libvisio::VisioDocument::generateSVG(::WPXInputStream* input, WPXString& output)
 {
 	std::ostringstream tmpOutputStream;
 	libvisio::VSDSVGGenerator generator(tmpOutputStream);

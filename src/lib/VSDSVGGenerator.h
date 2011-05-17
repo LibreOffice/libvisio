@@ -24,18 +24,18 @@
  * Corel Corporation or Corel Corporation Limited."
  */
 
-#ifndef __WPGSVGGENERATOR_H__
-#define __WPGSVGGENERATOR_H__
+#ifndef __VISIOSVGGENERATOR_H__
+#define __VISIOSVGGENERATOR_H__
 
 #include <stdio.h>
 #include <iostream>
 #include <libwpd/libwpd.h>
-#include "libwpg.h"
+#include <libwpg/libwpg.h>
 
-namespace libwpg
+namespace libvisio
 {
 
-class VSDSVGGenerator : public WPGPaintInterface {
+class VSDSVGGenerator : public libwpg::WPGPaintInterface {
 public:
 	VSDSVGGenerator(std::ostream & output_sink);
 	~VSDSVGGenerator();
@@ -73,6 +73,6 @@ private:
 	std::ostream & m_outputSink;
 };
 
-} // namespace libwpg
+} // namespace libvisio
 
-#endif // __WPGSVGGENERATOR_H__
+#endif // __VISIOSVGGENERATOR_H__

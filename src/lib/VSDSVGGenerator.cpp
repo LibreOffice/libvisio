@@ -47,21 +47,19 @@ static std::string doubleToString(const double value)
 }
 
 
-libwpg::VSDSVGGenerator::VSDSVGGenerator(std::ostream & output_sink): m_gradient(), m_style(), m_gradientIndex(1), m_outputSink(output_sink)
+libvisio::VSDSVGGenerator::VSDSVGGenerator(std::ostream & output_sink): m_gradient(), m_style(), m_gradientIndex(1), m_outputSink(output_sink)
 {
 }
 
-libwpg::VSDSVGGenerator::~VSDSVGGenerator()
+libvisio::VSDSVGGenerator::~VSDSVGGenerator()
 {
 }
 
-void libwpg::VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
+void libvisio::VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
 {
 	m_outputSink << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
 	m_outputSink << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"";
 	m_outputSink << " \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
-
-	m_outputSink << "<!-- Created with wpg2svg/libwpg " << LIBVISIO_VERSION_STRING << " -->\n";
 
 	m_outputSink << "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" ";
 	m_outputSink << "xmlns:xlink=\"http://www.w3.org/1999/xlink\" ";
@@ -74,12 +72,12 @@ void libwpg::VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
 	m_gradientIndex = 1;
 }
 
-void libwpg::VSDSVGGenerator::endGraphics()
+void libvisio::VSDSVGGenerator::endGraphics()
 {
 	m_outputSink << "</svg>\n";
 }
 
-void libwpg::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector& gradient)
+void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector& gradient)
 {
 	m_style = propList;
 
@@ -117,17 +115,17 @@ void libwpg::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, const 
 
 }
 
-void libwpg::VSDSVGGenerator::startLayer(const ::WPXPropertyList& propList)
+void libvisio::VSDSVGGenerator::startLayer(const ::WPXPropertyList& propList)
 {
 	m_outputSink << "<g id=\"Layer" << propList["svg:id"]->getInt() << "\" >\n";
 }
 
-void libwpg::VSDSVGGenerator::endLayer()
+void libvisio::VSDSVGGenerator::endLayer()
 {
 	m_outputSink << "</g>\n";
 }
 
-void libwpg::VSDSVGGenerator::drawRectangle(const ::WPXPropertyList& propList)
+void libvisio::VSDSVGGenerator::drawRectangle(const ::WPXPropertyList& propList)
 {
 	m_outputSink << "<rect ";
 	m_outputSink << "x=\"" << doubleToString(72*propList["svg:x"]->getDouble()) << "\" y=\"" << doubleToString(72*propList["svg:y"]->getDouble()) << "\" ";
@@ -138,7 +136,7 @@ void libwpg::VSDSVGGenerator::drawRectangle(const ::WPXPropertyList& propList)
 	m_outputSink << "/>\n";
 }
 
-void libwpg::VSDSVGGenerator::drawEllipse(const WPXPropertyList& propList)
+void libvisio::VSDSVGGenerator::drawEllipse(const WPXPropertyList& propList)
 {
 	m_outputSink << "<ellipse ";
 	m_outputSink << "cx=\"" << doubleToString(72*propList["svg:cx"]->getDouble()) << "\" cy=\"" << doubleToString(72*propList["svg:cy"]->getDouble()) << "\" ";
@@ -153,17 +151,17 @@ void libwpg::VSDSVGGenerator::drawEllipse(const WPXPropertyList& propList)
 	m_outputSink << "/>\n";
 }
 
-void libwpg::VSDSVGGenerator::drawPolyline(const ::WPXPropertyListVector& vertices)
+void libvisio::VSDSVGGenerator::drawPolyline(const ::WPXPropertyListVector& vertices)
 {
 	drawPolySomething(vertices, false);
 }
 
-void libwpg::VSDSVGGenerator::drawPolygon(const ::WPXPropertyListVector& vertices)
+void libvisio::VSDSVGGenerator::drawPolygon(const ::WPXPropertyListVector& vertices)
 {
 	drawPolySomething(vertices, true);
 }
 
-void libwpg::VSDSVGGenerator::drawPolySomething(const ::WPXPropertyListVector& vertices, bool isClosed)
+void libvisio::VSDSVGGenerator::drawPolySomething(const ::WPXPropertyListVector& vertices, bool isClosed)
 {
 	if(vertices.count() < 2)
 		return;
@@ -196,7 +194,7 @@ void libwpg::VSDSVGGenerator::drawPolySomething(const ::WPXPropertyListVector& v
 	}
 }
 
-void libwpg::VSDSVGGenerator::drawPath(const ::WPXPropertyListVector& path)
+void libvisio::VSDSVGGenerator::drawPath(const ::WPXPropertyListVector& path)
 {
 	m_outputSink << "<path d=\" ";
 	bool isClosed = false;
@@ -241,7 +239,7 @@ void libwpg::VSDSVGGenerator::drawPath(const ::WPXPropertyListVector& path)
 	m_outputSink << "/>\n";
 }
 
-void libwpg::VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData& binaryData)
+void libvisio::VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData& binaryData)
 {
 	if (!propList["libwpg:mime-type"] || propList["libwpg:mime-type"]->getStr().len() <= 0)
 		return;
@@ -255,19 +253,19 @@ void libwpg::VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propLis
 	m_outputSink << "\" />\n";
 }
 
-void libwpg::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector & /* path */)
+void libvisio::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector & /* path */)
 {
 	m_outputSink << "<text ";
 	if (propList["svg:x"] && propList["svg:y"])
 	m_outputSink << "x=\"" << doubleToString(72*(propList["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(propList["svg:y"]->getDouble())) << "\">\n";
 }
 
-void libwpg::VSDSVGGenerator::endTextObject()
+void libvisio::VSDSVGGenerator::endTextObject()
 {
 	m_outputSink << "</text>\n";
 }
 
-void libwpg::VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
+void libvisio::VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
 {
 	m_outputSink << "<tspan ";
 	if (propList["style:font-name"])
@@ -285,19 +283,19 @@ void libwpg::VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
 	m_outputSink << ">\n";
 }
 
-void libwpg::VSDSVGGenerator::endTextSpan()
+void libvisio::VSDSVGGenerator::endTextSpan()
 {
 	m_outputSink << "</tspan>\n";
 }
 
-void libwpg::VSDSVGGenerator::insertText(const ::WPXString &str)
+void libvisio::VSDSVGGenerator::insertText(const ::WPXString &str)
 {
 	WPXString tempUTF8(str, true);
 	m_outputSink << tempUTF8.cstr() << "\n";
 }
 
 // create "style" attribute based on current pen and brush
-void libwpg::VSDSVGGenerator::writeStyle(bool /* isClosed */)
+void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
 {
 	m_outputSink << "style=\"";
 

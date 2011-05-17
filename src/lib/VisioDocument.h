@@ -23,8 +23,8 @@
  * Corel Corporation or Corel Corporation Limited."
  */
 
-#ifndef __WPGRAPHICS_H__
-#define __WPGRAPHICS_H__
+#ifndef __VISIODOCUMENT_H__
+#define __VISIODOCUMENT_H__
 
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
@@ -40,8 +40,8 @@ public:
 	
 	static bool isSupported(WPXInputStream* input);
 	
-	static bool parse(WPXInputStream* input, WPGPaintInterface* painter);
-	static bool parse(const unsigned char* data, unsigned long size, WPGPaintInterface* painter);
+	static bool parse(WPXInputStream* input, libwpg::WPGPaintInterface* painter);
+	static bool parse(const unsigned char* data, unsigned long size, libwpg::WPGPaintInterface* painter);
 
 	static bool generateSVG(WPXInputStream* input, WPXString& output);
 	static bool generateSVG(const unsigned char* data, unsigned long size, WPXString& output);
@@ -49,4 +49,4 @@ public:
 
 } // namespace libvisio
 
-#endif //  __WPGRAPHICS_H__
+#endif //  __VISIODOCUMENT_H__

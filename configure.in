@@ -1,10 +1,10 @@
-AC_INIT(src/lib/WPGraphics.cpp)
+AC_INIT(src/lib/VisioDocument.cpp)
 AC_PREREQ([2.59c])
 
 AM_CONFIG_HEADER(config.h)
 
 VSD_MAJOR_VERSION=0
-VSD_MINOR_VERSION=1
+VSD_MINOR_VERSION=0
 VSD_MICRO_VERSION=0
 
 LIBWPD_REQUIRED_VERSION="0.9.0"
@@ -74,6 +74,7 @@ dnl ****************************************************************************
 PKG_CHECK_MODULES(LIBVISIO,[
 libwpd-0.9 >= $LIBWPD_REQUIRED_VERSION
 libwpd-stream-0.9 >= $LIBWPD_REQUIRED_VERSION
+libwpg-0.2 >= $LIBWPG_REQUIRED_VERSION
 ])
 
 AC_HEADER_STDC
@@ -83,21 +84,21 @@ case "$host" in
   *-*-mingw*)
     native_win32=yes
     LIBVISIO_WIN32_RESOURCE=libvisio-win32res.lo
-    WPG2RAW_WIN32_RESOURCE=vsd2raw-win32res.lo
-    WPG2SVG_WIN32_RESOURCE=vsd2svg-win32res.lo
+    VSD2RAW_WIN32_RESOURCE=vsd2raw-win32res.lo
+    VSD2SVG_WIN32_RESOURCE=vsd2svg-win32res.lo
     ;;
   *)
     native_win32=no
     LIBVISIO_WIN32_RESOURCE=
-    WPG2RAW_WIN32_RESOURCE=
-    WPG2SVG_WIN32_RESOURCE=
+    VSD2RAW_WIN32_RESOURCE=
+    VSD2SVG_WIN32_RESOURCE=
     ;;
 esac
 AC_MSG_RESULT([$native_win32])
 AM_CONDITIONAL(OS_WIN32, test "$native_win32" = yes)
 AC_SUBST(LIBVISIO_WIN32_RESOURCE)
-AC_SUBST(WPG2RAW_WIN32_RESOURCE)
-AC_SUBST(WPG2SVG_WIN32_RESOURCE)
+AC_SUBST(VSD2RAW_WIN32_RESOURCE)
+AC_SUBST(VSD2SVG_WIN32_RESOURCE)
 
 test_dummy_bitmaps=false
 AC_ARG_WITH(dummy_bitmaps,
@@ -221,13 +222,12 @@ src/conv/raw/vsd2raw.rc
 src/conv/svg/Makefile
 src/conv/svg/vsd2svg.rc
 src/lib/Makefile
-src/lib/libvisio.h
 src/lib/libvisio.rc
 build/Makefile
 build/win32/Makefile
 docs/Makefile
 docs/doxygen/Makefile
-libvisio-0.2.pc
+libvisio-0.0.pc
 libvisio.spec
 libvisio-zip
 ])

@@ -39,14 +39,7 @@ int printUsage()
 	printf("\n");
 	printf("Options:\n");
 	printf("--help                Shows this help message\n");
-	printf("--version             Output vsd2svg version \n");
 	return -1;
-}
-
-int printVersion()
-{
-	printf("vsd2svg %s\n", LIBVISIO_VERSION_STRING);
-	return 0;
 }
 
 } // anonymous namespace
@@ -60,9 +53,7 @@ int main(int argc, char *argv[])
 
 	for (int i = 1; i < argc; i++)
 	{
-		if (!strcmp(argv[i], "--version"))
-			return printVersion();
-		else if (!file && strncmp(argv[i], "--", 2))
+		if (!file && strncmp(argv[i], "--", 2))
 			file = argv[i];
 		else
 			return printUsage();
@@ -73,14 +64,14 @@ int main(int argc, char *argv[])
 		
 	WPXFileStream input(file);
 
-	if (!libvisio::WPGraphics::isSupported(&input))
+	if (!libvisio::VisioDocument::isSupported(&input))
 	{
 		std::cerr << "ERROR: Unsupported file format (unsupported version) or file is encrypted!" << std::endl;
 		return 1;
 	}
 
 	::WPXString output;
-	if (!libvisio::WPGraphics::generateSVG(&input, output))
+	if (!libvisio::VisioDocument::generateSVG(&input, output))
 	{
 		std::cerr << "ERROR: SVG Generation failed!" << std::endl;
 		return 1;

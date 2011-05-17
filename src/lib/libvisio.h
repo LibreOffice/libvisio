@@ -1,6 +1,5 @@
-/* libwpg
- * Copyright (C) 2006 Ariya Hidayat (ariya@kde.org)
- * Copyright (C) 2004 Marc Oude Kotte (marc@solcon.nl)
+/* libvisio
+ * Copyright (C) 2011 Fridrich Strba (fridrich.strba@bluewin.ch)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,8 +15,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, 
  * Boston, MA  02111-1301 USA
- *
- * For further information visit http://libwpg.sourceforge.net
  */
 
 /* "This product is not manufactured, approved, or supported by
@@ -27,11 +24,8 @@
 #ifndef __LIBVISIO_H__
 #define __LIBVISIO_H__
 
-#define LIBVISIO_VERSION_MAJOR     @WPG_MAJOR_VERSION@
-#define LIBVISIO_VERSION_MINOR     @WPG_MINOR_VERSION@
-#define LIBVISIO_VERSION_REVISION  @WPG_MICRO_VERSION@
-#define LIBVISIO_VERSION_STRING    "@WPG_MAJOR_VERSION@.@WPG_MINOR_VERSION@.@WPG_MICRO_VERSION@"
-
+#include <libwpd/libwpd.h>
+#include <libwpg/libwpg.h>
 #include "VisioDocument.h"
 
 #endif
