@@ -37,7 +37,7 @@ Analyzes the content of an input stream to see if it can be parsed
 \return A value that indicates whether the content from the input
 stream is a Visio Document that libvisio able to parse
 */
-bool libvisio::VisioDocument::isSupported(WPXInputStream* input)
+bool libvisio::VisioDocument::isSupported(WPXInputStream* /*input*/)
 {
 	return false;
 }
@@ -50,16 +50,11 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInterface* painter)
+bool libvisio::VisioDocument::parse(::WPXInputStream* /*input*/, libwpg::WPGPaintInterface* /*painter*/)
 {
 	return false;
 }
 
-bool libvisio::VisioDocument::parse(const unsigned char* data, unsigned long size, libwpg::WPGPaintInterface* painter)
-{
-	WPXStringStream tmpStream(data, size);
-	return libvisio::VisioDocument::parse(&tmpStream, painter);
-} 
 /**
 Parses the input stream content and generates a valid Scalable Vector Graphics
 Provided as a convenience function for applications that support SVG internally.
@@ -77,10 +72,4 @@ bool libvisio::VisioDocument::generateSVG(::WPXInputStream* input, WPXString& ou
 	else
 		output = WPXString("");
 	return result;
-}
-
-bool libvisio::VisioDocument::generateSVG(const unsigned char* data, unsigned long size, WPXString& output)
-{
-	WPXStringStream tmpStream(data, size);
-	return libvisio::VisioDocument::generateSVG(&tmpStream, output);
 }

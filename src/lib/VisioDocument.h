@@ -41,10 +41,8 @@ public:
 	static bool isSupported(WPXInputStream* input);
 	
 	static bool parse(WPXInputStream* input, libwpg::WPGPaintInterface* painter);
-	static bool parse(const unsigned char* data, unsigned long size, libwpg::WPGPaintInterface* painter);
 
 	static bool generateSVG(WPXInputStream* input, WPXString& output);
-	static bool generateSVG(const unsigned char* data, unsigned long size, WPXString& output);
 };
 
 } // namespace libvisio
