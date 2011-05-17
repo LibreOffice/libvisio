@@ -1,6 +1,5 @@
-/* libwpg
- * Copyright (C) 2006 Ariya Hidayat (ariya@kde.org)
- * Copyright (C) 2007 Fridrich Strba (fridrich.strba@bluewin.ch)
+/* libvisio
+ * Copyright (C) 2011 Fridrich Strba <fridrich.strba@bluewin.ch>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,12 +15,6 @@
  * License along with this library; if not, write to the 
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
  * Boston, MA  02111-1301 USA
- *
- * For further information visit http://libwpg.sourceforge.net
- */
-
-/* "This product is not manufactured, approved, or supported by
- * Corel Corporation or Corel Corporation Limited."
  */
 
 #include <libwpd-stream/libwpd-stream.h>

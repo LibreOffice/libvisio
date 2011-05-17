@@ -17,10 +17,6 @@
  * Boston, MA  02111-1301 USA
  */
 
-/* "This product is not manufactured, approved, or supported by
- * Corel Corporation or Corel Corporation Limited."
- */
-
 #ifndef __LIBVISIO_H__
 #define __LIBVISIO_H__
 
