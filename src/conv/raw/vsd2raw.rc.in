@@ -1,8 +1,8 @@
 #include <winver.h>
 
 VS_VERSION_INFO VERSIONINFO
-  FILEVERSION @WPG_MAJOR_VERSION@,@WPG_MINOR_VERSION@,@WPG_MICRO_VERSION@,BUILDNUMBER
-  PRODUCTVERSION @WPG_MAJOR_VERSION@,@WPG_MINOR_VERSION@,@WPG_MICRO_VERSION@,0
+  FILEVERSION @VSD_MAJOR_VERSION@,@VSD_MINOR_VERSION@,@VSD_MICRO_VERSION@,BUILDNUMBER
+  PRODUCTVERSION @VSD_MAJOR_VERSION@,@VSD_MINOR_VERSION@,@VSD_MICRO_VERSION@,0
   FILEFLAGSMASK 0
   FILEFLAGS 0
   FILEOS VOS__WINDOWS32
@@ -13,14 +13,14 @@ VS_VERSION_INFO VERSIONINFO
     BEGIN
       BLOCK "040904B0"
       BEGIN
-	VALUE "CompanyName", "The libwpg developer community"
-	VALUE "FileDescription", "wpg2raw"
-	VALUE "FileVersion", "@WPG_MAJOR_VERSION@.@WPG_MINOR_VERSION@.@WPG_MICRO_VERSION@.BUILDNUMBER"
-	VALUE "InternalName", "wpg2raw"
-	VALUE "LegalCopyright", "Copyright (C) 2004 Marc Oude Kotte, other contributers"
-	VALUE "OriginalFilename", "wpg2raw.exe"
-	VALUE "ProductName", "libwpg"
-	VALUE "ProductVersion", "@WPG_MAJOR_VERSION@.@WPG_MINOR_VERSION@.@WPG_MICRO_VERSION@"
+	VALUE "CompanyName", "The libvisio developer community"
+	VALUE "FileDescription", "vsd2raw"
+	VALUE "FileVersion", "@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.@VSD_MICRO_VERSION@.BUILDNUMBER"
+	VALUE "InternalName", "vsd2raw"
+	VALUE "LegalCopyright", "Copyright (C) 2011 Fridrich Strba, other contribut0rs"
+	VALUE "OriginalFilename", "vsd2raw.exe"
+	VALUE "ProductName", "libvisio"
+	VALUE "ProductVersion", "@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.@VSD_MICRO_VERSION@"
       END
     END
     BLOCK "VarFileInfo"
