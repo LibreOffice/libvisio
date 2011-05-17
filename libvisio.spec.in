@@ -1,0 +1,97 @@
+%define name libvisio
+%define version @VERSION@
+%define RELEASE 1
+%define release     %{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
+
+Name: %{name}
+Summary: Library for importing and converting Corel WordPerfect(tm) Graphics images
+Version: %{version}
+Release: %{release}
+Source: %{name}-%{version}.tar.gz
+Group: System Environment/Libraries
+URL: http://libvisio.sf.net/
+BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
+BuildRequires: libwpd-devel >= 0.9.0, gcc-c++, libstdc++-devel, pkgconfig >= 0.9.0
+License: LGPL
+Prefix: %{prefix}
+
+%description
+libvisio is a library for reading and converting WPG images
+
+%package tools
+Requires: libvisio
+Summary: Tools to convert WPG images into other formats
+Group: Applications/Publishing
+
+%description tools
+Tools to convert WPG images into other formats.
+Currently supported: raw svg
+
+%package devel
+Requires: %{name} >= %{version}
+Requires: libwpd-devel >= 0.9.0
+Summary: Files for developing with libvisio.
+Group: Development/Libraries
+
+%description devel
+Includes and definitions for developing with libvisio.
+
+%if %{!?_without_docs:1}%{?_without_docs:0}
+%package docs
+Requires: %{name} >= %{version}
+BuildRequires: doxygen
+Summary: Documentation of libvisio API
+Group: Development/Documentation
+
+%description docs
+Documentation of libvisio API for developing with libvisio
+%endif
+
+%prep
+%__rm -rf $RPM_BUILD_ROOT
+
+%setup -q -n %{name}-%{version}
+
+%build
+%configure --prefix=%{_prefix} --libdir=%{_libdir} \
+        %{?_with_debug:--enable-debug}  \
+
+%__make
+
+%install
+umask 022
+
+%__make DESTDIR=$RPM_BUILD_ROOT install
+%__rm -rf $RPM_BUILD_ROOT/%{_libdir}/libvisio*.la
+
+%clean
+%__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
+
+%files
+%defattr(644,root,root,755)
+%{_libdir}/libvisio*.so.*
+%doc ChangeLog README COPYING AUTHORS
+
+%files tools
+%defattr(755,root,root,755)
+%{_bindir}/visio2*
+
+%files devel
+%defattr(644,root,root,755)
+%{_libdir}/libvisio*.so
+%{_libdir}/pkgconfig/libvisio*.pc
+%{_includedir}/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@/libvisio
+
+%if %{!?_without_docs:1}%{?_without_docs:0}
+%files docs
+%{_datadir}/*
+%endif
+
+%changelog
+* Fri Apr 20 2007 Fridrich Strba <fridrich.strba@bluewin.ch>
+- Add documentation packaging
+- Make doc and stream optional
+
+* Tue Jan 27 2004 Fridrich Strba <fridrich.strba@bluewin.ch>
+- Create rpm spec according to the rpm spec of libwpD
+- of Rui M. Seabra
