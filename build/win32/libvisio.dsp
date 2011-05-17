@@ -40,8 +40,8 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /GX /O2 /I "libwpd-0.9" /D "WIN32" /D "NDEBUG" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "libwpd-0.9" /D "NDEBUG" /D "WIN32" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /FD /c
+# ADD BASE CPP /nologo /W3 /GX /O2 /I "libwpd-0.9" /I "libwpg-0.2" /D "WIN32" /D "NDEBUG" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GR /GX /O2 /I "libwpd-0.9" /I "libwpg-0.2" /D "NDEBUG" /D "WIN32" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"Release\lib\libvisio-0.2.lib"
+# ADD LIB32 /nologo /out:"Release\lib\libvisio-0.0.lib"
 
 !ELSEIF  "$(CFG)" == "libvisio - Win32 Debug"
 
@@ -64,8 +64,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /I "libwpd-0.9" /D "WIN32" /D "_DEBUG" /D "DEBUG" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /GR /GX /ZI /Od /I "libwpd-0.9" /D "_DEBUG" /D "DEBUG" /D "WIN32" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /FD /GZ /c
+# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /I "libwpd-0.9" /I "libwpg-0.2" /D "WIN32" /D "_DEBUG" /D "DEBUG" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /YX /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /GR /GX /ZI /Od /I "libwpd-0.9" /I "libwpg-0.2" /D "_DEBUG" /D "DEBUG" /D "WIN32" /D "_LIB" /D "_CRT_SECURE_NO_WARNINGS" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"Debug\lib\libvisio-0.2.lib"
+# ADD LIB32 /nologo /out:"Debug\lib\libvisio-0.0.lib"
 
 !ENDIF 
 
@@ -87,71 +87,11 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\src\lib\WPG1Parser.cpp
+SOURCE=..\..\src\lib\VisioDocument.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\WPG2Parser.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGBinaryData.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGBitmap.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGBrush.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGColor.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGGradient.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGHeader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGInternalStream.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGPath.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGPen.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGPoint.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGraphics.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGRect.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGString.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGSVGGenerator.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGXParser.cpp
+SOURCE=..\..\src\lib\VSDSVGGenerator.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -167,75 +107,11 @@ SOURCE=..\..\src\lib\libvisio_utils.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\WPG1Parser.h
+SOURCE=..\..\src\lib\VisioDocument.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\WPG2Parser.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGBinaryData.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGBitmap.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGBrush.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGColor.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGGradient.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGHeader.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGInternalStream.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGPaintInterface.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGPath.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGPen.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGPoint.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGraphics.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGRect.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGString.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGSVGGenerator.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\WPGXParser.h
+SOURCE=..\..\src\lib\VSDSVGGenerator.h
 # End Source File
 # End Group
 # End Target
