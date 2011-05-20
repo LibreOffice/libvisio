@@ -41,14 +41,14 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream* input)
   tmpDocStream->seek(0x1A, WPX_SEEK_SET);
   unsigned long bytesRead;
   const unsigned char *data = tmpDocStream->read(1, bytesRead);
-  
+
   if (bytesRead != 1)
   {
     delete [] data;
     delete tmpDocStream;
     return false;
   }
-  
+
   unsigned char version = data[0];
   delete [] data;
   delete tmpDocStream;
