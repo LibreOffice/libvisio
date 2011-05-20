@@ -30,8 +30,35 @@ Analyzes the content of an input stream to see if it can be parsed
 \return A value that indicates whether the content from the input
 stream is a Visio Document that libvisio able to parse
 */
-bool libvisio::VisioDocument::isSupported(WPXInputStream* /*input*/)
+bool libvisio::VisioDocument::isSupported(WPXInputStream* input)
 {
+  WPXInputStream* tmpDocStream = input->getDocumentOLEStream("VisioDocument");
+  if (!tmpDocStream)
+  {
+    return false;
+  }
+
+  tmpDocStream->seek(0x1A, WPX_SEEK_SET);
+  unsigned long bytesRead;
+  const unsigned char *data = tmpDocStream->read(1, bytesRead);
+  
+  if (bytesRead != 1)
+  {
+    delete [] data;
+    delete tmpDocStream;
+    return false;
+  }
+  
+  unsigned char version = data[0];
+  delete [] data;
+  delete tmpDocStream;
+
+  // Versions 2k (6) and 2k3 (11)
+  if (version == 6 || version == 11)
+  {
+    return true;
+  }
+
 	return false;
 }
 
