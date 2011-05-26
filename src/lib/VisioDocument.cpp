@@ -45,13 +45,11 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream* input)
 
   if (bytesRead != 1)
   {
-    delete [] data;
     delete tmpDocStream;
     return false;
   }
 
   unsigned char version = data[0];
-  delete [] data;
   delete tmpDocStream;
 
   // Versions 2k (6) and 2k3 (11)
@@ -85,7 +83,6 @@ bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInt
 
   if (bytesRead != 1)
   {
-    delete [] data;
     delete docStream;
     return false;
   }
