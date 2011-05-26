@@ -18,7 +18,9 @@
  */
 
 #include <libwpd-stream/libwpd-stream.h>
+#include <libvisio_utils.h>
 #include "VSDXParser.h"
+#include "VSDInternalStream.h"
 #include <locale.h>
 #include <sstream>
 #include <string>
@@ -49,7 +51,24 @@ by WPGPaintInterface class implementation as needed.
 */
 bool libvisio::VSD6Parser::parse(libwpg::WPGPaintInterface *iface)
 {
-  return false;
+  if (!m_input)
+  {
+    return false;
+  }
+  // Seek to trailer stream pointer
+  m_input->seek(0x24, WPX_SEEK_SET);
+
+  m_input->seek(8, WPX_SEEK_CUR);
+  unsigned int offset = readU32(m_input);
+  unsigned int length = readU32(m_input);
+  unsigned short format = readU16(m_input);
+  bool compressed = ((format & 2) == 2);
+
+  // Seek to offset then pass docstream, size and bool compression to VSDInternalStream
+  m_input->seek(offset, WPX_SEEK_SET);
+  VSDInternalStream trailerStream(m_input, length, compressed);
+
+  return true;
 }
 
 
@@ -71,5 +90,22 @@ by WPGPaintInterface class implementation as needed.
 */
 bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
 {
-  return false;
+  if (!m_input)
+  {
+    return false;
+  }
+  // Seek to trailer stream pointer
+  m_input->seek(0x24, WPX_SEEK_SET);
+
+  m_input->seek(8, WPX_SEEK_CUR);
+  unsigned int offset = readU32(m_input);
+  unsigned int length = readU32(m_input);
+  unsigned short format = readU16(m_input);
+  bool compressed = ((format & 2) == 2);
+
+  // Seek to offset then pass docstream, size and bool compression to VSDInternalStream
+  m_input->seek(offset, WPX_SEEK_SET);
+  VSDInternalStream trailerStream(m_input, length, compressed);
+
+  return true;
 }

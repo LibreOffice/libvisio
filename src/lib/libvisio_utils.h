@@ -24,7 +24,7 @@
 
 #include <libwpd-stream/libwpd-stream.h>
 
-//#define DEBUG // FIXME !
+#define DEBUG // FIXME !
 
 // debug message includes source file and line number
 //#define VERBOSE_DEBUG 1

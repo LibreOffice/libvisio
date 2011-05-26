@@ -22,6 +22,7 @@
 #include <string>
 #include "libvisio.h"
 #include "VSDSVGGenerator.h"
+#include "VSDXParser.h"
 
 
 /**
@@ -68,9 +69,37 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parse(::WPXInputStream* /*input*/, libwpg::WPGPaintInterface* /*painter*/)
+bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInterface* painter)
 {
-	return false;
+  WPXInputStream* docStream = input->getDocumentOLEStream("VisioDocument");
+  if (!docStream)
+  {
+    return false;
+  }
+
+  docStream->seek(0x1A, WPX_SEEK_SET);
+  unsigned long bytesRead;
+  const unsigned char *data = docStream->read(1, bytesRead);
+
+  if (bytesRead != 1)
+  {
+    delete [] data;
+    delete docStream;
+    return false;
+  }
+
+  unsigned char version = data[0];
+  VSDXParser* parser;
+  switch(version)
+  {
+  case 6: parser = new VSD6Parser(docStream); break;
+  case 11: parser = new VSD11Parser(docStream); break;
+  default: return false;
+  }
+  if (parser)
+    parser->parse(painter);
+
+	return true;
 }
 
 /**

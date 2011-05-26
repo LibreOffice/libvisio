@@ -40,7 +40,7 @@ protected:
 };
 
 /* Parser for Visio 2000 */
-class VSD6Parser : protected VSDXParser
+class VSD6Parser : public VSDXParser
 {
 public:
   explicit VSD6Parser(WPXInputStream *input);
@@ -49,7 +49,7 @@ public:
 };
 
 /* Parser for Visio 2003 */
-class VSD11Parser : protected VSDXParser
+class VSD11Parser : public VSDXParser
 {
 public:
   explicit VSD11Parser(WPXInputStream *input);
