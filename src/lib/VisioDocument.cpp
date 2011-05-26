@@ -71,16 +71,8 @@ bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInt
   }
 
   docStream->seek(0x1A, WPX_SEEK_SET);
-  unsigned long bytesRead;
-  const unsigned char *data = docStream->read(1, bytesRead);
 
-  if (bytesRead != 1)
-  {
-    delete docStream;
-    return false;
-  }
-
-  unsigned char version = data[0];
+  unsigned char version = readU8(docStream);
   VSDXParser* parser;
   switch(version)
   {
@@ -88,10 +80,20 @@ bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInt
   case 11: parser = new VSD11Parser(docStream); break;
   default: return false;
   }
-  if (parser)
-    parser->parse(painter);
 
-	return true;
+  if (parser)
+  {
+    parser->parse(painter);
+  }
+  else
+  {
+    delete docStream;
+    return false;
+  }
+
+  delete docStream;
+
+  return true;
 }
 
 /**
