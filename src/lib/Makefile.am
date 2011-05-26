@@ -32,9 +32,11 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -e
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_utils.cpp \
 	VisioDocument.cpp \
+	VSDXParser.cpp \
 	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
 	libvisio_utils \
+	VSDXParser.h \
 	VSDInternalStream.h \
 	VSDSVGGenerator.h
 
