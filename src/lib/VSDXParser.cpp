@@ -40,10 +40,7 @@ libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input)
 {}
 
 libvisio::VSD6Parser::~VSD6Parser()
-{
-  if (m_input)  
-    delete m_input;
-}
+{}
 
 /** Parses VSD 2000 input stream content, making callbacks to functions provided
 by WPGPaintInterface class implementation as needed.
@@ -65,10 +62,7 @@ libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
 {}
 
 libvisio::VSD11Parser::~VSD11Parser()
-{
-  if (m_input)  
-    delete m_input;
-}
+{}
 
 /** Parses VSD 2003 input stream content, making callbacks to functions provided
 by WPGPaintInterface class implementation as needed.
