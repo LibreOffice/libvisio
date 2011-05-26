@@ -30,10 +30,11 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = $(LIBVISIO_LIBS) @
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic $(no_undefined)
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
+	libvisio_utils.cpp \
 	VisioDocument.cpp \
 	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
-	libvisio.h \
+	libvisio_utils \
 	VSDInternalStream.h \
 	VSDSVGGenerator.h
 

@@ -22,6 +22,8 @@
 
 #include <stdio.h>
 
+#include <libwpd-stream/libwpd-stream.h>
+
 //#define DEBUG // FIXME !
 
 // debug message includes source file and line number
@@ -40,5 +42,9 @@
 	#define VSD_DEBUG_MSG(M)
 	#define VSD_DEBUG(M)
 #endif
+
+unsigned char readU8(WPXInputStream *input); 
+unsigned short readU16(WPXInputStream *input);
+unsigned readU32(WPXInputStream *input);
 
 #endif // __LIBVISIO_UTILS_H__
