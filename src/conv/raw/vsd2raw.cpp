@@ -208,18 +208,11 @@ namespace {
 
 int printUsage()
 {
-	printf("Usage: wpg2raw [OPTION] <WordPerfect Graphics File>\n");
+	printf("Usage: vsd2raw [OPTION] <WordPerfect Graphics File>\n");
 	printf("\n");
 	printf("Options:\n");
 	printf("--help                Shows this help message\n");
-	printf("--version             Output wpg2raw version \n");
 	return -1;
-}
-
-int printVersion()
-{
-	printf("wpg2raw %s\n", LIBWPG_VERSION_STRING);
-	return 0;
 }
 
 } // anonymous namespace
@@ -233,9 +226,7 @@ int main(int argc, char *argv[])
 
 	for (int i = 1; i < argc; i++)
 	{
-		if (!strcmp(argv[i], "--version"))
-			return printVersion();
-		else if (!file && strncmp(argv[i], "--", 2))
+		if (!file && strncmp(argv[i], "--", 2))
 			file = argv[i];
 		else
 			return printUsage();
@@ -246,14 +237,14 @@ int main(int argc, char *argv[])
 		
 	WPXFileStream input(file);
 
-	if (!libwpg::WPGraphics::isSupported(&input))
+	if (!libvisio::VisioDocument::isSupported(&input))
 	{
 		fprintf(stderr, "ERROR: Unsupported file format (unsupported version) or file is encrypted!\n");
 		return 1;
 	}
 
 	RawPainter painter;
-	libwpg::WPGraphics::parse(&input, &painter);
+	libvisio::VisioDocument::parse(&input, &painter);
 
 	return 0;
 }

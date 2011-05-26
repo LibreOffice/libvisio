@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include "libvisio.h"
+#include "libvisio_utils.h"
 #include "VSDSVGGenerator.h"
 #include "VSDXParser.h"
 
@@ -35,22 +36,14 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream* input)
 {
   WPXInputStream* tmpDocStream = input->getDocumentOLEStream("VisioDocument");
   if (!tmpDocStream)
-  {
     return false;
-  }
 
   tmpDocStream->seek(0x1A, WPX_SEEK_SET);
-  unsigned long bytesRead;
-  const unsigned char *data = tmpDocStream->read(1, bytesRead);
 
-  if (bytesRead != 1)
-  {
-    delete tmpDocStream;
-    return false;
-  }
-
-  unsigned char version = data[0];
+  unsigned char version = readU8(tmpDocStream);
   delete tmpDocStream;
+  
+  VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
 
   // Versions 2k (6) and 2k3 (11)
   if (version == 6 || version == 11)
