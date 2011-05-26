@@ -208,7 +208,7 @@ namespace {
 
 int printUsage()
 {
-	printf("Usage: vsd2raw [OPTION] <WordPerfect Graphics File>\n");
+	printf("Usage: vsd2raw [OPTION] <Visio Document File>\n");
 	printf("\n");
 	printf("Options:\n");
 	printf("--help                Shows this help message\n");
@@ -244,7 +244,11 @@ int main(int argc, char *argv[])
 	}
 
 	RawPainter painter;
-	libvisio::VisioDocument::parse(&input, &painter);
+	if (!libvisio::VisioDocument::parse(&input, &painter))
+	{
+		fprintf(stderr, "ERROR: Parsing of document failed!\n");
+		return 1;
+	}
 
 	return 0;
 }
