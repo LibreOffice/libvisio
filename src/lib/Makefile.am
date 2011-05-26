@@ -31,8 +31,10 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic $(no_undefined)
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VisioDocument.cpp \
+	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
 	libvisio.h \
+	VSDInternalStream.h \
 	VSDSVGGenerator.h
 
 if OS_WIN32
