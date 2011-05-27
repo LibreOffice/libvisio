@@ -90,6 +90,7 @@ by WPGPaintInterface class implementation as needed.
 */
 bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
 {
+  const unsigned int SHIFT = 4;
   if (!m_input)
   {
     return false;
@@ -103,9 +104,29 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
   unsigned short format = readU16(m_input);
   bool compressed = ((format & 2) == 2);
 
-  // Seek to offset then pass docstream, size and bool compression to VSDInternalStream
   m_input->seek(offset, WPX_SEEK_SET);
-  VSDInternalStream trailerStream(m_input, length, compressed);
+  VSDInternalStream *trailerStream = new VSDInternalStream(m_input, length, compressed);
+
+  // Parse out pointers to other streams from trailer
+  trailerStream->seek(SHIFT, WPX_SEEK_SET);
+  offset = readU32(trailerStream);
+  trailerStream->seek(offset+SHIFT, WPX_SEEK_SET);
+  unsigned int pointerCount = readU32(trailerStream);
+  trailerStream->seek(SHIFT, WPX_SEEK_CUR);
+
+  unsigned int ptrType;
+  unsigned int ptrOffset;
+  unsigned int ptrLength;
+  unsigned int ptrFormat;
+  for (unsigned int i = 0; i < pointerCount; i++)
+  {
+    ptrType = readU32(trailerStream);
+    trailerStream->seek(4, WPX_SEEK_CUR); // Skip dword
+    ptrOffset = readU32(trailerStream);
+    ptrLength = readU32(trailerStream);
+    ptrFormat = readU16(trailerStream);
+    VSD_DEBUG_MSG(("Found pointer of type %x and format %x\n", ptrType, ptrFormat));
+  }
 
   return true;
 }
