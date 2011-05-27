@@ -91,6 +91,7 @@ bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInt
     return false;
   }
 
+  delete parser;
   delete docStream;
 
   return true;
