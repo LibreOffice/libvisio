@@ -87,6 +87,7 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
 				mask = mask << 1;
 			}
 		}
+    m_size = m_buffer.size();
 	}
 }
 
