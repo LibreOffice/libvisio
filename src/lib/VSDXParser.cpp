@@ -163,7 +163,8 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
     {0x45, "??? match number of Pages or Stencil Pages in Pages/Stencils", 0},
     {0xc9, "some collection of 13 bytes structures related to 3f/40 streams", 0},
     {0xd7, "FontFace (ver.11)", 0},
-    {0xd8, "FontFaces (ver.6)", 0}
+    {0xd8, "FontFaces (ver.6)", 0},
+	{0, 0, 0}
   };
 
   trailerStream.seek(SHIFT, WPX_SEEK_SET);
@@ -189,7 +190,7 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
     VSDInternalStream stream(m_input, ptrLength, compressed);
 
     int index = -1;
-    for (int i = 0; (index < 0) && handlers[i].name; i++)
+    for (int i = 0; (index < 0) && handlers[i].type; i++)
     {
       if (handlers[i].type == ptrType)
         index = i;
