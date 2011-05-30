@@ -1,5 +1,6 @@
 /* libvisio
  * Copyright (C) 2011 Fridrich Strba <fridrich.strba@bluewin.ch>
+ * Copyright (C) 2011 Eilidh McAdam <tibbylickle@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,21 +18,26 @@
  * Boston, MA  02111-1301 USA
  */
 
-#include <libwpd-stream/libwpd-stream.h>
-#include <libvisio_utils.h>
+#ifndef __VSD6PARSER_H__
+#define __VSD6PARSER_H__
+
+#include <stdio.h>
+#include <iostream>
+#include <libwpd/libwpd.h>
+#include <libwpg/libwpg.h>
 #include "VSDXParser.h"
-#include "VSDInternalStream.h"
-#include <locale.h>
-#include <sstream>
-#include <string>
 
-libvisio::VSDXParser::VSDXParser(WPXInputStream *input)
-  : m_input(input)
-{}
+namespace libvisio
+{
 
-libvisio::VSDXParser::~VSDXParser()
-{}
+class VSD6Parser : public VSDXParser
+{
+public:
+  explicit VSD6Parser(WPXInputStream *input);
+  ~VSD6Parser();
+  bool parse(libwpg::WPGPaintInterface *iface);
+};
 
+} // namespace libvisio
 
-
-
+#endif // __VSD6PARSER_H__

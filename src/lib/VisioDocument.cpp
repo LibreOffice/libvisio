@@ -24,7 +24,8 @@
 #include "libvisio_utils.h"
 #include "VSDSVGGenerator.h"
 #include "VSDXParser.h"
-
+#include "VSD6Parser.h"
+#include "VSD11Parser.h"
 
 /**
 Analyzes the content of an input stream to see if it can be parsed

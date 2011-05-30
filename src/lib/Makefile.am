@@ -33,10 +33,14 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_utils.cpp \
 	VisioDocument.cpp \
 	VSDXParser.cpp \
+	VSD6Parser.cpp \
+	VSD11Parser.cpp \
 	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
 	libvisio_utils \
 	VSDXParser.h \
+	VSD6Parser.h \
+	VSD11Parser.h \
 	VSDInternalStream.h \
 	VSDSVGGenerator.h
 

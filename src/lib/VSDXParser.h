@@ -39,24 +39,6 @@ protected:
   WPXInputStream *m_input;
 };
 
-/* Parser for Visio 2000 */
-class VSD6Parser : public VSDXParser
-{
-public:
-  explicit VSD6Parser(WPXInputStream *input);
-  ~VSD6Parser();
-  bool parse(libwpg::WPGPaintInterface *iface);
-};
-
-/* Parser for Visio 2003 */
-class VSD11Parser : public VSDXParser
-{
-public:
-  explicit VSD11Parser(WPXInputStream *input);
-  ~VSD11Parser();
-  bool parse(libwpg::WPGPaintInterface *iface);
-};
-
 } // namespace libvisio
 
 #endif // __VSDXPARSER_H__
