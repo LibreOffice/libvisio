@@ -39,12 +39,9 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
 	}
 	else
 	{
-		unsigned char buffer[4096];
+		unsigned char buffer[4096] = { 0 };
 		unsigned pos = 0;
 		unsigned offset = 0;
-
-		for (int l = 0; l<4096; l++)
-			buffer[l] = 0;
 
 		while (offset < size)
 		{
