@@ -23,7 +23,6 @@
 VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, bool compressed) :
 	WPXInputStream(),
 	m_offset(0),
-	m_size(size),
 	m_buffer()
 {
 	unsigned long tmpNumBytesRead = 0;
@@ -40,25 +39,27 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
 	}
 	else
 	{
-		unsigned char buffer[4096] = { 0 };
+		unsigned char buffer[4096];
 		unsigned pos = 0;
-		unsigned long i = 0;
 		unsigned offset = 0;
 
-		while (i < size)
+		for (int l = 0; l<4096; l++)
+			buffer[l] = 0;
+
+		while (offset < size)
 		{
 			unsigned flag = tmpBuffer[offset++];
-			i++;
+			if (offset > size-1)
+				break;
 
 			unsigned mask = 1;
-			for (unsigned bit = 0; bit < 8; ++bit)
+			for (unsigned bit = 0; bit < 8 && offset < size; ++bit)
 			{
 				if (flag & mask)
 				{
 					buffer[pos&4095] = tmpBuffer[offset++];
 					m_buffer.push_back(buffer[pos&4095]);
 					pos++;
-					i++;
 				}
 				else
 				{
@@ -69,7 +70,6 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
 
 					unsigned length = (addr2&15) + 3;
 					unsigned pointer = (((unsigned)addr2 & 0xF0) << 4) | addr1;
-					i += 2;
 					if (pointer > 4078)
 						pointer -= 4078;
 					else
@@ -87,7 +87,6 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
 				mask = mask << 1;
 			}
 		}
-    m_size = m_buffer.size();
 	}
 }
 
@@ -100,10 +99,10 @@ const unsigned char * VSDInternalStream::read(unsigned long numBytes, unsigned l
 	
 	int numBytesToRead;
 
-	if ((m_offset+numBytes) < m_size)
+	if ((m_offset+numBytes) < m_buffer.size())
 		numBytesToRead = numBytes;
 	else
-		numBytesToRead = m_size - m_offset;
+		numBytesToRead = m_buffer.size() - m_offset;
 	
 	numBytesRead = numBytesToRead; // about as paranoid as we can be..
 
@@ -128,9 +127,9 @@ int VSDInternalStream::seek(long offset, WPX_SEEK_TYPE seekType)
 		m_offset = 0;
 		return 1;
 	}
-	if ((long)m_offset > (long)m_size)
+	if ((long)m_offset > (long)m_buffer.size())
 	{
-		m_offset = m_size;
+		m_offset = m_buffer.size();
 		return 1;
 	}
 
@@ -144,7 +143,7 @@ long VSDInternalStream::tell()
 
 bool VSDInternalStream::atEOS()
 {
-	if ((long)m_offset == (long)m_size) 
+	if ((long)m_offset == (long)m_buffer.size()) 
 		return true; 
 
 	return false;

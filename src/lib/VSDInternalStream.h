@@ -37,11 +37,10 @@ public:
 	int seek(long offset, WPX_SEEK_TYPE seekType);
 	long tell();
 	bool atEOS();
-	unsigned long getSize() const { return m_size; };
+	unsigned long getSize() const { return m_buffer.size(); };
 
 private:
 	long m_offset;
-	unsigned long m_size;
 	std::vector<unsigned char> m_buffer;
 	VSDInternalStream(const VSDInternalStream&);
 	VSDInternalStream& operator=(const VSDInternalStream&);
