@@ -129,6 +129,43 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
   VSDInternalStream trailerStream(m_input, length, compressed);
 
   // Parse out pointers to other streams from trailer
+  typedef void (VSD11Parser::*Method)(VSDInternalStream&);
+  struct StreamHandler { unsigned int type; const char *name; Method handler;};
+  static const struct StreamHandler handlers[] =
+  {
+    {0xa, "Name", 0},
+    {0xb, "Name Idx", 0},
+    {0x14, "Trailer, 0"},
+    {0x15, "Page", 0},
+    {0x16, "Colors"},
+    {0x17, "??? seems to have no data", 0},
+    {0x18, "FontFaces (ver.11)", 0},
+    {0x1a, "Styles", 0},
+    {0x1b, "??? saw 'Acrobat PDFWriter' string here", 0},
+    {0x1c, "??? saw 'winspool.Acrobat PDFWriter.LPT1' string here", 0},
+    {0x1d, "Stencils"},
+    {0x1e, "Stencil Page (collection of Shapes, one collection per each stencil item)", 0},
+    {0x20, "??? seems to have no data", 0},
+    {0x21, "??? seems to have no data", 0},
+    {0x23, "Icon (for stencil only?)", 0},
+    {0x24, "??? seems to have no data", 0},
+    {0x26, "??? some fractions, maybe PrintProps", 0},
+    {0x27, "Pages", 0},
+    {0x29, "Collection of Type 2a streams", 0},
+    {0x2a, "???", 0},
+    {0x31, "Document", 0},
+    {0x32, "NameList", 0},
+    {0x33, "Name", 0},
+    {0x3d, "??? found in VSS, seems to have no data", 0},
+    {0x3f, "List of name indexes collections", 0},
+    {0x40, "Name Idx + ?? group (contains 0xb type streams)", 0},
+    {0x44, "??? Collection of Type 0x45 streams", 0},
+    {0x45, "??? match number of Pages or Stencil Pages in Pages/Stencils", 0},
+    {0xc9, "some collection of 13 bytes structures related to 3f/40 streams", 0},
+    {0xd7, "FontFace (ver.11)", 0},
+    {0xd8, "FontFaces (ver.6)", 0}
+  };
+
   trailerStream.seek(SHIFT, WPX_SEEK_SET);
   offset = readU32(&trailerStream);
   trailerStream.seek(offset+SHIFT, WPX_SEEK_SET);
@@ -146,7 +183,38 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
     ptrOffset = readU32(&trailerStream);
     ptrLength = readU32(&trailerStream);
     ptrFormat = readU16(&trailerStream);
-    VSD_DEBUG_MSG(("Found pointer of type %x and format %x\n", ptrType, ptrFormat));
+
+    compressed = ((format & 2) == 2);
+    m_input->seek(ptrOffset, WPX_SEEK_SET);
+    VSDInternalStream stream(m_input, ptrLength, compressed);
+
+    int index = -1;
+    for (int i = 0; (index < 0) && handlers[i].name; i++)
+    {
+      if (handlers[i].type == ptrType)
+        index = i;
+    }
+
+    if (index < 0)
+    {
+      VSD_DEBUG_MSG(("Unknown stream pointer type 0x%02x found in trailer at %li\n",
+                     ptrType, trailerStream.tell() - 18));
+    }
+    else
+    {
+      Method streamHandler = handlers[index].handler;
+      if (!streamHandler)
+        VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li ignored\n",
+                       handlers[index].name, handlers[index].type, ptrFormat,
+                       trailerStream.tell() - 18));
+      else
+      {
+        VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li handled\n",
+                       handlers[index].name, handlers[index].type, ptrFormat,
+                       trailerStream.tell() - 18));
+        (this->*streamHandler)(stream);
+      }
+    }
   }
 
   return true;
