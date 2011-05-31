@@ -37,7 +37,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSD11Parser.cpp \
 	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
-	libvisio_utils \
+	libvisio_utils.h \
 	VSDXParser.h \
 	VSD6Parser.h \
 	VSD11Parser.h \
