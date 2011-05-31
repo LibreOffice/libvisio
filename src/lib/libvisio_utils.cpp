@@ -19,47 +19,45 @@
 
 #include "libvisio_utils.h"
 
-#define VSD_GET_UINT8(p) (*(unsigned char const *)(p))
-#define VSD_GET_UINT16(p)				  \
-        (unsigned short)((((unsigned char const *)(p))[0] << 0)  |    \
-                  (((unsigned char const *)(p))[1] << 8))
-#define VSD_GET_UINT32(p) \
-        (unsigned)((((unsigned char const *)(p))[0] << 0)  |    \
-                  (((unsigned char const *)(p))[1] << 8)  |    \
-                  (((unsigned char const *)(p))[2] << 16) |    \
-                  (((unsigned char const *)(p))[3] << 24))
-
 #define VSD_NUM_ELEMENTS(array) sizeof(array)/sizeof(array[0])
 
-unsigned char readU8(WPXInputStream *input)
+uint8_t readU8(WPXInputStream *input)
 {
+	if (!input || input->atEOS())
+		return (uint8_t)0;
 	unsigned long numBytesRead;
-	unsigned char const * p = input->read(sizeof(unsigned char), numBytesRead);
-
-  	if (!p || numBytesRead != sizeof(unsigned char))
-		return 0;
-
-	return VSD_GET_UINT8(p);
+	uint8_t const * p = input->read(sizeof(uint8_t), numBytesRead);
+	
+	if (p && numBytesRead == sizeof(uint8_t))
+		return *(uint8_t const *)(p);
+	return (uint8_t)0;
 }
 
-unsigned short readU16(WPXInputStream *input)
+uint16_t readU16(WPXInputStream *input)
 {
-	unsigned long numBytesRead;
-	unsigned short const *val = (unsigned short const *)input->read(sizeof(unsigned short), numBytesRead);
-
-	if (!val || numBytesRead != sizeof(unsigned short))
-  		return 0;
-
-	return VSD_GET_UINT16(val);
+	uint64_t p0 = (uint64_t)readU8(input);
+	uint64_t p1 = (uint64_t)readU8(input);
+	return (uint64_t)(p0|(p1<<8));
 }
 
-unsigned readU32(WPXInputStream *input)
+uint32_t readU32(WPXInputStream *input)
 {
-	unsigned long numBytesRead;
-	unsigned const *val = (unsigned const *)input->read(sizeof(unsigned), numBytesRead);
+	uint32_t p0 = (uint32_t)readU8(input);
+	uint32_t p1 = (uint32_t)readU8(input);
+	uint32_t p2 = (uint32_t)readU8(input);
+	uint32_t p3 = (uint32_t)readU8(input);
+	return (uint32_t)(p0|(p1<<8)|(p2<<16)|(p3<<24));
+}
 
-	if (!val || numBytesRead != sizeof(unsigned))
-  		return 0;
-
-	return VSD_GET_UINT32(val);
+uint64_t readU64(WPXInputStream *input)
+{
+	uint64_t p0 = (uint64_t)readU8(input);
+	uint64_t p1 = (uint64_t)readU8(input);
+	uint64_t p2 = (uint64_t)readU8(input);
+	uint64_t p3 = (uint64_t)readU8(input);
+	uint64_t p4 = (uint64_t)readU8(input);
+	uint64_t p5 = (uint64_t)readU8(input);
+	uint64_t p6 = (uint64_t)readU8(input);
+	uint64_t p7 = (uint64_t)readU8(input);
+	return (uint64_t)(p0|(p1<<8)|(p2<<16)|(p3<<24)|(p4<<32)|(p5<<40)|(p6<<48)|(p7<<56));
 }

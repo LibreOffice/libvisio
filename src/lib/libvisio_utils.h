@@ -22,6 +22,29 @@
 
 #include <stdio.h>
 
+#ifdef _MSC_VER
+
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+typedef unsigned __int64 uint64_t;
+
+#else
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
+#endif
+
 #include <libwpd-stream/libwpd-stream.h>
 
 // debug message includes source file and line number
@@ -41,8 +64,9 @@
 	#define VSD_DEBUG(M)
 #endif
 
-unsigned char readU8(WPXInputStream *input); 
-unsigned short readU16(WPXInputStream *input);
-unsigned readU32(WPXInputStream *input);
+uint8_t readU8(WPXInputStream *input); 
+uint16_t readU16(WPXInputStream *input);
+uint32_t readU32(WPXInputStream *input);
+uint64_t readU64(WPXInputStream *input);
 
 #endif // __LIBVISIO_UTILS_H__
