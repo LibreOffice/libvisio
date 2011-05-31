@@ -64,9 +64,15 @@ uint64_t readU64(WPXInputStream *input)
 
 double readDouble(WPXInputStream *input)
 {
-#if defined (_MSC_VER) && (_MSC_VER <= 1200)
-    return static_cast<double>(static_cast<__int64>(readU64(input)));
-#else
-	return static_cast<double>(readU64(input));
-#endif
+	union
+	{
+		uint64_t *a;
+		double *b;
+	};
+	
+	uint64_t value = readU64(input);
+	
+	a = &value;
+
+	return *b;
 }
