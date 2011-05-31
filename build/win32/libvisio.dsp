@@ -87,11 +87,31 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=..\..\src\lib\libvisio_utils.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VisioDocument.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSD11Parser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSD6Parser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDInternalStream.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDSVGGenerator.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXParser.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -111,7 +131,23 @@ SOURCE=..\..\src\lib\VisioDocument.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSD11Parser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSD6Parser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDInternalStream.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDSVGGenerator.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXParser.h
 # End Source File
 # End Group
 # End Target

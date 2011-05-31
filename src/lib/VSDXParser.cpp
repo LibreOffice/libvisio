@@ -18,12 +18,12 @@
  */
 
 #include <libwpd-stream/libwpd-stream.h>
-#include <libvisio_utils.h>
-#include "VSDXParser.h"
-#include "VSDInternalStream.h"
 #include <locale.h>
 #include <sstream>
 #include <string>
+#include "libvisio_utils.h"
+#include "VSDXParser.h"
+#include "VSDInternalStream.h"
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input)
   : m_input(input)

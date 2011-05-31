@@ -69,4 +69,6 @@ uint16_t readU16(WPXInputStream *input);
 uint32_t readU32(WPXInputStream *input);
 uint64_t readU64(WPXInputStream *input);
 
+double readDouble(WPXInputStream *input);
+
 #endif // __LIBVISIO_UTILS_H__

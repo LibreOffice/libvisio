@@ -29,8 +29,13 @@ INCPRE+=$(SOLARVER)$/$(UPD)$/$(INPATH)$/inc$/libwpg
 .ENDIF
 
 SLOFILES= \
+	$(SLO)$/libvisio_utils.obj \
 	$(SLO)$/VisioDocument.obj \
-	$(SLO)$/VSDSVGGenerator.obj
+	$(SLO)$/VSD11Parser.obj \
+	$(SLO)$/VSD6Parser.obj \
+	$(SLO)$/VSDInternalStream.obj \
+	$(SLO)$/VSDSVGGenerator.obj \
+	$(SLO)$/VSDXParser.obj
 
 LIB1ARCHIV=$(LB)$/libvisiolib.a
 LIB1TARGET=$(SLB)$/$(TARGET).lib

@@ -35,9 +35,9 @@ uint8_t readU8(WPXInputStream *input)
 
 uint16_t readU16(WPXInputStream *input)
 {
-	uint64_t p0 = (uint64_t)readU8(input);
-	uint64_t p1 = (uint64_t)readU8(input);
-	return (uint64_t)(p0|(p1<<8));
+	uint16_t p0 = (uint16_t)readU8(input);
+	uint16_t p1 = (uint16_t)readU8(input);
+	return (uint16_t)(p0|(p1<<8));
 }
 
 uint32_t readU32(WPXInputStream *input)
@@ -60,4 +60,13 @@ uint64_t readU64(WPXInputStream *input)
 	uint64_t p6 = (uint64_t)readU8(input);
 	uint64_t p7 = (uint64_t)readU8(input);
 	return (uint64_t)(p0|(p1<<8)|(p2<<16)|(p3<<24)|(p4<<32)|(p5<<40)|(p6<<48)|(p7<<56));
+}
+
+double readDouble(WPXInputStream *input)
+{
+#if defined (_MSC_VER) && (_MSC_VER <= 1200)
+    return static_cast<double>(static_cast<__int64>(readU64(input)));
+#else
+	return static_cast<double>(readU64(input));
+#endif
 }
