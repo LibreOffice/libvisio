@@ -217,8 +217,12 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
     //dbug
     VSD_DEBUG_MSG(("Reading length from %lx\n", stream.tell()));
     stream.seek(-4, WPX_SEEK_CUR);
+#ifdef DEBUG
     unsigned long bytesRead;
     const unsigned char *buffer = stream.read(4, bytesRead);
+#else
+	stream.seek(4, WPX_SEEK_CUR);
+#endif
     VSD_DEBUG_MSG(("Length contents: %02x%02x%02x%02x\n", buffer[0], buffer[1], buffer[2], buffer[3]));
 
     VSD_DEBUG_MSG(("Length field: %x (%d)\n", dataLength, dataLength));
@@ -227,8 +231,12 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
                    chunkType, trailer, dataLength));
     if (chunkType == 0x92) // Page properties
     {
+#ifdef DEBUG
       double width = readDouble(&stream);
       double height = readDouble(&stream);
+#else
+      stream.seek(16, WPX_SEEK_CUR);
+#endif
       VSD_DEBUG_MSG(("Found page - %f x %f, now at %lx\n", width, height, stream.tell()));
       stream.seek(dataLength+trailer-16, WPX_SEEK_CUR);
       VSD_DEBUG_MSG(("Moved to %lx\n", stream.tell()));
