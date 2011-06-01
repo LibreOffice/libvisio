@@ -211,7 +211,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
     stream.seek(4, WPX_SEEK_CUR); // Skip ix field
     unsigned int trailer = 0;
     if (readU32(&stream) != 0)
-      trailer = 12; // 8byte trailer + (4byte separator for v11)
+      trailer += 8; // 8 byte trailer
     unsigned int dataLength = readU32(&stream);
 
     //dbug
@@ -226,11 +226,30 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
     VSD_DEBUG_MSG(("Length contents: %02x%02x%02x%02x\n", buffer[0], buffer[1], buffer[2], buffer[3]));
 
     VSD_DEBUG_MSG(("Length field: %x (%d)\n", dataLength, dataLength));
-    stream.seek(3, WPX_SEEK_CUR); // Skip word and byte
+
+    unsigned int level = readU16(&stream);
+    unsigned int unknown = readU8(&stream);
+
+    // Add 4 byte separator under certain circumstances
+    if (trailer != 0 || (level == 2 && unknown == 0x55) ||
+        (level == 2 && unknown == 0x54) || (level == 3 && unknown == 0x50) ||
+        chunkType == 0x69 || chunkType == 0x6a || chunkType == 0x6b || 
+        chunkType == 0x71 || chunkType == 0xb6 || chunkType == 0xb9 || 
+        chunkType == 0xa9)
+    {
+      trailer += 4;
+    }
+
+    if (chunkType == 0x1f || chunkType == 0xc9)
+    {
+      trailer = 0;
+    }
+
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    chunkType, trailer, dataLength));
     if (chunkType == 0x92) // Page properties
     {
+
 #ifdef DEBUG
       stream.seek(1, WPX_SEEK_CUR); // Skip separator
       double width = readDouble(&stream);
