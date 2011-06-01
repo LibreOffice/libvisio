@@ -1,5 +1,6 @@
 /* libvisio
  * Copyright (C) 2011 Fridrich Strba <fridrich.strba@bluewin.ch>
+ * Copyright (C) 2011 Eilidh McAdam <tibbylickle@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
