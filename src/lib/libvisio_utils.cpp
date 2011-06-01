@@ -64,15 +64,9 @@ uint64_t readU64(WPXInputStream *input)
 
 double readDouble(WPXInputStream *input)
 {
-	union
-	{
-		uint64_t *a;
-		double *b;
-	};
-	
 	uint64_t value = readU64(input);
 	
-	a = &value;
-
-	return *b;
+	double *doublePointer = reinterpret_cast<double *>(&value);
+	
+	return *doublePointer;
 }
