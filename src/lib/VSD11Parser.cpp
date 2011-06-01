@@ -232,13 +232,15 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
     if (chunkType == 0x92) // Page properties
     {
 #ifdef DEBUG
+      stream.seek(1, WPX_SEEK_CUR); // Skip separator
       double width = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR); // Skip separator
       double height = readDouble(&stream);
 #else
-      stream.seek(16, WPX_SEEK_CUR);
+      stream.seek(18, WPX_SEEK_CUR);
 #endif
       VSD_DEBUG_MSG(("Found page - %f x %f, now at %lx\n", width, height, stream.tell()));
-      stream.seek(dataLength+trailer-16, WPX_SEEK_CUR);
+      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
       VSD_DEBUG_MSG(("Moved to %lx\n", stream.tell()));
     }
     else // Skip chunk
