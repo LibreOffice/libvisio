@@ -44,6 +44,8 @@ private:
   static const struct StreamHandler handlers[32];
   void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  
+  bool m_isPageStarted;
 };
 
 } // namespace libvisio

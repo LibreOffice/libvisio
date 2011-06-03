@@ -63,7 +63,7 @@ const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::handler
       };
 
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
-  : VSDXParser(input)
+  : VSDXParser(input), m_isPageStarted(false)
 {}
 
 libvisio::VSD11Parser::~VSD11Parser()
@@ -145,6 +145,9 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *painter)
     }
   }
 
+  // End page if one is started
+  if (m_isPageStarted)
+    painter->endGraphics();
   return true;
 }
 
@@ -242,7 +245,10 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       WPXPropertyList pageProps;
       pageProps.insert("svg:width", width);
       pageProps.insert("svg:height", height);
+      if (m_isPageStarted)
+        painter->endGraphics();
       painter->startGraphics(pageProps);
+      m_isPageStarted = true;
 
       stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
       VSD_DEBUG_MSG(("Moved to %lx\n", stream.tell()));
