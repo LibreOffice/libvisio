@@ -53,7 +53,7 @@ void libvisio::VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
 	if (m_isFirstPage)
 		m_isFirstPage = false;
 	else
-		m_outputSink << "<hr/>";
+		m_outputSink << "<hr/>\n";
 	m_outputSink << "<svg version=\"1.1\" ";
 	if (propList["svg:width"])
 		m_outputSink << "width=\"" << doubleToString(72*(propList["svg:width"]->getDouble())) << "\" ";
