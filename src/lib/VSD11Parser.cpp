@@ -27,40 +27,40 @@
 #include "VSDInternalStream.h"
 
 const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::handlers[] =
-    {
-      {0xa, "Name", 0},
-      {0xb, "Name Idx", 0},
-      {0x14, "Trailer, 0"},
-      {0x15, "Page", &libvisio::VSD11Parser::handlePage},
-      {0x16, "Colors"},
-      {0x17, "??? seems to have no data", 0},
-      {0x18, "FontFaces (ver.11)", 0},
-      {0x1a, "Styles", 0},
-      {0x1b, "??? saw 'Acrobat PDFWriter' string here", 0},
-      {0x1c, "??? saw 'winspool.Acrobat PDFWriter.LPT1' string here", 0},
-      {0x1d, "Stencils"},
-      {0x1e, "Stencil Page (collection of Shapes, one collection per each stencil item)", 0},
-      {0x20, "??? seems to have no data", 0},
-      {0x21, "??? seems to have no data", 0},
-      {0x23, "Icon (for stencil only?)", 0},
-      {0x24, "??? seems to have no data", 0},
-      {0x26, "??? some fractions, maybe PrintProps", 0},
-      {0x27, "Pages", &libvisio::VSD11Parser::handlePages},
-      {0x29, "Collection of Type 2a streams", 0},
-      {0x2a, "???", 0},
-      {0x31, "Document", 0},
-      {0x32, "NameList", 0},
-      {0x33, "Name", 0},
-      {0x3d, "??? found in VSS, seems to have no data", 0},
-      {0x3f, "List of name indexes collections", 0},
-      {0x40, "Name Idx + ?? group (contains 0xb type streams)", 0},
-      {0x44, "??? Collection of Type 0x45 streams", 0},
-      {0x45, "??? match number of Pages or Stencil Pages in Pages/Stencils", 0},
-      {0xc9, "some collection of 13 bytes structures related to 3f/40 streams", 0},
-      {0xd7, "FontFace (ver.11)", 0},
-      {0xd8, "FontFaces (ver.6)", 0},
-      {0, 0, 0}
-      };
+{
+  {0xa, "Name", 0},
+  {0xb, "Name Idx", 0},
+  {0x14, "Trailer, 0"},
+  {0x15, "Page", &libvisio::VSD11Parser::handlePage},
+  {0x16, "Colors"},
+  {0x17, "??? seems to have no data", 0},
+  {0x18, "FontFaces (ver.11)", 0},
+  {0x1a, "Styles", 0},
+  {0x1b, "??? saw 'Acrobat PDFWriter' string here", 0},
+  {0x1c, "??? saw 'winspool.Acrobat PDFWriter.LPT1' string here", 0},
+  {0x1d, "Stencils"},
+  {0x1e, "Stencil Page (collection of Shapes, one collection per each stencil item)", 0},
+  {0x20, "??? seems to have no data", 0},
+  {0x21, "??? seems to have no data", 0},
+  {0x23, "Icon (for stencil only?)", 0},
+  {0x24, "??? seems to have no data", 0},
+  {0x26, "??? some fractions, maybe PrintProps", 0},
+  {0x27, "Pages", &libvisio::VSD11Parser::handlePages},
+  {0x29, "Collection of Type 2a streams", 0},
+  {0x2a, "???", 0},
+  {0x31, "Document", 0},
+  {0x32, "NameList", 0},
+  {0x33, "Name", 0},
+  {0x3d, "??? found in VSS, seems to have no data", 0},
+  {0x3f, "List of name indexes collections", 0},
+  {0x40, "Name Idx + ?? group (contains 0xb type streams)", 0},
+  {0x44, "??? Collection of Type 0x45 streams", 0},
+  {0x45, "??? match number of Pages or Stencil Pages in Pages/Stencils", 0},
+  {0xc9, "some collection of 13 bytes structures related to 3f/40 streams", 0},
+  {0xd7, "FontFace (ver.11)", 0},
+  {0xd8, "FontFaces (ver.6)", 0},
+  {0, 0, 0}
+};
 
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
   : VSDXParser(input), m_isPageStarted(false)
@@ -209,37 +209,50 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
   while (!stream.atEOS())
   {
     unsigned int chunkType = readU32(&stream);
-    //unsigned int id = readU32(&stream);
-    stream.seek(4, WPX_SEEK_CUR); // Skip id field
-    unsigned int trailer = 0;
-    if (readU32(&stream) != 0)
-      trailer += 8; // 8 byte trailer
-    unsigned int dataLength = readU32(&stream);
+    // Hackish way of dealing with unknown v11 chunk separators (see below)
+    if (chunkType == 0)
+      continue;
 
+    stream.seek(4, WPX_SEEK_CUR); // Skip id field
+
+    // Certain chunk types seem to always have a trailer
+    unsigned int list = readU32(&stream);
+    unsigned int trailer = 0;
+    if (list != 0 || chunkType == 0x71 || chunkType == 0x70 ||
+        chunkType == 0x6b || chunkType == 0x6a || chunkType == 0x69 || 
+        chunkType == 0x66 || chunkType == 0x65 || chunkType == 0x2c)
+      trailer += 8; // 8 byte trailer
+
+    unsigned int dataLength = readU32(&stream);
     unsigned int level = readU16(&stream);
     unsigned int unknown = readU8(&stream);
 
-    // Add 4 byte separator under certain circumstances
-    if (trailer != 0 || (level == 2 && unknown == 0x55) ||
-        (level == 2 && unknown == 0x54) || (level == 3 && unknown == 0x50) ||
+    // Add word separator under certain circumstances for v11
+    // Below are known conditions, may be more or a simpler pattern
+    if (list != 0 || (level == 2 && unknown == 0x55) ||
+        (level == 2 && unknown == 0x54 && chunkType == 0xaa) 
+        || (level == 3 && unknown != 0x50 && unknown != 0x54) ||
         chunkType == 0x69 || chunkType == 0x6a || chunkType == 0x6b || 
         chunkType == 0x71 || chunkType == 0xb6 || chunkType == 0xb9 || 
         chunkType == 0xa9 || chunkType == 0x92)
     {
       trailer += 4;
     }
+    // 0x1f (OLE data) and 0xc9 (Name ID) never have trailer 
     if (chunkType == 0x1f || chunkType == 0xc9)
     {
       trailer = 0;
     }
+
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    chunkType, trailer, dataLength));
 
     if (chunkType == 0x92) // Page properties
     {
-      stream.seek(1, WPX_SEEK_CUR); // Skip separator
+      // Skip bytes representing unit to *display* (value is always inches)
+      stream.seek(1, WPX_SEEK_CUR);
       double width = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR); // Skip separator
+      stream.seek(1, WPX_SEEK_CUR);
       double height = readDouble(&stream);
 
       WPXPropertyList pageProps;
@@ -250,8 +263,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       painter->startGraphics(pageProps);
       m_isPageStarted = true;
 
-      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
-      VSD_DEBUG_MSG(("Moved to %lx\n", stream.tell()));
+      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);      
     }
     else // Skip chunk
     {
