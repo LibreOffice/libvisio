@@ -54,7 +54,7 @@ void libvisio::VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
 		m_isFirstPage = false;
 	else
 		m_outputSink << "<hr/>\n";
-	m_outputSink << "<svg version=\"1.1\" ";
+	m_outputSink << "<svg:svg version=\"1.1\" ";
 	if (propList["svg:width"])
 		m_outputSink << "width=\"" << doubleToString(72*(propList["svg:width"]->getDouble())) << "\" ";
 	if (propList["svg:height"])
@@ -66,7 +66,7 @@ void libvisio::VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
 
 void libvisio::VSDSVGGenerator::endGraphics()
 {
-	m_outputSink << "</svg>\n";
+	m_outputSink << "</svg:svg>\n";
 }
 
 void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector& gradient)
