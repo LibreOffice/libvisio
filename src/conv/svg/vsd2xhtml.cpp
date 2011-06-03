@@ -28,7 +28,7 @@ namespace {
 
 int printUsage()
 {
-	printf("Usage: vsd2svg [OPTION] <Visio Document>\n");
+	printf("Usage: vsd2xhtml [OPTION] <Visio Document>\n");
 	printf("\n");
 	printf("Options:\n");
 	printf("--help                Shows this help message\n");

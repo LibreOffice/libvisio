@@ -40,7 +40,7 @@ static std::string doubleToString(const double value)
 }
 
 
-libvisio::VSDSVGGenerator::VSDSVGGenerator(std::ostream & output_sink): m_gradient(), m_style(), m_gradientIndex(1), m_outputSink(output_sink)
+libvisio::VSDSVGGenerator::VSDSVGGenerator(std::ostream & output_sink): m_gradient(), m_style(), m_gradientIndex(1), m_isFirstPage(true), m_outputSink(output_sink)
 {
 }
 
@@ -50,6 +50,10 @@ libvisio::VSDSVGGenerator::~VSDSVGGenerator()
 
 void libvisio::VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
 {
+	if (m_isFirstPage)
+		m_isFirstPage = false;
+	else
+		m_outputSink << "<hr/>";
 	m_outputSink << "<svg version=\"1.1\" ";
 	if (propList["svg:width"])
 		m_outputSink << "width=\"" << doubleToString(72*(propList["svg:width"]->getDouble())) << "\" ";

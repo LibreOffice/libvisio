@@ -60,6 +60,7 @@ private:
 	::WPXPropertyListVector m_gradient;
 	::WPXPropertyList m_style;
 	int m_gradientIndex;
+	bool m_isFirstPage;
 	void writeStyle(bool isClosed=true);
 	void drawPolySomething(const ::WPXPropertyListVector& vertices, bool isClosed);
 
