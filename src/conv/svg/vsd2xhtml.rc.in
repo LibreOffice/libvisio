@@ -14,11 +14,11 @@ VS_VERSION_INFO VERSIONINFO
       BLOCK "040904B0"
       BEGIN
 	VALUE "CompanyName", "The libvisio developer community"
-	VALUE "FileDescription", "vsd2svg"
+	VALUE "FileDescription", "vsd2xhtml"
 	VALUE "FileVersion", "@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.@VSD_MICRO_VERSION@.BUILDNUMBER"
-	VALUE "InternalName", "vsd2svg"
+	VALUE "InternalName", "vsd2xhtml"
 	VALUE "LegalCopyright", "Copyright (C) 2011 Fridrich Strba, other contribut0rs"
-	VALUE "OriginalFilename", "vsd2svg.exe"
+	VALUE "OriginalFilename", "vsd2xhtml.exe"
 	VALUE "ProductName", "libvisio"
 	VALUE "ProductVersion", "@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.@VSD_MICRO_VERSION@"
       END

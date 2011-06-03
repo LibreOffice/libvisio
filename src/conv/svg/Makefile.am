@@ -1,30 +1,30 @@
-bin_PROGRAMS = vsd2svg
+bin_PROGRAMS = vsd2xhtml
 
 AM_CXXFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
 
-vsd2svg_DEPENDENCIES = @VSD2SVG_WIN32_RESOURCE@
+vsd2xhtml_DEPENDENCIES = @VSD2XHTML_WIN32_RESOURCE@
 
 if STATIC_TOOLS
-vsd2svg_LDADD = ../../lib/@VSD_OBJDIR@/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.a $(LIBVISIO_LIBS) @VSD2SVG_WIN32_RESOURCE@
-vsd2svg_LDFLAGS = -all-static 
+vsd2xhtml_LDADD = ../../lib/@VSD_OBJDIR@/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.a $(LIBVISIO_LIBS) @VSD2XHTML_WIN32_RESOURCE@
+vsd2xhtml_LDFLAGS = -all-static 
 else
-vsd2svg_LDADD = ../../lib/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la $(LIBVISIO_LIBS) @VSD2SVG_WIN32_RESOURCE@ 
+vsd2xhtml_LDADD = ../../lib/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la $(LIBVISIO_LIBS) @VSD2XHTML_WIN32_RESOURCE@ 
 endif
 
-vsd2svg_SOURCES = \
-	vsd2svg.cpp
+vsd2xhtml_SOURCES = \
+	vsd2xhtml.cpp
 
 if OS_WIN32
 
-@VSD2SVG_WIN32_RESOURCE@ : vsd2svg.rc $(vsd2svg_OBJECTS)
+@VSD2XHTML_WIN32_RESOURCE@ : vsd2xhtml.rc $(vsd2xhtml_OBJECTS)
 	chmod +x $(top_srcdir)/build/win32/*compile-resource
-	WINDRES=@WINDRES@ $(top_srcdir)/build/win32/lt-compile-resource vsd2svg.rc @VSD2SVG_WIN32_RESOURCE@
+	WINDRES=@WINDRES@ $(top_srcdir)/build/win32/lt-compile-resource vsd2xhtml.rc @VSD2XHTML_WIN32_RESOURCE@
 endif
 
 EXTRA_DIST = \
-	$(vsd2svg_SOURCES) \
-	vsd2svg.rc.in
+	$(vsd2xhtml_SOURCES) \
+	vsd2xhtml.rc.in
 
 # These may be in the builddir too
 BUILD_EXTRA_DIST = \
-	vsd2svg.rc
+	vsd2xhtml.rc

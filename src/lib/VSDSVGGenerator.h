@@ -55,9 +55,6 @@ public:
 	void startTextSpan(const ::WPXPropertyList &propList);
 	void endTextSpan();
 	void insertText(const ::WPXString &str);
-	
-	void startPageSet(const ::WPXPropertyList &propList);
-	void endPageSet();
 
 private:
 	::WPXPropertyListVector m_gradient;

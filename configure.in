@@ -85,20 +85,20 @@ case "$host" in
     native_win32=yes
     LIBVISIO_WIN32_RESOURCE=libvisio-win32res.lo
     VSD2RAW_WIN32_RESOURCE=vsd2raw-win32res.lo
-    VSD2SVG_WIN32_RESOURCE=vsd2svg-win32res.lo
+    VSD2XHTML_WIN32_RESOURCE=vsd2xhtml-win32res.lo
     ;;
   *)
     native_win32=no
     LIBVISIO_WIN32_RESOURCE=
     VSD2RAW_WIN32_RESOURCE=
-    VSD2SVG_WIN32_RESOURCE=
+    VSD2XHTML_WIN32_RESOURCE=
     ;;
 esac
 AC_MSG_RESULT([$native_win32])
 AM_CONDITIONAL(OS_WIN32, test "$native_win32" = yes)
 AC_SUBST(LIBVISIO_WIN32_RESOURCE)
 AC_SUBST(VSD2RAW_WIN32_RESOURCE)
-AC_SUBST(VSD2SVG_WIN32_RESOURCE)
+AC_SUBST(VSD2XHTML_WIN32_RESOURCE)
 
 test_dummy_bitmaps=false
 AC_ARG_WITH(dummy_bitmaps,
@@ -220,7 +220,7 @@ src/conv/Makefile
 src/conv/raw/Makefile
 src/conv/raw/vsd2raw.rc
 src/conv/svg/Makefile
-src/conv/svg/vsd2svg.rc
+src/conv/svg/vsd2xhtml.rc
 src/lib/Makefile
 src/lib/libvisio.rc
 build/Makefile
