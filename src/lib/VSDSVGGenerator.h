@@ -55,11 +55,15 @@ public:
 	void startTextSpan(const ::WPXPropertyList &propList);
 	void endTextSpan();
 	void insertText(const ::WPXString &str);
+	
+	void startPageSet(const ::WPXPropertyList &propList);
+	void endPageSet();
 
 private:
 	::WPXPropertyListVector m_gradient;
 	::WPXPropertyList m_style;
 	int m_gradientIndex;
+	bool m_isFirstPage;
 	void writeStyle(bool isClosed=true);
 	void drawPolySomething(const ::WPXPropertyListVector& vertices, bool isClosed);
 
