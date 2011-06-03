@@ -26,6 +26,7 @@
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
 #include "VSDXParser.h"
+#include "VSDInternalStream.h"
 
 namespace libvisio
 {
@@ -36,6 +37,15 @@ public:
   explicit VSD6Parser(WPXInputStream *input);
   ~VSD6Parser();
   bool parse(libwpg::WPGPaintInterface *iface);
+private:
+
+  typedef void (VSD6Parser::*Method)(VSDInternalStream&, libwpg::WPGPaintInterface*);
+  struct StreamHandler { unsigned int type; const char *name; Method handler;};
+  static const struct StreamHandler handlers[32];
+  void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  
+  bool m_isPageStarted;
 };
 
 } // namespace libvisio
