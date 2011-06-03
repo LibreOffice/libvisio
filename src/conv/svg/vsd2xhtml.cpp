@@ -70,6 +70,16 @@ int main(int argc, char *argv[])
 		return 1;
 	}		
 
+	std::cout << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl;
+	std::cout << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" << std::endl;
+	std::cout << "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" << std::endl;
+	std::cout << "<body>" << std::endl;
+	std::cout << "<?import namespace=\"svg\" urn=\"http://www.w3.org/2000/svg\"?>" << std::endl;
+
 	std::cout << output.cstr() << std::endl;
+
+	std::cout << "</body>" << std::endl;
+	std::cout << "</html>" << std::endl;
+
 	return 0;
 }
