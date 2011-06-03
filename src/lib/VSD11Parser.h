@@ -39,11 +39,11 @@ public:
   bool parse(libwpg::WPGPaintInterface *iface);
 private:
 
-  typedef void (VSD11Parser::*Method)(VSDInternalStream&);
+  typedef void (VSD11Parser::*Method)(VSDInternalStream&, libwpg::WPGPaintInterface*);
   struct StreamHandler { unsigned int type; const char *name; Method handler;};
   static const struct StreamHandler handlers[32];
-  void handlePages(VSDInternalStream &stream);
-  void handlePage(VSDInternalStream &stream);
+  void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 };
 
 } // namespace libvisio

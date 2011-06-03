@@ -74,7 +74,7 @@ by WPGPaintInterface class implementation as needed.
 \param iface A WPGPaintInterface implementation
 \return A value indicating whether parsing was successful
 */
-bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
+bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *painter)
 {
   const unsigned int SHIFT = 4;
   if (!m_input)
@@ -140,7 +140,7 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
         compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
         VSDInternalStream stream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(stream);
+        (this->*streamHandler)(stream, painter);
       }
     }
   }
@@ -148,7 +148,7 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *iface)
   return true;
 }
 
-void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream)
+void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
   unsigned int offset = readU32(&stream);
   stream.seek(offset, WPX_SEEK_SET);
@@ -192,40 +192,26 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream)
                        handlers[index].name, handlers[index].type, ptrFormat,
                        stream.tell() - 18));
 
-
         bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
         VSDInternalStream stream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(stream);
+        (this->*streamHandler)(stream, painter);
       }
     }
   }
 }
 
-void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
+void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
   while (!stream.atEOS())
   {
     unsigned int chunkType = readU32(&stream);
-    //unsigned int ix = readU32(&stream);
-    stream.seek(4, WPX_SEEK_CUR); // Skip ix field
+    //unsigned int id = readU32(&stream);
+    stream.seek(4, WPX_SEEK_CUR); // Skip id field
     unsigned int trailer = 0;
     if (readU32(&stream) != 0)
       trailer += 8; // 8 byte trailer
     unsigned int dataLength = readU32(&stream);
-
-    //dbug
-    VSD_DEBUG_MSG(("Reading length from %lx\n", stream.tell()));
-    stream.seek(-4, WPX_SEEK_CUR);
-#ifdef DEBUG
-    unsigned long bytesRead;
-    const unsigned char *buffer = stream.read(4, bytesRead);
-#else
-	stream.seek(4, WPX_SEEK_CUR);
-#endif
-    VSD_DEBUG_MSG(("Length contents: %02x%02x%02x%02x\n", buffer[0], buffer[1], buffer[2], buffer[3]));
-
-    VSD_DEBUG_MSG(("Length field: %x (%d)\n", dataLength, dataLength));
 
     unsigned int level = readU16(&stream);
     unsigned int unknown = readU8(&stream);
@@ -235,30 +221,29 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
         (level == 2 && unknown == 0x54) || (level == 3 && unknown == 0x50) ||
         chunkType == 0x69 || chunkType == 0x6a || chunkType == 0x6b || 
         chunkType == 0x71 || chunkType == 0xb6 || chunkType == 0xb9 || 
-        chunkType == 0xa9)
+        chunkType == 0xa9 || chunkType == 0x92)
     {
       trailer += 4;
     }
-
     if (chunkType == 0x1f || chunkType == 0xc9)
     {
       trailer = 0;
     }
-
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    chunkType, trailer, dataLength));
+
     if (chunkType == 0x92) // Page properties
     {
-
-#ifdef DEBUG
       stream.seek(1, WPX_SEEK_CUR); // Skip separator
       double width = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR); // Skip separator
       double height = readDouble(&stream);
-#else
-      stream.seek(18, WPX_SEEK_CUR);
-#endif
-      VSD_DEBUG_MSG(("Found page - %f x %f, now at %lx\n", width, height, stream.tell()));
+
+      WPXPropertyList pageProps;
+      pageProps.insert("svg:width", width);
+      pageProps.insert("svg:height", height);
+      painter->startGraphics(pageProps);
+
       stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
       VSD_DEBUG_MSG(("Moved to %lx\n", stream.tell()));
     }
