@@ -62,6 +62,19 @@ const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::handler
   {0, 0, 0}
 };
 
+struct XForm
+{
+  double pinX;
+  double pinY;
+  double height;
+  double width;
+  double pinLocX;
+  double pinLocY;
+  double angle;
+  bool flipX;
+  bool flipY;
+};
+
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
   : VSDXParser(input), m_isPageStarted(false)
 {}
@@ -206,6 +219,12 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
 
 void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
+  WPXPropertyList pageProps;
+  XForm xform = {0}; // Tracks current xform data
+  unsigned int foreignType = 0; // Tracks current foreign data type
+  unsigned int foreignFormat = 0; // Tracks foreign data format
+  unsigned long tmpBytesRead = 0;
+
   while (!stream.atEOS())
   {
     unsigned int chunkType = readU32(&stream);
@@ -247,7 +266,65 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    chunkType, trailer, dataLength));
 
-    if (chunkType == 0x92) // Page properties
+    if (chunkType == 0x9b) // XForm data
+    {
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinX = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinY = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.width = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.height = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinLocX = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinLocY = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.angle = readDouble(&stream);
+
+      xform.flipX = (readU8(&stream) != 0);
+      xform.flipY = (readU8(&stream) != 0);
+
+      stream.seek(dataLength+trailer-65, WPX_SEEK_CUR);
+    }
+    else if (chunkType == 0x0c) // Foreign data (binary)
+    {
+      if (foreignType == 1) // Image
+      {
+        const unsigned char *buffer = stream.read(dataLength, tmpBytesRead);
+        WPXBinaryData binaryData = WPXBinaryData(buffer, tmpBytesRead);
+
+        WPXPropertyList foreignProps;
+        foreignProps.insert("svg:width", xform.width);
+        foreignProps.insert("svg:height", xform.height);
+        foreignProps.insert("svg:x", xform.pinX - xform.pinLocX);
+        // Y axis starts at the bottom not top
+        foreignProps.insert("svg:y", pageProps["svg:height"]->getDouble() 
+                            - xform.pinY + xform.pinLocY - xform.height);
+
+        switch(foreignFormat)
+        {
+        case 0:
+          foreignProps.insert("libwpg:mime-type", "image/bmp"); break;
+        case 1:
+          foreignProps.insert("libwpg:mime-type", "image/jpeg"); break;
+        case 2:
+          foreignProps.insert("libwpg:mime-type", "image/gif"); break;
+        case 3:
+          foreignProps.insert("libwpg:mime-type", "image/tiff"); break;
+        case 4:
+          foreignProps.insert("libwpg:mime-type", "image/png"); break;
+        }
+
+        painter->drawGraphicObject(foreignProps, binaryData);
+      }
+      else
+      {
+        stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+      }
+    }
+    else if (chunkType == 0x92) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
@@ -255,7 +332,6 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       double height = readDouble(&stream);
 
-      WPXPropertyList pageProps;
       pageProps.insert("svg:width", width);
       pageProps.insert("svg:height", height);
       if (m_isPageStarted)
@@ -264,6 +340,16 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       m_isPageStarted = true;
 
       stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);      
+    }
+    else if (chunkType == 0x98) // Foreign data type
+    {
+      stream.seek(0x24, WPX_SEEK_CUR);
+      foreignType = readU16(&stream);
+      stream.seek(0xb, WPX_SEEK_CUR);
+      foreignFormat = readU32(&stream);
+
+      stream.seek(dataLength+trailer-0x35, WPX_SEEK_CUR);
+      VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
     }
     else // Skip chunk
     {
