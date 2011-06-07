@@ -26,6 +26,13 @@
 #include "VSD11Parser.h"
 #include "VSDInternalStream.h"
 
+#define DUMP_BITMAP 0
+
+#if DUMP_BITMAP
+static unsigned bitmapId = 0;
+#include <sstream>
+#endif
+
 const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::handlers[] =
 {
   {0xa, "Name", 0},
@@ -294,6 +301,30 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       {
         const unsigned char *buffer = stream.read(dataLength, tmpBytesRead);
         WPXBinaryData binaryData = WPXBinaryData(buffer, tmpBytesRead);
+		
+#if DUMP_BITMAP
+        std::ostringstream filename;
+        switch(foreignFormat)
+        {
+        case 0:
+          filename << "binarydump" << bitmapId++ << ".bmp"; break;
+        case 1:
+          filename << "binarydump" << bitmapId++ << ".jpeg"; break;
+        case 2:
+          filename << "binarydump" << bitmapId++ << ".gif"; break;
+        case 3:
+          filename << "binarydump" << bitmapId++ << ".tiff"; break;
+        case 4:
+          filename << "binarydump" << bitmapId++ << ".png"; break;
+        }
+        FILE *f = fopen(filename.str().c_str(), "wb");
+        if (f)
+        {
+            for (unsigned k = 0; k < tmpBytesRead; k++)
+                fprintf(f, "%c",buffer[k]);
+            fclose(f);
+        }
+#endif
 
         WPXPropertyList foreignProps;
         foreignProps.insert("svg:width", xform.width);
