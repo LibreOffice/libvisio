@@ -79,8 +79,8 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 	{
 		double angle = (m_style["draw:angle"] ? m_style["draw:angle"]->getDouble() : 0.0);
 
-		m_outputSink << "<defs>\n";
-		m_outputSink << "  <linearGradient id=\"grad" << m_gradientIndex++ << "\" >\n";
+		m_outputSink << "<svg:defs>\n";
+		m_outputSink << "  <svg:linearGradient id=\"grad" << m_gradientIndex++ << "\" >\n";
 		for(unsigned c = 0; c < m_gradient.count(); c++)
 		{
 			m_outputSink << "    <stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
@@ -89,37 +89,37 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 			m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getStr().cstr() << "\" />" << std::endl;
 
 		}
-		m_outputSink << "  </linearGradient>\n";
+		m_outputSink << "  </svg:linearGradient>\n";
 
 		// not a simple horizontal gradient
 		if(angle != -90)
 		{
-			m_outputSink << "  <linearGradient xlink:href=\"#grad" << m_gradientIndex-1 << "\"";
+			m_outputSink << "  <svg:linearGradient xlink:href=\"#grad" << m_gradientIndex-1 << "\"";
 			m_outputSink << " id=\"grad" << m_gradientIndex++ << "\" ";
 			m_outputSink << "x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\" ";
 			m_outputSink << "gradientTransform=\"rotate(" << angle << ")\" ";
 			m_outputSink << "gradientUnits=\"objectBoundingBox\" >\n";
-			m_outputSink << "  </linearGradient>\n";
+			m_outputSink << "  </svg:linearGradient>\n";
 		}
 
-		m_outputSink << "</defs>\n";
+		m_outputSink << "</svg:defs>\n";
 	}
 
 }
 
 void libvisio::VSDSVGGenerator::startLayer(const ::WPXPropertyList& propList)
 {
-	m_outputSink << "<g id=\"Layer" << propList["svg:id"]->getInt() << "\" >\n";
+	m_outputSink << "<svg:g id=\"Layer" << propList["svg:id"]->getInt() << "\" >\n";
 }
 
 void libvisio::VSDSVGGenerator::endLayer()
 {
-	m_outputSink << "</g>\n";
+	m_outputSink << "</svg:g>\n";
 }
 
 void libvisio::VSDSVGGenerator::drawRectangle(const ::WPXPropertyList& propList)
 {
-	m_outputSink << "<rect ";
+	m_outputSink << "<svg:rect ";
 	m_outputSink << "x=\"" << doubleToString(72*propList["svg:x"]->getDouble()) << "\" y=\"" << doubleToString(72*propList["svg:y"]->getDouble()) << "\" ";
 	m_outputSink << "width=\"" << doubleToString(72*propList["svg:width"]->getDouble()) << "\" height=\"" << doubleToString(72*propList["svg:height"]->getDouble()) << "\" ";
 	if((propList["svg:rx"] && propList["svg:rx"]->getInt() !=0) || (propList["svg:ry"] && propList["svg:ry"]->getInt() !=0))
@@ -130,7 +130,7 @@ void libvisio::VSDSVGGenerator::drawRectangle(const ::WPXPropertyList& propList)
 
 void libvisio::VSDSVGGenerator::drawEllipse(const WPXPropertyList& propList)
 {
-	m_outputSink << "<ellipse ";
+	m_outputSink << "<svg:ellipse ";
 	m_outputSink << "cx=\"" << doubleToString(72*propList["svg:cx"]->getDouble()) << "\" cy=\"" << doubleToString(72*propList["svg:cy"]->getDouble()) << "\" ";
 	m_outputSink << "rx=\"" << doubleToString(72*propList["svg:rx"]->getDouble()) << "\" ry=\"" << doubleToString(72*propList["svg:ry"]->getDouble()) << "\" ";
 	writeStyle();
@@ -160,7 +160,7 @@ void libvisio::VSDSVGGenerator::drawPolySomething(const ::WPXPropertyListVector&
 
 	if(vertices.count() == 2)
 	{
-		m_outputSink << "<line ";
+		m_outputSink << "<svg:line ";
 		m_outputSink << "x1=\"" << doubleToString(72*(vertices[0]["svg:x"]->getDouble())) << "\"  y1=\"" << doubleToString(72*(vertices[0]["svg:y"]->getDouble())) << "\" ";
 		m_outputSink << "x2=\"" << doubleToString(72*(vertices[1]["svg:x"]->getDouble())) << "\"  y2=\"" << doubleToString(72*(vertices[1]["svg:y"]->getDouble())) << "\"\n";
 		writeStyle();
@@ -169,9 +169,9 @@ void libvisio::VSDSVGGenerator::drawPolySomething(const ::WPXPropertyListVector&
 	else
 	{
 		if (isClosed)
-			m_outputSink << "<polygon ";
+			m_outputSink << "<svg:polygon ";
 		else
-			m_outputSink << "<polyline ";
+			m_outputSink << "<svg:polyline ";
 
 		m_outputSink << "points=\"";
 		for(unsigned i = 0; i < vertices.count(); i++)
@@ -188,7 +188,7 @@ void libvisio::VSDSVGGenerator::drawPolySomething(const ::WPXPropertyListVector&
 
 void libvisio::VSDSVGGenerator::drawPath(const ::WPXPropertyListVector& path)
 {
-	m_outputSink << "<path d=\" ";
+	m_outputSink << "<svg:path d=\" ";
 	bool isClosed = false;
 	unsigned i=0;
 	for(i=0; i < path.count(); i++)
@@ -236,7 +236,7 @@ void libvisio::VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propL
 	if (!propList["libwpg:mime-type"] || propList["libwpg:mime-type"]->getStr().len() <= 0)
 		return;
 	WPXString base64 = binaryData.getBase64Data();
-	m_outputSink << "<image ";
+	m_outputSink << "<svg:image ";
 	if (propList["svg:x"] && propList["svg:y"] && propList["svg:width"] && propList["svg:height"])
 	m_outputSink << "x=\"" << doubleToString(72*(propList["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(propList["svg:y"]->getDouble())) << "\" ";
 	m_outputSink << "width=\"" << doubleToString(72*(propList["svg:width"]->getDouble())) << "\" height=\"" << doubleToString(72*(propList["svg:height"]->getDouble())) << "\" ";
@@ -247,19 +247,19 @@ void libvisio::VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propL
 
 void libvisio::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector & /* path */)
 {
-	m_outputSink << "<text ";
+	m_outputSink << "<svg:text ";
 	if (propList["svg:x"] && propList["svg:y"])
 	m_outputSink << "x=\"" << doubleToString(72*(propList["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(propList["svg:y"]->getDouble())) << "\">\n";
 }
 
 void libvisio::VSDSVGGenerator::endTextObject()
 {
-	m_outputSink << "</text>\n";
+	m_outputSink << "</svg:text>\n";
 }
 
 void libvisio::VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
 {
-	m_outputSink << "<tspan ";
+	m_outputSink << "<svg:tspan ";
 	if (propList["style:font-name"])
 		m_outputSink << "font-family=\"" << propList["style:font-name"]->getStr().cstr() << "\" ";
 	if (propList["fo:font-style"])
@@ -277,7 +277,7 @@ void libvisio::VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
 
 void libvisio::VSDSVGGenerator::endTextSpan()
 {
-	m_outputSink << "</tspan>\n";
+	m_outputSink << "</svg:tspan>\n";
 }
 
 void libvisio::VSDSVGGenerator::insertText(const ::WPXString &str)
