@@ -62,6 +62,19 @@ const struct libvisio::VSD6Parser::StreamHandler libvisio::VSD6Parser::handlers[
   {0, 0, 0}
 };
 
+struct XForm
+{
+  double pinX;
+  double pinY;
+  double height;
+  double width;
+  double pinLocX;
+  double pinLocY;
+  double angle;
+  bool flipX;
+  bool flipY;
+};
+
 libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input)
   : VSDXParser(input), m_isPageStarted(false)
 {}
@@ -206,6 +219,12 @@ void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPai
 
 void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
+  WPXPropertyList pageProps;
+  XForm xform = {0}; // Tracks current xform data
+  unsigned int foreignType = 0; // Tracks current foreign data type
+  unsigned int foreignFormat = 0; // Tracks foreign data format
+  unsigned long tmpBytesRead = 0;
+
   while (!stream.atEOS())
   {
     unsigned int chunkType = readU32(&stream);
@@ -225,7 +244,73 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    chunkType, trailer, dataLength));
 
-    if (chunkType == 0x92) // Page properties
+    if (chunkType == 0x9b) // XForm data
+    {
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinX = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinY = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.width = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.height = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinLocX = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinLocY = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.angle = readDouble(&stream);
+
+      xform.flipX = (readU8(&stream) != 0);
+      xform.flipY = (readU8(&stream) != 0);
+
+      stream.seek(dataLength+trailer-65, WPX_SEEK_CUR);
+    }
+    else if (chunkType == 0x0c) // Foreign data (binary)
+    {
+      if (foreignType == 1) // Image
+      {
+        const unsigned char *buffer = stream.read(dataLength, tmpBytesRead);
+        WPXBinaryData binaryData;
+
+        // v6 always uses bmp for images which needs header reconstruction
+        binaryData.append(0x42);
+        binaryData.append(0x4d);
+
+        binaryData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
+        binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
+        binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
+        binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
+
+        binaryData.append(0x00);
+        binaryData.append(0x00);
+        binaryData.append(0x00);
+        binaryData.append(0x00);
+
+        binaryData.append(0x36);
+        binaryData.append(0x00);
+        binaryData.append(0x00);
+        binaryData.append(0x00);
+
+        binaryData.append(buffer, tmpBytesRead);
+
+        WPXPropertyList foreignProps;
+        foreignProps.insert("svg:width", xform.width);
+        foreignProps.insert("svg:height", xform.height);
+        foreignProps.insert("svg:x", xform.pinX - xform.pinLocX);
+        // Y axis starts at the bottom not top
+        foreignProps.insert("svg:y", pageProps["svg:height"]->getDouble() 
+        - xform.pinY + xform.pinLocY - xform.height);
+        foreignProps.insert("libwpg:mime-type", "image/bmp");
+
+        painter->drawGraphicObject(foreignProps, binaryData);
+      }
+      else
+      {
+        stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+      }
+    }
+    else if (chunkType == 0x92) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
@@ -233,7 +318,6 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
       stream.seek(1, WPX_SEEK_CUR);
       double height = readDouble(&stream);
 
-      WPXPropertyList pageProps;
       pageProps.insert("svg:width", width);
       pageProps.insert("svg:height", height);
       if (m_isPageStarted)
@@ -242,6 +326,15 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
       m_isPageStarted = true;
 
       stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
+    }
+    else if (chunkType == 0x98) // Foreign data type
+    {
+      stream.seek(0x24, WPX_SEEK_CUR);
+      foreignType = readU16(&stream);
+      stream.seek(0xb, WPX_SEEK_CUR);
+      foreignFormat = readU32(&stream);
+
+      stream.seek(dataLength+trailer-0x35, WPX_SEEK_CUR);
     }
     else // Skip chunk
     {

@@ -300,28 +300,29 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       if (foreignType == 1) // Image
       {
         const unsigned char *buffer = stream.read(dataLength, tmpBytesRead);
-		WPXBinaryData binaryData;
-		if (foreignFormat == 0)
-		{
-			binaryData.append(0x42);
-			binaryData.append(0x4d);
+        WPXBinaryData binaryData;
+        // If bmp data found, reconstruct header
+        if (foreignFormat == 0)
+        {
+          binaryData.append(0x42);
+          binaryData.append(0x4d);
 
-			binaryData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
-			binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
-			binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
-			binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
+          binaryData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
 
-			binaryData.append(0x00);
-			binaryData.append(0x00);
-			binaryData.append(0x00);
-			binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
 
-			binaryData.append(0x36);
-			binaryData.append(0x00);
-			binaryData.append(0x00);
-			binaryData.append(0x00);
-		}
-		binaryData.append(buffer, tmpBytesRead);
+          binaryData.append(0x36);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+        }
+        binaryData.append(buffer, tmpBytesRead);
 		
 #if DUMP_BITMAP
         std::ostringstream filename;
