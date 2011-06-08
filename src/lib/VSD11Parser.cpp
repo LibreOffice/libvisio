@@ -419,7 +419,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
     {
       // Reset style
       styleProps.clear();
-      styleProps.insert("svg:stroke-width", 0.0139);
+      styleProps.insert("svg:stroke-width", 0.0138889);
       styleProps.insert("svg:stroke-color", "black");
 
       stream.seek(dataLength+trailer, WPX_SEEK_CUR);
@@ -428,6 +428,16 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
     {
       painter->setStyle(styleProps, gradientProps);
       stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+    }
+    else if (chunkType == 0x85) // Line properties
+    {
+      stream.seek(1, WPX_SEEK_CUR);
+      styleProps.insert("svg:stroke-width", readDouble(&stream));
+      stream.seek(dataLength+trailer-9, WPX_SEEK_CUR);      
+    }
+    else if (chunkType == 0x86) // Fill properties
+    {
+      stream.seek(dataLength+trailer, WPX_SEEK_CUR);      
     }
     else if (chunkType == 0x8a) // MoveTo
     {
