@@ -80,6 +80,8 @@ struct XForm
   double angle;
   bool flipX;
   bool flipY;
+  double x;
+  double y;
 };
 
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
@@ -227,10 +229,14 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
 void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
   WPXPropertyList pageProps;
+  WPXPropertyList styleProps;
+  WPXPropertyListVector gradientProps;
   XForm xform = {0}; // Tracks current xform data
   unsigned int foreignType = 0; // Tracks current foreign data type
   unsigned int foreignFormat = 0; // Tracks foreign data format
   unsigned long tmpBytesRead = 0;
+
+  double x = 0; double y = 0;
 
   while (!stream.atEOS())
   {
@@ -292,6 +298,17 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
 
       xform.flipX = (readU8(&stream) != 0);
       xform.flipY = (readU8(&stream) != 0);
+
+      if (pageProps["svg:height"])
+      {
+        xform.x = xform.pinX - xform.pinLocX;
+        xform.y = pageProps["svg:height"]->getDouble() -
+          xform.pinY + xform.pinLocY - xform.height;
+      }
+      else
+      {
+        xform.x = xform.y = 0;
+      }
 
       stream.seek(dataLength+trailer-65, WPX_SEEK_CUR);
     }
@@ -397,6 +414,49 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       {
         stream.seek(dataLength+trailer, WPX_SEEK_CUR);
       }
+    }
+    else if (chunkType == 0x48) // ShapeType=Shape
+    {
+      // Reset style
+      styleProps.clear();
+      styleProps.insert("svg:stroke-width", 0.0139);
+      styleProps.insert("svg:stroke-color", "black");
+
+      stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+    }
+    else if (chunkType == 0x6c) // GeomList (list of lines etc coming up)
+    {
+      painter->setStyle(styleProps, gradientProps);
+      stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+    }
+    else if (chunkType == 0x8a) // MoveTo
+    {
+      stream.seek(1, WPX_SEEK_CUR);
+      x = readDouble(&stream) + xform.x;
+      stream.seek(1, WPX_SEEK_CUR);
+      y = readDouble(&stream) + xform.y;
+
+      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
+    }
+    else if (chunkType == 0x8b) // LineTo
+    {      
+      WPXPropertyListVector vertices;
+      WPXPropertyList end1, end2;
+      end1.insert("svg:x", x);
+      end1.insert("svg:y", y);  
+    
+      stream.seek(1, WPX_SEEK_CUR);
+      x = readDouble(&stream) + xform.x;
+      stream.seek(1, WPX_SEEK_CUR);
+      y = readDouble(&stream) + xform.y;
+
+      end2.insert("svg:x", x);
+      end2.insert("svg:y", y);
+      vertices.append(end1);
+      vertices.append(end2);
+      painter->drawPolyline(vertices);
+
+      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
     }
     else if (chunkType == 0x92) // Page properties
     {
