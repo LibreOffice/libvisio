@@ -268,31 +268,34 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
     }
     else if (chunkType == 0x0c) // Foreign data (binary)
     {
-      if (foreignType == 1) // Image
+      if (foreignType == 1 || foreignType == 4) // Image
       {
         const unsigned char *buffer = stream.read(dataLength, tmpBytesRead);
         WPXBinaryData binaryData;
 
-        // v6 always uses bmp for images which needs header reconstruction
-        binaryData.append(0x42);
-        binaryData.append(0x4d);
+        if (foreignType == 1)
+        {        
+          // v6 always uses bmp for images which needs header reconstruction
+          binaryData.append(0x42);
+          binaryData.append(0x4d);
 
-        binaryData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
-        binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
-        binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
-        binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
+          binaryData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
 
-        binaryData.append(0x00);
-        binaryData.append(0x00);
-        binaryData.append(0x00);
-        binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
 
-        binaryData.append(0x36);
-        binaryData.append(0x00);
-        binaryData.append(0x00);
-        binaryData.append(0x00);
+          binaryData.append(0x36);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
 
-        binaryData.append(buffer, tmpBytesRead);
+          binaryData.append(buffer, tmpBytesRead);
+        }
 
         WPXPropertyList foreignProps;
         foreignProps.insert("svg:width", xform.width);
@@ -301,7 +304,25 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
         // Y axis starts at the bottom not top
         foreignProps.insert("svg:y", pageProps["svg:height"]->getDouble() 
         - xform.pinY + xform.pinLocY - xform.height);
-        foreignProps.insert("libwpg:mime-type", "image/bmp");
+
+        if (foreignType == 1)
+        {
+          foreignProps.insert("libwpg:mime-type", "image/bmp");
+        }
+        else if (foreignType == 4)
+        {
+          stream.seek(-(dataLength - 0x28), WPX_SEEK_CUR); // Seek back to *mf sig
+          unsigned int signature = readU32(&stream);
+          stream.seek(dataLength - 0x2C, WPX_SEEK_CUR); // Seek to end of chunk again
+          if (signature == 0x464D4520)
+          {
+            foreignProps.insert("libwpg:mime-type", "image/emf");
+          }
+          else
+          {
+            foreignProps.insert("libwpg:mime-type", "image/wmf");
+          }
+        }
 
         painter->drawGraphicObject(foreignProps, binaryData);
       }
