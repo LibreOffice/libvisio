@@ -297,12 +297,12 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
     }
     else if (chunkType == 0x0c) // Foreign data (binary)
     {
-      if (foreignType == 1) // Image
+      if (foreignType == 1 || foreignType == 4) // Image
       {
         const unsigned char *buffer = stream.read(dataLength, tmpBytesRead);
         WPXBinaryData binaryData;
         // If bmp data found, reconstruct header
-        if (foreignFormat == 0)
+        if (foreignType == 1 && foreignFormat == 0)
         {
           binaryData.append(0x42);
           binaryData.append(0x4d);
@@ -323,29 +323,32 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
           binaryData.append(0x00);
         }
         binaryData.append(buffer, tmpBytesRead);
-		
+        
 #if DUMP_BITMAP
-        std::ostringstream filename;
-        switch(foreignFormat)
+        if (foreignType == 1)
         {
-        case 0:
-          filename << "binarydump" << bitmapId++ << ".bmp"; break;
-        case 1:
-          filename << "binarydump" << bitmapId++ << ".jpeg"; break;
-        case 2:
-          filename << "binarydump" << bitmapId++ << ".gif"; break;
-        case 3:
-          filename << "binarydump" << bitmapId++ << ".tiff"; break;
-        case 4:
-          filename << "binarydump" << bitmapId++ << ".png"; break;
-        }
-        FILE *f = fopen(filename.str().c_str(), "wb");
-        if (f)
-        {
-			const unsigned char *tmpBuffer = binaryData.getDataBuffer();
+          std::ostringstream filename;
+          switch(foreignFormat)
+          {
+          case 0:
+            filename << "binarydump" << bitmapId++ << ".bmp"; break;
+          case 1:
+            filename << "binarydump" << bitmapId++ << ".jpeg"; break;
+          case 2:
+            filename << "binarydump" << bitmapId++ << ".gif"; break;
+          case 3:
+            filename << "binarydump" << bitmapId++ << ".tiff"; break;
+          case 4:
+            filename << "binarydump" << bitmapId++ << ".png"; break;
+          }
+          FILE *f = fopen(filename.str().c_str(), "wb");
+          if (f)
+          {
+            const unsigned char *tmpBuffer = binaryData.getDataBuffer();
             for (unsigned long k = 0; k < binaryData.size(); k++)
-                fprintf(f, "%c",tmpBuffer[k]);
+              fprintf(f, "%c",tmpBuffer[k]);
             fclose(f);
+          }
         }
 #endif
 
@@ -357,18 +360,35 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
         foreignProps.insert("svg:y", pageProps["svg:height"]->getDouble() 
                             - xform.pinY + xform.pinLocY - xform.height);
 
-        switch(foreignFormat)
+        if (foreignType == 1)
         {
-        case 0:
-          foreignProps.insert("libwpg:mime-type", "image/bmp"); break;
-        case 1:
-          foreignProps.insert("libwpg:mime-type", "image/jpeg"); break;
-        case 2:
-          foreignProps.insert("libwpg:mime-type", "image/gif"); break;
-        case 3:
-          foreignProps.insert("libwpg:mime-type", "image/tiff"); break;
-        case 4:
-          foreignProps.insert("libwpg:mime-type", "image/png"); break;
+          switch(foreignFormat)
+          {
+          case 0:
+            foreignProps.insert("libwpg:mime-type", "image/bmp"); break;
+          case 1:
+            foreignProps.insert("libwpg:mime-type", "image/jpeg"); break;
+          case 2:
+            foreignProps.insert("libwpg:mime-type", "image/gif"); break;
+          case 3:
+            foreignProps.insert("libwpg:mime-type", "image/tiff"); break;
+          case 4:
+            foreignProps.insert("libwpg:mime-type", "image/png"); break;
+          }
+        }
+        else if (foreignType == 4)
+        {
+          stream.seek(-(dataLength - 0x28), WPX_SEEK_CUR); // Seek back to *mf sig
+          unsigned int signature = readU32(&stream);
+          stream.seek(dataLength - 0x2C, WPX_SEEK_CUR); // Seek to end of chunk again
+          if (signature == 0x464D4520)
+          {
+            foreignProps.insert("libwpg:mime-type", "image/emf");
+          }
+          else
+          {
+            foreignProps.insert("libwpg:mime-type", "image/wmf");
+          }
         }
 
         painter->drawGraphicObject(foreignProps, binaryData);
