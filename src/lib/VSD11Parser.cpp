@@ -33,7 +33,7 @@ static unsigned bitmapId = 0;
 #include <sstream>
 #endif
 
-const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::handlers[] =
+const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] =
 {
   {0xa, "Name", 0},
   {0xb, "Name Idx", 0},
@@ -66,6 +66,12 @@ const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::handler
   {0xc9, "some collection of 13 bytes structures related to 3f/40 streams", 0},
   {0xd7, "FontFace (ver.11)", 0},
   {0xd8, "FontFaces (ver.6)", 0},
+  {0, 0, 0}
+};
+
+const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHandlers[] =
+{
+  {0x48, "ShapeType=\"Shape\"", 0},
   {0, 0, 0}
 };
 
@@ -135,9 +141,9 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *painter)
     ptrFormat = readU16(&trailerStream);
 
     int index = -1;
-    for (int i = 0; (index < 0) && handlers[i].type; i++)
+    for (int i = 0; (index < 0) && streamHandlers[i].type; i++)
     {
-      if (handlers[i].type == ptrType)
+      if (streamHandlers[i].type == ptrType)
         index = i;
     }
 
@@ -148,15 +154,15 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *painter)
     }
     else
     {
-      Method streamHandler = handlers[index].handler;
+      StreamMethod streamHandler = streamHandlers[index].handler;
       if (!streamHandler)
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li ignored\n",
-                       handlers[index].name, handlers[index].type, ptrFormat,
+                       streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
                        trailerStream.tell() - 18));
       else
       {
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li handled\n",
-                       handlers[index].name, handlers[index].type, ptrFormat,
+                       streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
                        trailerStream.tell() - 18));
 
         compressed = ((ptrFormat & 2) == 2);
@@ -193,9 +199,9 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
     ptrFormat = readU16(&stream);
 
     int index = -1;
-    for (int i = 0; (index < 0) && handlers[i].type; i++)
+    for (int i = 0; (index < 0) && streamHandlers[i].type; i++)
     {
-      if (handlers[i].type == ptrType)
+      if (streamHandlers[i].type == ptrType)
         index = i;
     }
 
@@ -206,15 +212,15 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
     }
     else
     {
-      Method streamHandler = handlers[index].handler;
+      StreamMethod streamHandler = streamHandlers[index].handler;
       if (!streamHandler)
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li ignored\n",
-                       handlers[index].name, handlers[index].type, ptrFormat,
+                       streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
                        stream.tell() - 18));
       else
       {
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li handled\n",
-                       handlers[index].name, handlers[index].type, ptrFormat,
+                       streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
                        stream.tell() - 18));
 
         bool compressed = ((ptrFormat & 2) == 2);

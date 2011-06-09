@@ -39,9 +39,14 @@ public:
   bool parse(libwpg::WPGPaintInterface *iface);
 private:
 
-  typedef void (VSD11Parser::*Method)(VSDInternalStream&, libwpg::WPGPaintInterface*);
-  struct StreamHandler { unsigned int type; const char *name; Method handler;};
-  static const struct StreamHandler handlers[32];
+  typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
+  struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};
+  static const struct StreamHandler streamHandlers[32];
+
+  typedef void (VSD11Parser::*ChunkMethod)(VSDInternalStream&, WPXPropertyListVector&, libwpg::WPGPaintInterface*);
+  struct ChunkHandler { unsigned int type; const char *name; ChunkMethod handler;};
+  static const struct ChunkHandler chunkHandlers[2];
+
   void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   
