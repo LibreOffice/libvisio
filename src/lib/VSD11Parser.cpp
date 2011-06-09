@@ -342,7 +342,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
         binaryData.append(buffer, tmpBytesRead);
         
 #if DUMP_BITMAP
-        if (foreignType == 1)
+        if (foreignType == 1 || foreignType == 4)
         {
           std::ostringstream filename;
           switch(foreignFormat)
@@ -357,6 +357,8 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
             filename << "binarydump" << bitmapId++ << ".tiff"; break;
           case 4:
             filename << "binarydump" << bitmapId++ << ".png"; break;
+          default:
+            filename << "binarydump" << bitmapId++ << ".bin"; break;
           }
           FILE *f = fopen(filename.str().c_str(), "wb");
           if (f)
