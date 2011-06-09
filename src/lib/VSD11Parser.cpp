@@ -241,51 +241,18 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
   unsigned int foreignType = 0; // Tracks current foreign data type
   unsigned int foreignFormat = 0; // Tracks foreign data format
   unsigned long tmpBytesRead = 0;
+  ChunkHeader header = {0};
 
   double x = 0; double y = 0;
 
   while (!stream.atEOS())
   {
-    unsigned int chunkType = readU32(&stream);
-    // Hackish way of dealing with unknown v11 chunk separators (see below)
-    if (chunkType == 0)
-      continue;
-
-    stream.seek(4, WPX_SEEK_CUR); // Skip id field
-
-    // Certain chunk types seem to always have a trailer
-    unsigned int list = readU32(&stream);
-    unsigned int trailer = 0;
-    if (list != 0 || chunkType == 0x71 || chunkType == 0x70 ||
-        chunkType == 0x6b || chunkType == 0x6a || chunkType == 0x69 || 
-        chunkType == 0x66 || chunkType == 0x65 || chunkType == 0x2c)
-      trailer += 8; // 8 byte trailer
-
-    unsigned int dataLength = readU32(&stream);
-    unsigned int level = readU16(&stream);
-    unsigned int unknown = readU8(&stream);
-
-    // Add word separator under certain circumstances for v11
-    // Below are known conditions, may be more or a simpler pattern
-    if (list != 0 || (level == 2 && unknown == 0x55) ||
-        (level == 2 && unknown == 0x54 && chunkType == 0xaa) 
-        || (level == 3 && unknown != 0x50 && unknown != 0x54) ||
-        chunkType == 0x69 || chunkType == 0x6a || chunkType == 0x6b || 
-        chunkType == 0x71 || chunkType == 0xb6 || chunkType == 0xb9 || 
-        chunkType == 0xa9 || chunkType == 0x92)
-    {
-      trailer += 4;
-    }
-    // 0x1f (OLE data) and 0xc9 (Name ID) never have trailer 
-    if (chunkType == 0x1f || chunkType == 0xc9)
-    {
-      trailer = 0;
-    }
+    getChunkHeader(stream, header);
 
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
-                   chunkType, trailer, dataLength));
+                   header.chunkType, header.trailer, header.dataLength));
 
-    if (chunkType == 0x9b) // XForm data
+    if (header.chunkType == 0x9b) // XForm data
     {
       stream.seek(1, WPX_SEEK_CUR);
       xform.pinX = readDouble(&stream);
@@ -316,13 +283,13 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
         xform.x = xform.y = 0;
       }
 
-      stream.seek(dataLength+trailer-65, WPX_SEEK_CUR);
+      stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
     }
-    else if (chunkType == 0x0c) // Foreign data (binary)
+    else if (header.chunkType == 0x0c) // Foreign data (binary)
     {
       if (foreignType == 1 || foreignType == 4) // Image
       {
-        const unsigned char *buffer = stream.read(dataLength, tmpBytesRead);
+        const unsigned char *buffer = stream.read(header.dataLength, tmpBytesRead);
         WPXBinaryData binaryData;
         // If bmp data found, reconstruct header
         if (foreignType == 1 && foreignFormat == 0)
@@ -403,9 +370,9 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
         }
         else if (foreignType == 4)
         {
-          stream.seek(-(dataLength - 0x28), WPX_SEEK_CUR); // Seek back to *mf sig
+          stream.seek(-(header.dataLength - 0x28), WPX_SEEK_CUR); // Seek back to *mf sig
           unsigned int signature = readU32(&stream);
-          stream.seek(dataLength - 0x2C, WPX_SEEK_CUR); // Seek to end of chunk again
+          stream.seek(header.dataLength - 0x2C, WPX_SEEK_CUR); // Seek to end of chunk again
           if (signature == 0x464D4520)
           {
             foreignProps.insert("libwpg:mime-type", "image/emf");
@@ -420,43 +387,43 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       }
       else
       {
-        stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+        stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
       }
     }
-    else if (chunkType == 0x48) // ShapeType=Shape
+    else if (header.chunkType == 0x48) // ShapeType=Shape
     {
       // Reset style
       styleProps.clear();
       styleProps.insert("svg:stroke-width", 0.0138889);
       styleProps.insert("svg:stroke-color", "black");
 
-      stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
     }
-    else if (chunkType == 0x6c) // GeomList (list of lines etc coming up)
+    else if (header.chunkType == 0x6c) // GeomList (list of lines etc coming up)
     {
       painter->setStyle(styleProps, gradientProps);
-      stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
     }
-    else if (chunkType == 0x85) // Line properties
+    else if (header.chunkType == 0x85) // Line properties
     {
       stream.seek(1, WPX_SEEK_CUR);
       styleProps.insert("svg:stroke-width", readDouble(&stream));
-      stream.seek(dataLength+trailer-9, WPX_SEEK_CUR);      
+      stream.seek(header.dataLength+header.trailer-9, WPX_SEEK_CUR);      
     }
-    else if (chunkType == 0x86) // Fill properties
+    else if (header.chunkType == 0x86) // Fill properties
     {
-      stream.seek(dataLength+trailer, WPX_SEEK_CUR);      
+      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);      
     }
-    else if (chunkType == 0x8a) // MoveTo
+    else if (header.chunkType == 0x8a) // MoveTo
     {
       stream.seek(1, WPX_SEEK_CUR);
       x = readDouble(&stream) + xform.x;
       stream.seek(1, WPX_SEEK_CUR);
       y = readDouble(&stream) + xform.y;
 
-      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
+      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
-    else if (chunkType == 0x8b) // LineTo
+    else if (header.chunkType == 0x8b) // LineTo
     {      
       WPXPropertyListVector vertices;
       WPXPropertyList end1, end2;
@@ -474,9 +441,9 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       vertices.append(end2);
       painter->drawPolyline(vertices);
 
-      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
+      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
-    else if (chunkType == 0x92) // Page properties
+    else if (header.chunkType == 0x92) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
@@ -491,24 +458,63 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       painter->startGraphics(pageProps);
       m_isPageStarted = true;
 
-      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);      
+      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);      
     }
-    else if (chunkType == 0x98) // Foreign data type
+    else if (header.chunkType == 0x98) // Foreign data type
     {
       stream.seek(0x24, WPX_SEEK_CUR);
       foreignType = readU16(&stream);
       stream.seek(0xb, WPX_SEEK_CUR);
       foreignFormat = readU32(&stream);
 
-      stream.seek(dataLength+trailer-0x35, WPX_SEEK_CUR);
+      stream.seek(header.dataLength+header.trailer-0x35, WPX_SEEK_CUR);
       VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
     }
     else // Skip chunk
     {
-      dataLength += trailer;
+      header.dataLength += header.trailer;
       VSD_DEBUG_MSG(("Skipping chunk by %x (%d) bytes\n",
-                     dataLength, dataLength));
-      stream.seek(dataLength, WPX_SEEK_CUR);
+                     header.dataLength, header.dataLength));
+      stream.seek(header.dataLength, WPX_SEEK_CUR);
     }
+  }
+}
+
+void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream, libvisio::VSD11Parser::ChunkHeader &header)
+{
+  do
+  {
+    header.chunkType = readU32(&stream);
+  } while (header.chunkType == 0);
+
+  header.id = readU32(&stream);
+  header.list = readU32(&stream);
+
+   // Certain chunk types seem to always have a trailer
+  header.trailer = 0;
+  if (header.list != 0 || header.chunkType == 0x71 || header.chunkType == 0x70 ||
+      header.chunkType == 0x6b || header.chunkType == 0x6a || header.chunkType == 0x69 || 
+      header.chunkType == 0x66 || header.chunkType == 0x65 || header.chunkType == 0x2c)
+    header.trailer += 8; // 8 byte trailer
+
+  header.dataLength = readU32(&stream);
+  header.level = readU16(&stream);
+  header.unknown = readU8(&stream);
+
+  // Add word separator under certain circumstances for v11
+  // Below are known conditions, may be more or a simpler pattern
+  if (header.list != 0 || (header.level == 2 && header.unknown == 0x55) ||
+      (header.level == 2 && header.unknown == 0x54 && header.chunkType == 0xaa) 
+      || (header.level == 3 && header.unknown != 0x50 && header.unknown != 0x54) ||
+      header.chunkType == 0x69 || header.chunkType == 0x6a || header.chunkType == 0x6b || 
+      header.chunkType == 0x71 || header.chunkType == 0xb6 || header.chunkType == 0xb9 || 
+      header.chunkType == 0xa9 || header.chunkType == 0x92)
+  {
+    header.trailer += 4;
+  }
+  // 0x1f (OLE data) and 0xc9 (Name ID) never have trailer 
+  if (header.chunkType == 0x1f || header.chunkType == 0xc9)
+  {
+    header.trailer = 0;
   }
 }

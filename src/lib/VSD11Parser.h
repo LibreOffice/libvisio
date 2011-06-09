@@ -47,8 +47,22 @@ private:
   struct ChunkHandler { unsigned int type; const char *name; ChunkMethod handler;};
   static const struct ChunkHandler chunkHandlers[2];
 
+  // Stream handlers
   void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+
+  // Utilities
+  struct ChunkHeader
+  {
+    unsigned int chunkType;  // 4 bytes
+    unsigned int id;         // 4 bytes
+    unsigned int list;       // 4 bytes
+    unsigned int dataLength; // 4 bytes
+    unsigned int level;      // 2 bytes
+    unsigned int unknown;    // 1 byte
+    unsigned int trailer; // Derived
+  };
+  void getChunkHeader(VSDInternalStream &stream, ChunkHeader &header);
   
   bool m_isPageStarted;
 };
