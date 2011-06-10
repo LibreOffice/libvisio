@@ -370,10 +370,9 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
         }
         else if (foreignType == 4)
         {
-          stream.seek(-(header.dataLength - 0x28), WPX_SEEK_CUR); // Seek back to *mf sig
-          unsigned int signature = readU32(&stream);
-          stream.seek(header.dataLength - 0x2C, WPX_SEEK_CUR); // Seek to end of chunk again
-          if (signature == 0x464D4520)
+          const unsigned char *tmpBinData = binaryData.getDataBuffer();
+		  // Check for EMF signature
+          if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
           {
             foreignProps.insert("libwpg:mime-type", "image/emf");
           }
