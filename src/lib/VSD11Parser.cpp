@@ -484,7 +484,7 @@ void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream, libvisio::
   do
   {
     header.chunkType = readU32(&stream);
-  } while (header.chunkType == 0);
+  } while (header.chunkType == 0 && !stream.atEOS());
 
   header.id = readU32(&stream);
   header.list = readU32(&stream);
