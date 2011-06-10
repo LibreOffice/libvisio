@@ -294,8 +294,8 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
           binaryData.append(0x00);
           binaryData.append(0x00);
 
-          binaryData.append(buffer, tmpBytesRead);
         }
+        binaryData.append(buffer, tmpBytesRead);
 
         WPXPropertyList foreignProps;
         foreignProps.insert("svg:width", xform.width);
