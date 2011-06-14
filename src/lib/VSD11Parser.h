@@ -43,13 +43,16 @@ private:
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};
   static const struct StreamHandler streamHandlers[32];
 
-  typedef void (VSD11Parser::*ChunkMethod)(VSDInternalStream&, WPXPropertyListVector&, libwpg::WPGPaintInterface*);
+  typedef void (VSD11Parser::*ChunkMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
   struct ChunkHandler { unsigned int type; const char *name; ChunkMethod handler;};
   static const struct ChunkHandler chunkHandlers[2];
 
   // Stream handlers
   void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+
+  // Chunk handlers
+  void shapeChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 
   // Utilities
   struct ChunkHeader
@@ -62,9 +65,16 @@ private:
     unsigned int unknown;    // 1 byte
     unsigned int trailer; // Derived
   };
+
+  struct DocumentProperties
+  {
+    std::vector<std::pair<double, double> > pageSize;
+  };
+
   void getChunkHeader(VSDInternalStream &stream, ChunkHeader &header);
   
   bool m_isPageStarted;
+  DocumentProperties props;
 };
 
 } // namespace libvisio
