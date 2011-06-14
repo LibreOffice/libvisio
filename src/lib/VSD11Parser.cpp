@@ -91,7 +91,8 @@ struct XForm
 };
 
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
-  : VSDXParser(input), m_isPageStarted(false)
+  : VSDXParser(input), m_isPageStarted(false), m_pageWidth(0.0), 
+    m_pageHeight(0.0)
 {}
 
 libvisio::VSD11Parser::~VSD11Parser()
@@ -285,11 +286,10 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       xform.flipX = (readU8(&stream) != 0);
       xform.flipY = (readU8(&stream) != 0);
 
-      if (props.pageSize.size() > 0)
+      if (m_pageHeight > 0)
       {
         xform.x = xform.pinX - xform.pinLocX;
-        xform.y = props.pageSize.back().second - // Current page height
-          xform.pinY + xform.pinLocY - xform.height;
+        xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
       }
       else
       {
@@ -362,7 +362,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
         foreignProps.insert("svg:height", xform.height);
         foreignProps.insert("svg:x", xform.pinX - xform.pinLocX);
         // Y axis starts at the bottom not top
-        foreignProps.insert("svg:y", props.pageSize.back().second - 
+        foreignProps.insert("svg:y", m_pageHeight - 
                             xform.pinY + xform.pinLocY - xform.height);
 
         if (foreignType == 1)
@@ -409,7 +409,8 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       double width = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR);
       double height = readDouble(&stream);
-      props.pageSize.push_back(std::pair<double, double>(width, height));
+      m_pageWidth = width;
+      m_pageHeight = height;
 
       WPXPropertyList pageProps;
       pageProps.insert("svg:width", width);
@@ -484,8 +485,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       xform.flipY = (readU8(&stream) != 0);
 
       xform.x = xform.pinX - xform.pinLocX;
-      xform.y = props.pageSize.back().second - // Current page height 
-        xform.pinY + xform.pinLocY - xform.height;
+      xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
       
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;

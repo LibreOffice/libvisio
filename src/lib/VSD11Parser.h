@@ -53,6 +53,7 @@ private:
 
   // Chunk handlers
   void shapeChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  void foreignChunk(VSDInternalStream &stream, WPXPropertyListVector &props, libwpg::WPGPaintInterface *painter);
 
   // Utilities
   struct ChunkHeader
@@ -66,15 +67,11 @@ private:
     unsigned int trailer; // Derived
   };
 
-  struct DocumentProperties
-  {
-    std::vector<std::pair<double, double> > pageSize;
-  };
-
   void getChunkHeader(VSDInternalStream &stream, ChunkHeader &header);
   
   bool m_isPageStarted;
-  DocumentProperties props;
+  double m_pageWidth;
+  double m_pageHeight;
 };
 
 } // namespace libvisio
