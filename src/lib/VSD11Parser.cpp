@@ -72,6 +72,7 @@ const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamH
 const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHandlers[] =
 {
   {0x48, "ShapeType=\"Shape\"", &libvisio::VSD11Parser::shapeChunk},
+  {0x4e, "ShapeType=\"Foreign\"", &libvisio::VSD11Parser::foreignChunk},
   {0, 0, 0}
 };
 
@@ -235,10 +236,6 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
 
 void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
-  XForm xform = {0}; // Tracks current xform data
-  unsigned int foreignType = 0; // Tracks current foreign data type
-  unsigned int foreignFormat = 0; // Tracks foreign data format
-  unsigned long tmpBytesRead = 0;
   ChunkHeader header = {0};
 
   //double x = 0; double y = 0;
@@ -266,143 +263,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    header.chunkType, header.trailer, header.dataLength));
 
-    if (header.chunkType == 0x9b) // XForm data
-    {
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.width = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.height = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.angle = readDouble(&stream);
-
-      xform.flipX = (readU8(&stream) != 0);
-      xform.flipY = (readU8(&stream) != 0);
-
-      if (m_pageHeight > 0)
-      {
-        xform.x = xform.pinX - xform.pinLocX;
-        xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
-      }
-      else
-      {
-        xform.x = 0; xform.y = 0;
-      }
-      
-      stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
-    }
-    else if (header.chunkType == 0x0c) // Foreign data (binary)
-    {
-      if (foreignType == 1 || foreignType == 4) // Image
-      {
-        const unsigned char *buffer = stream.read(header.dataLength, tmpBytesRead);
-        WPXBinaryData binaryData;
-        // If bmp data found, reconstruct header
-        if (foreignType == 1 && foreignFormat == 0)
-        {
-          binaryData.append(0x42);
-          binaryData.append(0x4d);
-
-          binaryData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
-          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
-          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
-          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
-
-          binaryData.append(0x00);
-          binaryData.append(0x00);
-          binaryData.append(0x00);
-          binaryData.append(0x00);
-
-          binaryData.append(0x36);
-          binaryData.append(0x00);
-          binaryData.append(0x00);
-          binaryData.append(0x00);
-        }
-        binaryData.append(buffer, tmpBytesRead);
-        
-#if DUMP_BITMAP
-        if (foreignType == 1 || foreignType == 4)
-        {
-          std::ostringstream filename;
-          switch(foreignFormat)
-          {
-          case 0:
-            filename << "binarydump" << bitmapId++ << ".bmp"; break;
-          case 1:
-            filename << "binarydump" << bitmapId++ << ".jpeg"; break;
-          case 2:
-            filename << "binarydump" << bitmapId++ << ".gif"; break;
-          case 3:
-            filename << "binarydump" << bitmapId++ << ".tiff"; break;
-          case 4:
-            filename << "binarydump" << bitmapId++ << ".png"; break;
-          default:
-            filename << "binarydump" << bitmapId++ << ".bin"; break;
-          }
-          FILE *f = fopen(filename.str().c_str(), "wb");
-          if (f)
-          {
-            const unsigned char *tmpBuffer = binaryData.getDataBuffer();
-            for (unsigned long k = 0; k < binaryData.size(); k++)
-              fprintf(f, "%c",tmpBuffer[k]);
-            fclose(f);
-          }
-        }
-#endif
-
-        WPXPropertyList foreignProps;
-        foreignProps.insert("svg:width", xform.width);
-        foreignProps.insert("svg:height", xform.height);
-        foreignProps.insert("svg:x", xform.pinX - xform.pinLocX);
-        // Y axis starts at the bottom not top
-        foreignProps.insert("svg:y", m_pageHeight - 
-                            xform.pinY + xform.pinLocY - xform.height);
-
-        if (foreignType == 1)
-        {
-          switch(foreignFormat)
-          {
-          case 0:
-            foreignProps.insert("libwpg:mime-type", "image/bmp"); break;
-          case 1:
-            foreignProps.insert("libwpg:mime-type", "image/jpeg"); break;
-          case 2:
-            foreignProps.insert("libwpg:mime-type", "image/gif"); break;
-          case 3:
-            foreignProps.insert("libwpg:mime-type", "image/tiff"); break;
-          case 4:
-            foreignProps.insert("libwpg:mime-type", "image/png"); break;
-          }
-        }
-        else if (foreignType == 4)
-        {
-          const unsigned char *tmpBinData = binaryData.getDataBuffer();
-		  // Check for EMF signature
-          if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
-          {
-            foreignProps.insert("libwpg:mime-type", "image/emf");
-          }
-          else
-          {
-            foreignProps.insert("libwpg:mime-type", "image/wmf");
-          }
-        }
-
-        painter->drawGraphicObject(foreignProps, binaryData);
-      }
-      else
-      {
-        stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
-      }
-    }
-    else if (header.chunkType == 0x92) // Page properties
+    if (header.chunkType == 0x92) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
@@ -422,16 +283,6 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       m_isPageStarted = true;
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);      
-    }
-    else if (header.chunkType == 0x98) // Foreign data type
-    {
-      stream.seek(0x24, WPX_SEEK_CUR);
-      foreignType = readU16(&stream);
-      stream.seek(0xb, WPX_SEEK_CUR);
-      foreignFormat = readU32(&stream);
-
-      stream.seek(header.dataLength+header.trailer-0x35, WPX_SEEK_CUR);
-      VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
     }
     else // Skip chunk
     {
@@ -533,6 +384,165 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     }
     if (geomCount > 0) geomCount--;
     if (geomCount == 0) done = true;
+  }
+}
+
+void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
+{
+  XForm xform = {0}; // Shape xform data
+  unsigned int foreignType = 0; // Tracks current foreign data type
+  unsigned int foreignFormat = 0; // Tracks foreign data format
+  ChunkHeader header = {0};
+  unsigned long tmpBytesRead = 0;
+  bool done = false;
+
+  while (!done && !stream.atEOS())
+  {
+    getChunkHeader(stream, header);
+
+    switch(header.chunkType)
+    {
+    case 0x9b: // XForm data      
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinX = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinY = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.width = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.height = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinLocX = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.pinLocY = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      xform.angle = readDouble(&stream);
+      xform.flipX = (readU8(&stream) != 0);
+      xform.flipY = (readU8(&stream) != 0);
+
+      xform.x = xform.pinX - xform.pinLocX;
+      xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
+      
+      stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
+      break;
+    case 0x98:
+      stream.seek(0x24, WPX_SEEK_CUR);
+      foreignType = readU16(&stream);
+      stream.seek(0xb, WPX_SEEK_CUR);
+      foreignFormat = readU32(&stream);
+
+      stream.seek(header.dataLength+header.trailer-0x35, WPX_SEEK_CUR);
+      VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
+      
+      break;
+    case 0x0c:
+      if (foreignType == 1 || foreignType == 4) // Image
+      {
+        const unsigned char *buffer = stream.read(header.dataLength, tmpBytesRead);
+        WPXBinaryData binaryData;
+        // If bmp data found, reconstruct header
+        if (foreignType == 1 && foreignFormat == 0)
+        {
+          binaryData.append(0x42);
+          binaryData.append(0x4d);
+
+          binaryData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
+          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
+
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+
+          binaryData.append(0x36);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+          binaryData.append(0x00);
+        }
+        binaryData.append(buffer, tmpBytesRead);
+        
+#if DUMP_BITMAP
+        if (foreignType == 1 || foreignType == 4)
+        {
+          std::ostringstream filename;
+          switch(foreignFormat)
+          {
+          case 0:
+            filename << "binarydump" << bitmapId++ << ".bmp"; break;
+          case 1:
+            filename << "binarydump" << bitmapId++ << ".jpeg"; break;
+          case 2:
+            filename << "binarydump" << bitmapId++ << ".gif"; break;
+          case 3:
+            filename << "binarydump" << bitmapId++ << ".tiff"; break;
+          case 4:
+            filename << "binarydump" << bitmapId++ << ".png"; break;
+          default:
+            filename << "binarydump" << bitmapId++ << ".bin"; break;
+          }
+          FILE *f = fopen(filename.str().c_str(), "wb");
+          if (f)
+          {
+            const unsigned char *tmpBuffer = binaryData.getDataBuffer();
+            for (unsigned long k = 0; k < binaryData.size(); k++)
+              fprintf(f, "%c",tmpBuffer[k]);
+            fclose(f);
+          }
+        }
+#endif
+
+        WPXPropertyList foreignProps;
+        foreignProps.insert("svg:width", xform.width);
+        foreignProps.insert("svg:height", xform.height);
+        foreignProps.insert("svg:x", xform.pinX - xform.pinLocX);
+        // Y axis starts at the bottom not top
+        foreignProps.insert("svg:y", m_pageHeight - 
+                            xform.pinY + xform.pinLocY - xform.height);
+
+        if (foreignType == 1)
+        {
+          switch(foreignFormat)
+          {
+          case 0:
+            foreignProps.insert("libwpg:mime-type", "image/bmp"); break;
+          case 1:
+            foreignProps.insert("libwpg:mime-type", "image/jpeg"); break;
+          case 2:
+            foreignProps.insert("libwpg:mime-type", "image/gif"); break;
+          case 3:
+            foreignProps.insert("libwpg:mime-type", "image/tiff"); break;
+          case 4:
+            foreignProps.insert("libwpg:mime-type", "image/png"); break;
+          }
+        }
+        else if (foreignType == 4)
+        {
+          const unsigned char *tmpBinData = binaryData.getDataBuffer();
+		  // Check for EMF signature
+          if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
+          {
+            foreignProps.insert("libwpg:mime-type", "image/emf");
+          }
+          else
+          {
+            foreignProps.insert("libwpg:mime-type", "image/wmf");
+          }
+        }
+
+        painter->drawGraphicObject(foreignProps, binaryData);
+      }
+      else
+      {
+        stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
+      }
+      break;
+
+    default:
+      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
+
+    }
   }
 }
 
