@@ -23,6 +23,7 @@
 #include <sstream>
 #include <string>
 #include <cmath>
+#include <set>
 #include "libvisio_utils.h"
 #include "VSD11Parser.h"
 #include "VSDInternalStream.h"
@@ -285,9 +286,11 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
   WPXPropertyList styleProps;
   WPXPropertyListVector gradientProps;
   XForm xform = {0}; // Shape xform data
-  std::vector<unsigned int> shapeIDs;
+  std::set<unsigned int> shapeIDs;
   ChunkHeader header = {0};
   double x = 0; double y = 0;
+  bool done = false;
+  int geomCount = -1;
 
   // Reset style
   styleProps.clear();
@@ -313,7 +316,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x83: // ShapeID
-      shapeIDs.push_back(readU32(&stream));
+      shapeIDs.insert(readU32(&stream));
       stream.seek(header.dataLength+header.trailer-4, WPX_SEEK_CUR);
       break;
     case 0x85: // Line properties
@@ -324,6 +327,8 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
     case 0x6c: // GeomList
       painter->setStyle(styleProps, gradientProps);
       stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
+      geomCount = header.list;
+      continue; // Avoid geomCount decrement below
     case 0x8a: // MoveTo
       stream.seek(1, WPX_SEEK_CUR);
       x = readDouble(&stream) + xform.x;
@@ -358,6 +363,8 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
     default:
       stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
     }
+    if (geomCount > 0) geomCount--;
+    if (geomCount == 0) done = true;
   }
 }
 
@@ -435,6 +442,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     if (geomCount > 0) geomCount--;
     if (geomCount == 0) done = true;
   }
+  
 }
 
 void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
