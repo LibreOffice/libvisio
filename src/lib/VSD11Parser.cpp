@@ -22,6 +22,7 @@
 #include <locale.h>
 #include <sstream>
 #include <string>
+#include <cmath>
 #include "libvisio_utils.h"
 #include "VSD11Parser.h"
 #include "VSDInternalStream.h"
@@ -339,6 +340,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       x = readDouble(&stream) + xform.x;
       stream.seek(1, WPX_SEEK_CUR);
       y = readDouble(&stream) + xform.y;
+      rotatePoint(x, y, xform);
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
       break;
@@ -347,12 +349,13 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       WPXPropertyListVector vertices;
       WPXPropertyList end1, end2;
       end1.insert("svg:x", x);
-      end1.insert("svg:y", y);  
+      end1.insert("svg:y", y); 
 
       stream.seek(1, WPX_SEEK_CUR);
       x = readDouble(&stream) + xform.x;
       stream.seek(1, WPX_SEEK_CUR);
       y = readDouble(&stream) + xform.y;
+      rotatePoint(x, y, xform);
 
       end2.insert("svg:x", x);
       end2.insert("svg:y", y);
@@ -572,3 +575,16 @@ void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream, libvisio::
   }
 }
 
+void libvisio::VSD11Parser::rotatePoint(double &x, double &y, const XForm &xform)
+{
+  if (xform.angle == 0.0) return;
+
+  // Calculate co-ordinates using pin position as origin
+  double tmpX = x - xform.pinX; 
+  double tmpY = (m_pageHeight - y) - xform.pinY; // Start from bottom left
+
+  // Rotate around pin and move back to bottom left as origin
+  x = (tmpX * cos(xform.angle)) - (tmpY * sin(xform.angle)) + xform.pinX;
+  y = (tmpX * sin(xform.angle)) + (tmpY * cos(xform.angle)) + xform.pinY;
+  y = m_pageHeight - y; // Flip Y for screen co-ordinate
+}

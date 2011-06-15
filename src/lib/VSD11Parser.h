@@ -68,6 +68,7 @@ private:
   };
 
   void getChunkHeader(VSDInternalStream &stream, ChunkHeader &header);
+  void rotatePoint(double &x, double &y, const XForm &xform);
 };
 
 } // namespace libvisio
