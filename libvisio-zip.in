@@ -12,15 +12,17 @@ DLLDIR=lib
 [ -f bin/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.dll ] && \
 DLLDIR=bin
 
+@STRIP@ --strip-unneeded \
+$DLLDIR/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.dll
+
 @STRIP@ --strip-all \
-$DLLDIR/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.dll \
-bin/visio2raw.exe \
-bin/visio2svg.exe
+bin/vsd2raw.exe \
+bin/vsd2xhtml.exe
 
 upx -qqq --best \
 $DLLDIR/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.dll \
-bin/visio2raw.exe \
-bin/visio2svg.exe
+bin/vsd2raw.exe \
+bin/vsd2xhtml.exe
 
 rm -f $ZIP
 zip -q -r $ZIP -@ <<EOF
@@ -37,14 +39,6 @@ EOF
 
 rm -f $TOOLSZIP
 zip -q -r -j $TOOLSZIP -@ <<EOF
-bin/visio2raw.exe
-bin/visio2svg.exe
-bin/visio2svgbatch.exe
-EOF
-
-rm -f $TOOLSZIP
-zip -q -r -j $TOOLSZIP -@ <<EOF
-bin/visio2raw.exe
-bin/visio2svg.exe
-bin/visio2svgbatch.pl
+bin/vsd2raw.exe
+bin/vsd2xhtml.exe
 EOF
