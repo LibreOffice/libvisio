@@ -45,13 +45,14 @@ private:
 
   typedef void (VSD11Parser::*ChunkMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
   struct ChunkHandler { unsigned int type; const char *name; ChunkMethod handler;};
-  static const struct ChunkHandler chunkHandlers[3];
+  static const struct ChunkHandler chunkHandlers[4];
 
   // Stream handlers
   void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 
   // Chunk handlers
+  void groupChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void shapeChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void foreignChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 
