@@ -76,21 +76,6 @@ const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHan
   {0, 0, 0}
 };
 
-struct XForm
-{
-  double pinX;
-  double pinY;
-  double height;
-  double width;
-  double pinLocX;
-  double pinLocY;
-  double angle;
-  bool flipX;
-  bool flipY;
-  double x;
-  double y;
-};
-
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
   : VSDXParser(input), m_isPageStarted(false), m_pageWidth(0.0), 
     m_pageHeight(0.0)

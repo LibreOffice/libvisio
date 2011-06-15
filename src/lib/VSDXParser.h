@@ -29,6 +29,7 @@
 namespace libvisio
 {
 
+typedef struct _VSDXForm VSDXForm;
 class VSDXParser
 {
 public:
@@ -37,6 +38,22 @@ public:
   virtual bool parse(libwpg::WPGPaintInterface *iface) = 0;
 protected:
   WPXInputStream *m_input;
+  struct XForm
+  {
+    double pinX;
+    double pinY;
+    double height;
+    double width;
+    double pinLocX;
+    double pinLocY;
+    double angle;
+    bool flipX;
+    bool flipY;
+    double x;
+    double y;
+  };
+
+
 };
 
 } // namespace libvisio

@@ -62,19 +62,6 @@ const struct libvisio::VSD6Parser::StreamHandler libvisio::VSD6Parser::handlers[
   {0, 0, 0}
 };
 
-struct XForm
-{
-  double pinX;
-  double pinY;
-  double height;
-  double width;
-  double pinLocX;
-  double pinLocY;
-  double angle;
-  bool flipX;
-  bool flipY;
-};
-
 libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input)
   : VSDXParser(input), m_isPageStarted(false)
 {}
