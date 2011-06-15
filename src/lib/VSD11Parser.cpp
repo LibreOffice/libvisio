@@ -309,26 +309,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
     switch (header.chunkType)
     {
     case 0x9b: // XForm data      
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.width = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.height = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.angle = readDouble(&stream);
-      xform.flipX = (readU8(&stream) != 0);
-      xform.flipY = (readU8(&stream) != 0);
-
-      xform.x = xform.pinX - xform.pinLocX;
-      xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
-      
+      xform = _parseXForm(&stream);
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x83: // ShapeID
@@ -404,26 +385,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     switch (header.chunkType)
     {
     case 0x9b: // XForm data      
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.width = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.height = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.angle = readDouble(&stream);
-      xform.flipX = (readU8(&stream) != 0);
-      xform.flipY = (readU8(&stream) != 0);
-
-      xform.x = xform.pinX - xform.pinLocX;
-      xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
-      
+      xform = _parseXForm(&stream);
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x85: // Line properties
@@ -491,26 +453,7 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
     switch(header.chunkType)
     {
     case 0x9b: // XForm data      
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.width = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.height = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.angle = readDouble(&stream);
-      xform.flipX = (readU8(&stream) != 0);
-      xform.flipY = (readU8(&stream) != 0);
-
-      xform.x = xform.pinX - xform.pinLocX;
-      xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
-      
+      xform = _parseXForm(&stream);
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x98:
@@ -688,4 +631,30 @@ void libvisio::VSD11Parser::rotatePoint(double &x, double &y, const XForm &xform
   x = (tmpX * cos(xform.angle)) - (tmpY * sin(xform.angle)) + xform.pinX;
   y = (tmpX * sin(xform.angle)) + (tmpY * cos(xform.angle)) + xform.pinY;
   y = m_pageHeight - y; // Flip Y for screen co-ordinate
+}
+
+libvisio::VSDXParser::XForm libvisio::VSD11Parser::_parseXForm(WPXInputStream *input)
+{
+  libvisio::VSDXParser::XForm xform;
+  input->seek(1, WPX_SEEK_CUR);
+  xform.pinX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  xform.pinY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  xform.width = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  xform.height = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  xform.pinLocX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  xform.pinLocY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  xform.angle = readDouble(input);
+  xform.flipX = (readU8(input) != 0);
+  xform.flipY = (readU8(input) != 0);
+
+  xform.x = xform.pinX - xform.pinLocX;
+  xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
+    
+  return xform;
 }
