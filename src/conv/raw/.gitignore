@@ -1,0 +1,9 @@
+.deps
+.libs
+*.lo
+*.la
+*.o
+Makefile
+Makefile.in
+vsd2raw
+*.rc
