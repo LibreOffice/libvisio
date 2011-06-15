@@ -53,6 +53,9 @@ protected:
     double y;
   };
 
+  bool m_isPageStarted;
+  double m_pageWidth;
+  double m_pageHeight;
 
 };
 

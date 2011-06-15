@@ -68,10 +68,6 @@ private:
   };
 
   void getChunkHeader(VSDInternalStream &stream, ChunkHeader &header);
-  
-  bool m_isPageStarted;
-  double m_pageWidth;
-  double m_pageHeight;
 };
 
 } // namespace libvisio

@@ -77,8 +77,7 @@ const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHan
 };
 
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
-  : VSDXParser(input), m_isPageStarted(false), m_pageWidth(0.0), 
-    m_pageHeight(0.0)
+  : VSDXParser(input)
 {}
 
 libvisio::VSD11Parser::~VSD11Parser()

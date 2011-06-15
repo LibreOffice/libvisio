@@ -26,7 +26,8 @@
 #include "VSDInternalStream.h"
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input)
-  : m_input(input)
+  : m_input(input), m_isPageStarted(false), m_pageWidth(0.0), 
+    m_pageHeight(0.0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()

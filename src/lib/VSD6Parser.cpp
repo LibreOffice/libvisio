@@ -63,7 +63,7 @@ const struct libvisio::VSD6Parser::StreamHandler libvisio::VSD6Parser::handlers[
 };
 
 libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input)
-  : VSDXParser(input), m_isPageStarted(false)
+  : VSDXParser(input)
 {}
 
 libvisio::VSD6Parser::~VSD6Parser()
