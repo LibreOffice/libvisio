@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="vsd2svg" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="vsd2xhtml" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Console Application" 0x0103
 
-CFG=vsd2svg - Win32 Release
+CFG=vsd2xhtml - Win32 Release
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "vsd2svg.mak".
+!MESSAGE NMAKE /f "vsd2xhtml.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "vsd2svg.mak" CFG="vsd2svg - Win32 Release"
+!MESSAGE NMAKE /f "vsd2xhtml.mak" CFG="vsd2xhtml - Win32 Release"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "vsd2svg - Win32 Release" (based on "Win32 (x86) Console Application")
-!MESSAGE "vsd2svg - Win32 Debug" (based on "Win32 (x86) Console Application")
+!MESSAGE "vsd2xhtml - Win32 Release" (based on "Win32 (x86) Console Application")
+!MESSAGE "vsd2xhtml - Win32 Debug" (based on "Win32 (x86) Console Application")
 !MESSAGE 
 
 # Begin Project
@@ -28,7 +28,7 @@ CFG=vsd2svg - Win32 Release
 CPP=cl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "vsd2svg - Win32 Release"
+!IF  "$(CFG)" == "vsd2xhtml - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -52,11 +52,11 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\vsd2svg.exe" /libpath:"Release\lib"
-# ADD LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\vsd2svg.exe" /libpath:"Release\lib"
+# ADD BASE LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\vsd2xhtml.exe" /libpath:"Release\lib"
+# ADD LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\vsd2xhtml.exe" /libpath:"Release\lib"
 # SUBTRACT LINK32 /nodefaultlib
 
-!ELSEIF  "$(CFG)" == "vsd2svg - Win32 Debug"
+!ELSEIF  "$(CFG)" == "vsd2xhtml - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -80,22 +80,22 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\vsd2svg.exe" /libpath:"Debug\lib"
-# ADD LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\vsd2svg.exe" /libpath:"Debug\lib"
+# ADD BASE LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\vsd2xhtml.exe" /libpath:"Debug\lib"
+# ADD LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\vsd2xhtml.exe" /libpath:"Debug\lib"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 
 
 # Begin Target
 
-# Name "vsd2svg - Win32 Release"
-# Name "vsd2svg - Win32 Debug"
+# Name "vsd2xhtml - Win32 Release"
+# Name "vsd2xhtml - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 # Begin Source File
 
-SOURCE=..\..\src\conv\svg\vsd2svg.cpp
+SOURCE=..\..\src\conv\svg\vsd2xhtml.cpp
 # End Source File
 # End Group
 # End Target
