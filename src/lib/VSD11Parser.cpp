@@ -347,6 +347,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       y = (xform.height - readDouble(&stream)) + xform.y;
       rotatePoint(x, y, xform);
+      flipPoint(x, y, xform);
 
       end.insert("svg:x", x);
       end.insert("svg:y", y); 
@@ -364,6 +365,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       y = (xform.height - readDouble(&stream)) + xform.y;
       rotatePoint(x, y, xform);
+      flipPoint(x, y, xform);
 
       end.insert("svg:x", x);
       end.insert("svg:y", y);
@@ -437,6 +439,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       y = (xform.height - readDouble(&stream)) + xform.y;
       rotatePoint(x, y, xform);
+      flipPoint(x, y, xform);
 
       end.insert("svg:x", x);
       end.insert("svg:y", y); 
@@ -454,6 +457,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       y = (xform.height - readDouble(&stream)) + xform.y;
       rotatePoint(x, y, xform);
+      flipPoint(x, y, xform);
 
       end.insert("svg:x", x);
       end.insert("svg:y", y);
@@ -668,6 +672,21 @@ void libvisio::VSD11Parser::rotatePoint(double &x, double &y, const XForm &xform
   y = m_pageHeight - y; // Flip Y for screen co-ordinate
 }
 
+void libvisio::VSD11Parser::flipPoint(double &x, double &y, const XForm &xform)
+{
+  if (!xform.flipX && !xform.flipY) return;
+
+  double tmpX = x - xform.x; 
+  double tmpY = y - xform.y;
+
+  if (xform.flipX)
+    tmpX = xform.width - tmpX;
+  if (xform.flipY)
+    tmpY = xform.height - tmpY;
+  x = tmpX + xform.x;
+  y = tmpY + xform.y;
+}
+
 libvisio::VSDXParser::XForm libvisio::VSD11Parser::_parseXForm(WPXInputStream *input)
 {
   libvisio::VSDXParser::XForm xform;
@@ -687,7 +706,7 @@ libvisio::VSDXParser::XForm libvisio::VSD11Parser::_parseXForm(WPXInputStream *i
   xform.angle = readDouble(input);
   xform.flipX = (readU8(input) != 0);
   xform.flipY = (readU8(input) != 0);
-
+  
   xform.x = xform.pinX - xform.pinLocX;
   xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
     

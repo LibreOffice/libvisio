@@ -70,6 +70,7 @@ private:
 
   void getChunkHeader(VSDInternalStream &stream, ChunkHeader &header);
   void rotatePoint(double &x, double &y, const XForm &xform);
+  void flipPoint(double &x, double &y, const XForm &xform);
   
   XForm _parseXForm(WPXInputStream *input);
   void _flushCurrentPath(libwpg::WPGPaintInterface *painter);
