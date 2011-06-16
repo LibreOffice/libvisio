@@ -297,6 +297,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
   styleProps.clear();
   styleProps.insert("svg:stroke-width", 0.0138889);
   styleProps.insert("svg:stroke-color", "black");
+  styleProps.insert("draw:fill", "none");
 
   while (!stream.atEOS())
   {
@@ -391,6 +392,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   styleProps.clear();
   styleProps.insert("svg:stroke-width", 0.0138889);
   styleProps.insert("svg:stroke-color", "black");
+  styleProps.insert("draw:fill", "none");
 
   while (!done && !stream.atEOS())
   {
