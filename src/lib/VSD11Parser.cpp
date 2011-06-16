@@ -339,7 +339,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       x = readDouble(&stream) + xform.x;
       stream.seek(1, WPX_SEEK_CUR);
-      y = readDouble(&stream) + xform.y;
+      y = (xform.height - readDouble(&stream)) + xform.y;
       rotatePoint(x, y, xform);
 
       end1.insert("svg:x", x);
@@ -355,7 +355,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       x = readDouble(&stream) + xform.x;
       stream.seek(1, WPX_SEEK_CUR);
-      y = readDouble(&stream) + xform.y;
+      y = (xform.height - readDouble(&stream)) + xform.y;
       rotatePoint(x, y, xform);
 
       end2.insert("svg:x", x);
@@ -420,7 +420,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       x = readDouble(&stream) + xform.x;
       stream.seek(1, WPX_SEEK_CUR);
-      y = readDouble(&stream) + xform.y;
+      y = (xform.height - readDouble(&stream)) + xform.y;
       rotatePoint(x, y, xform);
 
       end1.insert("svg:x", x);
@@ -436,7 +436,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       x = readDouble(&stream) + xform.x;
       stream.seek(1, WPX_SEEK_CUR);
-      y = readDouble(&stream) + xform.y;
+      y = (xform.height - readDouble(&stream)) + xform.y;
       rotatePoint(x, y, xform);
 
       end2.insert("svg:x", x);
