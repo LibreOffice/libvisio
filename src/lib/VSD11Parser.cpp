@@ -35,6 +35,10 @@ static unsigned bitmapId = 0;
 #include <sstream>
 #endif
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] =
 {
   {0xa, "Name", 0},
@@ -466,7 +470,23 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
-      break;
+    break;
+    case 0x8f: // Ellipse
+    {
+      WPXPropertyList ellipse;
+      stream.seek(1, WPX_SEEK_CUR);
+      double rx = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      double ry = readDouble(&stream);
+      ellipse.insert("svg:rx", rx);
+      ellipse.insert("svg:ry", ry);
+      ellipse.insert("svg:cx", xform.x+rx);
+      ellipse.insert("svg:cy", xform.y+ry);
+      ellipse.insert("libwpg:rotate", xform.angle * (180/M_PI));
+      painter->drawEllipse(ellipse);
+      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
+    }
+    break;
     default:
       stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
     }
