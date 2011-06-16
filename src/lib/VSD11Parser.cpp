@@ -327,12 +327,18 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-9, WPX_SEEK_CUR);      
       break;
     case 0x6c: // GeomList
+    {
       _flushCurrentPath(painter);
-      path = WPXPropertyListVector();
       painter->setStyle(styleProps, gradientProps);
-      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
+      uint32_t subHeaderLength = readU32(&stream);
+      uint32_t childrenListLength = readU32(&stream);
+      stream.seek(subHeaderLength, WPX_SEEK_CUR);
+      for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+        m_currentGeometryOrder.push_back(readU32(&stream)); 
+      stream.seek(header.dataLength+header.trailer-8-childrenListLength-subHeaderLength, WPX_SEEK_CUR);
       geomCount = header.list;
       continue; // Avoid geomCount decrement below
+    }
     case 0x8a: // MoveTo
     {
       WPXPropertyList end;
@@ -345,7 +351,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       end.insert("svg:x", x);
       end.insert("svg:y", y); 
       end.insert("libwpg:path-action", "M");
-	  m_currentGeometry[header.id] = end;
+      m_currentGeometry[header.id] = end;
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
@@ -362,7 +368,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       end.insert("svg:x", x);
       end.insert("svg:y", y);
       end.insert("libwpg:path-action", "L");
-	  m_currentGeometry[header.id] = end;
+      m_currentGeometry[header.id] = end;
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
@@ -411,12 +417,18 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-9, WPX_SEEK_CUR);      
       break;
     case 0x6c: // GeomList
+    {
       _flushCurrentPath(painter);
-      path = WPXPropertyListVector();
       painter->setStyle(styleProps, gradientProps);
-      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
+      uint32_t subHeaderLength = readU32(&stream);
+      uint32_t childrenListLength = readU32(&stream);
+      stream.seek(subHeaderLength, WPX_SEEK_CUR);
+      for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+        m_currentGeometryOrder.push_back(readU32(&stream)); 
+      stream.seek(header.dataLength+header.trailer-8-childrenListLength-subHeaderLength, WPX_SEEK_CUR);
       geomCount = header.list;
       continue; // Avoid geomCount decrement below
+    }
     case 0x8a: // MoveTo
     {
       WPXPropertyList end;
@@ -429,7 +441,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       end.insert("svg:x", x);
       end.insert("svg:y", y); 
       end.insert("libwpg:path-action", "M");
-	  m_currentGeometry[header.id] = end;
+      m_currentGeometry[header.id] = end;
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
@@ -446,7 +458,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       end.insert("svg:x", x);
       end.insert("svg:y", y);
       end.insert("libwpg:path-action", "L");
-	  m_currentGeometry[header.id] = end;
+      m_currentGeometry[header.id] = end;
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
@@ -574,7 +586,7 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
         else if (foreignType == 4)
         {
           const unsigned char *tmpBinData = binaryData.getDataBuffer();
-		  // Check for EMF signature
+          // Check for EMF signature
           if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
           {
             foreignProps.insert("libwpg:mime-type", "image/emf");
@@ -685,9 +697,23 @@ libvisio::VSDXParser::XForm libvisio::VSD11Parser::_parseXForm(WPXInputStream *i
 void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter)
 {
   WPXPropertyListVector path;
-  for (std::map<unsigned int, WPXPropertyList>::iterator iter=m_currentGeometry.begin(); iter != m_currentGeometry.end(); iter++)
-    path.append(iter->second);
+  std::map<unsigned int, WPXPropertyList>::iterator iter;
+  if (m_currentGeometryOrder.size())
+  {
+    for (unsigned i = 0; i < m_currentGeometryOrder.size(); i++)
+    {
+       iter = m_currentGeometry.find(m_currentGeometryOrder[i]);
+       if (iter != m_currentGeometry.end())
+          path.append(iter->second);
+    }
+  }
+  else
+  { 
+    for (iter=m_currentGeometry.begin(); iter != m_currentGeometry.end(); iter++)
+      path.append(iter->second);
+  }
   if (path.count())
     painter->drawPath(path);
-  m_currentGeometry.clear();	
+  m_currentGeometry.clear();
+  m_currentGeometryOrder.clear();
 }
