@@ -283,7 +283,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
 
 void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
-  WPXPropertyListVector vertices;
+  WPXPropertyListVector path;
   WPXPropertyList styleProps;
   WPXPropertyListVector gradientProps;
   XForm xform = {0}; // Shape xform data
@@ -326,9 +326,9 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-9, WPX_SEEK_CUR);      
       break;
     case 0x6c: // GeomList
-      if (vertices.count())
-        painter->drawPolyline(vertices);
-      vertices = WPXPropertyListVector();
+      if (path.count())
+        painter->drawPath(path);
+      path = WPXPropertyListVector();
       painter->setStyle(styleProps, gradientProps);
       stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
       geomCount = header.list;
@@ -344,7 +344,8 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
 
       end1.insert("svg:x", x);
       end1.insert("svg:y", y); 
-      vertices.append(end1);
+      end1.insert("libwpg:path-action", "M");
+      path.append(end1);
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
@@ -360,7 +361,8 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
 
       end2.insert("svg:x", x);
       end2.insert("svg:y", y);
-      vertices.append(end2);
+      end2.insert("libwpg:path-action", "L");
+      path.append(end2);
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
@@ -375,7 +377,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
 
 void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
-  WPXPropertyListVector vertices;
+  WPXPropertyListVector path;
   WPXPropertyList styleProps;
   WPXPropertyListVector gradientProps;
   XForm xform = {0}; // Shape xform data
@@ -407,9 +409,9 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-9, WPX_SEEK_CUR);      
       break;
     case 0x6c: // GeomList
-      if (vertices.count())
-        painter->drawPolyline(vertices);
-      vertices = WPXPropertyListVector();
+      if (path.count())
+        painter->drawPath(path);
+      path = WPXPropertyListVector();
       painter->setStyle(styleProps, gradientProps);
       stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
       geomCount = header.list;
@@ -425,7 +427,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
       end1.insert("svg:x", x);
       end1.insert("svg:y", y); 
-      vertices.append(end1);
+      end1.insert("libwpg:path-action", "M");
+      path.append(end1);
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
@@ -441,7 +444,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
       end2.insert("svg:x", x);
       end2.insert("svg:y", y);
-      vertices.append(end2);
+      end2.insert("libwpg:path-action", "L");
+      path.append(end2);
 
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
@@ -452,8 +456,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     if (geomCount > 0) geomCount--;
     if (geomCount == 0) done = true;
   }
-  if (vertices.count())
-     painter->drawPolyline(vertices);
+  if (path.count())
+     painter->drawPath(path);
 }
 
 void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
