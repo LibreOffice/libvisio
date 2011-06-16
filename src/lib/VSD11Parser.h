@@ -72,6 +72,7 @@ private:
   void rotatePoint(double &x, double &y, const XForm &xform);
   
   XForm _parseXForm(WPXInputStream *input);
+  void _flushCurrentPath(libwpg::WPGPaintInterface *painter);
 };
 
 } // namespace libvisio

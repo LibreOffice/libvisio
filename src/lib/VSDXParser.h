@@ -23,6 +23,8 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <vector>
+#include <map>
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
 
@@ -56,6 +58,8 @@ protected:
   bool m_isPageStarted;
   double m_pageWidth;
   double m_pageHeight;
+  std::vector<unsigned int> m_currentGeometryOrder;
+  std::map<unsigned int, WPXPropertyList> m_currentGeometry;
 
 };
 
