@@ -598,6 +598,47 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
     break;
+    case 0x90: // Elliptical ArcTo
+    {
+      stream.seek(1, WPX_SEEK_CUR);
+      double x3 = readDouble(&stream) + xform.x; // End x
+      stream.seek(1, WPX_SEEK_CUR);
+      double y3 = (xform.height - readDouble(&stream)) + xform.y; // End y
+      stream.seek(1, WPX_SEEK_CUR);
+      double x2 = readDouble(&stream) + xform.x; // Mid x
+      stream.seek(1, WPX_SEEK_CUR);
+      double y2 = (xform.height - readDouble(&stream)) + xform.y; // Mid y
+      stream.seek(1, WPX_SEEK_CUR);
+      double angle = readDouble(&stream); // Angle
+      stream.seek(1, WPX_SEEK_CUR);
+      double ecc = readDouble(&stream); // Eccentricity
+
+      rotatePoint(x2, y2, xform);
+      rotatePoint(x3, y3, xform);
+
+      double x1 = x;
+      double y1 = y;
+      double x0 = ((x1-x2)*(x1+x2)*(y2-y3) - (x2-x3)*(x2+x3)*(y1-y2) + ecc*ecc*(y1-y2)*(y2-y3)*(y1-y3)) / (2*((x1-x2)*(y2-y3) - (x2-x3)*(y1-y2)));
+      double y0 = ((x1-x2)*(x2-x3)*(x1-x3) + ecc*ecc*(x2-x3)*(y1-y2)*(y1+y2) - ecc*ecc*(x1-x2)*(y2-y3)*(y2+y3)) / (2*ecc*ecc*((x2-x3)*(y1-y2) - (x1-x2)*(y2-y3)));
+      VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
+      double rx = sqrt(pow(x1-x0, 2) + ecc*ecc*pow(y1-y0, 2));
+      double ry = rx / ecc;
+
+      x = x3; y = y3;
+      WPXPropertyList arc;
+      arc.insert("svg:rx", rx);
+      arc.insert("svg:ry", ry);
+      arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + xform.angle * (180 / M_PI)));
+      arc.insert("libwpg:large-arc", 0);
+      arc.insert("libwpg:sweep", 1);
+      arc.insert("svg:x", x);
+      arc.insert("svg:y", y);
+      arc.insert("libwpg:path-action", "A");
+      m_currentGeometry[header.id] = arc;
+
+      stream.seek(header.dataLength + header.trailer - 54, WPX_SEEK_CUR);
+    }
+      break;
     default:
       stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
     }
