@@ -646,11 +646,6 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       if (midSide > 0)
         sweep = 0;
 
-      // Invert sweep direction if shape is flipped
-      if (xform.flipX || xform.flipY)
-      {
-        sweep = sweep == 1 ? 0 : 1;
-      }
       arc.insert("svg:rx", rx);
       arc.insert("svg:ry", ry);
       arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + xform.angle * (180 / M_PI)));
