@@ -565,6 +565,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
         WPXPropertyList arc;
         double chord = sqrt(pow((y2 - y),2) + pow((x2 - x),2));
         double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
+        VSD_DEBUG_MSG(("ArcTo with bow %f radius %f and chord %f\n", bow, radius, chord));
         int largeArc = fabs(bow) > radius ? 1 : 0;
         int sweep = bow < 0 ? 1 : 0;
         x = x2; y = y2;
@@ -620,8 +621,12 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
       double x1 = x;
       double y1 = y;
-      double x0 = ((x1-x2)*(x1+x2)*(y2-y3) - (x2-x3)*(x2+x3)*(y1-y2) + ecc*ecc*(y1-y2)*(y2-y3)*(y1-y3)) / (2*((x1-x2)*(y2-y3) - (x2-x3)*(y1-y2)));
-      double y0 = ((x1-x2)*(x2-x3)*(x1-x3) + ecc*ecc*(x2-x3)*(y1-y2)*(y1+y2) - ecc*ecc*(x1-x2)*(y2-y3)*(y2+y3)) / (2*ecc*ecc*((x2-x3)*(y1-y2) - (x1-x2)*(y2-y3)));
+      double x0 = ((x1-x2)*(x1+x2)*(y2-y3) - (x2-x3)*(x2+x3)*(y1-y2) + 
+                   ecc*ecc*(y1-y2)*(y2-y3)*(y1-y3)) / 
+                   (2*((x1-x2)*(y2-y3) - (x2-x3)*(y1-y2)));
+      double y0 = ((x1-x2)*(x2-x3)*(x1-x3) + ecc*ecc*(x2-x3)*(y1-y2)*(y1+y2) - 
+                   ecc*ecc*(x1-x2)*(y2-y3)*(y2+y3)) / 
+                   (2*ecc*ecc*((x2-x3)*(y1-y2) - (x1-x2)*(y2-y3)));
       VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
       double rx = sqrt(pow(x1-x0, 2) + ecc*ecc*pow(y1-y0, 2));
       double ry = rx / ecc;
@@ -630,6 +635,16 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       WPXPropertyList arc;
       int largeArc = 0;
       int sweep = 1;
+
+      // Calculate side of chord that ellipse centre and control point fall on
+      double centreSide = (x3-x1)*(y0-y1) - (y3-y1)*(x0-x1);
+      double midSide = (x3-x1)*(y2-y1) - (y3-y1)*(x2-x1);
+      // Large arc if centre and control point are on the same side
+      if ((centreSide > 0 && midSide > 0) || (centreSide < 0 && midSide < 0))
+        largeArc = 1;
+      // Change direction depending of side of control point
+      if (midSide > 0)
+        sweep = 0;
 
       // Invert sweep direction if shape is flipped
       if (xform.flipX || xform.flipY)
