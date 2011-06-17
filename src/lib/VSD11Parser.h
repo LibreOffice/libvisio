@@ -73,6 +73,7 @@ private:
   void flipPoint(double &x, double &y, const XForm &xform);
   
   XForm _parseXForm(WPXInputStream *input);
+  XForm _transformXForm(const XForm &xform);
   void _flushCurrentPath(libwpg::WPGPaintInterface *painter);
 };
 

@@ -616,7 +616,7 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
     switch(header.chunkType)
     {
     case 0x9b: // XForm data      
-      xform = _parseXForm(&stream);
+      xform = _transformXForm(_parseXForm(&stream));
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x98:
@@ -742,14 +742,16 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
 
 void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream, libvisio::VSD11Parser::ChunkHeader &header)
 {
-  do
-  {
-    header.chunkType = readU32(&stream);
-  } while (header.chunkType == 0 && !stream.atEOS());
+  unsigned char tmpChar = 0;
+  while (!stream.atEOS() && !tmpChar)
+    tmpChar = readU8(&stream);
   
   if (stream.atEOS())
     return;
+  else
+    stream.seek(-1, WPX_SEEK_CUR);
 
+  header.chunkType = readU32(&stream);
   header.id = readU32(&stream);
   header.list = readU32(&stream);
 
@@ -834,15 +836,23 @@ libvisio::VSDXParser::XForm libvisio::VSD11Parser::_parseXForm(WPXInputStream *i
   xform.x = xform.pinX - xform.pinLocX;
   xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
     
-#if 0
+  return xform;
+}
+
+libvisio::VSDXParser::XForm libvisio::VSD11Parser::_transformXForm(const libvisio::VSDXParser::XForm &xform)
+{
+  libvisio::VSDXParser::XForm tmpXForm = xform;
   std::map<unsigned int, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
   if  (iter != m_groupXForms.end()) {
-    xform.x += iter->second.x;
-    xform.y += iter->second.y;
+    tmpXForm.pinX += iter->second.pinX;
+    tmpXForm.pinY += iter->second.pinY;
+	tmpXForm.pinLocX += iter->second.pinLocX;
+	tmpXForm.pinLocY += iter->second.pinLocY;
   }
-#endif
+  tmpXForm.x = tmpXForm.pinX - tmpXForm.pinLocX;
+  tmpXForm.y = m_pageHeight - tmpXForm.pinY + tmpXForm.pinLocY - tmpXForm.height;
 
-  return xform;
+  return tmpXForm;    
 }
 
 void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter)
