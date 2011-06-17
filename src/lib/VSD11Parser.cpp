@@ -615,6 +615,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
       rotatePoint(x2, y2, xform);
       rotatePoint(x3, y3, xform);
+      flipPoint(x2, y2, xform);
+      flipPoint(x3, y3, xform);
 
       double x1 = x;
       double y1 = y;
@@ -626,11 +628,19 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
       x = x3; y = y3;
       WPXPropertyList arc;
+      int largeArc = 0;
+      int sweep = 1;
+
+      // Invert sweep direction if shape is flipped
+      if (xform.flipX || xform.flipY)
+      {
+        sweep = sweep == 1 ? 0 : 1;
+      }
       arc.insert("svg:rx", rx);
       arc.insert("svg:ry", ry);
       arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + xform.angle * (180 / M_PI)));
-      arc.insert("libwpg:large-arc", 0);
-      arc.insert("libwpg:sweep", 1);
+      arc.insert("libwpg:large-arc", largeArc);
+      arc.insert("libwpg:sweep", sweep);
       arc.insert("svg:x", x);
       arc.insert("svg:y", y);
       arc.insert("libwpg:path-action", "A");
