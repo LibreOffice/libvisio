@@ -565,14 +565,14 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
         WPXPropertyList arc;
         double chord = sqrt(pow((y2 - y),2) + pow((x2 - x),2));
         double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
-        bool largeArc = fabs(bow) > radius ? 1 : 0;
-        bool sweep = bow < 0 ? 1 : 0;
+        int largeArc = fabs(bow) > radius ? 1 : 0;
+        int sweep = bow < 0 ? 1 : 0;
         x = x2; y = y2;
         arc.insert("svg:rx", radius);
         arc.insert("svg:ry", radius);
         arc.insert("libwpg:rotate", xform.angle * (180/M_PI));
-        arc.insert("svg:large-arc", largeArc);
-        arc.insert("svg:sweep", sweep);
+        arc.insert("libwpg:large-arc", largeArc);
+        arc.insert("libwpg:sweep", sweep);
         arc.insert("svg:x", x);
         arc.insert("svg:y", y);
         arc.insert("libwpg:path-action", "A");
