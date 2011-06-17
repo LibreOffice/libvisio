@@ -305,7 +305,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
   styleProps.insert("svg:stroke-color", "black");
   styleProps.insert("draw:fill", "none");
 
-  while (!stream.atEOS())
+  while (!done && !stream.atEOS())
   {
     getChunkHeader(stream, header);
     VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", header.chunkType));
@@ -320,7 +320,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
     switch (header.chunkType)
     {
     case 0x9b: // XForm data      
-      xform = _parseXForm(&stream);
+      xform = _transformXForm(_parseXForm(&stream));
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x83: // ShapeID
@@ -471,11 +471,18 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   {
     getChunkHeader(stream, header);
 
+    // Break once a chunk that is not nested in the shape is found
+    if (header.level < 2)
+    {
+      stream.seek(-19, WPX_SEEK_CUR);
+      break;
+    }
+
     VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", header.chunkType));
     switch (header.chunkType)
     {
     case 0x9b: // XForm data      
-      xform = _parseXForm(&stream);
+      xform = _transformXForm(_parseXForm(&stream));
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x85: // Line properties
@@ -612,6 +619,13 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
   while (!done && !stream.atEOS())
   {
     getChunkHeader(stream, header);
+
+    // Break once a chunk that is not nested in the foreign is found
+    if (header.level < 2)
+    {
+      stream.seek(-19, WPX_SEEK_CUR);
+      break;
+    }
 
     switch(header.chunkType)
     {
