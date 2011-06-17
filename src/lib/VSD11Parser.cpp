@@ -228,8 +228,7 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
 void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
   ChunkHeader header = {0};
-
-  //double x = 0; double y = 0;
+  m_groupXForms.clear();
 
   while (!stream.atEOS())
   {
@@ -247,7 +246,10 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength + header.trailer, WPX_SEEK_CUR);
       ChunkMethod chunkHandler = chunkHandlers[index].handler;
       if (chunkHandler)
+      {
+        m_currentShapeId = header.id;
         (this->*chunkHandler)(stream, painter);
+      }
       continue;
     }
 
@@ -322,7 +324,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x83: // ShapeID
-      shapeIDs.insert(readU32(&stream));
+      m_groupXForms[readU32(&stream)] = xform;
       stream.seek(header.dataLength+header.trailer-4, WPX_SEEK_CUR);
       break;
     case 0x85: // Line properties
@@ -832,6 +834,14 @@ libvisio::VSDXParser::XForm libvisio::VSD11Parser::_parseXForm(WPXInputStream *i
   xform.x = xform.pinX - xform.pinLocX;
   xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
     
+#if 0
+  std::map<unsigned int, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
+  if  (iter != m_groupXForms.end()) {
+    xform.x += iter->second.x;
+    xform.y += iter->second.y;
+  }
+#endif
+
   return xform;
 }
 
