@@ -379,6 +379,65 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
       break;
+    case 0x8c: // ArcTo
+    {
+      stream.seek(1, WPX_SEEK_CUR);
+      double x2 = readDouble(&stream) + xform.x;
+      stream.seek(1, WPX_SEEK_CUR);
+      double y2 = (xform.height - readDouble(&stream)) + xform.y;
+      stream.seek(1, WPX_SEEK_CUR);
+      double bow = readDouble(&stream);
+
+      rotatePoint(x2, y2, xform);
+      flipPoint(x2, y2, xform);
+
+      if (bow == 0)
+      {
+        x = x2; y = y2;
+        WPXPropertyList end;
+        end.insert("svg:x", x);
+        end.insert("svg:y", y);
+        end.insert("libwpg:path-action", "L");
+        m_currentGeometry[header.id] = end;
+      }
+      else
+      {
+        WPXPropertyList arc;
+        double chord = sqrt(pow((y2 - y),2) + pow((x2 - x),2));
+        double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
+        bool largeArc = fabs(bow) > radius ? 1 : 0;
+        bool sweep = bow < 0 ? 1 : 0;
+        x = x2; y = y2;
+        arc.insert("svg:rx", radius);
+        arc.insert("svg:ry", radius);
+        arc.insert("libwpg:rotate", xform.angle * (180/M_PI));
+        arc.insert("svg:large-arc", largeArc);
+        arc.insert("svg:sweep", sweep);
+        arc.insert("svg:x", x);
+        arc.insert("svg:y", y);
+        arc.insert("libwpg:path-action", "A");
+        m_currentGeometry[header.id] = arc;
+      }
+
+      stream.seek(header.dataLength+header.trailer-27, WPX_SEEK_CUR);
+    }
+      break;
+    case 0x8f: // Ellipse
+    {
+      WPXPropertyList ellipse;
+      stream.seek(1, WPX_SEEK_CUR);
+      double rx = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      double ry = readDouble(&stream);
+      ellipse.insert("svg:rx", rx);
+      ellipse.insert("svg:ry", ry);
+      ellipse.insert("svg:cx", xform.x+rx);
+      ellipse.insert("svg:cy", xform.y+ry);
+      ellipse.insert("libwpg:rotate", xform.angle * (180/M_PI));
+      painter->drawEllipse(ellipse);
+      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
+    }
+    break;
     default:
       stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
     }
