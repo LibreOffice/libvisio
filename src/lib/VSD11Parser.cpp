@@ -45,7 +45,7 @@ const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamH
   {0xb, "Name Idx", 0},
   {0x14, "Trailer, 0"},
   {0x15, "Page", &libvisio::VSD11Parser::handlePage},
-  {0x16, "Colors"},
+  {0x16, "Colors", &libvisio::VSD11Parser::handleColours},
   {0x17, "??? seems to have no data", 0},
   {0x18, "FontFaces (ver.11)", 0},
   {0x1a, "Styles", 0},
@@ -284,6 +284,25 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
                      header.dataLength, header.dataLength));
       stream.seek(header.dataLength, WPX_SEEK_CUR);
     }
+  }
+}
+
+void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
+{
+  stream.seek(6, WPX_SEEK_SET);
+  unsigned int numColours = readU8(&stream);
+  Colour tmpColour = {0};
+
+  stream.seek(1, WPX_SEEK_CUR);
+
+  for (unsigned int i = 0; i < numColours; i++)
+  {
+    tmpColour.r = readU8(&stream);
+    tmpColour.g = readU8(&stream);
+    tmpColour.b = readU8(&stream);
+    tmpColour.a = readU8(&stream);
+
+    m_colours.push_back(tmpColour);
   }
 }
 

@@ -50,6 +50,7 @@ private:
   // Stream handlers
   void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  void handleColours(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 
   // Chunk handlers
   void groupChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
@@ -68,6 +69,14 @@ private:
     unsigned int trailer; // Derived
   };
 
+  struct Colour
+  {
+    unsigned int r;
+    unsigned int g;
+    unsigned int b;
+    unsigned int a;
+  };
+
   void getChunkHeader(VSDInternalStream &stream, ChunkHeader &header);
   void rotatePoint(double &x, double &y, const XForm &xform);
   void flipPoint(double &x, double &y, const XForm &xform);
@@ -75,6 +84,8 @@ private:
   XForm _parseXForm(WPXInputStream *input);
   XForm _transformXForm(const XForm &xform);
   void _flushCurrentPath(libwpg::WPGPaintInterface *painter);
+
+  std::vector<Colour> m_colours;
 };
 
 } // namespace libvisio
