@@ -506,8 +506,19 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       xform = _transformXForm(_parseXForm(&stream));
       break;
     case 0x85: // Line properties
+    {
       stream.seek(1, WPX_SEEK_CUR);
-      styleProps.insert("svg:stroke-width", readDouble(&stream));   
+      styleProps.insert("svg:stroke-width", readDouble(&stream));
+      stream.seek(1, WPX_SEEK_CUR);
+      Colour c = {0};
+      c.r = readU8(&stream);
+      c.g = readU8(&stream);
+      c.b = readU8(&stream);
+      c.a = readU8(&stream);
+      std::stringstream ss;
+      ss << "RGB(" << c.r << ", " << c.g << ", " << c.b << ")";
+      styleProps.insert("svg:stroke-color", ss.str().c_str());
+    }
       break;
     case 0x6c: // GeomList
     {
