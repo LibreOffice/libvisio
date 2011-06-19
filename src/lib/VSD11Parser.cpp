@@ -477,6 +477,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   ChunkHeader header = {0};
   bool done = false;
   int geomCount = -1;
+  unsigned long streamPos = 0;
 
   double x = 0; double y = 0;
 
@@ -489,6 +490,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   while (!done && !stream.atEOS())
   {
     getChunkHeader(stream, header);
+    streamPos = stream.tell();
 
     // Break once a chunk that is not nested in the shape is found
     if (header.level < 2)
@@ -502,12 +504,10 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     {
     case 0x9b: // XForm data      
       xform = _transformXForm(_parseXForm(&stream));
-      stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
       break;
     case 0x85: // Line properties
       stream.seek(1, WPX_SEEK_CUR);
-      styleProps.insert("svg:stroke-width", readDouble(&stream));
-      stream.seek(header.dataLength+header.trailer-9, WPX_SEEK_CUR);      
+      styleProps.insert("svg:stroke-width", readDouble(&stream));   
       break;
     case 0x6c: // GeomList
     {
@@ -517,8 +517,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       uint32_t childrenListLength = readU32(&stream);
       stream.seek(subHeaderLength, WPX_SEEK_CUR);
       for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-        m_currentGeometryOrder.push_back(readU32(&stream)); 
-      stream.seek(header.dataLength+header.trailer-8-childrenListLength-subHeaderLength, WPX_SEEK_CUR);
+        m_currentGeometryOrder.push_back(readU32(&stream));
       geomCount = header.list;
       continue; // Avoid geomCount decrement below
     }
@@ -536,8 +535,6 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       end.insert("svg:y", y); 
       end.insert("libwpg:path-action", "M");
       m_currentGeometry[header.id] = end;
-
-      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
       break;
     case 0x8b: // LineTo
@@ -554,8 +551,6 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       end.insert("svg:y", y);
       end.insert("libwpg:path-action", "L");
       m_currentGeometry[header.id] = end;
-
-      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
     break;
     case 0x8c: // ArcTo
@@ -598,8 +593,6 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
         arc.insert("libwpg:path-action", "A");
         m_currentGeometry[header.id] = arc;
       }
-
-      stream.seek(header.dataLength+header.trailer-27, WPX_SEEK_CUR);
     }
       break;
     case 0x8f: // Ellipse
@@ -615,7 +608,6 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       ellipse.insert("svg:cy", xform.y+ry);
       ellipse.insert("libwpg:rotate", xform.angle * (180/M_PI));
       painter->drawEllipse(ellipse);
-      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
     }
     break;
     case 0x90: // Elliptical ArcTo
@@ -674,15 +666,13 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       arc.insert("svg:y", y);
       arc.insert("libwpg:path-action", "A");
       m_currentGeometry[header.id] = arc;
-
-      stream.seek(header.dataLength + header.trailer - 54, WPX_SEEK_CUR);
     }
       break;
-    default:
-      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
     }
     if (geomCount > 0) geomCount--;
     if (geomCount == 0) done = true;
+
+    stream.seek(header.dataLength+header.trailer-(stream.tell()-streamPos), WPX_SEEK_CUR);
   }
   _flushCurrentPath(painter);
 }
