@@ -39,6 +39,13 @@ static unsigned bitmapId = 0;
 #define M_PI 3.14159265358979323846
 #endif
 
+const ::WPXString libvisio::VSD11Parser::getColourString(const struct Colour &c) const
+{
+	::WPXString sColour;
+	sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
+	return sColour;
+}
+
 const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] =
 {
   {0xa, "Name", 0},
@@ -523,9 +530,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       c.g = readU8(&stream);
       c.b = readU8(&stream);
       c.a = readU8(&stream);
-      std::stringstream ss;
-      ss << "RGB(" << c.r << ", " << c.g << ", " << c.b << ")";
-      styleProps.insert("svg:stroke-color", ss.str().c_str());
+      styleProps.insert("svg:stroke-color", getColourString(c));
     }
       break;
     case 0x86: // Fill & Shadow properties
@@ -535,11 +540,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       unsigned int fillPattern = readU8(&stream);
       if (fillPattern == 1)
       {
-        std::stringstream colourString;
-        colourString << "RGB(" << m_colours[colourIndexFG].r << ", " << 
-          m_colours[colourIndexFG].g << ", " << m_colours[colourIndexFG].b << ")";
         styleProps.insert("draw:fill", "solid");
-        styleProps.insert("draw:fill-color", colourString.str().c_str());
+        styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
       }
     }
       break;

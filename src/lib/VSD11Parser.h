@@ -84,6 +84,8 @@ private:
   XForm _parseXForm(WPXInputStream *input);
   XForm _transformXForm(const XForm &xform);
   void _flushCurrentPath(libwpg::WPGPaintInterface *painter);
+  
+  const ::WPXString getColourString(const Colour& c) const;
 
   std::vector<Colour> m_colours;
 };
