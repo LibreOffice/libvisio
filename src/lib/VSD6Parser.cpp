@@ -285,12 +285,12 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
         binaryData.append(buffer, tmpBytesRead);
 
         WPXPropertyList foreignProps;
-        foreignProps.insert("svg:width", xform.width);
-        foreignProps.insert("svg:height", xform.height);
-        foreignProps.insert("svg:x", xform.pinX - xform.pinLocX);
+        foreignProps.insert("svg:width", m_scale*xform.width);
+        foreignProps.insert("svg:height", m_scale*xform.height);
+        foreignProps.insert("svg:x", m_scale*(xform.pinX - xform.pinLocX));
         // Y axis starts at the bottom not top
-        foreignProps.insert("svg:y", pageProps["svg:height"]->getDouble() 
-        - xform.pinY + xform.pinLocY - xform.height);
+        foreignProps.insert("svg:y", m_scale*(pageProps["svg:height"]->getDouble() 
+        - xform.pinY + xform.pinLocY - xform.height));
 
         if (foreignType == 1)
         {
@@ -321,12 +321,12 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
-      double width = readDouble(&stream);
+      m_pageWidth = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR);
-      double height = readDouble(&stream);
+      m_pageHeight = readDouble(&stream);
 
-      pageProps.insert("svg:width", width);
-      pageProps.insert("svg:height", height);
+      pageProps.insert("svg:width", m_scale*m_pageWidth);
+      pageProps.insert("svg:height", m_scale*m_pageHeight);
       if (m_isPageStarted)
         painter->endGraphics();
       painter->startGraphics(pageProps);

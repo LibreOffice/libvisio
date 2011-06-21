@@ -260,22 +260,22 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
-      double width = readDouble(&stream);
+      m_pageWidth = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR);
-      double height = readDouble(&stream);
-      m_pageWidth = width;
-      m_pageHeight = height;
-
+      m_pageHeight = readDouble(&stream);
+	  stream.seek(19, WPX_SEEK_CUR);
+	  m_scale = readDouble(&stream);
+	  
       WPXPropertyList pageProps;
-      pageProps.insert("svg:width", width);
-      pageProps.insert("svg:height", height);
+      pageProps.insert("svg:width", m_scale*m_pageWidth);
+      pageProps.insert("svg:height", m_scale*m_pageHeight);
 
       if (m_isPageStarted)
         painter->endGraphics();
       painter->startGraphics(pageProps);
       m_isPageStarted = true;
 
-      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);      
+      stream.seek(header.dataLength+header.trailer-45, WPX_SEEK_CUR);      
     }
     else // Skip chunk
     {
@@ -320,7 +320,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
 
   // Reset style
   styleProps.clear();
-  styleProps.insert("svg:stroke-width", 0.0138889);
+  styleProps.insert("svg:stroke-width", m_scale*0.0138889);
   styleProps.insert("svg:stroke-color", "black");
   styleProps.insert("draw:fill", "none");
 
@@ -348,7 +348,7 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       break;
     case 0x85: // Line properties
       stream.seek(1, WPX_SEEK_CUR);
-      styleProps.insert("svg:stroke-width", readDouble(&stream));
+      styleProps.insert("svg:stroke-width", m_scale*readDouble(&stream));
       stream.seek(header.dataLength+header.trailer-9, WPX_SEEK_CUR);      
       break;
     case 0x6c: // GeomList
@@ -374,8 +374,8 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       rotatePoint(x, y, xform);
       flipPoint(x, y, xform);
 
-      end.insert("svg:x", x);
-      end.insert("svg:y", y); 
+      end.insert("svg:x", m_scale*x);
+      end.insert("svg:y", m_scale*y); 
       end.insert("libwpg:path-action", "M");
       m_currentGeometry[header.id] = end;
 
@@ -392,8 +392,8 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       rotatePoint(x, y, xform);
       flipPoint(x, y, xform);
 
-      end.insert("svg:x", x);
-      end.insert("svg:y", y);
+      end.insert("svg:x", m_scale*x);
+      end.insert("svg:y", m_scale*y);
       end.insert("libwpg:path-action", "L");
       m_currentGeometry[header.id] = end;
 
@@ -416,8 +416,8 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       {
         x = x2; y = y2;
         WPXPropertyList end;
-        end.insert("svg:x", x);
-        end.insert("svg:y", y);
+        end.insert("svg:x", m_scale*x);
+        end.insert("svg:y", m_scale*y);
         end.insert("libwpg:path-action", "L");
         m_currentGeometry[header.id] = end;
       }
@@ -429,13 +429,13 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
         bool largeArc = fabs(bow) > radius ? 1 : 0;
         bool sweep = bow < 0 ? 1 : 0;
         x = x2; y = y2;
-        arc.insert("svg:rx", radius);
-        arc.insert("svg:ry", radius);
+        arc.insert("svg:rx", m_scale*radius);
+        arc.insert("svg:ry", m_scale*radius);
         arc.insert("libwpg:rotate", xform.angle * (180/M_PI));
         arc.insert("svg:large-arc", largeArc);
         arc.insert("svg:sweep", sweep);
-        arc.insert("svg:x", x);
-        arc.insert("svg:y", y);
+        arc.insert("svg:x", m_scale*x);
+        arc.insert("svg:y", m_scale*y);
         arc.insert("libwpg:path-action", "A");
         m_currentGeometry[header.id] = arc;
       }
@@ -447,16 +447,24 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
     {
       WPXPropertyList ellipse;
       stream.seek(1, WPX_SEEK_CUR);
-      double rx = readDouble(&stream);
+      double cx = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR);
-      double ry = readDouble(&stream);
-      ellipse.insert("svg:rx", rx);
-      ellipse.insert("svg:ry", ry);
-      ellipse.insert("svg:cx", xform.x+rx);
-      ellipse.insert("svg:cy", xform.y+ry);
+      double cy = readDouble(&stream);
+	  stream.seek(1, WPX_SEEK_CUR);
+	  double aa = readDouble(&stream);
+	  stream.seek(1, WPX_SEEK_CUR);
+	  /* double bb = */ readDouble(&stream);
+	  stream.seek(1, WPX_SEEK_CUR);
+	  /* double cc = */ readDouble(&stream);
+	  stream.seek(1, WPX_SEEK_CUR);
+	  double dd = readDouble(&stream);
+      ellipse.insert("svg:rx", m_scale*(aa-cx));
+      ellipse.insert("svg:ry", m_scale*(dd-cy));
+      ellipse.insert("svg:cx", m_scale*(xform.x+cx));
+      ellipse.insert("svg:cy", m_scale*(xform.y+cy));
       ellipse.insert("libwpg:rotate", xform.angle * (180/M_PI));
       painter->drawEllipse(ellipse);
-      stream.seek(header.dataLength+header.trailer-18, WPX_SEEK_CUR);
+      stream.seek(header.dataLength+header.trailer-54, WPX_SEEK_CUR);
     }
     break;
     default:
@@ -483,7 +491,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
   // Reset style
   styleProps.clear();
-  styleProps.insert("svg:stroke-width", 0.0138889);
+  styleProps.insert("svg:stroke-width", m_scale*0.0138889);
   styleProps.insert("svg:stroke-color", "black");
   styleProps.insert("draw:fill", "none");
 
@@ -508,7 +516,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     case 0x85: // Line properties
     {
       stream.seek(1, WPX_SEEK_CUR);
-      styleProps.insert("svg:stroke-width", readDouble(&stream));
+      styleProps.insert("svg:stroke-width", m_scale*readDouble(&stream));
       stream.seek(1, WPX_SEEK_CUR);
       Colour c = {0};
       c.r = readU8(&stream);
@@ -542,8 +550,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       rotatePoint(x, y, xform);
       flipPoint(x, y, xform);
 
-      end.insert("svg:x", x);
-      end.insert("svg:y", y); 
+      end.insert("svg:x", m_scale*x);
+      end.insert("svg:y", m_scale*y); 
       end.insert("libwpg:path-action", "M");
       m_currentGeometry[header.id] = end;
     }
@@ -558,8 +566,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       rotatePoint(x, y, xform);
       flipPoint(x, y, xform);
 
-      end.insert("svg:x", x);
-      end.insert("svg:y", y);
+      end.insert("svg:x", m_scale*x);
+      end.insert("svg:y", m_scale*y);
       end.insert("libwpg:path-action", "L");
       m_currentGeometry[header.id] = end;
     }
@@ -580,8 +588,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       {
         x = x2; y = y2;
         WPXPropertyList end;
-        end.insert("svg:x", x);
-        end.insert("svg:y", y);
+        end.insert("svg:x", m_scale*x);
+        end.insert("svg:y", m_scale*y);
         end.insert("libwpg:path-action", "L");
         m_currentGeometry[header.id] = end;
       }
@@ -594,13 +602,13 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
         int largeArc = fabs(bow) > radius ? 1 : 0;
         int sweep = bow < 0 ? 1 : 0;
         x = x2; y = y2;
-        arc.insert("svg:rx", radius);
-        arc.insert("svg:ry", radius);
+        arc.insert("svg:rx", m_scale*radius);
+        arc.insert("svg:ry", m_scale*radius);
         arc.insert("libwpg:rotate", xform.angle * (180/M_PI));
         arc.insert("libwpg:large-arc", largeArc);
         arc.insert("libwpg:sweep", sweep);
-        arc.insert("svg:x", x);
-        arc.insert("svg:y", y);
+        arc.insert("svg:x", m_scale*x);
+        arc.insert("svg:y", m_scale*y);
         arc.insert("libwpg:path-action", "A");
         m_currentGeometry[header.id] = arc;
       }
@@ -610,15 +618,24 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     {
       WPXPropertyList ellipse;
       stream.seek(1, WPX_SEEK_CUR);
-      double rx = readDouble(&stream);
+      double cx = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR);
-      double ry = readDouble(&stream);
-      ellipse.insert("svg:rx", rx);
-      ellipse.insert("svg:ry", ry);
-      ellipse.insert("svg:cx", xform.x+rx);
-      ellipse.insert("svg:cy", xform.y+ry);
+      double cy = readDouble(&stream);
+	  stream.seek(1, WPX_SEEK_CUR);
+	  double aa = readDouble(&stream);
+	  stream.seek(1, WPX_SEEK_CUR);
+	  /* double bb = */ readDouble(&stream);
+	  stream.seek(1, WPX_SEEK_CUR);
+	  /* double cc = */ readDouble(&stream);
+	  stream.seek(1, WPX_SEEK_CUR);
+	  double dd = readDouble(&stream);
+      ellipse.insert("svg:rx", m_scale*(aa-cx));
+      ellipse.insert("svg:ry", m_scale*(dd-cy));
+      ellipse.insert("svg:cx", m_scale*(xform.x+cx));
+      ellipse.insert("svg:cy", m_scale*(xform.y+cy));
       ellipse.insert("libwpg:rotate", xform.angle * (180/M_PI));
       painter->drawEllipse(ellipse);
+      stream.seek(header.dataLength+header.trailer-54, WPX_SEEK_CUR);
     }
     break;
     case 0x90: // Elliptical ArcTo
@@ -668,13 +685,13 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       if (midSide > 0)
         sweep = 0;
 
-      arc.insert("svg:rx", rx);
-      arc.insert("svg:ry", ry);
+      arc.insert("svg:rx", m_scale*rx);
+      arc.insert("svg:ry", m_scale*ry);
       arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + xform.angle * (180 / M_PI)));
       arc.insert("libwpg:large-arc", largeArc);
       arc.insert("libwpg:sweep", sweep);
-      arc.insert("svg:x", x);
-      arc.insert("svg:y", y);
+      arc.insert("svg:x", m_scale*x);
+      arc.insert("svg:y", m_scale*y);
       arc.insert("libwpg:path-action", "A");
       m_currentGeometry[header.id] = arc;
     }
@@ -783,12 +800,12 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
 #endif
 
         WPXPropertyList foreignProps;
-        foreignProps.insert("svg:width", xform.width);
-        foreignProps.insert("svg:height", xform.height);
-        foreignProps.insert("svg:x", xform.pinX - xform.pinLocX);
+        foreignProps.insert("svg:width", m_scale*xform.width);
+        foreignProps.insert("svg:height", m_scale*xform.height);
+        foreignProps.insert("svg:x", m_scale*(xform.pinX - xform.pinLocX));
         // Y axis starts at the bottom not top
-        foreignProps.insert("svg:y", m_pageHeight - 
-                            xform.pinY + xform.pinLocY - xform.height);
+        foreignProps.insert("svg:y", m_scale*(m_pageHeight - 
+                            xform.pinY + xform.pinLocY - xform.height));
 
         if (foreignType == 1)
         {

@@ -58,11 +58,12 @@ protected:
   bool m_isPageStarted;
   double m_pageWidth;
   double m_pageHeight;
+  double m_scale;
   std::vector<unsigned int> m_currentGeometryOrder;
   std::map<unsigned int, WPXPropertyList> m_currentGeometry;
   std::map<unsigned int, WPXPropertyListVector> m_currentComplexGeometry;
   std::map<unsigned int, XForm> m_groupXForms;
-  unsigned m_currentShapeId;  
+  unsigned m_currentShapeId;
 };
 
 } // namespace libvisio
