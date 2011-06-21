@@ -263,9 +263,9 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       m_pageWidth = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR);
       m_pageHeight = readDouble(&stream);
-	  stream.seek(19, WPX_SEEK_CUR);
-	  m_scale = readDouble(&stream);
-	  
+      stream.seek(19, WPX_SEEK_CUR);
+      m_scale = readDouble(&stream);
+      
       WPXPropertyList pageProps;
       pageProps.insert("svg:width", m_scale*m_pageWidth);
       pageProps.insert("svg:height", m_scale*m_pageHeight);
@@ -450,14 +450,14 @@ void libvisio::VSD11Parser::groupChunk(VSDInternalStream &stream, libwpg::WPGPai
       double cx = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR);
       double cy = readDouble(&stream);
-	  stream.seek(1, WPX_SEEK_CUR);
-	  double aa = readDouble(&stream);
-	  stream.seek(1, WPX_SEEK_CUR);
-	  /* double bb = */ readDouble(&stream);
-	  stream.seek(1, WPX_SEEK_CUR);
-	  /* double cc = */ readDouble(&stream);
-	  stream.seek(1, WPX_SEEK_CUR);
-	  double dd = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      double aa = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      /* double bb = */ readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      /* double cc = */ readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      double dd = readDouble(&stream);
       ellipse.insert("svg:rx", m_scale*(aa-cx));
       ellipse.insert("svg:ry", m_scale*(dd-cy));
       ellipse.insert("svg:cx", m_scale*(xform.x+cx));
@@ -636,14 +636,14 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       double cx = readDouble(&stream);
       stream.seek(1, WPX_SEEK_CUR);
       double cy = readDouble(&stream);
-	  stream.seek(1, WPX_SEEK_CUR);
-	  double aa = readDouble(&stream);
-	  stream.seek(1, WPX_SEEK_CUR);
-	  /* double bb = */ readDouble(&stream);
-	  stream.seek(1, WPX_SEEK_CUR);
-	  /* double cc = */ readDouble(&stream);
-	  stream.seek(1, WPX_SEEK_CUR);
-	  double dd = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      double aa = readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      /* double bb = */ readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      /* double cc = */ readDouble(&stream);
+      stream.seek(1, WPX_SEEK_CUR);
+      double dd = readDouble(&stream);
       ellipse.insert("svg:rx", m_scale*(aa-cx));
       ellipse.insert("svg:ry", m_scale*(dd-cy));
       ellipse.insert("svg:cx", m_scale*(xform.x+cx));
@@ -1005,7 +1005,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
         {
           startX = x;
           startY = y;
-		  firstPoint = false;
+          firstPoint = false;
         }
         else if (!broken && ((iter->second)["libwpg:path-action"]->getStr() == "M"))
           broken = true;
