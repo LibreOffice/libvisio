@@ -528,6 +528,21 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       styleProps.insert("svg:stroke-color", ss.str().c_str());
     }
       break;
+    case 0x86: // Fill & Shadow properties
+    {
+      unsigned int colourIndexFG = readU8(&stream);
+      stream.seek(9, WPX_SEEK_CUR);
+      unsigned int fillPattern = readU8(&stream);
+      if (fillPattern == 1)
+      {
+        std::stringstream colourString;
+        colourString << "RGB(" << m_colours[colourIndexFG].r << ", " << 
+          m_colours[colourIndexFG].g << ", " << m_colours[colourIndexFG].b << ")";
+        styleProps.insert("draw:fill", "solid");
+        styleProps.insert("draw:fill-color", colourString.str().c_str());
+      }
+    }
+      break;
     case 0x6c: // GeomList
     {
       _flushCurrentPath(painter);
@@ -985,9 +1000,9 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
        iter = m_currentGeometry.find(m_currentGeometryOrder[i]);
        if (iter != m_currentGeometry.end())
        {
-          x = (iter->second)["svg:x"]->getDouble();
-          y = (iter->second)["svg:y"]->getDouble();
-          pathAction = (iter->second)["libwpg:path-action"]->getStr().cstr();
+         x = (iter->second)["svg:x"]->getDouble();
+         y = (iter->second)["svg:y"]->getDouble();
+         pathAction = (iter->second)["libwpg:path-action"]->getStr().cstr();
           if (firstPoint)
           {
             startX = x;
