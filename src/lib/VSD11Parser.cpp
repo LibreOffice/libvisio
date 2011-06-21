@@ -986,7 +986,6 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
 {
   double startX = 0; double startY = 0;
   double x = 0; double y = 0;
-  std::string pathAction;
   bool broken = false;
   bool firstPoint = true;
 
@@ -997,40 +996,38 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
   {
     for (unsigned i = 0; i < m_currentGeometryOrder.size(); i++)
     {
-       iter = m_currentGeometry.find(m_currentGeometryOrder[i]);
-       if (iter != m_currentGeometry.end())
-       {
-         x = (iter->second)["svg:x"]->getDouble();
-         y = (iter->second)["svg:y"]->getDouble();
-         pathAction = (iter->second)["libwpg:path-action"]->getStr().cstr();
-          if (firstPoint)
-          {
-            startX = x;
-            startY = y;
-          }
-          else if (!broken && pathAction == "M")
-          {
-            broken = true;
-          }
+      iter = m_currentGeometry.find(m_currentGeometryOrder[i]);
+      if (iter != m_currentGeometry.end())
+      {
+        x = (iter->second)["svg:x"]->getDouble();
+        y = (iter->second)["svg:y"]->getDouble();
+        if (firstPoint)
+        {
+          startX = x;
+          startY = y;
+		  firstPoint = false;
+        }
+        else if (!broken && ((iter->second)["libwpg:path-action"]->getStr() == "M"))
+          broken = true;
 
-          path.append(iter->second);
-       }
-       else
-       {
-         itervec = m_currentComplexGeometry.find(m_currentGeometryOrder[i]);
-         if (itervec != m_currentComplexGeometry.end())
-         {
-            WPXPropertyListVector::Iter iter2(itervec->second);
-            for (; iter2.next();)
-            {
-              path.append(iter2());
+        path.append(iter->second);
+      }
+      else
+      {
+        itervec = m_currentComplexGeometry.find(m_currentGeometryOrder[i]);
+        if (itervec != m_currentComplexGeometry.end())
+        {
+          WPXPropertyListVector::Iter iter2(itervec->second);
+          for (; iter2.next();)
+          {
+             path.append(iter2());
 
-              // Only interested in last point of complex geometry
-              x = (iter2())["svg:x"]->getDouble();
-              y = (iter2())["svg:y"]->getDouble();
-            }
-         }
-       }
+             // Only interested in last point of complex geometry
+             x = (iter2())["svg:x"]->getDouble();
+             y = (iter2())["svg:y"]->getDouble();
+          }
+        }
+      }
     }
 
     // Last geom
@@ -1038,7 +1035,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
     {
       broken = true;
     }
-    if (!broken)
+    if (!broken && path.count())
     {
       WPXPropertyList closedPath;
       closedPath.insert("libwpg:path-action", "Z");
