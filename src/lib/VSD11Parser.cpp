@@ -988,5 +988,6 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
   if (path.count())
     painter->drawPath(path);
   m_currentGeometry.clear();
+  m_currentComplexGeometry.clear();
   m_currentGeometryOrder.clear();
 }
