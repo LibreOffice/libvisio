@@ -941,8 +941,8 @@ libvisio::VSDXParser::XForm libvisio::VSD11Parser::_transformXForm(const libvisi
   if  (iter != m_groupXForms.end()) {
     tmpXForm.pinX += iter->second.pinX;
     tmpXForm.pinY += iter->second.pinY;
-	tmpXForm.pinLocX += iter->second.pinLocX;
-	tmpXForm.pinLocY += iter->second.pinLocY;
+    tmpXForm.pinLocX += iter->second.pinLocX;
+    tmpXForm.pinLocY += iter->second.pinLocY;
   }
   tmpXForm.x = tmpXForm.pinX - tmpXForm.pinLocX;
   tmpXForm.y = m_pageHeight - tmpXForm.pinY + tmpXForm.pinLocY - tmpXForm.height;
@@ -954,6 +954,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
 {
   WPXPropertyListVector path;
   std::map<unsigned int, WPXPropertyList>::iterator iter;
+  std::map<unsigned int, WPXPropertyListVector>::iterator itervec;
   if (m_currentGeometryOrder.size())
   {
     for (unsigned i = 0; i < m_currentGeometryOrder.size(); i++)
@@ -961,12 +962,28 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
        iter = m_currentGeometry.find(m_currentGeometryOrder[i]);
        if (iter != m_currentGeometry.end())
           path.append(iter->second);
+       else
+       {
+         itervec = m_currentComplexGeometry.find(m_currentGeometryOrder[i]);
+         if (itervec != m_currentComplexGeometry.end())
+         {
+            WPXPropertyListVector::Iter iter2(itervec->second);
+            for (; iter2.next();)
+              path.append(iter2());
+         }
+       }
     }
   }
   else
   { 
     for (iter=m_currentGeometry.begin(); iter != m_currentGeometry.end(); iter++)
       path.append(iter->second);
+    for (itervec=m_currentComplexGeometry.begin(); itervec != m_currentComplexGeometry.end(); itervec++)
+    {
+      WPXPropertyListVector::Iter iter2(itervec->second);
+      for (; iter2.next();)
+        path.append(iter2());
+    }
   }
   if (path.count())
     painter->drawPath(path);

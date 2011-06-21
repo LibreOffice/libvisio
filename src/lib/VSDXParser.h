@@ -60,6 +60,7 @@ protected:
   double m_pageHeight;
   std::vector<unsigned int> m_currentGeometryOrder;
   std::map<unsigned int, WPXPropertyList> m_currentGeometry;
+  std::map<unsigned int, WPXPropertyListVector> m_currentComplexGeometry;
   std::map<unsigned int, XForm> m_groupXForms;
   unsigned m_currentShapeId;  
 };
