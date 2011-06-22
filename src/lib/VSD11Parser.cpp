@@ -597,11 +597,20 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
   double x = 0; double y = 0;
 
+  // Geometry flags
+  bool noLine = false;
+  bool noFill = false;
+  bool noShow = false;
+
+  // Save line colour and fill type
+  std::string lineColour = "black";
+  std::string fillType = "none";
+
   // Reset style
   styleProps.clear();
   styleProps.insert("svg:stroke-width", m_scale*0.0138889);
-  styleProps.insert("svg:stroke-color", "black");
-  styleProps.insert("draw:fill", "none");
+  styleProps.insert("svg:stroke-color", lineColour.c_str());
+  styleProps.insert("draw:fill", fillType.c_str());
   styleProps.insert("svg:stroke-dasharray", "solid");
 
   while (!stream.atEOS())
@@ -614,6 +623,13 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     {
       stream.seek(-19, WPX_SEEK_CUR);
       break;
+    }
+
+    // Until the next geometry chunk, don't parse if geometry is not to be shown
+    if (header.chunkType != 0x6c && noShow)
+    {
+      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
+      continue;
     }
 
     VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", header.chunkType));
@@ -632,7 +648,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       c.g = readU8(&stream);
       c.b = readU8(&stream);
       c.a = readU8(&stream);
-      styleProps.insert("svg:stroke-color", getColourString(c));
+      lineColour = getColourString(c).cstr();
+      styleProps.insert("svg:stroke-color", lineColour.c_str());
       unsigned int linePattern = readU8(&stream);
       const char* patterns[] = {
         /*  0 */  "solid",
@@ -675,11 +692,13 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       unsigned int fillPattern = readU8(&stream);
       if (fillPattern == 1)
       {
+        fillType = "solid";
         styleProps.insert("draw:fill", "solid");
         styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
       }
       else if (fillPattern >= 25 && fillPattern <= 34)
       {
+        fillType = "gradient";
         styleProps.insert("draw:fill", "gradient");
         WPXPropertyList startColour;
         startColour.insert("svg:stop-color",
@@ -747,8 +766,27 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(subHeaderLength, WPX_SEEK_CUR);
       for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
         m_currentGeometryOrder.push_back(readU32(&stream));
+      noShow = false;
       break;
+    }    
+    case 0x89: // Geometry
+    {
+      unsigned int geomFlags = readU8(&stream);
+      noFill = ((geomFlags & 1) == 1);
+      noLine = ((geomFlags & 2) == 2);
+      noShow = ((geomFlags & 4) == 4);
+      if (noLine)
+        styleProps.insert("svg:stroke-color", "none");
+      else
+        styleProps.insert("svg:stroke-color", lineColour.c_str());
+      if (noFill)
+        styleProps.insert("svg:fill", "none");
+      else
+        styleProps.insert("svg:fill", fillType.c_str());
+      VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, noFill, noLine, noShow));
+      painter->setStyle(styleProps, gradientProps);
     }
+      break;
     case 0x8a: // MoveTo
     {
       WPXPropertyList end;
