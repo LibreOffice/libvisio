@@ -310,22 +310,8 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
 			m_outputSink << "stroke-opacity: " << doubleToString(m_style["svg:stroke-opacity"]->getDouble()) << "; ";
 	}
 
-	if(!m_style["draw:stroke"] || !(m_style["draw:stroke"]->getStr() == "solid"))
-	{
-#if 0
-		if (m_dashArray.count())
-		{
-			m_outputSink << "stroke-dasharray: ";
-			for(unsigned i = 0; i < m_dashArray.count(); i++)
-			{
-				m_outputSink << doubleToString(72*m_dashArray.at(i)*m_style["svg:stroke_width"]->getDouble());
-				if(i < m_dashArray.count()-1)
-					m_outputSink << ", ";
-			}
-			m_outputSink << "; ";
-		}
-#endif
-	}
+	if (m_style["svg:stroke-dasharray"])
+		m_outputSink << "stroke-dasharray: " << m_style["svg:stroke-dasharray"]->getStr().cstr() <<"; ";
 
 	if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "none")
 		m_outputSink << "fill: none; ";
