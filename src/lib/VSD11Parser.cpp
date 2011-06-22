@@ -602,9 +602,11 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   bool noFill = false;
   bool noShow = false;
 
-  // Save line colour and fill type
+  // Save line colour and pattern, fill type and pattern
   std::string lineColour = "black";
   std::string fillType = "none";
+  unsigned int linePattern = 1; // same as "solid"
+  unsigned int fillPattern = 1; // same as "solid"
 
   // Reset style
   styleProps.clear();
@@ -650,9 +652,9 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       c.a = readU8(&stream);
       lineColour = getColourString(c).cstr();
       styleProps.insert("svg:stroke-color", lineColour.c_str());
-      unsigned int linePattern = readU8(&stream);
+      linePattern = readU8(&stream);
       const char* patterns[] = {
-        /*  0 */  "solid",
+        /*  0 */  "none",
         /*  1 */  "solid",
         /*  2 */  "6, 3",
         /*  3 */  "1, 3",
@@ -677,10 +679,10 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
         /* 22 */  "27, 5, 11, 5, 11, 5",
         /* 23 */  "2, 1"
       };
-      if (linePattern > 1 && linePattern < sizeof(patterns)/sizeof(patterns[0]))
+      if (linePattern > 0 && linePattern < sizeof(patterns)/sizeof(patterns[0]))
         styleProps.insert("svg:stroke-dasharray", patterns[linePattern]);
-      else
-        styleProps.insert("svg:stroke-dasharray", "solid");
+      // FIXME: later it will require special treatment for custom line patterns
+      // patt ID is 0xfe, link to stencil name is in 'Line' blocks
     }
       break;
     case 0x86: // Fill & Shadow properties
@@ -689,7 +691,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(4, WPX_SEEK_CUR);
       unsigned int colourIndexBG = readU8(&stream);
       stream.seek(4, WPX_SEEK_CUR);
-      unsigned int fillPattern = readU8(&stream);
+      fillPattern = readU8(&stream);
       if (fillPattern == 1)
       {
         fillType = "solid";
@@ -775,11 +777,11 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       noFill = ((geomFlags & 1) == 1);
       noLine = ((geomFlags & 2) == 2);
       noShow = ((geomFlags & 4) == 4);
-      if (noLine)
+      if (noLine || linePattern == 0)
         styleProps.insert("svg:stroke-color", "none");
       else
         styleProps.insert("svg:stroke-color", lineColour.c_str());
-      if (noFill)
+      if (noFill || fillPattern == 0)
         styleProps.insert("svg:fill", "none");
       else
         styleProps.insert("svg:fill", fillType.c_str());
