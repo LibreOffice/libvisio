@@ -104,7 +104,7 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 			m_outputSink << "  <svg:linearGradient xlink:href=\"#grad" << m_gradientIndex-1 << "\"";
 			m_outputSink << " id=\"grad" << m_gradientIndex++ << "\" ";
 			m_outputSink << "x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\" ";
-			m_outputSink << "gradientTransform=\"rotate(" << angle << ")\" ";
+			m_outputSink << "gradientTransform=\"rotate(" << angle << " .5 .5)\" ";
 			m_outputSink << "gradientUnits=\"objectBoundingBox\" >\n";
 			m_outputSink << "  </svg:linearGradient>\n";
 		}
