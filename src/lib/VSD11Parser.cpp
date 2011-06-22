@@ -670,12 +670,72 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     case 0x86: // Fill & Shadow properties
     {
       unsigned int colourIndexFG = readU8(&stream);
-      stream.seek(9, WPX_SEEK_CUR);
+      stream.seek(4, WPX_SEEK_CUR);
+      unsigned int colourIndexBG = readU8(&stream);
+      stream.seek(4, WPX_SEEK_CUR);
       unsigned int fillPattern = readU8(&stream);
       if (fillPattern == 1)
       {
         styleProps.insert("draw:fill", "solid");
         styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+      }
+      else if (fillPattern >= 25 && fillPattern <= 34)
+      {
+        styleProps.insert("draw:fill", "gradient");
+        WPXPropertyList startColour;
+        startColour.insert("svg:stop-color",
+                           getColourString(m_colours[colourIndexFG]));
+        startColour.insert("svg:offset", 0, WPX_PERCENT);
+        startColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+        WPXPropertyList endColour;
+        endColour.insert("svg:stop-color",
+                         getColourString(m_colours[colourIndexBG]));
+        endColour.insert("svg:offset", 1, WPX_PERCENT);
+        endColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+
+        switch(fillPattern)
+        {
+        case 25:
+          styleProps.insert("draw:angle", -90);
+          break;
+        case 26:
+          styleProps.insert("draw:angle", -90);
+          endColour.insert("svg:offset", 0, WPX_PERCENT);
+          gradientProps.append(endColour);
+          endColour.insert("svg:offset", 1, WPX_PERCENT);
+          startColour.insert("svg:offset", 0.5, WPX_PERCENT);
+          break;
+        case 27:
+          styleProps.insert("draw:angle", 90);
+          break;
+        case 28:
+          styleProps.insert("draw:angle", 0);
+          break;
+        case 29:
+          styleProps.insert("draw:angle", 0);
+          endColour.insert("svg:offset", 0, WPX_PERCENT);
+          gradientProps.append(endColour);
+          endColour.insert("svg:offset", 1, WPX_PERCENT);
+          startColour.insert("svg:offset", 0.5, WPX_PERCENT);
+          break;
+        case 30:
+          styleProps.insert("draw:angle", 180);
+          break;
+        case 31:
+          styleProps.insert("draw:angle", -45);
+          break;
+        case 32:
+          styleProps.insert("draw:angle", 45);
+          break;
+        case 33:
+          styleProps.insert("draw:angle", 225);
+          break;
+        case 34:
+          styleProps.insert("draw:angle", 135);
+          break;
+        }
+        gradientProps.append(startColour);
+        gradientProps.append(endColour);
       }
     }
       break;
