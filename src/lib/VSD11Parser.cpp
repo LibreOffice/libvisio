@@ -593,8 +593,6 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   WPXPropertyListVector gradientProps;
   XForm xform = {0}; // Shape xform data
   ChunkHeader header = {0};
-  bool done = false;
-  int geomCount = -1;
   unsigned long streamPos = 0;
 
   double x = 0; double y = 0;
@@ -604,8 +602,9 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   styleProps.insert("svg:stroke-width", m_scale*0.0138889);
   styleProps.insert("svg:stroke-color", "black");
   styleProps.insert("draw:fill", "none");
+  styleProps.insert("svg:stroke-dasharray", "solid");
 
-  while (!done && !stream.atEOS())
+  while (!stream.atEOS())
   {
     getChunkHeader(stream, header);
     streamPos = stream.tell();
@@ -748,8 +747,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(subHeaderLength, WPX_SEEK_CUR);
       for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
         m_currentGeometryOrder.push_back(readU32(&stream));
-      geomCount = header.list;
-      continue; // Avoid geomCount decrement below
+      break;
     }
     case 0x8a: // MoveTo
     {
@@ -908,8 +906,6 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     }
       break;
     }
-    if (geomCount > 0) geomCount--;
-    if (geomCount == 0) done = true;
 
     stream.seek(header.dataLength+header.trailer-(stream.tell()-streamPos), WPX_SEEK_CUR);
   }
