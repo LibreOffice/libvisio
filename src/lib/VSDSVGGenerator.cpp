@@ -90,7 +90,7 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 		m_outputSink << "  <svg:linearGradient id=\"grad" << m_gradientIndex++ << "\" >\n";
 		for(unsigned c = 0; c < m_gradient.count(); c++)
 		{
-			m_outputSink << "    <stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
+			m_outputSink << "    <svg:stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
 
 			m_outputSink << " stop-color=\"" << m_gradient[c]["svg:stop-color"]->getStr().cstr() << "\"";
 			m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getStr().cstr() << "\" />" << std::endl;
