@@ -271,7 +271,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       m_pageHeight = readDouble(&stream);
       stream.seek(19, WPX_SEEK_CUR);
-      m_scale = readDouble(&stream);
+      /* m_scale = */ readDouble(&stream);
 
       WPXPropertyList pageProps;
       pageProps.insert("svg:width", m_scale*m_pageWidth);
