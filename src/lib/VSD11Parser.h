@@ -53,7 +53,6 @@ private:
   void handleColours(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 
   // Chunk handlers
-  void groupChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void shapeChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void foreignChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 
