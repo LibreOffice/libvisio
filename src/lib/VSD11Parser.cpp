@@ -939,8 +939,8 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
           if (startX == x && startY == y)
           {
              WPXPropertyList closedPath;
-             closedPath.insert("libwpg:path-action", "Z")
-             path.append(iter->second());
+             closedPath.insert("libwpg:path-action", "Z");
+             path.append(closedPath);
           }
           if (path.count())
             painter->drawPath(path);
@@ -981,8 +981,8 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
               if (startX == x && startY == y)
               {
                 WPXPropertyList closedPath;
-                closedPath.insert("libwpg:path-action", "Z")
-                path.append(iter2()());
+                closedPath.insert("libwpg:path-action", "Z");
+                path.append(closedPath);
               }
               if (path.count())
                 painter->drawPath(path);
