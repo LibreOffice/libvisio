@@ -41,7 +41,7 @@ private:
 
   typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};
-  static const struct StreamHandler streamHandlers[32];
+  static const StreamHandler streamHandlers[];
 
   typedef void (VSD11Parser::*ChunkMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
   struct ChunkHandler { unsigned int type; const char *name; ChunkMethod handler;};

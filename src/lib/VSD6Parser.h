@@ -41,7 +41,7 @@ private:
 
   typedef void (VSD6Parser::*Method)(VSDInternalStream&, libwpg::WPGPaintInterface*);
   struct StreamHandler { unsigned int type; const char *name; Method handler;};
-  static const struct StreamHandler handlers[32];
+  static const StreamHandler handlers[];
   void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 };

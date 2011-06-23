@@ -26,19 +26,18 @@
 #include "VSD6Parser.h"
 #include "VSDInternalStream.h"
 
-const struct libvisio::VSD6Parser::StreamHandler libvisio::VSD6Parser::handlers[] =
-{
+const libvisio::VSD6Parser::StreamHandler libvisio::VSD6Parser::handlers[] = {
   {0xa, "Name", 0},
   {0xb, "Name Idx", 0},
-  {0x14, "Trailer, 0"},
+  {0x14, "Trailer", 0},
   {0x15, "Page", &libvisio::VSD6Parser::handlePage},
-  {0x16, "Colors"},
+  {0x16, "Colors", 0},
   {0x17, "??? seems to have no data", 0},
   {0x18, "FontFaces (ver.11)", 0},
   {0x1a, "Styles", 0},
   {0x1b, "??? saw 'Acrobat PDFWriter' string here", 0},
   {0x1c, "??? saw 'winspool.Acrobat PDFWriter.LPT1' string here", 0},
-  {0x1d, "Stencils"},
+  {0x1d, "Stencils", 0},
   {0x1e, "Stencil Page (collection of Shapes, one collection per each stencil item)", 0},
   {0x20, "??? seems to have no data", 0},
   {0x21, "??? seems to have no data", 0},
@@ -113,10 +112,10 @@ bool libvisio::VSD6Parser::parse(libwpg::WPGPaintInterface *painter)
     ptrFormat = readU16(&trailerStream);
 
     int index = -1;
-    for (int i = 0; (index < 0) && handlers[i].type; i++)
+    for (int j = 0; (index < 0) && handlers[j].type; i++)
     {
-      if (handlers[i].type == ptrType)
-        index = i;
+      if (handlers[j].type == ptrType)
+        index = j;
     }
 
     if (index < 0)
@@ -171,10 +170,10 @@ void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPai
     ptrFormat = readU16(&stream);
 
     int index = -1;
-    for (int i = 0; (index < 0) && handlers[i].type; i++)
+    for (int j = 0; (index < 0) && handlers[j].type; j++)
     {
-      if (handlers[i].type == ptrType)
-        index = i;
+      if (handlers[j].type == ptrType)
+        index = j;
     }
 
     if (index < 0)
@@ -197,8 +196,8 @@ void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPai
 
         bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
-        VSDInternalStream stream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(stream, painter);
+        VSDInternalStream tmpStream(m_input, ptrLength, compressed);
+        (this->*streamHandler)(tmpStream, painter);
       }
     }
   }
@@ -207,7 +206,7 @@ void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPai
 void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
   WPXPropertyList pageProps;
-  XForm xform = {0}; // Tracks current xform data
+  XForm xform; // Tracks current xform data
   unsigned int foreignType = 0; // Tracks current foreign data type
   unsigned int foreignFormat = 0; // Tracks foreign data format
   unsigned long tmpBytesRead = 0;

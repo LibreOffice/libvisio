@@ -46,11 +46,10 @@ const ::WPXString libvisio::VSD11Parser::getColourString(const struct Colour &c)
     return sColour;
 }
 
-const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] =
-{
+const libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] = {
   {0xa, "Name", 0},
   {0xb, "Name Idx", 0},
-  {0x14, "Trailer, 0"},
+  {0x14, "Trailer", 0},
   {0x15, "Page", &libvisio::VSD11Parser::handlePage},
   {0x16, "Colors", &libvisio::VSD11Parser::handleColours},
   {0x17, "??? seems to have no data", 0},
@@ -58,7 +57,7 @@ const struct libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamH
   {0x1a, "Styles", 0},
   {0x1b, "??? saw 'Acrobat PDFWriter' string here", 0},
   {0x1c, "??? saw 'winspool.Acrobat PDFWriter.LPT1' string here", 0},
-  {0x1d, "Stencils"},
+  {0x1d, "Stencils", 0},
   {0x1e, "Stencil Page (collection of Shapes, one collection per each stencil item)", 0},
   {0x20, "??? seems to have no data", 0},
   {0x21, "??? seems to have no data", 0},
@@ -141,10 +140,10 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *painter)
     ptrFormat = readU16(&trailerStream);
 
     int index = -1;
-    for (int i = 0; (index < 0) && streamHandlers[i].type; i++)
+    for (int j = 0; (index < 0) && streamHandlers[j].type; j++)
     {
-      if (streamHandlers[i].type == ptrType)
-        index = i;
+      if (streamHandlers[j].type == ptrType)
+        index = j;
     }
 
     if (index < 0)
@@ -199,10 +198,10 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
     ptrFormat = readU16(&stream);
 
     int index = -1;
-    for (int i = 0; (index < 0) && streamHandlers[i].type; i++)
+    for (int j = 0; (index < 0) && streamHandlers[j].type; j++)
     {
-      if (streamHandlers[i].type == ptrType)
-        index = i;
+      if (streamHandlers[j].type == ptrType)
+        index = j;
     }
 
     if (index < 0)
@@ -225,8 +224,8 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
 
         bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
-        VSDInternalStream stream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(stream, painter);
+        VSDInternalStream tmpStream(m_input, ptrLength, compressed);
+        (this->*streamHandler)(tmpStream, painter);
       }
     }
   }
@@ -234,7 +233,7 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
 
 void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
-  ChunkHeader header = {0};
+  ChunkHeader header;
   m_groupXForms.clear();
 
   while (!stream.atEOS())
@@ -294,11 +293,11 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
   }
 }
 
-void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
+void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream, libwpg::WPGPaintInterface * /*painter*/)
 {
   stream.seek(6, WPX_SEEK_SET);
   unsigned int numColours = readU8(&stream);
-  Colour tmpColour = {0};
+  Colour tmpColour;
 
   stream.seek(1, WPX_SEEK_CUR);
 
@@ -318,10 +317,10 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   WPXPropertyListVector path;
   WPXPropertyList styleProps;
   WPXPropertyListVector gradientProps;
-  XForm xform = {0}; // Shape xform data
+  XForm xform; // Shape xform data
   unsigned int foreignType = 0; // Tracks current foreign data type
   unsigned int foreignFormat = 0; // Tracks foreign data format
-  ChunkHeader header = {0};
+  ChunkHeader header;
   unsigned long tmpBytesRead = 0;
   unsigned long streamPos = 0;
 
@@ -378,7 +377,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(1, WPX_SEEK_CUR);
       styleProps.insert("svg:stroke-width", m_scale*readDouble(&stream));
       stream.seek(1, WPX_SEEK_CUR);
-      Colour c = {0};
+      Colour c;
       c.r = readU8(&stream);
       c.g = readU8(&stream);
       c.b = readU8(&stream);
