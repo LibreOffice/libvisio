@@ -41,6 +41,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
 	libvisio_utils.h \
+	VSDXDocumentStructure.h \
 	VSDXCollector.h \
 	VSDXContentCollector.h \
 	VSDXStylesCollector.h \
