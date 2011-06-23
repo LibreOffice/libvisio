@@ -950,15 +950,13 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
           y = (iter->second)["svg:y"]->getDouble();
           startX = x;
           startY = y;
-
-          path.append(iter->second);
         }
         else
         {
           x = (iter->second)["svg:x"]->getDouble();
           y = (iter->second)["svg:y"]->getDouble();
-          path.append(iter->second);
         }
+		path.append(iter->second);
       }
       else
       {
@@ -992,15 +990,13 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
               y = (iter2())["svg:y"]->getDouble();
               startX = x;
               startY = y;
-
-              path.append(iter2());
             }
             else
             {
               x = (iter2())["svg:x"]->getDouble();
               y = (iter2())["svg:y"]->getDouble();
-              path.append(iter2());
             }
+	      path.append(iter2());
           }
         }
       }
@@ -1011,8 +1007,9 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
       WPXPropertyList closedPath;
       closedPath.insert("libwpg:path-action", "Z");
       path.append(closedPath);
-	  painter->drawPath(path);
     }
+	if (path.count())
+      painter->drawPath(path);
   }
   else
   {
