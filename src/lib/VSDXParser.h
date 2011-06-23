@@ -63,6 +63,8 @@ protected:
   std::map<unsigned int, WPXPropertyList> m_currentGeometry;
   std::map<unsigned int, WPXPropertyListVector> m_currentComplexGeometry;
   std::map<unsigned int, XForm> m_groupXForms;
+  WPXBinaryData m_currentForeignData;
+  WPXPropertyList m_currentForeignProps;
   unsigned m_currentShapeId;
 };
 

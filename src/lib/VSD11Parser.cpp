@@ -86,7 +86,7 @@ const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHan
 {
   {0x47, "ShapeType=\"Group\"", &libvisio::VSD11Parser::shapeChunk},
   {0x48, "ShapeType=\"Shape\"", &libvisio::VSD11Parser::shapeChunk},
-  {0x4e, "ShapeType=\"Foreign\"", &libvisio::VSD11Parser::foreignChunk},
+  {0x4e, "ShapeType=\"Foreign\"", &libvisio::VSD11Parser::shapeChunk},
   {0, 0, 0}
 };
 
@@ -319,7 +319,10 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   WPXPropertyList styleProps;
   WPXPropertyListVector gradientProps;
   XForm xform = {0}; // Shape xform data
+  unsigned int foreignType = 0; // Tracks current foreign data type
+  unsigned int foreignFormat = 0; // Tracks foreign data format
   ChunkHeader header = {0};
+  unsigned long tmpBytesRead = 0;
   unsigned long streamPos = 0;
 
   double x = 0; double y = 0;
@@ -675,40 +678,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       m_currentGeometry[header.id] = arc;
     }
       break;
-    }
-
-    stream.seek(header.dataLength+header.trailer-(stream.tell()-streamPos), WPX_SEEK_CUR);
-  }
-  _flushCurrentPath(painter);
-}
-
-void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
-{
-  XForm xform = {0}; // Shape xform data
-  unsigned int foreignType = 0; // Tracks current foreign data type
-  unsigned int foreignFormat = 0; // Tracks foreign data format
-  ChunkHeader header = {0};
-  unsigned long tmpBytesRead = 0;
-  bool done = false;
-
-  while (!done && !stream.atEOS())
-  {
-    getChunkHeader(stream, header);
-
-    // Break once a chunk that is not nested in the foreign is found
-    if (header.level < 2)
-    {
-      stream.seek(-19, WPX_SEEK_CUR);
-      break;
-    }
-
-    switch(header.chunkType)
-    {
-    case 0x9b: // XForm data
-      xform = _transformXForm(_parseXForm(&stream));
-      stream.seek(header.dataLength+header.trailer-65, WPX_SEEK_CUR);
-      break;
-    case 0x98:
+    case 0x98:  // Foreign
       stream.seek(0x24, WPX_SEEK_CUR);
       foreignType = readU16(&stream);
       stream.seek(0xb, WPX_SEEK_CUR);
@@ -718,33 +688,32 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
       VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
 
       break;
-    case 0x0c:
+    case 0x0c:  // Foreign data
       if (foreignType == 1 || foreignType == 4) // Image
       {
         const unsigned char *buffer = stream.read(header.dataLength, tmpBytesRead);
-        WPXBinaryData binaryData;
         // If bmp data found, reconstruct header
         if (foreignType == 1 && foreignFormat == 0)
         {
-          binaryData.append(0x42);
-          binaryData.append(0x4d);
+          m_currentForeignData.append(0x42);
+          m_currentForeignData.append(0x4d);
 
-          binaryData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
-          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
-          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
-          binaryData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
+          m_currentForeignData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
+          m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
+          m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
+          m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
 
-          binaryData.append(0x00);
-          binaryData.append(0x00);
-          binaryData.append(0x00);
-          binaryData.append(0x00);
+          m_currentForeignData.append(0x00);
+          m_currentForeignData.append(0x00);
+          m_currentForeignData.append(0x00);
+          m_currentForeignData.append(0x00);
 
-          binaryData.append(0x36);
-          binaryData.append(0x00);
-          binaryData.append(0x00);
-          binaryData.append(0x00);
+          m_currentForeignData.append(0x36);
+          m_currentForeignData.append(0x00);
+          m_currentForeignData.append(0x00);
+          m_currentForeignData.append(0x00);
         }
-        binaryData.append(buffer, tmpBytesRead);
+        m_currentForeignData.append(buffer, tmpBytesRead);
 
 #if DUMP_BITMAP
         if (foreignType == 1 || foreignType == 4)
@@ -768,20 +737,19 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
           FILE *f = fopen(filename.cstr(), "wb");
           if (f)
           {
-            const unsigned char *tmpBuffer = binaryData.getDataBuffer();
-            for (unsigned long k = 0; k < binaryData.size(); k++)
+            const unsigned char *tmpBuffer = m_currentForeignData.getDataBuffer();
+            for (unsigned long k = 0; k < m_currentForeignData.size(); k++)
               fprintf(f, "%c",tmpBuffer[k]);
             fclose(f);
           }
         }
 #endif
 
-        WPXPropertyList foreignProps;
-        foreignProps.insert("svg:width", m_scale*xform.width);
-        foreignProps.insert("svg:height", m_scale*xform.height);
-        foreignProps.insert("svg:x", m_scale*(xform.pinX - xform.pinLocX));
+        m_currentForeignProps.insert("svg:width", m_scale*xform.width);
+        m_currentForeignProps.insert("svg:height", m_scale*xform.height);
+        m_currentForeignProps.insert("svg:x", m_scale*(xform.pinX - xform.pinLocX));
         // Y axis starts at the bottom not top
-        foreignProps.insert("svg:y", m_scale*(m_pageHeight -
+        m_currentForeignProps.insert("svg:y", m_scale*(m_pageHeight -
                             xform.pinY + xform.pinLocY - xform.height));
 
         if (foreignType == 1)
@@ -789,44 +757,42 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
           switch(foreignFormat)
           {
           case 0:
-            foreignProps.insert("libwpg:mime-type", "image/bmp"); break;
+            m_currentForeignProps.insert("libwpg:mime-type", "image/bmp"); break;
           case 1:
-            foreignProps.insert("libwpg:mime-type", "image/jpeg"); break;
+            m_currentForeignProps.insert("libwpg:mime-type", "image/jpeg"); break;
           case 2:
-            foreignProps.insert("libwpg:mime-type", "image/gif"); break;
+            m_currentForeignProps.insert("libwpg:mime-type", "image/gif"); break;
           case 3:
-            foreignProps.insert("libwpg:mime-type", "image/tiff"); break;
+            m_currentForeignProps.insert("libwpg:mime-type", "image/tiff"); break;
           case 4:
-            foreignProps.insert("libwpg:mime-type", "image/png"); break;
+            m_currentForeignProps.insert("libwpg:mime-type", "image/png"); break;
           }
         }
         else if (foreignType == 4)
         {
-          const unsigned char *tmpBinData = binaryData.getDataBuffer();
+          const unsigned char *tmpBinData = m_currentForeignData.getDataBuffer();
           // Check for EMF signature
           if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
           {
-            foreignProps.insert("libwpg:mime-type", "image/emf");
+            m_currentForeignProps.insert("libwpg:mime-type", "image/emf");
           }
           else
           {
-            foreignProps.insert("libwpg:mime-type", "image/wmf");
+            m_currentForeignProps.insert("libwpg:mime-type", "image/wmf");
           }
         }
-
-        painter->drawGraphicObject(foreignProps, binaryData);
       }
       else
       {
         stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
       }
       break;
-
-    default:
-      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
-
     }
+
+    stream.seek(header.dataLength+header.trailer-(stream.tell()-streamPos), WPX_SEEK_CUR);
   }
+  _flushCurrentPath(painter);
+  _flushCurrentForeignData(painter);
 }
 
 void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream, libvisio::VSD11Parser::ChunkHeader &header)
@@ -1020,4 +986,12 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
   m_currentGeometry.clear();
   m_currentComplexGeometry.clear();
   m_currentGeometryOrder.clear();
+}
+
+void libvisio::VSD11Parser::_flushCurrentForeignData(libwpg::WPGPaintInterface *painter)
+{
+  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"])
+    painter->drawGraphicObject(m_currentForeignProps, m_currentForeignData);
+  m_currentForeignData.clear();
+  m_currentForeignProps.clear();
 }
