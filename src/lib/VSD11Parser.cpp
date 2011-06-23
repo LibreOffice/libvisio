@@ -330,16 +330,16 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   bool noShow = false;
 
   // Save line colour and pattern, fill type and pattern
-  std::string lineColour = "black";
-  std::string fillType = "none";
+  ::WPXString lineColour = "black";
+  ::WPXString fillType = "none";
   unsigned int linePattern = 1; // same as "solid"
   unsigned int fillPattern = 1; // same as "solid"
 
   // Reset style
   styleProps.clear();
   styleProps.insert("svg:stroke-width", m_scale*0.0138889);
-  styleProps.insert("svg:stroke-color", lineColour.c_str());
-  styleProps.insert("draw:fill", fillType.c_str());
+  styleProps.insert("svg:stroke-color", lineColour);
+  styleProps.insert("draw:fill", fillType);
   styleProps.insert("svg:stroke-dasharray", "solid");
 
   while (!stream.atEOS())
@@ -380,8 +380,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       c.g = readU8(&stream);
       c.b = readU8(&stream);
       c.a = readU8(&stream);
-      lineColour = getColourString(c).cstr();
-      styleProps.insert("svg:stroke-color", lineColour.c_str());
+      lineColour = getColourString(c);
+      styleProps.insert("svg:stroke-color", lineColour);
       linePattern = readU8(&stream);
       const char* patterns[] = {
         /*  0 */  "none",
@@ -510,11 +510,11 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       if (noLine || linePattern == 0)
         styleProps.insert("svg:stroke-color", "none");
       else
-        styleProps.insert("svg:stroke-color", lineColour.c_str());
+        styleProps.insert("svg:stroke-color", lineColour);
       if (noFill || fillPattern == 0)
         styleProps.insert("svg:fill", "none");
       else
-        styleProps.insert("svg:fill", fillType.c_str());
+        styleProps.insert("svg:fill", fillType);
       VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, noFill, noLine, noShow));
       painter->setStyle(styleProps, gradientProps);
     }
@@ -749,23 +749,23 @@ void libvisio::VSD11Parser::foreignChunk(VSDInternalStream &stream, libwpg::WPGP
 #if DUMP_BITMAP
         if (foreignType == 1 || foreignType == 4)
         {
-          std::ostringstream filename;
+          ::WPXString filename;
           switch(foreignFormat)
           {
           case 0:
-            filename << "binarydump" << bitmapId++ << ".bmp"; break;
+            filename.sprintf("binarydump%i.bmp", bitmapId++); break;
           case 1:
-            filename << "binarydump" << bitmapId++ << ".jpeg"; break;
+            filename.sprintf("binarydump%i.jpeg", bitmapId++); break;
           case 2:
-            filename << "binarydump" << bitmapId++ << ".gif"; break;
+            filename.sprintf("binarydump%i.gif", bitmapId++); break;
           case 3:
-            filename << "binarydump" << bitmapId++ << ".tiff"; break;
+            filename.sprintf("binarydump%i.tiff", bitmapId++); break;
           case 4:
-            filename << "binarydump" << bitmapId++ << ".png"; break;
+            filename.sprintf("binarydump%i.png", bitmapId++); break;
           default:
-            filename << "binarydump" << bitmapId++ << ".bin"; break;
+            filename.sprintf("binarydump%i.bin", bitmapId++); break;
           }
-          FILE *f = fopen(filename.str().c_str(), "wb");
+          FILE *f = fopen(filename.cstr(), "wb");
           if (f)
           {
             const unsigned char *tmpBuffer = binaryData.getDataBuffer();
