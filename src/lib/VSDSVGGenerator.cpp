@@ -26,7 +26,11 @@ static std::string doubleToString(const double value)
 {
   std::ostringstream tempStream;
   tempStream << value;
+#ifndef __ANDROID__
   std::string decimalPoint(localeconv()->decimal_point);
+#else
+  std::string decimalPoint(".");
+#endif
   if ((decimalPoint.size() == 0) || (decimalPoint == "."))
     return tempStream.str();
   std::string stringValue(tempStream.str());
