@@ -54,22 +54,22 @@ private:
   void readForeignDataType(WPXInputStream *input);
   
 
-  typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&);
+  typedef void (VSD11Parser::*StreamMethod)(WPXInputStream*);
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};
   static const StreamHandler streamHandlers[];
 
-  typedef void (VSD11Parser::*ChunkMethod)(VSDInternalStream&);
+  typedef void (VSD11Parser::*ChunkMethod)(WPXInputStream*);
   struct ChunkHandler { unsigned int type; const char *name; ChunkMethod handler;};
-  static const struct ChunkHandler chunkHandlers[4];
+  static const struct ChunkHandler chunkHandlers[];
 
   // Stream handlers
-  void handlePages(VSDInternalStream &stream);
-  void handlePage(VSDInternalStream &stream);
-  void handleColours(VSDInternalStream &stream);
+  void handlePages(WPXInputStream *input);
+  void handlePage(WPXInputStream *input);
+  void handleColours(WPXInputStream *input);
 
   // Chunk handlers
-  void shapeChunk(VSDInternalStream &stream);
-  void foreignChunk(VSDInternalStream &stream);
+  void shapeChunk(WPXInputStream *input);
+  void foreignChunk(WPXInputStream *input);
 
   struct Colour
   {
@@ -79,7 +79,7 @@ private:
     unsigned int a;
   };
 
-  void getChunkHeader(VSDInternalStream &stream);
+  void getChunkHeader(WPXInputStream *input);
   void rotatePoint(double &x, double &y, const XForm &xform);
   void flipPoint(double &x, double &y, const XForm &xform);
   

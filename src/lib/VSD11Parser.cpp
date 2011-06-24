@@ -59,6 +59,21 @@ const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHan
   {VSD_SHAPE_GROUP, "ShapeType=\"Group\"", &libvisio::VSD11Parser::shapeChunk},
   {VSD_SHAPE_SHAPE, "ShapeType=\"Shape\"", &libvisio::VSD11Parser::shapeChunk},
   {VSD_SHAPE_FOREIGN, "ShapeType=\"Foreign\"", &libvisio::VSD11Parser::shapeChunk},
+#if 0
+  {VSD_XFORM_DATA, "XForm Data", &libvisio::VSD11Parser::readXFormData},
+  {VSD_SHAPE_ID, "Shape Id", &libvisio::VSD11Parser::readShapeID},
+  {VSD_LINE, "Line", &libvisio::VSD11Parser::readLine},
+  {VSD_FILL_AND_SHADOW, "Fill and Shadow", &libvisio::VSD11Parser::readFillAndShadow},
+  {VSD_GEOM_LIST, "Geom List", &libvisio::VSD11Parser::readGeomList},
+  {VSD_GEOMETRY, "Geometry", &libvisio::VSD11Parser::readGeometry},
+  {VSD_MOVE_TO, "Move To", &libvisio::VSD11Parser::readMoveTo},
+  {VSD_LINE_TO, "Line To", &libvisio::VSD11Parser::readLineTo},
+  {VSD_ARC_TO, "Arc To", &libvisio::VSD11Parser::readArcTo},
+  {VSD_ELLIPSE, "Ellipse", &libvisio::VSD11Parser::readEllipse},
+  {VSD_ELLIPTICAL_ARC_TO, "Elliptical Arc To", &libvisio::VSD11Parser::readEllipticalArcTo},
+  {VSD_FOREIGN_DATA_TYPE, "Foreign Data Type", &libvisio::VSD11Parser::readForeignDataType},
+  {VSD_FOREIGN_DATA, "Foreign Data", &libvisio::VSD11Parser::readForeignData},
+#endif
   {0, 0, 0}
 };
 
@@ -139,8 +154,9 @@ bool libvisio::VSD11Parser::parse()
 
         compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
-        VSDInternalStream stream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(stream);
+        WPXInputStream *input = new VSDInternalStream(m_input, ptrLength, compressed);
+        (this->*streamHandler)(input);
+        delete input;
       }
     }
   }
@@ -151,12 +167,12 @@ bool libvisio::VSD11Parser::parse()
   return true;
 }
 
-void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream)
+void libvisio::VSD11Parser::handlePages(WPXInputStream *input)
 {
-  unsigned int offset = readU32(&stream);
-  stream.seek(offset, WPX_SEEK_SET);
-  unsigned int pointerCount = readU32(&stream);
-  stream.seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
+  unsigned int offset = readU32(input);
+  input->seek(offset, WPX_SEEK_SET);
+  unsigned int pointerCount = readU32(input);
+  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
   unsigned int ptrType;
   unsigned int ptrOffset;
@@ -164,11 +180,11 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream)
   unsigned int ptrFormat;
   for (unsigned int i = 0; i < pointerCount; i++)
   {
-    ptrType = readU32(&stream);
-    stream.seek(4, WPX_SEEK_CUR); // Skip dword
-    ptrOffset = readU32(&stream);
-    ptrLength = readU32(&stream);
-    ptrFormat = readU16(&stream);
+    ptrType = readU32(input);
+    input->seek(4, WPX_SEEK_CUR); // Skip dword
+    ptrOffset = readU32(input);
+    ptrLength = readU32(input);
+    ptrFormat = readU16(input);
 
     int index = -1;
     for (int j = 0; (index < 0) && streamHandlers[j].type; j++)
@@ -180,7 +196,7 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream)
     if (index < 0)
     {
       VSD_DEBUG_MSG(("Unknown stream pointer type 0x%02x found in pages at %li\n",
-                     ptrType, stream.tell() - 18));
+                     ptrType, input->tell() - 18));
     }
     else
     {
@@ -188,29 +204,30 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream)
       if (!streamHandler)
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li ignored\n",
                        streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
-                       stream.tell() - 18));
+                       input->tell() - 18));
       else
       {
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li handled\n",
                        streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
-                       stream.tell() - 18));
+                       input->tell() - 18));
 
         bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
-        VSDInternalStream tmpStream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(tmpStream);
+        WPXInputStream *input = new VSDInternalStream(m_input, ptrLength, compressed);
+        (this->*streamHandler)(input);
+        delete input;
       }
     }
   }
 }
 
-void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
+void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
 {
   m_groupXForms.clear();
 
-  while (!stream.atEOS())
+  while (!input->atEOS())
   {
-    getChunkHeader(stream);
+    getChunkHeader(input);
     int index = -1;
     for (int i = 0; (index < 0) && chunkHandlers[i].type; i++)
     {
@@ -221,12 +238,12 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
     if (index >= 0)
     {
       // Skip rest of this chunk
-      stream.seek(m_header.dataLength + m_header.trailer, WPX_SEEK_CUR);
+      input->seek(m_header.dataLength + m_header.trailer, WPX_SEEK_CUR);
       ChunkMethod chunkHandler = chunkHandlers[index].handler;
       if (chunkHandler)
       {
         m_currentShapeId = m_header.id;
-        (this->*chunkHandler)(stream);
+        (this->*chunkHandler)(input);
       }
       continue;
     }
@@ -237,12 +254,12 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
     if (m_header.chunkType == VSD_PAGE_PROPS) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
-      stream.seek(1, WPX_SEEK_CUR);
-      m_pageWidth = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      m_pageHeight = readDouble(&stream);
-      stream.seek(19, WPX_SEEK_CUR);
-      /* m_scale = */ readDouble(&stream);
+      input->seek(1, WPX_SEEK_CUR);
+      m_pageWidth = readDouble(input);
+      input->seek(1, WPX_SEEK_CUR);
+      m_pageHeight = readDouble(input);
+      input->seek(19, WPX_SEEK_CUR);
+      /* m_scale = */ readDouble(input);
 
       WPXPropertyList pageProps;
       pageProps.insert("svg:width", m_scale*m_pageWidth);
@@ -253,40 +270,41 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
       m_painter->startGraphics(pageProps);
       m_isPageStarted = true;
 
-      stream.seek(m_header.dataLength+m_header.trailer-45, WPX_SEEK_CUR);
+      input->seek(m_header.dataLength+m_header.trailer-45, WPX_SEEK_CUR);
     }
     else // Skip chunk
     {
       m_header.dataLength += m_header.trailer;
       VSD_DEBUG_MSG(("Skipping chunk by %x (%d) bytes\n",
                      m_header.dataLength, m_header.dataLength));
-      stream.seek(m_header.dataLength, WPX_SEEK_CUR);
+      input->seek(m_header.dataLength, WPX_SEEK_CUR);
     }
   }
 }
 
-void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream)
+void libvisio::VSD11Parser::handleColours(WPXInputStream *input)
 {
-  stream.seek(6, WPX_SEEK_SET);
-  unsigned int numColours = readU8(&stream);
+  input->seek(6, WPX_SEEK_SET);
+  unsigned int numColours = readU8(input);
   Colour tmpColour;
 
-  stream.seek(1, WPX_SEEK_CUR);
+  input->seek(1, WPX_SEEK_CUR);
 
   for (unsigned int i = 0; i < numColours; i++)
   {
-    tmpColour.r = readU8(&stream);
-    tmpColour.g = readU8(&stream);
-    tmpColour.b = readU8(&stream);
-    tmpColour.a = readU8(&stream);
+    tmpColour.r = readU8(input);
+    tmpColour.g = readU8(input);
+    tmpColour.b = readU8(input);
+    tmpColour.a = readU8(input);
 
     m_colours.push_back(tmpColour);
   }
 }
 
-void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
+void libvisio::VSD11Parser::shapeChunk(WPXInputStream *input)
 {
   unsigned long streamPos = 0;
+
   m_gradientProps = WPXPropertyListVector();
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
@@ -315,22 +333,22 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
   m_styleProps.insert("draw:fill", m_fillType);
   m_styleProps.insert("svg:stroke-dasharray", "solid");
 
-  while (!stream.atEOS())
+  while (!input->atEOS())
   {
-    getChunkHeader(stream);
-    streamPos = stream.tell();
+    getChunkHeader(input);
+    streamPos = input->tell();
 
     // Break once a chunk that is not nested in the shape is found
     if (m_header.level < 2)
     {
-      stream.seek(-19, WPX_SEEK_CUR);
+      input->seek(-19, WPX_SEEK_CUR);
       break;
     }
 
     // Until the next geometry chunk, don't parse if geometry is not to be shown
     if (m_header.chunkType != VSD_GEOM_LIST && m_noShow)
     {
-      stream.seek(m_header.dataLength+m_header.trailer, WPX_SEEK_CUR);
+      input->seek(m_header.dataLength+m_header.trailer, WPX_SEEK_CUR);
       continue;
     }
 
@@ -338,67 +356,67 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
     switch (m_header.chunkType)
     {
     case VSD_XFORM_DATA: // XForm data
-	  readXFormData(&stream);
+	  readXFormData(input);
       break;
     case VSD_SHAPE_ID:
-	  readShapeID(&stream);
+	  readShapeID(input);
       break;
     case VSD_LINE:
-      readLine(&stream);
+      readLine(input);
       break;
     case VSD_FILL_AND_SHADOW:
-      readFillAndShadow(&stream);
+      readFillAndShadow(input);
       break;
     case VSD_GEOM_LIST:
-      readGeomList(&stream);
+      readGeomList(input);
       break;
     case VSD_GEOMETRY:
-      readGeometry(&stream);
+      readGeometry(input);
       break;
     case VSD_MOVE_TO:
-      readMoveTo(&stream);
+      readMoveTo(input);
       break;
     case VSD_LINE_TO:
-      readLineTo(&stream);
+      readLineTo(input);
       break;
     case VSD_ARC_TO:
-      readArcTo(&stream);
+      readArcTo(input);
       break;
     case VSD_ELLIPSE:
-      readEllipse(&stream);
+      readEllipse(input);
       break;
     case VSD_ELLIPTICAL_ARC_TO:
-      readEllipticalArcTo(&stream);
+      readEllipticalArcTo(input);
       break;
     case VSD_FOREIGN_DATA_TYPE:
-	  readForeignDataType(&stream);
+	  readForeignDataType(input);
       break;
     case VSD_FOREIGN_DATA:
-      readForeignData(&stream);
+      readForeignData(input);
       break;
     }
 
-    stream.seek(m_header.dataLength+m_header.trailer-(stream.tell()-streamPos), WPX_SEEK_CUR);
+    input->seek(m_header.dataLength+m_header.trailer-(input->tell()-streamPos), WPX_SEEK_CUR);
   }
   _flushCurrentPath();
   _flushCurrentForeignData();
   m_x = 0; m_y = 0;
 }
 
-void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream)
+void libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
 {
   unsigned char tmpChar = 0;
-  while (!stream.atEOS() && !tmpChar)
-    tmpChar = readU8(&stream);
+  while (!input->atEOS() && !tmpChar)
+    tmpChar = readU8(input);
 
-  if (stream.atEOS())
+  if (input->atEOS())
     return;
   else
-    stream.seek(-1, WPX_SEEK_CUR);
+    input->seek(-1, WPX_SEEK_CUR);
 
-  m_header.chunkType = readU32(&stream);
-  m_header.id = readU32(&stream);
-  m_header.list = readU32(&stream);
+  m_header.chunkType = readU32(input);
+  m_header.id = readU32(input);
+  m_header.list = readU32(input);
 
    // Certain chunk types seem to always have a trailer
   m_header.trailer = 0;
@@ -407,9 +425,9 @@ void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream)
       m_header.chunkType == 0x66 || m_header.chunkType == 0x65 || m_header.chunkType == 0x2c)
     m_header.trailer += 8; // 8 byte trailer
 
-  m_header.dataLength = readU32(&stream);
-  m_header.level = readU16(&stream);
-  m_header.unknown = readU8(&stream);
+  m_header.dataLength = readU32(input);
+  m_header.level = readU16(input);
+  m_header.unknown = readU8(input);
 
   // Add word separator under certain circumstances for v11
   // Below are known conditions, may be more or a simpler pattern
