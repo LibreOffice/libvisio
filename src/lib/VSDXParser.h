@@ -27,13 +27,13 @@
 #include <map>
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
-#include "VSDXContentCollector.h"
-#include "VSDXStylesCollector.h"
+#include "VSDXTypes.h"
 
 namespace libvisio
 {
 
-typedef struct _VSDXForm VSDXForm;
+class VSDXCollector;
+
 class VSDXParser
 {
 public:
@@ -41,45 +41,6 @@ public:
   virtual ~VSDXParser();
   virtual bool parse() = 0;
 protected:
-  struct XForm
-  {
-    double pinX;
-    double pinY;
-    double height;
-    double width;
-    double pinLocX;
-    double pinLocY;
-    double angle;
-    bool flipX;
-    bool flipY;
-    double x;
-    double y;
-    XForm() : pinX(0.0), pinY(0.0), height(0.0), width(0.0),
-              pinLocX(0.0), pinLocY(0.0), angle(0.0),
-              flipX(false), flipY(false), x(0.0), y(0.0) {}
-  };
-
-  // Utilities
-  struct ChunkHeader
-  {
-    unsigned chunkType;  // 4 bytes
-    unsigned id;         // 4 bytes
-    unsigned list;       // 4 bytes
-    unsigned dataLength; // 4 bytes
-    unsigned level;      // 2 bytes
-    unsigned unknown;    // 1 byte
-    unsigned trailer; // Derived
-  };
-
-  struct Colour
-  {
-    unsigned int r;
-    unsigned int g;
-    unsigned int b;
-    unsigned int a;
-  };
-
-
   // reader functions
   void readEllipticalArcTo(WPXInputStream *input);
   void readForeignData(WPXInputStream *input);
@@ -138,6 +99,8 @@ protected:
   bool m_noFill;
   bool m_noShow;
   std::vector<Colour> m_colours;
+
+  VSDXCollector *m_collector;
 };
 
 } // namespace libvisio

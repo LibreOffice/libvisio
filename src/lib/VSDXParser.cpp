@@ -238,17 +238,25 @@ void libvisio::VSDXParser::_flushCurrentForeignData()
 void libvisio::VSDXParser::readEllipticalArcTo(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
-  double x3 = readDouble(input) + m_xform.x; // End x
+  double x3 = readDouble(input); // End x
   input->seek(1, WPX_SEEK_CUR);
-  double y3 = (m_xform.height - readDouble(input)) + m_xform.y; // End y
+  double y3 = readDouble(input); // End y
   input->seek(1, WPX_SEEK_CUR);
-  double x2 = readDouble(input) + m_xform.x; // Mid x
+  double x2 = readDouble(input); // Mid x
   input->seek(1, WPX_SEEK_CUR);
-  double y2 = (m_xform.height - readDouble(input)) + m_xform.y; // Mid y
+  double y2 = readDouble(input); // Mid y
   input->seek(1, WPX_SEEK_CUR);
   double angle = readDouble(input); // Angle
   input->seek(1, WPX_SEEK_CUR);
   double ecc = readDouble(input); // Eccentricity
+
+#if 0
+  m_collector->collectEllipticalArcTo(x3, y3, x2, y2, angle, ecc, m_header.id);
+#else
+  x3 += m_xform.x;
+  y3 = m_xform.height - y3 + m_xform.y;
+  x2 += m_xform.x;
+  y2 = m_xform.height - y2 + m_xform.y;
 
   rotatePoint(x2, y2, m_xform);
   rotatePoint(x3, y3, m_xform);
@@ -291,6 +299,7 @@ void libvisio::VSDXParser::readEllipticalArcTo(WPXInputStream *input)
   arc.insert("svg:y", m_scale*m_y);
   arc.insert("libwpg:path-action", "A");
   m_currentGeometry[m_header.id] = arc;
+#endif
 }
 
 
@@ -394,7 +403,6 @@ void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
 
 void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
 {
-  WPXPropertyList ellipse;
   input->seek(1, WPX_SEEK_CUR);
   double cx = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
@@ -407,6 +415,11 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
   /* double cc = */ readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   double dd = readDouble(input);
+
+#if 0
+  m_collector->collectEllipse(cx, cy, aa, bb, cc, dd);
+#else
+  WPXPropertyList ellipse;
   ellipse.insert("svg:rx", m_scale*(aa-cx));
   ellipse.insert("svg:ry", m_scale*(dd-cy));
   ellipse.insert("svg:cx", m_scale*(m_xform.x+cx));
@@ -417,6 +430,7 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
     m_painter->setStyle(m_styleProps, m_gradientProps);
     m_painter->drawEllipse(ellipse);
   }
+#endif
 }
 
 void libvisio::VSDXParser::readLine(WPXInputStream *input)

@@ -27,6 +27,7 @@
 #include <libwpg/libwpg.h>
 #include "VSDXParser.h"
 #include "VSDInternalStream.h"
+#include "VSDXCollector.h"
 
 namespace libvisio
 {

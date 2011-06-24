@@ -22,19 +22,35 @@
 #define VSDXSTYLESCOLLECTOR_H
 
 #include "VSDXCollector.h"
+#include "VSDXParser.h"
 
 namespace libvisio {
  
 class VSDXStylesCollector : public VSDXCollector
 {
 public:
-    VSDXStylesCollector();
-    virtual ~VSDXStylesCollector() {};
+  VSDXStylesCollector();
+  virtual ~VSDXStylesCollector() {};
+
+  void collectEllipticalArcTo(double x3, double y3, double x2, double y2, double angle, double ecc, unsigned id) {}
+  void collectForeignData() {}
+  void collectEllipse(double cx, double cy, double aa, double bb, double cc, double dd) {}
+  void collectLine() {}
+  void collectFillAndShadow() {}
+  void collectGeomList() {}
+  void collectGeometry() {}
+  void collectMoveTo() {}
+  void collectLineTo() {}
+  void collectArcTo() {}
+  void collectXFormData() {}
+  void collectShapeID() {}
+  void collectForeignDataType() {}
+  void collectPageProps() {}
 
 
 private:
-    VSDXStylesCollector(const VSDXStylesCollector&);
-    VSDXStylesCollector& operator=(const VSDXStylesCollector&);
+  VSDXStylesCollector(const VSDXStylesCollector&);
+  VSDXStylesCollector& operator=(const VSDXStylesCollector&);
 };
 
 }

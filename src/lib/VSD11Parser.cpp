@@ -26,6 +26,7 @@
 #include "VSD11Parser.h"
 #include "VSDInternalStream.h"
 #include "VSDXDocumentStructure.h"
+#include "VSDXContentCollector.h"
 
 const libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] = {
   {VSD_PAGE, "Page", &libvisio::VSD11Parser::handlePage},
@@ -95,7 +96,7 @@ bool libvisio::VSD11Parser::parse()
     return false;
   }
 */
-  VSDXContentCollector contentCollector;
+  VSDXContentCollector contentCollector(m_painter);
   if (!parseDocument(trailerStream, &contentCollector))
   {
     delete trailerStream;
