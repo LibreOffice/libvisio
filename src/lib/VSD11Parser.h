@@ -54,6 +54,9 @@ private:
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
   
+  // parser of one pass
+  bool parseDocument(WPXInputStream *input, VSDXCollector *collector);
+  
 
   typedef void (VSD11Parser::*StreamMethod)(WPXInputStream*);
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};

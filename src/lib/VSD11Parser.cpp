@@ -91,7 +91,6 @@ by WPGPaintInterface class implementation as needed.
 */
 bool libvisio::VSD11Parser::parse()
 {
-  const unsigned int SHIFT = 4;
   if (!m_input)
   {
     return false;
@@ -106,26 +105,49 @@ bool libvisio::VSD11Parser::parse()
   bool compressed = ((format & 2) == 2);
 
   m_input->seek(offset, WPX_SEEK_SET);
-  VSDInternalStream trailerStream(m_input, length, compressed);
+  WPXInputStream *trailerStream = new VSDInternalStream(m_input, length, compressed);
 
-  // Parse out pointers to other streams from trailer
-  trailerStream.seek(SHIFT, WPX_SEEK_SET);
-  offset = readU32(&trailerStream);
-  trailerStream.seek(offset+SHIFT, WPX_SEEK_SET);
-  unsigned int pointerCount = readU32(&trailerStream);
-  trailerStream.seek(SHIFT, WPX_SEEK_CUR);
+/*  
+  VSDXStylesCollector stylesCollector;
+  if (!parseDocument(trailerStream, &stylesCollector))
+  {
+    delete trailerStream;
+    return false;
+  }
+*/
+  VSDXContentCollector contentCollector;
+  if (!parseDocument(trailerStream, &contentCollector))
+  {
+    delete trailerStream;
+    return false;
+  }
+  
+  delete trailerStream;
+  return true;
+}
+
+bool libvisio::VSD11Parser::parseDocument(WPXInputStream *input, VSDXCollector *collector)
+{
+  const unsigned int SHIFT = 4;
 
   unsigned int ptrType;
   unsigned int ptrOffset;
   unsigned int ptrLength;
   unsigned int ptrFormat;
+
+  // Parse out pointers to other streams from trailer
+  input->seek(SHIFT, WPX_SEEK_SET);
+  unsigned offset = readU32(input);
+  input->seek(offset+SHIFT, WPX_SEEK_SET);
+  unsigned int pointerCount = readU32(input);
+  input->seek(SHIFT, WPX_SEEK_CUR);
   for (unsigned int i = 0; i < pointerCount; i++)
   {
-    ptrType = readU32(&trailerStream);
-    trailerStream.seek(4, WPX_SEEK_CUR); // Skip dword
-    ptrOffset = readU32(&trailerStream);
-    ptrLength = readU32(&trailerStream);
-    ptrFormat = readU16(&trailerStream);
+    ptrType = readU32(input);
+    input->seek(4, WPX_SEEK_CUR); // Skip dword
+    ptrOffset = readU32(input);
+    ptrLength = readU32(input);
+    ptrFormat = readU16(input);
 
     int index = -1;
     for (int j = 0; (index < 0) && streamHandlers[j].type; j++)
@@ -137,7 +159,7 @@ bool libvisio::VSD11Parser::parse()
     if (index < 0)
     {
       VSD_DEBUG_MSG(("Unknown stream pointer type 0x%02x found in trailer at %li\n",
-                     ptrType, trailerStream.tell() - 18));
+                     ptrType, input->tell() - 18));
     }
     else
     {
@@ -145,14 +167,14 @@ bool libvisio::VSD11Parser::parse()
       if (!streamHandler)
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li ignored\n",
                        streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
-                       trailerStream.tell() - 18));
+                       input->tell() - 18));
       else
       {
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li handled\n",
                        streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
-                       trailerStream.tell() - 18));
+                       input->tell() - 18));
 
-        compressed = ((ptrFormat & 2) == 2);
+        bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
         WPXInputStream *input = new VSDInternalStream(m_input, ptrLength, compressed);
         (this->*streamHandler)(input);

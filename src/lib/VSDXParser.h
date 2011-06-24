@@ -27,6 +27,8 @@
 #include <map>
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
+#include "VSDXContentCollector.h"
+#include "VSDXStylesCollector.h"
 
 namespace libvisio
 {
