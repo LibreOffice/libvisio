@@ -85,6 +85,9 @@ protected:
   WPXBinaryData m_currentForeignData;
   WPXPropertyList m_currentForeignProps;
   unsigned m_currentShapeId;
+  unsigned int m_foreignType;
+  unsigned int m_foreignFormat;
+
 };
 
 } // namespace libvisio

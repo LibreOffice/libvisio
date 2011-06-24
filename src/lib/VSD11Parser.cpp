@@ -289,9 +289,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   WPXPropertyListVector path;
   WPXPropertyList styleProps;
   WPXPropertyListVector gradientProps;
-  unsigned int foreignType = 0; // Tracks current foreign data type
-  unsigned int foreignFormat = 0; // Tracks foreign data format
-  unsigned long tmpBytesRead = 0;
+  m_foreignType = 0; // Tracks current foreign data type
+  m_foreignFormat = 0; // Tracks foreign data format
   unsigned long streamPos = 0;
 
   m_x = 0; m_y = 0;
@@ -477,7 +476,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     }    
     case VSD_GEOMETRY:
     {
-	  m_x = 0.0; m_x = 0.0;
+      m_x = 0.0; m_x = 0.0;
       unsigned int geomFlags = readU8(&stream);
       noFill = ((geomFlags & 1) == 1);
       noLine = ((geomFlags & 2) == 2);
@@ -593,118 +592,20 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     }
     break;
     case VSD_ELLIPTICAL_ARC_TO:
-    {
-	  readEllipticalArcTo(&stream);
-    }
+      readEllipticalArcTo(&stream);
       break;
     case VSD_FOREIGN_DATA_TYPE:
       stream.seek(0x24, WPX_SEEK_CUR);
-      foreignType = readU16(&stream);
+      m_foreignType = readU16(&stream);
       stream.seek(0xb, WPX_SEEK_CUR);
-      foreignFormat = readU32(&stream);
+      m_foreignFormat = readU32(&stream);
 
       stream.seek(m_header.dataLength+m_header.trailer-0x35, WPX_SEEK_CUR);
-      VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
+      VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", m_foreignType, m_foreignFormat));
 
       break;
     case VSD_FOREIGN_DATA:
-      if (foreignType == 1 || foreignType == 4) // Image
-      {
-        const unsigned char *buffer = stream.read(m_header.dataLength, tmpBytesRead);
-        // If bmp data found, reconstruct m_header
-        if (foreignType == 1 && foreignFormat == 0)
-        {
-          m_currentForeignData.append(0x42);
-          m_currentForeignData.append(0x4d);
-
-          m_currentForeignData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
-          m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
-          m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
-          m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
-
-          m_currentForeignData.append(0x00);
-          m_currentForeignData.append(0x00);
-          m_currentForeignData.append(0x00);
-          m_currentForeignData.append(0x00);
-
-          m_currentForeignData.append(0x36);
-          m_currentForeignData.append(0x00);
-          m_currentForeignData.append(0x00);
-          m_currentForeignData.append(0x00);
-        }
-        m_currentForeignData.append(buffer, tmpBytesRead);
-
-#if DUMP_BITMAP
-        if (foreignType == 1 || foreignType == 4)
-        {
-          ::WPXString filename;
-          switch(foreignFormat)
-          {
-          case 0:
-            filename.sprintf("binarydump%i.bmp", bitmapId++); break;
-          case 1:
-            filename.sprintf("binarydump%i.jpeg", bitmapId++); break;
-          case 2:
-            filename.sprintf("binarydump%i.gif", bitmapId++); break;
-          case 3:
-            filename.sprintf("binarydump%i.tiff", bitmapId++); break;
-          case 4:
-            filename.sprintf("binarydump%i.png", bitmapId++); break;
-          default:
-            filename.sprintf("binarydump%i.bin", bitmapId++); break;
-          }
-          FILE *f = fopen(filename.cstr(), "wb");
-          if (f)
-          {
-            const unsigned char *tmpBuffer = m_currentForeignData.getDataBuffer();
-            for (unsigned long k = 0; k < m_currentForeignData.size(); k++)
-              fprintf(f, "%c",tmpBuffer[k]);
-            fclose(f);
-          }
-        }
-#endif
-
-        m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
-        m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
-        m_currentForeignProps.insert("svg:x", m_scale*(m_xform.pinX - m_xform.pinLocX));
-        // Y axis starts at the bottom not top
-        m_currentForeignProps.insert("svg:y", m_scale*(m_pageHeight -
-                            m_xform.pinY + m_xform.pinLocY - m_xform.height));
-
-        if (foreignType == 1)
-        {
-          switch(foreignFormat)
-          {
-          case 0:
-            m_currentForeignProps.insert("libwpg:mime-type", "image/bmp"); break;
-          case 1:
-            m_currentForeignProps.insert("libwpg:mime-type", "image/jpeg"); break;
-          case 2:
-            m_currentForeignProps.insert("libwpg:mime-type", "image/gif"); break;
-          case 3:
-            m_currentForeignProps.insert("libwpg:mime-type", "image/tiff"); break;
-          case 4:
-            m_currentForeignProps.insert("libwpg:mime-type", "image/png"); break;
-          }
-        }
-        else if (foreignType == 4)
-        {
-          const unsigned char *tmpBinData = m_currentForeignData.getDataBuffer();
-          // Check for EMF signature
-          if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
-          {
-            m_currentForeignProps.insert("libwpg:mime-type", "image/emf");
-          }
-          else
-          {
-            m_currentForeignProps.insert("libwpg:mime-type", "image/wmf");
-          }
-        }
-      }
-      else
-      {
-        stream.seek(m_header.dataLength+m_header.trailer, WPX_SEEK_CUR);
-      }
+      readForeignData(&stream);
       break;
     }
 
@@ -876,7 +777,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
           x = (iter->second)["svg:x"]->getDouble();
           y = (iter->second)["svg:y"]->getDouble();
         }
-		path.append(iter->second);
+        path.append(iter->second);
       }
       else
       {
@@ -916,7 +817,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
               x = (iter2())["svg:x"]->getDouble();
               y = (iter2())["svg:y"]->getDouble();
             }
-	      path.append(iter2());
+          path.append(iter2());
           }
         }
       }
@@ -928,7 +829,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
       closedPath.insert("libwpg:path-action", "Z");
       path.append(closedPath);
     }
-	if (path.count())
+    if (path.count())
       painter->drawPath(path);
   }
   else
@@ -960,58 +861,157 @@ void libvisio::VSD11Parser::_flushCurrentForeignData(libwpg::WPGPaintInterface *
 
 void libvisio::VSD11Parser::readEllipticalArcTo(WPXInputStream *input)
 {
-      input->seek(1, WPX_SEEK_CUR);
-      double x3 = readDouble(input) + m_xform.x; // End x
-      input->seek(1, WPX_SEEK_CUR);
-      double y3 = (m_xform.height - readDouble(input)) + m_xform.y; // End y
-      input->seek(1, WPX_SEEK_CUR);
-      double x2 = readDouble(input) + m_xform.x; // Mid x
-      input->seek(1, WPX_SEEK_CUR);
-      double y2 = (m_xform.height - readDouble(input)) + m_xform.y; // Mid y
-      input->seek(1, WPX_SEEK_CUR);
-      double angle = readDouble(input); // Angle
-      input->seek(1, WPX_SEEK_CUR);
-      double ecc = readDouble(input); // Eccentricity
+  input->seek(1, WPX_SEEK_CUR);
+  double x3 = readDouble(input) + m_xform.x; // End x
+  input->seek(1, WPX_SEEK_CUR);
+  double y3 = (m_xform.height - readDouble(input)) + m_xform.y; // End y
+  input->seek(1, WPX_SEEK_CUR);
+  double x2 = readDouble(input) + m_xform.x; // Mid x
+  input->seek(1, WPX_SEEK_CUR);
+  double y2 = (m_xform.height - readDouble(input)) + m_xform.y; // Mid y
+  input->seek(1, WPX_SEEK_CUR);
+  double angle = readDouble(input); // Angle
+  input->seek(1, WPX_SEEK_CUR);
+  double ecc = readDouble(input); // Eccentricity
 
-      rotatePoint(x2, y2, m_xform);
-      rotatePoint(x3, y3, m_xform);
-      flipPoint(x2, y2, m_xform);
-      flipPoint(x3, y3, m_xform);
+  rotatePoint(x2, y2, m_xform);
+  rotatePoint(x3, y3, m_xform);
+  flipPoint(x2, y2, m_xform);
+  flipPoint(x3, y3, m_xform);
 
-      double x1 = m_x;
-      double y1 = m_y;
-      double x0 = ((x1-x2)*(x1+x2)*(y2-y3) - (x2-x3)*(x2+x3)*(y1-y2) +
-                   ecc*ecc*(y1-y2)*(y2-y3)*(y1-y3)) /
-                   (2*((x1-x2)*(y2-y3) - (x2-x3)*(y1-y2)));
-      double y0 = ((x1-x2)*(x2-x3)*(x1-x3) + ecc*ecc*(x2-x3)*(y1-y2)*(y1+y2) -
-                   ecc*ecc*(x1-x2)*(y2-y3)*(y2+y3)) /
-                   (2*ecc*ecc*((x2-x3)*(y1-y2) - (x1-x2)*(y2-y3)));
-      VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
-      double rx = sqrt(pow(x1-x0, 2) + ecc*ecc*pow(y1-y0, 2));
-      double ry = rx / ecc;
+  double x1 = m_x;
+  double y1 = m_y;
+  double x0 = ((x1-x2)*(x1+x2)*(y2-y3) - (x2-x3)*(x2+x3)*(y1-y2) +
+               ecc*ecc*(y1-y2)*(y2-y3)*(y1-y3)) /
+               (2*((x1-x2)*(y2-y3) - (x2-x3)*(y1-y2)));
+  double y0 = ((x1-x2)*(x2-x3)*(x1-x3) + ecc*ecc*(x2-x3)*(y1-y2)*(y1+y2) -
+               ecc*ecc*(x1-x2)*(y2-y3)*(y2+y3)) /
+               (2*ecc*ecc*((x2-x3)*(y1-y2) - (x1-x2)*(y2-y3)));
+  VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
+  double rx = sqrt(pow(x1-x0, 2) + ecc*ecc*pow(y1-y0, 2));
+  double ry = rx / ecc;
 
-      m_x = x3; m_y = y3;
-      WPXPropertyList arc;
-      int largeArc = 0;
-      int sweep = 1;
+  m_x = x3; m_y = y3;
+  WPXPropertyList arc;
+  int largeArc = 0;
+  int sweep = 1;
 
-      // Calculate side of chord that ellipse centre and control point fall on
-      double centreSide = (x3-x1)*(y0-y1) - (y3-y1)*(x0-x1);
-      double midSide = (x3-x1)*(y2-y1) - (y3-y1)*(x2-x1);
-      // Large arc if centre and control point are on the same side
-      if ((centreSide > 0 && midSide > 0) || (centreSide < 0 && midSide < 0))
-        largeArc = 1;
-      // Change direction depending of side of control point
-      if (midSide > 0)
-        sweep = 0;
+  // Calculate side of chord that ellipse centre and control point fall on
+  double centreSide = (x3-x1)*(y0-y1) - (y3-y1)*(x0-x1);
+  double midSide = (x3-x1)*(y2-y1) - (y3-y1)*(x2-x1);
+  // Large arc if centre and control point are on the same side
+  if ((centreSide > 0 && midSide > 0) || (centreSide < 0 && midSide < 0))
+    largeArc = 1;
+  // Change direction depending of side of control point
+  if (midSide > 0)
+    sweep = 0;
 
-      arc.insert("svg:rx", m_scale*rx);
-      arc.insert("svg:ry", m_scale*ry);
-      arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + m_xform.angle * (180 / M_PI)));
-      arc.insert("libwpg:large-arc", largeArc);
-      arc.insert("libwpg:sweep", sweep);
-      arc.insert("svg:x", m_scale*m_x);
-      arc.insert("svg:y", m_scale*m_y);
-      arc.insert("libwpg:path-action", "A");
-      m_currentGeometry[m_header.id] = arc;
+  arc.insert("svg:rx", m_scale*rx);
+  arc.insert("svg:ry", m_scale*ry);
+  arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + m_xform.angle * (180 / M_PI)));
+  arc.insert("libwpg:large-arc", largeArc);
+  arc.insert("libwpg:sweep", sweep);
+  arc.insert("svg:x", m_scale*m_x);
+  arc.insert("svg:y", m_scale*m_y);
+  arc.insert("libwpg:path-action", "A");
+  m_currentGeometry[m_header.id] = arc;
+}
+
+
+void libvisio::VSD11Parser::readForeignData(WPXInputStream *input)
+{
+  if (m_foreignType == 1 || m_foreignType == 4) // Image
+  {
+    unsigned long tmpBytesRead = 0;
+    const unsigned char *buffer = input->read(m_header.dataLength, tmpBytesRead);
+    // If bmp data found, reconstruct header
+    if (m_foreignType == 1 && m_foreignFormat == 0)
+    {
+      m_currentForeignData.append(0x42);
+      m_currentForeignData.append(0x4d);
+
+      m_currentForeignData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
+      m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
+      m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
+      m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
+
+      m_currentForeignData.append(0x00);
+      m_currentForeignData.append(0x00);
+      m_currentForeignData.append(0x00);
+      m_currentForeignData.append(0x00);
+
+      m_currentForeignData.append(0x36);
+      m_currentForeignData.append(0x00);
+      m_currentForeignData.append(0x00);
+      m_currentForeignData.append(0x00);
+    }
+    m_currentForeignData.append(buffer, tmpBytesRead);
+
+#if DUMP_BITMAP
+    if (m_foreignType == 1 || m_foreignType == 4)
+    {
+      ::WPXString filename;
+      switch(m_foreignFormat)
+      {
+      case 0:
+        filename.sprintf("binarydump%i.bmp", bitmapId++); break;
+      case 1:
+        filename.sprintf("binarydump%i.jpeg", bitmapId++); break;
+      case 2:
+        filename.sprintf("binarydump%i.gif", bitmapId++); break;
+      case 3:
+        filename.sprintf("binarydump%i.tiff", bitmapId++); break;
+      case 4:
+        filename.sprintf("binarydump%i.png", bitmapId++); break;
+      default:
+        filename.sprintf("binarydump%i.bin", bitmapId++); break;
+      }
+      FILE *f = fopen(filename.cstr(), "wb");
+      if (f)
+      {
+        const unsigned char *tmpBuffer = m_currentForeignData.getDataBuffer();
+        for (unsigned long k = 0; k < m_currentForeignData.size(); k++)
+          fprintf(f, "%c",tmpBuffer[k]);
+        fclose(f);
+      }
+    }
+#endif
+
+    m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
+    m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
+    m_currentForeignProps.insert("svg:x", m_scale*(m_xform.pinX - m_xform.pinLocX));
+    // Y axis starts at the bottom not top
+    m_currentForeignProps.insert("svg:y", m_scale*(m_pageHeight -
+                        m_xform.pinY + m_xform.pinLocY - m_xform.height));
+
+    if (m_foreignType == 1)
+    {
+      switch(m_foreignFormat)
+      {
+      case 0:
+        m_currentForeignProps.insert("libwpg:mime-type", "image/bmp"); break;
+      case 1:
+        m_currentForeignProps.insert("libwpg:mime-type", "image/jpeg"); break;
+      case 2:
+        m_currentForeignProps.insert("libwpg:mime-type", "image/gif"); break;
+      case 3:
+        m_currentForeignProps.insert("libwpg:mime-type", "image/tiff"); break;
+      case 4:
+        m_currentForeignProps.insert("libwpg:mime-type", "image/png"); break;
+      }
+    }
+    else if (m_foreignType == 4)
+    {
+      const unsigned char *tmpBinData = m_currentForeignData.getDataBuffer();
+      // Check for EMF signature
+      if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
+      {
+        m_currentForeignProps.insert("libwpg:mime-type", "image/emf");
+      }
+      else
+      {
+        m_currentForeignProps.insert("libwpg:mime-type", "image/wmf");
+      }
+    }
+  }
 }

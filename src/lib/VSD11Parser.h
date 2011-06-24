@@ -40,6 +40,7 @@ public:
 private:
   // reader functions
   void readEllipticalArcTo(WPXInputStream *input);
+  void readForeignData(WPXInputStream *input);
 
   typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};

@@ -28,7 +28,7 @@
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input)
   : m_input(input), m_isPageStarted(false), m_pageWidth(0.0), 
     m_pageHeight(0.0), m_scale(1.0), m_x(0.0), m_y(0.0),
-    m_currentShapeId(0)
+    m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
