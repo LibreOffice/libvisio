@@ -34,16 +34,16 @@ namespace libvisio
 class VSD6Parser : public VSDXParser
 {
 public:
-  explicit VSD6Parser(WPXInputStream *input);
+  explicit VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   ~VSD6Parser();
-  bool parse(libwpg::WPGPaintInterface *iface);
+  bool parse();
 private:
 
-  typedef void (VSD6Parser::*Method)(VSDInternalStream&, libwpg::WPGPaintInterface*);
+  typedef void (VSD6Parser::*Method)(VSDInternalStream&);
   struct StreamHandler { unsigned int type; const char *name; Method handler;};
   static const StreamHandler handlers[];
-  void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
-  void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  void handlePages(VSDInternalStream &stream);
+  void handlePage(VSDInternalStream &stream);
 };
 
 } // namespace libvisio

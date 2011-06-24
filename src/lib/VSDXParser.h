@@ -35,11 +35,12 @@ typedef struct _VSDXForm VSDXForm;
 class VSDXParser
 {
 public:
-  explicit VSDXParser(WPXInputStream *input);
+  explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   virtual ~VSDXParser();
-  virtual bool parse(libwpg::WPGPaintInterface *iface) = 0;
+  virtual bool parse() = 0;
 protected:
   WPXInputStream *m_input;
+  libwpg::WPGPaintInterface *m_painter;
   struct XForm
   {
     double pinX;
@@ -61,13 +62,13 @@ protected:
   // Utilities
   struct ChunkHeader
   {
-    unsigned int chunkType;  // 4 bytes
-    unsigned int id;         // 4 bytes
-    unsigned int list;       // 4 bytes
-    unsigned int dataLength; // 4 bytes
-    unsigned int level;      // 2 bytes
-    unsigned int unknown;    // 1 byte
-    unsigned int trailer; // Derived
+    unsigned chunkType;  // 4 bytes
+    unsigned id;         // 4 bytes
+    unsigned list;       // 4 bytes
+    unsigned dataLength; // 4 bytes
+    unsigned level;      // 2 bytes
+    unsigned unknown;    // 1 byte
+    unsigned trailer; // Derived
   };
 
   bool m_isPageStarted;
@@ -78,16 +79,20 @@ protected:
   double m_y;
   XForm m_xform;
   ChunkHeader m_header;
-  std::vector<unsigned int> m_currentGeometryOrder;
-  std::map<unsigned int, WPXPropertyList> m_currentGeometry;
-  std::map<unsigned int, WPXPropertyListVector> m_currentComplexGeometry;
-  std::map<unsigned int, XForm> m_groupXForms;
+  std::vector<unsigned> m_currentGeometryOrder;
+  std::map<unsigned, WPXPropertyList> m_currentGeometry;
+  std::map<unsigned, WPXPropertyListVector> m_currentComplexGeometry;
+  std::map<unsigned, XForm> m_groupXForms;
   WPXBinaryData m_currentForeignData;
   WPXPropertyList m_currentForeignProps;
   unsigned m_currentShapeId;
-  unsigned int m_foreignType;
-  unsigned int m_foreignFormat;
-
+  unsigned m_foreignType;
+  unsigned m_foreignFormat;
+  WPXPropertyList m_styleProps;
+  ::WPXString m_lineColour;
+  ::WPXString m_fillType;
+  unsigned m_linePattern;
+  unsigned m_fillPattern;
 };
 
 } // namespace libvisio

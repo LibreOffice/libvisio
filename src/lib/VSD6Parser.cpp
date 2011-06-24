@@ -33,8 +33,8 @@ const libvisio::VSD6Parser::StreamHandler libvisio::VSD6Parser::handlers[] = {
   {0, 0, 0}
 };
 
-libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input)
-  : VSDXParser(input)
+libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+  : VSDXParser(input, painter)
 {}
 
 libvisio::VSD6Parser::~VSD6Parser()
@@ -45,7 +45,7 @@ by WPGPaintInterface class implementation as needed.
 \param iface A WPGPaintInterface implementation
 \return A value indicating whether parsing was successful
 */
-bool libvisio::VSD6Parser::parse(libwpg::WPGPaintInterface *painter)
+bool libvisio::VSD6Parser::parse()
 {
   const unsigned int SHIFT = 4;
   if (!m_input)
@@ -111,18 +111,18 @@ bool libvisio::VSD6Parser::parse(libwpg::WPGPaintInterface *painter)
         compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
         VSDInternalStream stream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(stream, painter);
+        (this->*streamHandler)(stream);
       }
     }
   }
 
   // End page if one is started
   if (m_isPageStarted)
-    painter->endGraphics();
+    m_painter->endGraphics();
   return true;
 }
 
-void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
+void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream)
 {
   unsigned int offset = readU32(&stream);
   stream.seek(offset, WPX_SEEK_SET);
@@ -169,13 +169,13 @@ void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPai
         bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
         VSDInternalStream tmpStream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(tmpStream, painter);
+        (this->*streamHandler)(tmpStream);
       }
     }
   }
 }
 
-void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
+void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream)
 {
   WPXPropertyList pageProps;
   XForm xform; // Tracks current xform data
@@ -281,7 +281,7 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
           }
         }
 
-        painter->drawGraphicObject(foreignProps, binaryData);
+        m_painter->drawGraphicObject(foreignProps, binaryData);
       }
       else
       {
@@ -299,8 +299,8 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
       pageProps.insert("svg:width", m_scale*m_pageWidth);
       pageProps.insert("svg:height", m_scale*m_pageHeight);
       if (m_isPageStarted)
-        painter->endGraphics();
-      painter->startGraphics(pageProps);
+        m_painter->endGraphics();
+      m_painter->startGraphics(pageProps);
       m_isPageStarted = true;
 
       stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);

@@ -77,14 +77,14 @@ bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInt
   VSDXParser* parser;
   switch(version)
   {
-  case 6: parser = new VSD6Parser(docStream); break;
-  case 11: parser = new VSD11Parser(docStream); break;
+  case 6: parser = new VSD6Parser(docStream, painter); break;
+  case 11: parser = new VSD11Parser(docStream, painter); break;
   default: return false;
   }
 
   if (parser)
   {
-    parser->parse(painter);
+    parser->parse();
   }
   else
   {

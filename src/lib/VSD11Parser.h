@@ -34,30 +34,32 @@ namespace libvisio
 class VSD11Parser : public VSDXParser
 {
 public:
-  explicit VSD11Parser(WPXInputStream *input);
+  explicit VSD11Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   ~VSD11Parser();
-  bool parse(libwpg::WPGPaintInterface *iface);
+  bool parse();
 private:
   // reader functions
   void readEllipticalArcTo(WPXInputStream *input);
   void readForeignData(WPXInputStream *input);
+  void readEllipse(WPXInputStream *input);
+  void readLine(WPXInputStream *input);
 
-  typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
+  typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&);
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};
   static const StreamHandler streamHandlers[];
 
-  typedef void (VSD11Parser::*ChunkMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
+  typedef void (VSD11Parser::*ChunkMethod)(VSDInternalStream&);
   struct ChunkHandler { unsigned int type; const char *name; ChunkMethod handler;};
   static const struct ChunkHandler chunkHandlers[4];
 
   // Stream handlers
-  void handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
-  void handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
-  void handleColours(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  void handlePages(VSDInternalStream &stream);
+  void handlePage(VSDInternalStream &stream);
+  void handleColours(VSDInternalStream &stream);
 
   // Chunk handlers
-  void shapeChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
-  void foreignChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
+  void shapeChunk(VSDInternalStream &stream);
+  void foreignChunk(VSDInternalStream &stream);
 
   struct Colour
   {
@@ -73,8 +75,8 @@ private:
   
   XForm _parseXForm(WPXInputStream *input);
   XForm _transformXForm(const XForm &xform);
-  void _flushCurrentPath(libwpg::WPGPaintInterface *painter);
-  void _flushCurrentForeignData(libwpg::WPGPaintInterface *painter);
+  void _flushCurrentPath();
+  void _flushCurrentForeignData();
   
   const ::WPXString getColourString(const Colour& c) const;
 

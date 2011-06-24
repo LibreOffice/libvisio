@@ -62,8 +62,8 @@ const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHan
   {0, 0, 0}
 };
 
-libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input)
-  : VSDXParser(input)
+libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+  : VSDXParser(input, painter)
 {}
 
 libvisio::VSD11Parser::~VSD11Parser()
@@ -74,7 +74,7 @@ by WPGPaintInterface class implementation as needed.
 \param iface A WPGPaintInterface implementation
 \return A value indicating whether parsing was successful
 */
-bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *painter)
+bool libvisio::VSD11Parser::parse()
 {
   const unsigned int SHIFT = 4;
   if (!m_input)
@@ -140,18 +140,18 @@ bool libvisio::VSD11Parser::parse(libwpg::WPGPaintInterface *painter)
         compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
         VSDInternalStream stream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(stream, painter);
+        (this->*streamHandler)(stream);
       }
     }
   }
 
   // End page if one is started
   if (m_isPageStarted)
-    painter->endGraphics();
+    m_painter->endGraphics();
   return true;
 }
 
-void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
+void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream)
 {
   unsigned int offset = readU32(&stream);
   stream.seek(offset, WPX_SEEK_SET);
@@ -198,13 +198,13 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
         bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
         VSDInternalStream tmpStream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(tmpStream, painter);
+        (this->*streamHandler)(tmpStream);
       }
     }
   }
 }
 
-void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
+void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream)
 {
   m_groupXForms.clear();
 
@@ -226,7 +226,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       if (chunkHandler)
       {
         m_currentShapeId = m_header.id;
-        (this->*chunkHandler)(stream, painter);
+        (this->*chunkHandler)(stream);
       }
       continue;
     }
@@ -249,8 +249,8 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       pageProps.insert("svg:height", m_scale*m_pageHeight);
 
       if (m_isPageStarted)
-        painter->endGraphics();
-      painter->startGraphics(pageProps);
+        m_painter->endGraphics();
+      m_painter->startGraphics(pageProps);
       m_isPageStarted = true;
 
       stream.seek(m_header.dataLength+m_header.trailer-45, WPX_SEEK_CUR);
@@ -265,7 +265,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
   }
 }
 
-void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream, libwpg::WPGPaintInterface * /*painter*/)
+void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream)
 {
   stream.seek(6, WPX_SEEK_SET);
   unsigned int numColours = readU8(&stream);
@@ -284,10 +284,9 @@ void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream, libwpg::WPG
   }
 }
 
-void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
+void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
 {
   WPXPropertyListVector path;
-  WPXPropertyList styleProps;
   WPXPropertyListVector gradientProps;
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
@@ -303,17 +302,17 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   bool noShow = false;
 
   // Save line colour and pattern, fill type and pattern
-  ::WPXString lineColour = "black";
-  ::WPXString fillType = "none";
-  unsigned int linePattern = 1; // same as "solid"
-  unsigned int fillPattern = 1; // same as "solid"
+  m_lineColour = "black";
+  m_fillType = "none";
+  m_linePattern = 1; // same as "solid"
+  m_fillPattern = 1; // same as "solid"
 
   // Reset style
-  styleProps.clear();
-  styleProps.insert("svg:stroke-width", m_scale*0.0138889);
-  styleProps.insert("svg:stroke-color", lineColour);
-  styleProps.insert("draw:fill", fillType);
-  styleProps.insert("svg:stroke-dasharray", "solid");
+  m_styleProps.clear();
+  m_styleProps.insert("svg:stroke-width", m_scale*0.0138889);
+  m_styleProps.insert("svg:stroke-color", m_lineColour);
+  m_styleProps.insert("draw:fill", m_fillType);
+  m_styleProps.insert("svg:stroke-dasharray", "solid");
 
   while (!stream.atEOS())
   {
@@ -344,49 +343,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       m_groupXForms[readU32(&stream)] = m_xform;
       break;
     case VSD_LINE:
-    {
-      stream.seek(1, WPX_SEEK_CUR);
-      styleProps.insert("svg:stroke-width", m_scale*readDouble(&stream));
-      stream.seek(1, WPX_SEEK_CUR);
-      Colour c;
-      c.r = readU8(&stream);
-      c.g = readU8(&stream);
-      c.b = readU8(&stream);
-      c.a = readU8(&stream);
-      lineColour = getColourString(c);
-      styleProps.insert("svg:stroke-color", lineColour);
-      linePattern = readU8(&stream);
-      const char* patterns[] = {
-        /*  0 */  "none",
-        /*  1 */  "solid",
-        /*  2 */  "6, 3",
-        /*  3 */  "1, 3",
-        /*  4 */  "6, 3, 1, 3",
-        /*  5 */  "6, 3, 1, 3, 1, 3",
-        /*  6 */  "6, 3, 6, 3, 1, 3",
-        /*  7 */  "14, 2, 6, 2",
-        /*  8 */  "14, 2, 6, 2, 6, 2",
-        /*  9 */  "3, 1",
-        /* 10 */  "1, 1",
-        /* 11 */  "3, 1, 1, 1",
-        /* 12 */  "3, 1, 1, 1, 1, 1",
-        /* 13 */  "3, 1, 3, 1, 1, 1",
-        /* 14 */  "7, 1, 3, 1",
-        /* 15 */  "7, 1, 3, 1, 3, 1",
-        /* 16 */  "11, 5",
-        /* 17 */  "1, 5",
-        /* 18 */  "11, 5, 1, 5",
-        /* 19 */  "11, 5, 1, 5, 1, 5",
-        /* 20 */  "11, 5, 11, 5, 1, 5",
-        /* 21 */  "27, 5, 11, 5",
-        /* 22 */  "27, 5, 11, 5, 11, 5",
-        /* 23 */  "2, 1"
-      };
-      if (linePattern > 0 && linePattern < sizeof(patterns)/sizeof(patterns[0]))
-        styleProps.insert("svg:stroke-dasharray", patterns[linePattern]);
-      // FIXME: later it will require special treatment for custom line patterns
-      // patt ID is 0xfe, link to stencil name is in 'Line' blocks
-    }
+	  readLine(&stream);
       break;
     case VSD_FILL_AND_SHADOW:
     {
@@ -394,17 +351,17 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(4, WPX_SEEK_CUR);
       unsigned int colourIndexBG = readU8(&stream);
       stream.seek(4, WPX_SEEK_CUR);
-      fillPattern = readU8(&stream);
-      if (fillPattern == 1)
+      m_fillPattern = readU8(&stream);
+      if (m_fillPattern == 1)
       {
-        fillType = "solid";
-        styleProps.insert("draw:fill", "solid");
-        styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+        m_fillType = "solid";
+        m_styleProps.insert("draw:fill", "solid");
+        m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
       }
-      else if (fillPattern >= 25 && fillPattern <= 34)
+      else if (m_fillPattern >= 25 && m_fillPattern <= 34)
       {
-        fillType = "gradient";
-        styleProps.insert("draw:fill", "gradient");
+        m_fillType = "gradient";
+        m_styleProps.insert("draw:fill", "gradient");
         WPXPropertyList startColour;
         startColour.insert("svg:stop-color",
                            getColourString(m_colours[colourIndexFG]));
@@ -416,45 +373,45 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
         endColour.insert("svg:offset", 1, WPX_PERCENT);
         endColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
 
-        switch(fillPattern)
+        switch(m_fillPattern)
         {
         case 25:
-          styleProps.insert("draw:angle", -90);
+          m_styleProps.insert("draw:angle", -90);
           break;
         case 26:
-          styleProps.insert("draw:angle", -90);
+          m_styleProps.insert("draw:angle", -90);
           endColour.insert("svg:offset", 0, WPX_PERCENT);
           gradientProps.append(endColour);
           endColour.insert("svg:offset", 1, WPX_PERCENT);
           startColour.insert("svg:offset", 0.5, WPX_PERCENT);
           break;
         case 27:
-          styleProps.insert("draw:angle", 90);
+          m_styleProps.insert("draw:angle", 90);
           break;
         case 28:
-          styleProps.insert("draw:angle", 0);
+          m_styleProps.insert("draw:angle", 0);
           break;
         case 29:
-          styleProps.insert("draw:angle", 0);
+          m_styleProps.insert("draw:angle", 0);
           endColour.insert("svg:offset", 0, WPX_PERCENT);
           gradientProps.append(endColour);
           endColour.insert("svg:offset", 1, WPX_PERCENT);
           startColour.insert("svg:offset", 0.5, WPX_PERCENT);
           break;
         case 30:
-          styleProps.insert("draw:angle", 180);
+          m_styleProps.insert("draw:angle", 180);
           break;
         case 31:
-          styleProps.insert("draw:angle", -45);
+          m_styleProps.insert("draw:angle", -45);
           break;
         case 32:
-          styleProps.insert("draw:angle", 45);
+          m_styleProps.insert("draw:angle", 45);
           break;
         case 33:
-          styleProps.insert("draw:angle", 225);
+          m_styleProps.insert("draw:angle", 225);
           break;
         case 34:
-          styleProps.insert("draw:angle", 135);
+          m_styleProps.insert("draw:angle", 135);
           break;
         }
         gradientProps.append(startColour);
@@ -464,8 +421,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       break;
     case VSD_GEOM_LIST:
     {
-      _flushCurrentPath(painter);
-      painter->setStyle(styleProps, gradientProps);
+      _flushCurrentPath();
+      m_painter->setStyle(m_styleProps, gradientProps);
       uint32_t subHeaderLength = readU32(&stream);
       uint32_t childrenListLength = readU32(&stream);
       stream.seek(subHeaderLength, WPX_SEEK_CUR);
@@ -481,16 +438,16 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       noFill = ((geomFlags & 1) == 1);
       noLine = ((geomFlags & 2) == 2);
       noShow = ((geomFlags & 4) == 4);
-      if (noLine || linePattern == 0)
-        styleProps.insert("svg:stroke-color", "none");
+      if (noLine || m_linePattern == 0)
+        m_styleProps.insert("svg:stroke-color", "none");
       else
-        styleProps.insert("svg:stroke-color", lineColour);
-      if (noFill || fillPattern == 0)
-        styleProps.insert("svg:fill", "none");
+        m_styleProps.insert("svg:stroke-color", m_lineColour);
+      if (noFill || m_fillPattern == 0)
+        m_styleProps.insert("svg:fill", "none");
       else
-        styleProps.insert("svg:fill", fillType);
+        m_styleProps.insert("svg:fill", m_fillType);
       VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, noFill, noLine, noShow));
-      painter->setStyle(styleProps, gradientProps);
+      m_painter->setStyle(m_styleProps, gradientProps);
     }
       break;
     case VSD_MOVE_TO:
@@ -568,29 +525,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     }
       break;
     case VSD_ELLIPSE:
-    {
-      WPXPropertyList ellipse;
-      stream.seek(1, WPX_SEEK_CUR);
-      double cx = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      double cy = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      double aa = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      /* double bb = */ readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      /* double cc = */ readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      double dd = readDouble(&stream);
-      ellipse.insert("svg:rx", m_scale*(aa-cx));
-      ellipse.insert("svg:ry", m_scale*(dd-cy));
-      ellipse.insert("svg:cx", m_scale*(m_xform.x+cx));
-      ellipse.insert("svg:cy", m_scale*(m_xform.y+cy));
-      ellipse.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
-      painter->drawEllipse(ellipse);
-      stream.seek(m_header.dataLength+m_header.trailer-54, WPX_SEEK_CUR);
-    }
-    break;
+      readEllipse(&stream);
+      break;
     case VSD_ELLIPTICAL_ARC_TO:
       readEllipticalArcTo(&stream);
       break;
@@ -611,8 +547,8 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
     stream.seek(m_header.dataLength+m_header.trailer-(stream.tell()-streamPos), WPX_SEEK_CUR);
   }
-  _flushCurrentPath(painter);
-  _flushCurrentForeignData(painter);
+  _flushCurrentPath();
+  _flushCurrentForeignData();
   m_x = 0.0; m_y = 0.0;
 }
 
@@ -731,7 +667,7 @@ libvisio::VSDXParser::XForm libvisio::VSD11Parser::_transformXForm(const libvisi
   return tmpXForm;
 }
 
-void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter)
+void libvisio::VSD11Parser::_flushCurrentPath()
 {
   double startX = 0; double startY = 0;
   double x = 0; double y = 0;
@@ -764,7 +700,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
              path.append(closedPath);
           }
           if (path.count())
-            painter->drawPath(path);
+            m_painter->drawPath(path);
 
           path = WPXPropertyListVector();
           x = (iter->second)["svg:x"]->getDouble();
@@ -804,7 +740,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
                 path.append(closedPath);
               }
               if (path.count())
-                painter->drawPath(path);
+                m_painter->drawPath(path);
 
               path = WPXPropertyListVector();
               x = (iter2())["svg:x"]->getDouble();
@@ -830,7 +766,7 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
       path.append(closedPath);
     }
     if (path.count())
-      painter->drawPath(path);
+      m_painter->drawPath(path);
   }
   else
   {
@@ -843,21 +779,22 @@ void libvisio::VSD11Parser::_flushCurrentPath(libwpg::WPGPaintInterface *painter
         path.append(iter2());
     }
     if (path.count())
-      painter->drawPath(path);
+      m_painter->drawPath(path);
   }
   m_currentGeometry.clear();
   m_currentComplexGeometry.clear();
   m_currentGeometryOrder.clear();
 }
 
-void libvisio::VSD11Parser::_flushCurrentForeignData(libwpg::WPGPaintInterface *painter)
+void libvisio::VSD11Parser::_flushCurrentForeignData()
 {
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"])
-    painter->drawGraphicObject(m_currentForeignProps, m_currentForeignData);
+    m_painter->drawGraphicObject(m_currentForeignProps, m_currentForeignData);
   m_currentForeignData.clear();
   m_currentForeignProps.clear();
 }
 
+// --- READERS --- 
 
 void libvisio::VSD11Parser::readEllipticalArcTo(WPXInputStream *input)
 {
@@ -1015,3 +952,72 @@ void libvisio::VSD11Parser::readForeignData(WPXInputStream *input)
     }
   }
 }
+
+void libvisio::VSD11Parser::readEllipse(WPXInputStream *input)
+{
+  WPXPropertyList ellipse;
+  input->seek(1, WPX_SEEK_CUR);
+  double cx = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double cy = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double aa = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  /* double bb = */ readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  /* double cc = */ readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double dd = readDouble(input);
+  ellipse.insert("svg:rx", m_scale*(aa-cx));
+  ellipse.insert("svg:ry", m_scale*(dd-cy));
+  ellipse.insert("svg:cx", m_scale*(m_xform.x+cx));
+  ellipse.insert("svg:cy", m_scale*(m_xform.y+cy));
+  ellipse.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
+  m_painter->drawEllipse(ellipse);
+}
+
+void libvisio::VSD11Parser::readLine(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  m_styleProps.insert("svg:stroke-width", m_scale*readDouble(input));
+  input->seek(1, WPX_SEEK_CUR);
+  Colour c;
+  c.r = readU8(input);
+  c.g = readU8(input);
+  c.b = readU8(input);
+  c.a = readU8(input);
+  m_lineColour = getColourString(c);
+  m_styleProps.insert("svg:stroke-color", m_lineColour);
+  m_linePattern = readU8(input);
+  const char* patterns[] = {
+    /*  0 */  "none",
+    /*  1 */  "solid",
+    /*  2 */  "6, 3",
+    /*  3 */  "1, 3",
+    /*  4 */  "6, 3, 1, 3",
+    /*  5 */  "6, 3, 1, 3, 1, 3",
+    /*  6 */  "6, 3, 6, 3, 1, 3",
+    /*  7 */  "14, 2, 6, 2",
+    /*  8 */  "14, 2, 6, 2, 6, 2",
+    /*  9 */  "3, 1",
+    /* 10 */  "1, 1",
+    /* 11 */  "3, 1, 1, 1",
+    /* 12 */  "3, 1, 1, 1, 1, 1",
+    /* 13 */  "3, 1, 3, 1, 1, 1",
+    /* 14 */  "7, 1, 3, 1",
+    /* 15 */  "7, 1, 3, 1, 3, 1",
+    /* 16 */  "11, 5",
+    /* 17 */  "1, 5",
+    /* 18 */  "11, 5, 1, 5",
+    /* 19 */  "11, 5, 1, 5, 1, 5",
+    /* 20 */  "11, 5, 11, 5, 1, 5",
+    /* 21 */  "27, 5, 11, 5",
+    /* 22 */  "27, 5, 11, 5, 11, 5",
+    /* 23 */  "2, 1"
+  };
+  if (m_linePattern > 0 && m_linePattern < sizeof(patterns)/sizeof(patterns[0]))
+    m_styleProps.insert("svg:stroke-dasharray", patterns[m_linePattern]);
+  // FIXME: later it will require special treatment for custom line patterns
+  // patt ID is 0xfe, link to stencil name is in 'Line' blocks
+}
+
