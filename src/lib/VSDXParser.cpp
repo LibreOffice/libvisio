@@ -47,7 +47,7 @@ libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterfac
     m_groupXForms(), m_currentForeignData(), m_currentForeignProps(), m_currentShapeId(0),
     m_foreignType(0), m_foreignFormat(0), m_styleProps(), m_lineColour("black"),
     m_fillType("none"), m_linePattern(1), m_fillPattern(1), m_gradientProps(), m_noLine(false),
-    m_noFill(false), m_noShow(false)
+    m_noFill(false), m_noShow(false), m_collector(0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()

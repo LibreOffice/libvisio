@@ -27,6 +27,7 @@
 #include "VSDInternalStream.h"
 #include "VSDXDocumentStructure.h"
 #include "VSDXContentCollector.h"
+#include "VSDXStylesCollector.h"
 
 const libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] = {
   {VSD_PAGE, "Page", &libvisio::VSD11Parser::handlePage},
@@ -90,14 +91,16 @@ bool libvisio::VSD11Parser::parse()
 
 /*  
   VSDXStylesCollector stylesCollector;
-  if (!parseDocument(trailerStream, &stylesCollector))
+  m_collector = &stylesCollector;
+  if (!parseDocument(trailerStream))
   {
     delete trailerStream;
     return false;
   }
 */
   VSDXContentCollector contentCollector(m_painter);
-  if (!parseDocument(trailerStream, &contentCollector))
+  m_collector = &contentCollector;
+  if (!parseDocument(trailerStream))
   {
     delete trailerStream;
     return false;
@@ -107,7 +110,7 @@ bool libvisio::VSD11Parser::parse()
   return true;
 }
 
-bool libvisio::VSD11Parser::parseDocument(WPXInputStream *input, VSDXCollector *collector)
+bool libvisio::VSD11Parser::parseDocument(WPXInputStream *input)
 {
   const unsigned int SHIFT = 4;
 

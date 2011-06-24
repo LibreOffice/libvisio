@@ -27,7 +27,6 @@
 #include <libwpg/libwpg.h>
 #include "VSDXParser.h"
 #include "VSDInternalStream.h"
-#include "VSDXCollector.h"
 
 namespace libvisio
 {
@@ -41,7 +40,7 @@ public:
 private:
 
   // parser of one pass
-  bool parseDocument(WPXInputStream *input, VSDXCollector *collector);
+  bool parseDocument(WPXInputStream *input);
   
 
   typedef void (VSD11Parser::*StreamMethod)(WPXInputStream*);
