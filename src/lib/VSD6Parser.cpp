@@ -110,9 +110,9 @@ bool libvisio::VSD6Parser::parse()
 
         compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
-		WPXInputStream *input = new VSDInternalStream(m_input, ptrLength, compressed);
+        WPXInputStream *input = new VSDInternalStream(m_input, ptrLength, compressed);
         (this->*streamHandler)(input);
-		delete input;
+        delete input;
       }
     }
   }
@@ -171,7 +171,7 @@ void libvisio::VSD6Parser::handlePages(WPXInputStream *input)
         m_input->seek(ptrOffset, WPX_SEEK_SET);
         WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
         (this->*streamHandler)(tmpInput);
-		delete tmpInput;
+        delete tmpInput;
       }
     }
   }
@@ -272,7 +272,7 @@ void libvisio::VSD6Parser::handlePage(WPXInputStream *input)
         else if (foreignType == 4)
         {
           const unsigned char *tmpBinData = binaryData.getDataBuffer();
-		  // Check for EMF signature
+          // Check for EMF signature
           if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
           {
             foreignProps.insert("libwpg:mime-type", "image/emf");

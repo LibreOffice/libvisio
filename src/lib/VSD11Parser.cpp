@@ -303,7 +303,7 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
                    m_header.chunkType, m_header.trailer, m_header.dataLength));
 
     if (m_header.chunkType == VSD_PAGE_PROPS)
-	  readPageProps(input);
+      readPageProps(input);
 
     input->seek(endPos, WPX_SEEK_SET);
   }
