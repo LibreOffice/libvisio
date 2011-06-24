@@ -46,6 +46,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXContentCollector.h \
 	VSDXStylesCollector.h \
 	VSDXParser.h \
+	VSDXTypes.h \
 	VSD6Parser.h \
 	VSD11Parser.h \
 	VSDInternalStream.h \
