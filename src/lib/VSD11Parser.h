@@ -49,6 +49,9 @@ private:
   void readMoveTo(WPXInputStream *input);
   void readLineTo(WPXInputStream *input);
   void readArcTo(WPXInputStream *input);
+  void readXFormData(WPXInputStream *input);
+  void readShapeID(WPXInputStream *input);
+  void readForeignDataType(WPXInputStream *input);
   
 
   typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&);
@@ -80,8 +83,6 @@ private:
   void rotatePoint(double &x, double &y, const XForm &xform);
   void flipPoint(double &x, double &y, const XForm &xform);
   
-  XForm _parseXForm(WPXInputStream *input);
-  XForm _transformXForm(const XForm &xform);
   void _flushCurrentPath();
   void _flushCurrentForeignData();
   

@@ -286,12 +286,13 @@ void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream)
 
 void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
 {
-  WPXPropertyListVector path;
+  unsigned long streamPos = 0;
   m_gradientProps = WPXPropertyListVector();
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
-  unsigned long streamPos = 0;
 
+  _flushCurrentPath();
+  _flushCurrentForeignData();
   m_x = 0; m_y = 0;
   m_xform = XForm();
   m_header = ChunkHeader();
@@ -337,10 +338,10 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
     switch (m_header.chunkType)
     {
     case VSD_XFORM_DATA: // XForm data
-      m_xform = _transformXForm(_parseXForm(&stream));
+	  readXFormData(&stream);
       break;
     case VSD_SHAPE_ID:
-      m_groupXForms[readU32(&stream)] = m_xform;
+	  readShapeID(&stream);
       break;
     case VSD_LINE:
       readLine(&stream);
@@ -370,14 +371,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
       readEllipticalArcTo(&stream);
       break;
     case VSD_FOREIGN_DATA_TYPE:
-      stream.seek(0x24, WPX_SEEK_CUR);
-      m_foreignType = readU16(&stream);
-      stream.seek(0xb, WPX_SEEK_CUR);
-      m_foreignFormat = readU32(&stream);
-
-      stream.seek(m_header.dataLength+m_header.trailer-0x35, WPX_SEEK_CUR);
-      VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", m_foreignType, m_foreignFormat));
-
+	  readForeignDataType(&stream);
       break;
     case VSD_FOREIGN_DATA:
       readForeignData(&stream);
@@ -388,7 +382,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
   }
   _flushCurrentPath();
   _flushCurrentForeignData();
-  m_x = 0.0; m_y = 0.0;
+  m_x = 0; m_y = 0;
 }
 
 void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream)
@@ -462,48 +456,6 @@ void libvisio::VSD11Parser::flipPoint(double &x, double &y, const XForm &xform)
     tmpY = xform.height - tmpY;
   x = tmpX + xform.x;
   y = tmpY + xform.y;
-}
-
-libvisio::VSDXParser::XForm libvisio::VSD11Parser::_parseXForm(WPXInputStream *input)
-{
-  libvisio::VSDXParser::XForm xform;
-  input->seek(1, WPX_SEEK_CUR);
-  xform.pinX = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  xform.pinY = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  xform.width = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  xform.height = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  xform.pinLocX = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  xform.pinLocY = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  xform.angle = readDouble(input);
-  xform.flipX = (readU8(input) != 0);
-  xform.flipY = (readU8(input) != 0);
-
-  xform.x = xform.pinX - xform.pinLocX;
-  xform.y = m_pageHeight - xform.pinY + xform.pinLocY - xform.height;
-
-  return xform;
-}
-
-libvisio::VSDXParser::XForm libvisio::VSD11Parser::_transformXForm(const libvisio::VSDXParser::XForm &xform)
-{
-  libvisio::VSDXParser::XForm tmpXForm = xform;
-  std::map<unsigned int, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
-  if  (iter != m_groupXForms.end()) {
-    tmpXForm.pinX += iter->second.pinX;
-    tmpXForm.pinY += iter->second.pinY;
-    tmpXForm.pinLocX += iter->second.pinLocX;
-    tmpXForm.pinLocY += iter->second.pinLocY;
-  }
-  tmpXForm.x = tmpXForm.pinX - tmpXForm.pinLocX;
-  tmpXForm.y = m_pageHeight - tmpXForm.pinY + tmpXForm.pinLocY - tmpXForm.height;
-
-  return tmpXForm;
 }
 
 void libvisio::VSD11Parser::_flushCurrentPath()
@@ -1038,4 +990,49 @@ void libvisio::VSD11Parser::readArcTo(WPXInputStream *input)
     arc.insert("libwpg:path-action", "A");
     m_currentGeometry[m_header.id] = arc;
   }
+}
+
+void libvisio::VSD11Parser::readXFormData(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  m_xform.pinX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_xform.pinY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_xform.width = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_xform.height = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_xform.pinLocX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_xform.pinLocY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_xform.angle = readDouble(input);
+  m_xform.flipX = (readU8(input) != 0);
+  m_xform.flipY = (readU8(input) != 0);
+
+  std::map<unsigned int, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
+  if  (iter != m_groupXForms.end()) {
+    m_xform.pinX += iter->second.pinX;
+    m_xform.pinY += iter->second.pinY;
+    m_xform.pinLocX += iter->second.pinLocX;
+    m_xform.pinLocY += iter->second.pinLocY;
+  }
+  m_xform.x = m_xform.pinX - m_xform.pinLocX;
+  m_xform.y = m_pageHeight - m_xform.pinY + m_xform.pinLocY - m_xform.height;
+}
+
+void libvisio::VSD11Parser::readShapeID(WPXInputStream *input)
+{
+  m_groupXForms[readU32(input)] = m_xform;
+}
+
+void libvisio::VSD11Parser::readForeignDataType(WPXInputStream *input)
+{
+  input->seek(0x24, WPX_SEEK_CUR);
+  m_foreignType = readU16(input);
+  input->seek(0xb, WPX_SEEK_CUR);
+  m_foreignFormat = readU32(input);
+
+  VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", m_foreignType, m_foreignFormat));
 }
