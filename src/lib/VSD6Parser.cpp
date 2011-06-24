@@ -25,39 +25,11 @@
 #include "libvisio_utils.h"
 #include "VSD6Parser.h"
 #include "VSDInternalStream.h"
+#include "VSDXDocumentStructure.h"
 
 const libvisio::VSD6Parser::StreamHandler libvisio::VSD6Parser::handlers[] = {
-  {0xa, "Name", 0},
-  {0xb, "Name Idx", 0},
-  {0x14, "Trailer", 0},
-  {0x15, "Page", &libvisio::VSD6Parser::handlePage},
-  {0x16, "Colors", 0},
-  {0x17, "??? seems to have no data", 0},
-  {0x18, "FontFaces (ver.11)", 0},
-  {0x1a, "Styles", 0},
-  {0x1b, "??? saw 'Acrobat PDFWriter' string here", 0},
-  {0x1c, "??? saw 'winspool.Acrobat PDFWriter.LPT1' string here", 0},
-  {0x1d, "Stencils", 0},
-  {0x1e, "Stencil Page (collection of Shapes, one collection per each stencil item)", 0},
-  {0x20, "??? seems to have no data", 0},
-  {0x21, "??? seems to have no data", 0},
-  {0x23, "Icon (for stencil only?)", 0},
-  {0x24, "??? seems to have no data", 0},
-  {0x26, "??? some fractions, maybe PrintProps", 0},
-  {0x27, "Pages", &libvisio::VSD6Parser::handlePages},
-  {0x29, "Collection of Type 2a streams", 0},
-  {0x2a, "???", 0},
-  {0x31, "Document", 0},
-  {0x32, "NameList", 0},
-  {0x33, "Name", 0},
-  {0x3d, "??? found in VSS, seems to have no data", 0},
-  {0x3f, "List of name indexes collections", 0},
-  {0x40, "Name Idx + ?? group (contains 0xb type streams)", 0},
-  {0x44, "??? Collection of Type 0x45 streams", 0},
-  {0x45, "??? match number of Pages or Stencil Pages in Pages/Stencils", 0},
-  {0xc9, "some collection of 13 bytes structures related to 3f/40 streams", 0},
-  {0xd7, "FontFace (ver.11)", 0},
-  {0xd8, "FontFaces (ver.6)", 0},
+  {VSD_PAGE, "Page", &libvisio::VSD6Parser::handlePage},
+  {VSD_PAGES, "Pages", &libvisio::VSD6Parser::handlePages},
   {0, 0, 0}
 };
 
@@ -230,7 +202,7 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    chunkType, trailer, dataLength));
 
-    if (chunkType == 0x9b) // XForm data
+    if (chunkType == VSD_XFORM_DATA) // XForm data
     {
       stream.seek(1, WPX_SEEK_CUR);
       xform.pinX = readDouble(&stream);
@@ -252,7 +224,7 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
 
       stream.seek(dataLength+trailer-65, WPX_SEEK_CUR);
     }
-    else if (chunkType == 0x0c) // Foreign data (binary)
+    else if (chunkType == VSD_FOREIGN_DATA) // Foreign data (binary)
     {
       if (foreignType == 1 || foreignType == 4) // Image
       {
@@ -316,7 +288,7 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
         stream.seek(dataLength+trailer, WPX_SEEK_CUR);
       }
     }
-    else if (chunkType == 0x92) // Page properties
+    else if (chunkType == VSD_PAGE_PROPS) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
@@ -333,7 +305,7 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPain
 
       stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
     }
-    else if (chunkType == 0x98) // Foreign data type
+    else if (chunkType == VSD_FOREIGN_DATA_TYPE) // Foreign data type
     {
       stream.seek(0x24, WPX_SEEK_CUR);
       foreignType = readU16(&stream);

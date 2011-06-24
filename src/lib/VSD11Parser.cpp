@@ -27,6 +27,7 @@
 #include "libvisio_utils.h"
 #include "VSD11Parser.h"
 #include "VSDInternalStream.h"
+#include "VSDXDocumentStructure.h"
 
 #define DUMP_BITMAP 0
 
@@ -47,45 +48,17 @@ const ::WPXString libvisio::VSD11Parser::getColourString(const struct Colour &c)
 }
 
 const libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] = {
-  {0xa, "Name", 0},
-  {0xb, "Name Idx", 0},
-  {0x14, "Trailer", 0},
-  {0x15, "Page", &libvisio::VSD11Parser::handlePage},
-  {0x16, "Colors", &libvisio::VSD11Parser::handleColours},
-  {0x17, "??? seems to have no data", 0},
-  {0x18, "FontFaces (ver.11)", 0},
-  {0x1a, "Styles", 0},
-  {0x1b, "??? saw 'Acrobat PDFWriter' string here", 0},
-  {0x1c, "??? saw 'winspool.Acrobat PDFWriter.LPT1' string here", 0},
-  {0x1d, "Stencils", 0},
-  {0x1e, "Stencil Page (collection of Shapes, one collection per each stencil item)", 0},
-  {0x20, "??? seems to have no data", 0},
-  {0x21, "??? seems to have no data", 0},
-  {0x23, "Icon (for stencil only?)", 0},
-  {0x24, "??? seems to have no data", 0},
-  {0x26, "??? some fractions, maybe PrintProps", 0},
-  {0x27, "Pages", &libvisio::VSD11Parser::handlePages},
-  {0x29, "Collection of Type 2a streams", 0},
-  {0x2a, "???", 0},
-  {0x31, "Document", 0},
-  {0x32, "NameList", 0},
-  {0x33, "Name", 0},
-  {0x3d, "??? found in VSS, seems to have no data", 0},
-  {0x3f, "List of name indexes collections", 0},
-  {0x40, "Name Idx + ?? group (contains 0xb type streams)", 0},
-  {0x44, "??? Collection of Type 0x45 streams", 0},
-  {0x45, "??? match number of Pages or Stencil Pages in Pages/Stencils", 0},
-  {0xc9, "some collection of 13 bytes structures related to 3f/40 streams", 0},
-  {0xd7, "FontFace (ver.11)", 0},
-  {0xd8, "FontFaces (ver.6)", 0},
+  {VSD_PAGE, "Page", &libvisio::VSD11Parser::handlePage},
+  {VSD_COLORS, "Colors", &libvisio::VSD11Parser::handleColours},
+  {VSD_PAGES, "Pages", &libvisio::VSD11Parser::handlePages},
   {0, 0, 0}
 };
 
 const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHandlers[] =
 {
-  {0x47, "ShapeType=\"Group\"", &libvisio::VSD11Parser::shapeChunk},
-  {0x48, "ShapeType=\"Shape\"", &libvisio::VSD11Parser::shapeChunk},
-  {0x4e, "ShapeType=\"Foreign\"", &libvisio::VSD11Parser::shapeChunk},
+  {VSD_SHAPE_GROUP, "ShapeType=\"Group\"", &libvisio::VSD11Parser::shapeChunk},
+  {VSD_SHAPE_SHAPE, "ShapeType=\"Shape\"", &libvisio::VSD11Parser::shapeChunk},
+  {VSD_SHAPE_FOREIGN, "ShapeType=\"Foreign\"", &libvisio::VSD11Parser::shapeChunk},
   {0, 0, 0}
 };
 
@@ -262,7 +235,7 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    header.chunkType, header.trailer, header.dataLength));
 
-    if (header.chunkType == 0x92) // Page properties
+    if (header.chunkType == VSD_PAGE_PROPS) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
@@ -357,7 +330,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     }
 
     // Until the next geometry chunk, don't parse if geometry is not to be shown
-    if (header.chunkType != 0x6c && noShow)
+    if (header.chunkType != VSD_GEOM_LIST && noShow)
     {
       stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
       continue;
@@ -366,13 +339,13 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", header.chunkType));
     switch (header.chunkType)
     {
-    case 0x9b: // XForm data
+    case VSD_XFORM_DATA: // XForm data
       xform = _transformXForm(_parseXForm(&stream));
       break;
-    case 0x83: // ShapeID
+    case VSD_SHAPE_ID:
       m_groupXForms[readU32(&stream)] = xform;
       break;
-    case 0x85: // Line properties
+    case VSD_LINE:
     {
       stream.seek(1, WPX_SEEK_CUR);
       styleProps.insert("svg:stroke-width", m_scale*readDouble(&stream));
@@ -417,7 +390,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       // patt ID is 0xfe, link to stencil name is in 'Line' blocks
     }
       break;
-    case 0x86: // Fill & Shadow properties
+    case VSD_FILL_AND_SHADOW:
     {
       unsigned int colourIndexFG = readU8(&stream);
       stream.seek(4, WPX_SEEK_CUR);
@@ -491,7 +464,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       }
     }
       break;
-    case 0x6c: // GeomList
+    case VSD_GEOM_LIST:
     {
       _flushCurrentPath(painter);
       painter->setStyle(styleProps, gradientProps);
@@ -503,7 +476,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       noShow = false;
       break;
     }    
-    case 0x89: // Geometry
+    case VSD_GEOMETRY:
     {
       unsigned int geomFlags = readU8(&stream);
       noFill = ((geomFlags & 1) == 1);
@@ -521,7 +494,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       painter->setStyle(styleProps, gradientProps);
     }
       break;
-    case 0x8a: // MoveTo
+    case VSD_MOVE_TO:
     {
       WPXPropertyList end;
       stream.seek(1, WPX_SEEK_CUR);
@@ -537,7 +510,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       m_currentGeometry[header.id] = end;
     }
       break;
-    case 0x8b: // LineTo
+    case VSD_LINE_TO:
     {
       WPXPropertyList end;
       stream.seek(1, WPX_SEEK_CUR);
@@ -553,7 +526,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       m_currentGeometry[header.id] = end;
     }
     break;
-    case 0x8c: // ArcTo
+    case VSD_ARC_TO:
     {
       stream.seek(1, WPX_SEEK_CUR);
       double x2 = readDouble(&stream) + xform.x;
@@ -595,7 +568,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       }
     }
       break;
-    case 0x8f: // Ellipse
+    case VSD_ELLIPSE:
     {
       WPXPropertyList ellipse;
       stream.seek(1, WPX_SEEK_CUR);
@@ -619,7 +592,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(header.dataLength+header.trailer-54, WPX_SEEK_CUR);
     }
     break;
-    case 0x90: // Elliptical ArcTo
+    case VSD_ELLIPTICAL_ARC_TO:
     {
       stream.seek(1, WPX_SEEK_CUR);
       double x3 = readDouble(&stream) + xform.x; // End x
@@ -677,7 +650,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       m_currentGeometry[header.id] = arc;
     }
       break;
-    case 0x98:  // Foreign
+    case VSD_FOREIGN_DATA_TYPE:
       stream.seek(0x24, WPX_SEEK_CUR);
       foreignType = readU16(&stream);
       stream.seek(0xb, WPX_SEEK_CUR);
@@ -687,7 +660,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
 
       break;
-    case 0x0c:  // Foreign data
+    case VSD_FOREIGN_DATA:
       if (foreignType == 1 || foreignType == 4) // Image
       {
         const unsigned char *buffer = stream.read(header.dataLength, tmpBytesRead);
