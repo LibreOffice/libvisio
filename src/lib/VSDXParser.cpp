@@ -122,7 +122,10 @@ void libvisio::VSDXParser::_flushCurrentPath()
              path.append(closedPath);
           }
           if (path.count() && !m_noShow)
+		  {
+		    m_painter->setStyle(m_styleProps, m_gradientProps);
             m_painter->drawPath(path);
+		  }
 
           path = WPXPropertyListVector();
           x = (iter->second)["svg:x"]->getDouble();
@@ -162,7 +165,10 @@ void libvisio::VSDXParser::_flushCurrentPath()
                 path.append(closedPath);
               }
               if (path.count() && !m_noShow)
+			  {
+			    m_painter->setStyle(m_styleProps, m_gradientProps);
                 m_painter->drawPath(path);
+			  }
 
               path = WPXPropertyListVector();
               x = (iter2())["svg:x"]->getDouble();
@@ -188,7 +194,10 @@ void libvisio::VSDXParser::_flushCurrentPath()
       path.append(closedPath);
     }
     if (path.count() && !m_noShow)
+	{
+	  m_painter->setStyle(m_styleProps, m_gradientProps);
       m_painter->drawPath(path);
+	}
   }
   else
   {
@@ -201,7 +210,10 @@ void libvisio::VSDXParser::_flushCurrentPath()
         path.append(iter2());
     }
     if (path.count() && !m_noShow)
+	{
+	  m_painter->setStyle(m_styleProps, m_gradientProps);
       m_painter->drawPath(path);
+	}
   }
   m_currentGeometry.clear();
   m_currentComplexGeometry.clear();
@@ -211,7 +223,10 @@ void libvisio::VSDXParser::_flushCurrentPath()
 void libvisio::VSDXParser::_flushCurrentForeignData()
 {
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
+  {
+    m_painter->setStyle(m_styleProps, m_gradientProps);
     m_painter->drawGraphicObject(m_currentForeignProps, m_currentForeignData);
+  }
   m_currentForeignData.clear();
   m_currentForeignProps.clear();
 }
@@ -398,7 +413,10 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
   ellipse.insert("svg:cy", m_scale*(m_xform.y+cy));
   ellipse.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
   if (!m_noShow)
+  {
+    m_painter->setStyle(m_styleProps, m_gradientProps);
 	m_painter->drawEllipse(ellipse);
+  }
 }
 
 void libvisio::VSDXParser::readLine(WPXInputStream *input)
@@ -524,8 +542,6 @@ void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
 void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
 {
   _flushCurrentPath();
-  if (!m_noShow)
-    m_painter->setStyle(m_styleProps, m_gradientProps);
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
   input->seek(subHeaderLength, WPX_SEEK_CUR);
@@ -550,8 +566,6 @@ void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
   else
     m_styleProps.insert("svg:fill", m_fillType);
   VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
-  if (!m_noShow)
-    m_painter->setStyle(m_styleProps, m_gradientProps);
 }
 
 void libvisio::VSDXParser::readMoveTo(WPXInputStream *input)
