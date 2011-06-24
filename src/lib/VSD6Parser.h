@@ -39,11 +39,11 @@ public:
   bool parse();
 private:
 
-  typedef void (VSD6Parser::*Method)(VSDInternalStream&);
+  typedef void (VSD6Parser::*Method)(WPXInputStream*);
   struct StreamHandler { unsigned int type; const char *name; Method handler;};
   static const StreamHandler handlers[];
-  void handlePages(VSDInternalStream &stream);
-  void handlePage(VSDInternalStream &stream);
+  void handlePages(WPXInputStream *input);
+  void handlePage(WPXInputStream *input);
 };
 
 } // namespace libvisio

@@ -110,8 +110,9 @@ bool libvisio::VSD6Parser::parse()
 
         compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
-        VSDInternalStream stream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(stream);
+		WPXInputStream *input = new VSDInternalStream(m_input, ptrLength, compressed);
+        (this->*streamHandler)(input);
+		delete input;
       }
     }
   }
@@ -122,12 +123,12 @@ bool libvisio::VSD6Parser::parse()
   return true;
 }
 
-void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream)
+void libvisio::VSD6Parser::handlePages(WPXInputStream *input)
 {
-  unsigned int offset = readU32(&stream);
-  stream.seek(offset, WPX_SEEK_SET);
-  unsigned int pointerCount = readU32(&stream);
-  stream.seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
+  unsigned int offset = readU32(input);
+  input->seek(offset, WPX_SEEK_SET);
+  unsigned int pointerCount = readU32(input);
+  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
   unsigned int ptrType;
   unsigned int ptrOffset;
@@ -135,11 +136,11 @@ void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream)
   unsigned int ptrFormat;
   for (unsigned int i = 0; i < pointerCount; i++)
   {
-    ptrType = readU32(&stream);
-    stream.seek(4, WPX_SEEK_CUR); // Skip dword
-    ptrOffset = readU32(&stream);
-    ptrLength = readU32(&stream);
-    ptrFormat = readU16(&stream);
+    ptrType = readU32(input);
+    input->seek(4, WPX_SEEK_CUR); // Skip dword
+    ptrOffset = readU32(input);
+    ptrLength = readU32(input);
+    ptrFormat = readU16(input);
 
     int index = -1;
     for (int j = 0; (index < 0) && handlers[j].type; j++)
@@ -151,7 +152,7 @@ void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream)
     if (index < 0)
     {
       VSD_DEBUG_MSG(("Unknown stream pointer type 0x%02x found in pages at %li\n",
-                     ptrType, stream.tell() - 18));
+                     ptrType, input->tell() - 18));
     }
     else
     {
@@ -159,23 +160,24 @@ void libvisio::VSD6Parser::handlePages(VSDInternalStream &stream)
       if (!streamHandler)
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li ignored\n",
                        handlers[index].name, handlers[index].type, ptrFormat,
-                       stream.tell() - 18));
+                       input->tell() - 18));
       else
       {
         VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li handled\n",
                        handlers[index].name, handlers[index].type, ptrFormat,
-                       stream.tell() - 18));
+                       input->tell() - 18));
 
         bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
-        VSDInternalStream tmpStream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(tmpStream);
+        WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
+        (this->*streamHandler)(tmpInput);
+		delete tmpInput;
       }
     }
   }
 }
 
-void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream)
+void libvisio::VSD6Parser::handlePage(WPXInputStream *input)
 {
   WPXPropertyList pageProps;
   XForm xform; // Tracks current xform data
@@ -183,52 +185,52 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream)
   unsigned int foreignFormat = 0; // Tracks foreign data format
   unsigned long tmpBytesRead = 0;
 
-  while (!stream.atEOS())
+  while (!input->atEOS())
   {
-    unsigned int chunkType = readU32(&stream);
-    stream.seek(4, WPX_SEEK_CUR); // Skip id field
+    unsigned int chunkType = readU32(input);
+    input->seek(4, WPX_SEEK_CUR); // Skip id field
 
     // Certain chunk types seem to always have a trailer
-    unsigned int list = readU32(&stream);
+    unsigned int list = readU32(input);
     unsigned int trailer = 0;
     if (list != 0 || chunkType == 0x71 || chunkType == 0x70 ||
         chunkType == 0x6b || chunkType == 0x6a || chunkType == 0x69 || 
         chunkType == 0x66 || chunkType == 0x65 || chunkType == 0x2c)
       trailer += 8; // 8 byte trailer
 
-    unsigned int dataLength = readU32(&stream);
-    stream.seek(3, WPX_SEEK_CUR); // Skip level (word) and ? (byte) fields
+    unsigned int dataLength = readU32(input);
+    input->seek(3, WPX_SEEK_CUR); // Skip level (word) and ? (byte) fields
 
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    chunkType, trailer, dataLength));
 
     if (chunkType == VSD_XFORM_DATA) // XForm data
     {
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.width = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.height = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocX = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.pinLocY = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      xform.angle = readDouble(&stream);
+      input->seek(1, WPX_SEEK_CUR);
+      xform.pinX = readDouble(input);
+      input->seek(1, WPX_SEEK_CUR);
+      xform.pinY = readDouble(input);
+      input->seek(1, WPX_SEEK_CUR);
+      xform.width = readDouble(input);
+      input->seek(1, WPX_SEEK_CUR);
+      xform.height = readDouble(input);
+      input->seek(1, WPX_SEEK_CUR);
+      xform.pinLocX = readDouble(input);
+      input->seek(1, WPX_SEEK_CUR);
+      xform.pinLocY = readDouble(input);
+      input->seek(1, WPX_SEEK_CUR);
+      xform.angle = readDouble(input);
 
-      xform.flipX = (readU8(&stream) != 0);
-      xform.flipY = (readU8(&stream) != 0);
+      xform.flipX = (readU8(input) != 0);
+      xform.flipY = (readU8(input) != 0);
 
-      stream.seek(dataLength+trailer-65, WPX_SEEK_CUR);
+      input->seek(dataLength+trailer-65, WPX_SEEK_CUR);
     }
     else if (chunkType == VSD_FOREIGN_DATA) // Foreign data (binary)
     {
       if (foreignType == 1 || foreignType == 4) // Image
       {
-        const unsigned char *buffer = stream.read(dataLength, tmpBytesRead);
+        const unsigned char *buffer = input->read(dataLength, tmpBytesRead);
         WPXBinaryData binaryData;
 
         if (foreignType == 1)
@@ -285,16 +287,16 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream)
       }
       else
       {
-        stream.seek(dataLength+trailer, WPX_SEEK_CUR);
+        input->seek(dataLength+trailer, WPX_SEEK_CUR);
       }
     }
     else if (chunkType == VSD_PAGE_PROPS) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
-      stream.seek(1, WPX_SEEK_CUR);
-      m_pageWidth = readDouble(&stream);
-      stream.seek(1, WPX_SEEK_CUR);
-      m_pageHeight = readDouble(&stream);
+      input->seek(1, WPX_SEEK_CUR);
+      m_pageWidth = readDouble(input);
+      input->seek(1, WPX_SEEK_CUR);
+      m_pageHeight = readDouble(input);
 
       pageProps.insert("svg:width", m_scale*m_pageWidth);
       pageProps.insert("svg:height", m_scale*m_pageHeight);
@@ -303,21 +305,21 @@ void libvisio::VSD6Parser::handlePage(VSDInternalStream &stream)
       m_painter->startGraphics(pageProps);
       m_isPageStarted = true;
 
-      stream.seek(dataLength+trailer-18, WPX_SEEK_CUR);
+      input->seek(dataLength+trailer-18, WPX_SEEK_CUR);
     }
     else if (chunkType == VSD_FOREIGN_DATA_TYPE) // Foreign data type
     {
-      stream.seek(0x24, WPX_SEEK_CUR);
-      foreignType = readU16(&stream);
-      stream.seek(0xb, WPX_SEEK_CUR);
-      foreignFormat = readU32(&stream);
+      input->seek(0x24, WPX_SEEK_CUR);
+      foreignType = readU16(input);
+      input->seek(0xb, WPX_SEEK_CUR);
+      foreignFormat = readU32(input);
 
-      stream.seek(dataLength+trailer-0x35, WPX_SEEK_CUR);
+      input->seek(dataLength+trailer-0x35, WPX_SEEK_CUR);
     }
     else // Skip chunk
     {
       dataLength += trailer;
-      stream.seek(dataLength, WPX_SEEK_CUR);
+      input->seek(dataLength, WPX_SEEK_CUR);
     }
   }
 }

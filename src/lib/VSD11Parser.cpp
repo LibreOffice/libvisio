@@ -213,9 +213,9 @@ void libvisio::VSD11Parser::handlePages(WPXInputStream *input)
 
         bool compressed = ((ptrFormat & 2) == 2);
         m_input->seek(ptrOffset, WPX_SEEK_SET);
-        WPXInputStream *input = new VSDInternalStream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(input);
-        delete input;
+        WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
+        (this->*streamHandler)(tmpInput);
+        delete tmpInput;
       }
     }
   }
