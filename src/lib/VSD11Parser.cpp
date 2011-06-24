@@ -324,13 +324,6 @@ void libvisio::VSD11Parser::shapeChunk(WPXInputStream *input)
       break;
     }
 
-    // Until the next geometry chunk, don't parse if geometry is not to be shown
-    if (m_header.chunkType != VSD_GEOM_LIST && m_noShow)
-    {
-      input->seek(m_header.dataLength+m_header.trailer, WPX_SEEK_CUR);
-      continue;
-    }
-
     VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
     switch (m_header.chunkType)
     {
@@ -487,7 +480,7 @@ void libvisio::VSD11Parser::_flushCurrentPath()
              closedPath.insert("libwpg:path-action", "Z");
              path.append(closedPath);
           }
-          if (path.count())
+          if (path.count() && !m_noShow)
             m_painter->drawPath(path);
 
           path = WPXPropertyListVector();
@@ -527,7 +520,7 @@ void libvisio::VSD11Parser::_flushCurrentPath()
                 closedPath.insert("libwpg:path-action", "Z");
                 path.append(closedPath);
               }
-              if (path.count())
+              if (path.count() && !m_noShow)
                 m_painter->drawPath(path);
 
               path = WPXPropertyListVector();
@@ -553,7 +546,7 @@ void libvisio::VSD11Parser::_flushCurrentPath()
       closedPath.insert("libwpg:path-action", "Z");
       path.append(closedPath);
     }
-    if (path.count())
+    if (path.count() && !m_noShow)
       m_painter->drawPath(path);
   }
   else
@@ -566,7 +559,7 @@ void libvisio::VSD11Parser::_flushCurrentPath()
       for (; iter2.next();)
         path.append(iter2());
     }
-    if (path.count())
+    if (path.count() && !m_noShow)
       m_painter->drawPath(path);
   }
   m_currentGeometry.clear();
@@ -576,7 +569,7 @@ void libvisio::VSD11Parser::_flushCurrentPath()
 
 void libvisio::VSD11Parser::_flushCurrentForeignData()
 {
-  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"])
+  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
     m_painter->drawGraphicObject(m_currentForeignProps, m_currentForeignData);
   m_currentForeignData.clear();
   m_currentForeignProps.clear();
@@ -761,7 +754,8 @@ void libvisio::VSD11Parser::readEllipse(WPXInputStream *input)
   ellipse.insert("svg:cx", m_scale*(m_xform.x+cx));
   ellipse.insert("svg:cy", m_scale*(m_xform.y+cy));
   ellipse.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
-  m_painter->drawEllipse(ellipse);
+  if (!m_noShow)
+	m_painter->drawEllipse(ellipse);
 }
 
 void libvisio::VSD11Parser::readLine(WPXInputStream *input)
@@ -887,7 +881,8 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
 void libvisio::VSD11Parser::readGeomList(WPXInputStream *input)
 {
   _flushCurrentPath();
-  m_painter->setStyle(m_styleProps, m_gradientProps);
+  if (!m_noShow)
+    m_painter->setStyle(m_styleProps, m_gradientProps);
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
   input->seek(subHeaderLength, WPX_SEEK_CUR);
@@ -912,7 +907,8 @@ void libvisio::VSD11Parser::readGeometry(WPXInputStream *input)
   else
     m_styleProps.insert("svg:fill", m_fillType);
   VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
-  m_painter->setStyle(m_styleProps, m_gradientProps);
+  if (!m_noShow)
+    m_painter->setStyle(m_styleProps, m_gradientProps);
 }
 
 void libvisio::VSD11Parser::readMoveTo(WPXInputStream *input)
