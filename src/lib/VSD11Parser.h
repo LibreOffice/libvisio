@@ -43,6 +43,8 @@ private:
   void readForeignData(WPXInputStream *input);
   void readEllipse(WPXInputStream *input);
   void readLine(WPXInputStream *input);
+  void readFillAndShadow(WPXInputStream *input);
+  void readGeomList(WPXInputStream *input);
 
   typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&);
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};

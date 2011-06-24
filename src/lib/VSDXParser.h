@@ -93,6 +93,10 @@ protected:
   ::WPXString m_fillType;
   unsigned m_linePattern;
   unsigned m_fillPattern;
+  WPXPropertyListVector m_gradientProps;
+  bool m_noLine;
+  bool m_noFill;
+  bool m_noShow;
 };
 
 } // namespace libvisio

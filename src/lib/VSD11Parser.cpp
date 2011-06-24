@@ -287,7 +287,7 @@ void libvisio::VSD11Parser::handleColours(VSDInternalStream &stream)
 void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
 {
   WPXPropertyListVector path;
-  WPXPropertyListVector gradientProps;
+  m_gradientProps = WPXPropertyListVector();
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
   unsigned long streamPos = 0;
@@ -297,9 +297,9 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
   m_header = ChunkHeader();
 
   // Geometry flags
-  bool noLine = false;
-  bool noFill = false;
-  bool noShow = false;
+  m_noLine = false;
+  m_noFill = false;
+  m_noShow = false;
 
   // Save line colour and pattern, fill type and pattern
   m_lineColour = "black";
@@ -327,7 +327,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
     }
 
     // Until the next geometry chunk, don't parse if geometry is not to be shown
-    if (m_header.chunkType != VSD_GEOM_LIST && noShow)
+    if (m_header.chunkType != VSD_GEOM_LIST && m_noShow)
     {
       stream.seek(m_header.dataLength+m_header.trailer, WPX_SEEK_CUR);
       continue;
@@ -346,108 +346,28 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
 	  readLine(&stream);
       break;
     case VSD_FILL_AND_SHADOW:
-    {
-      unsigned int colourIndexFG = readU8(&stream);
-      stream.seek(4, WPX_SEEK_CUR);
-      unsigned int colourIndexBG = readU8(&stream);
-      stream.seek(4, WPX_SEEK_CUR);
-      m_fillPattern = readU8(&stream);
-      if (m_fillPattern == 1)
-      {
-        m_fillType = "solid";
-        m_styleProps.insert("draw:fill", "solid");
-        m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
-      }
-      else if (m_fillPattern >= 25 && m_fillPattern <= 34)
-      {
-        m_fillType = "gradient";
-        m_styleProps.insert("draw:fill", "gradient");
-        WPXPropertyList startColour;
-        startColour.insert("svg:stop-color",
-                           getColourString(m_colours[colourIndexFG]));
-        startColour.insert("svg:offset", 0, WPX_PERCENT);
-        startColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
-        WPXPropertyList endColour;
-        endColour.insert("svg:stop-color",
-                         getColourString(m_colours[colourIndexBG]));
-        endColour.insert("svg:offset", 1, WPX_PERCENT);
-        endColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
-
-        switch(m_fillPattern)
-        {
-        case 25:
-          m_styleProps.insert("draw:angle", -90);
-          break;
-        case 26:
-          m_styleProps.insert("draw:angle", -90);
-          endColour.insert("svg:offset", 0, WPX_PERCENT);
-          gradientProps.append(endColour);
-          endColour.insert("svg:offset", 1, WPX_PERCENT);
-          startColour.insert("svg:offset", 0.5, WPX_PERCENT);
-          break;
-        case 27:
-          m_styleProps.insert("draw:angle", 90);
-          break;
-        case 28:
-          m_styleProps.insert("draw:angle", 0);
-          break;
-        case 29:
-          m_styleProps.insert("draw:angle", 0);
-          endColour.insert("svg:offset", 0, WPX_PERCENT);
-          gradientProps.append(endColour);
-          endColour.insert("svg:offset", 1, WPX_PERCENT);
-          startColour.insert("svg:offset", 0.5, WPX_PERCENT);
-          break;
-        case 30:
-          m_styleProps.insert("draw:angle", 180);
-          break;
-        case 31:
-          m_styleProps.insert("draw:angle", -45);
-          break;
-        case 32:
-          m_styleProps.insert("draw:angle", 45);
-          break;
-        case 33:
-          m_styleProps.insert("draw:angle", 225);
-          break;
-        case 34:
-          m_styleProps.insert("draw:angle", 135);
-          break;
-        }
-        gradientProps.append(startColour);
-        gradientProps.append(endColour);
-      }
-    }
+	  readFillAndShadow(&stream);
       break;
     case VSD_GEOM_LIST:
-    {
-      _flushCurrentPath();
-      m_painter->setStyle(m_styleProps, gradientProps);
-      uint32_t subHeaderLength = readU32(&stream);
-      uint32_t childrenListLength = readU32(&stream);
-      stream.seek(subHeaderLength, WPX_SEEK_CUR);
-      for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-        m_currentGeometryOrder.push_back(readU32(&stream));
-      noShow = false;
+      readGeomList(&stream);
       break;
-    }    
     case VSD_GEOMETRY:
     {
       m_x = 0.0; m_x = 0.0;
       unsigned int geomFlags = readU8(&stream);
-      noFill = ((geomFlags & 1) == 1);
-      noLine = ((geomFlags & 2) == 2);
-      noShow = ((geomFlags & 4) == 4);
-      if (noLine || m_linePattern == 0)
+      m_noFill = ((geomFlags & 1) == 1);
+      m_noLine = ((geomFlags & 2) == 2);
+      m_noShow = ((geomFlags & 4) == 4);
+      if (m_noLine || m_linePattern == 0)
         m_styleProps.insert("svg:stroke-color", "none");
       else
         m_styleProps.insert("svg:stroke-color", m_lineColour);
-      if (noFill || m_fillPattern == 0)
+      if (m_noFill || m_fillPattern == 0)
         m_styleProps.insert("svg:fill", "none");
       else
         m_styleProps.insert("svg:fill", m_fillType);
-      VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, noFill, noLine, noShow));
-      m_painter->setStyle(m_styleProps, gradientProps);
+      VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
+      m_painter->setStyle(m_styleProps, m_gradientProps);
     }
       break;
     case VSD_MOVE_TO:
@@ -1021,3 +941,89 @@ void libvisio::VSD11Parser::readLine(WPXInputStream *input)
   // patt ID is 0xfe, link to stencil name is in 'Line' blocks
 }
 
+void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
+{
+  unsigned int colourIndexFG = readU8(input);
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned int colourIndexBG = readU8(input);
+  input->seek(4, WPX_SEEK_CUR);
+  m_fillPattern = readU8(input);
+  if (m_fillPattern == 1)
+  {
+    m_fillType = "solid";
+    m_styleProps.insert("draw:fill", "solid");
+    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+  }
+  else if (m_fillPattern >= 25 && m_fillPattern <= 34)
+  {
+    m_fillType = "gradient";
+    m_styleProps.insert("draw:fill", "gradient");
+    WPXPropertyList startColour;
+    startColour.insert("svg:stop-color",
+                       getColourString(m_colours[colourIndexFG]));
+    startColour.insert("svg:offset", 0, WPX_PERCENT);
+    startColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+    WPXPropertyList endColour;
+    endColour.insert("svg:stop-color",
+                     getColourString(m_colours[colourIndexBG]));
+    endColour.insert("svg:offset", 1, WPX_PERCENT);
+    endColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+
+    switch(m_fillPattern)
+    {
+    case 25:
+      m_styleProps.insert("draw:angle", -90);
+      break;
+    case 26:
+      m_styleProps.insert("draw:angle", -90);
+      endColour.insert("svg:offset", 0, WPX_PERCENT);
+      m_gradientProps.append(endColour);
+      endColour.insert("svg:offset", 1, WPX_PERCENT);
+      startColour.insert("svg:offset", 0.5, WPX_PERCENT);
+      break;
+    case 27:
+      m_styleProps.insert("draw:angle", 90);
+      break;
+    case 28:
+      m_styleProps.insert("draw:angle", 0);
+      break;
+    case 29:
+      m_styleProps.insert("draw:angle", 0);
+      endColour.insert("svg:offset", 0, WPX_PERCENT);
+      m_gradientProps.append(endColour);
+      endColour.insert("svg:offset", 1, WPX_PERCENT);
+      startColour.insert("svg:offset", 0.5, WPX_PERCENT);
+      break;
+    case 30:
+      m_styleProps.insert("draw:angle", 180);
+      break;
+    case 31:
+      m_styleProps.insert("draw:angle", -45);
+      break;
+    case 32:
+      m_styleProps.insert("draw:angle", 45);
+      break;
+    case 33:
+      m_styleProps.insert("draw:angle", 225);
+      break;
+    case 34:
+      m_styleProps.insert("draw:angle", 135);
+      break;
+    }
+    m_gradientProps.append(startColour);
+    m_gradientProps.append(endColour);
+  }
+}
+
+
+void libvisio::VSD11Parser::readGeomList(WPXInputStream *input)
+{
+  _flushCurrentPath();
+  m_painter->setStyle(m_styleProps, m_gradientProps);
+  uint32_t subHeaderLength = readU32(input);
+  uint32_t childrenListLength = readU32(input);
+  input->seek(subHeaderLength, WPX_SEEK_CUR);
+  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    m_currentGeometryOrder.push_back(readU32(input));
+  m_noShow = false;
+}    
