@@ -112,7 +112,7 @@ bool libvisio::VSD6Parser::parse(libwpg::WPGPaintInterface *painter)
     ptrFormat = readU16(&trailerStream);
 
     int index = -1;
-    for (int j = 0; (index < 0) && handlers[j].type; i++)
+    for (int j = 0; (index < 0) && handlers[j].type; j++)
     {
       if (handlers[j].type == ptrType)
         index = j;
