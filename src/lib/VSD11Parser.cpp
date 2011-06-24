@@ -254,25 +254,8 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
                    m_header.chunkType, m_header.trailer, m_header.dataLength));
 
-    if (m_header.chunkType == VSD_PAGE_PROPS) // Page properties
-    {
-      // Skip bytes representing unit to *display* (value is always inches)
-      input->seek(1, WPX_SEEK_CUR);
-      m_pageWidth = readDouble(input);
-      input->seek(1, WPX_SEEK_CUR);
-      m_pageHeight = readDouble(input);
-      input->seek(19, WPX_SEEK_CUR);
-      /* m_scale = */ readDouble(input);
-
-      WPXPropertyList pageProps;
-      pageProps.insert("svg:width", m_scale*m_pageWidth);
-      pageProps.insert("svg:height", m_scale*m_pageHeight);
-
-      if (m_isPageStarted)
-        m_painter->endGraphics();
-      m_painter->startGraphics(pageProps);
-      m_isPageStarted = true;
-    }
+    if (m_header.chunkType == VSD_PAGE_PROPS)
+	  readPageProps(input);
 
     input->seek(endPos, WPX_SEEK_SET);
   }
@@ -1049,4 +1032,24 @@ void libvisio::VSD11Parser::readForeignDataType(WPXInputStream *input)
   m_foreignFormat = readU32(input);
 
   VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", m_foreignType, m_foreignFormat));
+}
+
+void libvisio::VSD11Parser::readPageProps(WPXInputStream *input)
+{
+  // Skip bytes representing unit to *display* (value is always inches)
+  input->seek(1, WPX_SEEK_CUR);
+  m_pageWidth = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_pageHeight = readDouble(input);
+  input->seek(19, WPX_SEEK_CUR);
+  /* m_scale = */ readDouble(input);
+
+  WPXPropertyList pageProps;
+  pageProps.insert("svg:width", m_scale*m_pageWidth);
+  pageProps.insert("svg:height", m_scale*m_pageHeight);
+
+  if (m_isPageStarted)
+    m_painter->endGraphics();
+  m_painter->startGraphics(pageProps);
+  m_isPageStarted = true;
 }

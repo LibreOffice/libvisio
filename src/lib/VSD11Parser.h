@@ -52,6 +52,7 @@ private:
   void readXFormData(WPXInputStream *input);
   void readShapeID(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
+  void readPageProps(WPXInputStream *input);
   
 
   typedef void (VSD11Parser::*StreamMethod)(WPXInputStream*);
