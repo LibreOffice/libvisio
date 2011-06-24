@@ -41,8 +41,6 @@ public:
   virtual ~VSDXParser();
   virtual bool parse() = 0;
 protected:
-  WPXInputStream *m_input;
-  libwpg::WPGPaintInterface *m_painter;
   struct XForm
   {
     double pinX;
@@ -73,6 +71,46 @@ protected:
     unsigned trailer; // Derived
   };
 
+  struct Colour
+  {
+    unsigned int r;
+    unsigned int g;
+    unsigned int b;
+    unsigned int a;
+  };
+
+
+  // reader functions
+  void readEllipticalArcTo(WPXInputStream *input);
+  void readForeignData(WPXInputStream *input);
+  void readEllipse(WPXInputStream *input);
+  void readLine(WPXInputStream *input);
+  void readFillAndShadow(WPXInputStream *input);
+  void readGeomList(WPXInputStream *input);
+  void readGeometry(WPXInputStream *input);
+  void readMoveTo(WPXInputStream *input);
+  void readLineTo(WPXInputStream *input);
+  void readArcTo(WPXInputStream *input);
+  void readXFormData(WPXInputStream *input);
+  void readShapeID(WPXInputStream *input);
+  void readForeignDataType(WPXInputStream *input);
+  void readPageProps(WPXInputStream *input);
+  
+  void rotatePoint(double &x, double &y, const XForm &xform);
+  void flipPoint(double &x, double &y, const XForm &xform);
+  
+  void _flushCurrentPath();
+  void _flushCurrentForeignData();
+  
+  // Chunk handlers
+  void shapeChunk(WPXInputStream *input);
+  
+  virtual bool getChunkHeader(WPXInputStream *input) = 0;
+
+  const ::WPXString getColourString(const Colour& c) const;
+
+  WPXInputStream *m_input;
+  libwpg::WPGPaintInterface *m_painter;
   bool m_isPageStarted;
   double m_pageWidth;
   double m_pageHeight;
@@ -99,6 +137,7 @@ protected:
   bool m_noLine;
   bool m_noFill;
   bool m_noShow;
+  std::vector<Colour> m_colours;
 };
 
 } // namespace libvisio

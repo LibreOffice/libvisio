@@ -38,22 +38,7 @@ public:
   ~VSD11Parser();
   bool parse();
 private:
-  // reader functions
-  void readEllipticalArcTo(WPXInputStream *input);
-  void readForeignData(WPXInputStream *input);
-  void readEllipse(WPXInputStream *input);
-  void readLine(WPXInputStream *input);
-  void readFillAndShadow(WPXInputStream *input);
-  void readGeomList(WPXInputStream *input);
-  void readGeometry(WPXInputStream *input);
-  void readMoveTo(WPXInputStream *input);
-  void readLineTo(WPXInputStream *input);
-  void readArcTo(WPXInputStream *input);
-  void readXFormData(WPXInputStream *input);
-  void readShapeID(WPXInputStream *input);
-  void readForeignDataType(WPXInputStream *input);
-  void readPageProps(WPXInputStream *input);
-  
+
   // parser of one pass
   bool parseDocument(WPXInputStream *input, VSDXCollector *collector);
   
@@ -71,28 +56,7 @@ private:
   void handlePage(WPXInputStream *input);
   void handleColours(WPXInputStream *input);
 
-  // Chunk handlers
-  void shapeChunk(WPXInputStream *input);
-  void foreignChunk(WPXInputStream *input);
-
-  struct Colour
-  {
-    unsigned int r;
-    unsigned int g;
-    unsigned int b;
-    unsigned int a;
-  };
-
   bool getChunkHeader(WPXInputStream *input);
-  void rotatePoint(double &x, double &y, const XForm &xform);
-  void flipPoint(double &x, double &y, const XForm &xform);
-  
-  void _flushCurrentPath();
-  void _flushCurrentForeignData();
-  
-  const ::WPXString getColourString(const Colour& c) const;
-
-  std::vector<Colour> m_colours;
 };
 
 } // namespace libvisio
