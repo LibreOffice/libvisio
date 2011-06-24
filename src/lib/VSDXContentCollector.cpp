@@ -128,3 +128,111 @@ void libvisio::VSDXContentCollector::collectEllipse(double cx, double cy, double
     m_painter->drawEllipse(ellipse);
   }
 }
+
+void libvisio::VSDXContentCollector::collectLine(double strokeWidth, Colour c, unsigned linePattern)
+{
+  m_linePattern = linePattern;
+  m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
+  m_lineColour = getColourString(c);
+  m_styleProps.insert("svg:stroke-color", m_lineColour);
+  const char* patterns[] = {
+    /*  0 */  "none",
+    /*  1 */  "solid",
+    /*  2 */  "6, 3",
+    /*  3 */  "1, 3",
+    /*  4 */  "6, 3, 1, 3",
+    /*  5 */  "6, 3, 1, 3, 1, 3",
+    /*  6 */  "6, 3, 6, 3, 1, 3",
+    /*  7 */  "14, 2, 6, 2",
+    /*  8 */  "14, 2, 6, 2, 6, 2",
+    /*  9 */  "3, 1",
+    /* 10 */  "1, 1",
+    /* 11 */  "3, 1, 1, 1",
+    /* 12 */  "3, 1, 1, 1, 1, 1",
+    /* 13 */  "3, 1, 3, 1, 1, 1",
+    /* 14 */  "7, 1, 3, 1",
+    /* 15 */  "7, 1, 3, 1, 3, 1",
+    /* 16 */  "11, 5",
+    /* 17 */  "1, 5",
+    /* 18 */  "11, 5, 1, 5",
+    /* 19 */  "11, 5, 1, 5, 1, 5",
+    /* 20 */  "11, 5, 11, 5, 1, 5",
+    /* 21 */  "27, 5, 11, 5",
+    /* 22 */  "27, 5, 11, 5, 11, 5",
+    /* 23 */  "2, 1"
+  };
+  if (m_linePattern > 0 && m_linePattern < sizeof(patterns)/sizeof(patterns[0]))
+    m_styleProps.insert("svg:stroke-dasharray", patterns[m_linePattern]);
+  // FIXME: later it will require special treatment for custom line patterns
+  // patt ID is 0xfe, link to stencil name is in 'Line' blocks
+}
+
+void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
+{
+  m_fillPattern = fillPattern;
+  if (m_fillPattern == 1)
+  {
+    m_fillType = "solid";
+    m_styleProps.insert("draw:fill", "solid");
+    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+  }
+  else if (m_fillPattern >= 25 && m_fillPattern <= 34)
+  {
+    m_fillType = "gradient";
+    m_styleProps.insert("draw:fill", "gradient");
+    WPXPropertyList startColour;
+    startColour.insert("svg:stop-color",
+                       getColourString(m_colours[colourIndexFG]));
+    startColour.insert("svg:offset", 0, WPX_PERCENT);
+    startColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+    WPXPropertyList endColour;
+    endColour.insert("svg:stop-color",
+                     getColourString(m_colours[colourIndexBG]));
+    endColour.insert("svg:offset", 1, WPX_PERCENT);
+    endColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+
+    switch(m_fillPattern)
+    {
+    case 25:
+      m_styleProps.insert("draw:angle", -90);
+      break;
+    case 26:
+      m_styleProps.insert("draw:angle", -90);
+      endColour.insert("svg:offset", 0, WPX_PERCENT);
+      m_gradientProps.append(endColour);
+      endColour.insert("svg:offset", 1, WPX_PERCENT);
+      startColour.insert("svg:offset", 0.5, WPX_PERCENT);
+      break;
+    case 27:
+      m_styleProps.insert("draw:angle", 90);
+      break;
+    case 28:
+      m_styleProps.insert("draw:angle", 0);
+      break;
+    case 29:
+      m_styleProps.insert("draw:angle", 0);
+      endColour.insert("svg:offset", 0, WPX_PERCENT);
+      m_gradientProps.append(endColour);
+      endColour.insert("svg:offset", 1, WPX_PERCENT);
+      startColour.insert("svg:offset", 0.5, WPX_PERCENT);
+      break;
+    case 30:
+      m_styleProps.insert("draw:angle", 180);
+      break;
+    case 31:
+      m_styleProps.insert("draw:angle", -45);
+      break;
+    case 32:
+      m_styleProps.insert("draw:angle", 45);
+      break;
+    case 33:
+      m_styleProps.insert("draw:angle", 225);
+      break;
+    case 34:
+      m_styleProps.insert("draw:angle", 135);
+      break;
+    }
+    m_gradientProps.append(startColour);
+    m_gradientProps.append(endColour);
+  }
+}

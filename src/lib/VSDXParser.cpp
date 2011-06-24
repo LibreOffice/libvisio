@@ -27,6 +27,7 @@
 #include "VSDXParser.h"
 #include "VSDInternalStream.h"
 #include "VSDXDocumentStructure.h"
+#include "VSDXCollector.h"
 
 #define DUMP_BITMAP 0
 
@@ -436,16 +437,22 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
 void libvisio::VSDXParser::readLine(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
-  m_styleProps.insert("svg:stroke-width", m_scale*readDouble(input));
+  double strokeWidth = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   Colour c;
   c.r = readU8(input);
   c.g = readU8(input);
   c.b = readU8(input);
   c.a = readU8(input);
+  unsigned linePattern = readU8(input);
+
+#if 0
+  m_collector->collectLine(strokeWidth, c, linePattern);
+#else
+  m_linePattern = linePattern;
+  m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
   m_lineColour = getColourString(c);
   m_styleProps.insert("svg:stroke-color", m_lineColour);
-  m_linePattern = readU8(input);
   const char* patterns[] = {
     /*  0 */  "none",
     /*  1 */  "solid",
@@ -476,6 +483,7 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
     m_styleProps.insert("svg:stroke-dasharray", patterns[m_linePattern]);
   // FIXME: later it will require special treatment for custom line patterns
   // patt ID is 0xfe, link to stencil name is in 'Line' blocks
+#endif
 }
 
 void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
@@ -484,7 +492,12 @@ void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
   input->seek(4, WPX_SEEK_CUR);
   unsigned int colourIndexBG = readU8(input);
   input->seek(4, WPX_SEEK_CUR);
-  m_fillPattern = readU8(input);
+  unsigned fillPattern = readU8(input);
+
+#if 0
+  m_collector->collectFillAndShadow(colourIndexFG, colourIndexBG, fillPattern);
+#else
+  m_fillPattern = fillPattern;
   if (m_fillPattern == 1)
   {
     m_fillType = "solid";
@@ -550,15 +563,16 @@ void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
     m_gradientProps.append(startColour);
     m_gradientProps.append(endColour);
   }
+#endif
 }
 
 
 void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
 {
-  _flushCurrentPath();
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
   input->seek(subHeaderLength, WPX_SEEK_CUR);
+  _flushCurrentPath();
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     m_currentGeometryOrder.push_back(readU32(input));
   m_noShow = false;

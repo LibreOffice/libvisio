@@ -34,8 +34,8 @@ public:
   virtual void collectEllipticalArcTo(double x3, double y3, double x2, double y2, double angle, double ecc, unsigned id) = 0;
   virtual void collectForeignData() = 0;
   virtual void collectEllipse(double cx, double cy, double aa, double bb, double cc, double dd) = 0;
-  virtual void collectLine() = 0;
-  virtual void collectFillAndShadow() = 0;
+  virtual void collectLine(double strokeWidth, Colour c, unsigned linePattern) = 0;
+  virtual void collectFillAndShadow(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern) = 0;
   virtual void collectGeomList() = 0;
   virtual void collectGeometry() = 0;
   virtual void collectMoveTo() = 0;

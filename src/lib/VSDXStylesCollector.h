@@ -35,8 +35,8 @@ public:
   void collectEllipticalArcTo(double x3, double y3, double x2, double y2, double angle, double ecc, unsigned id) {}
   void collectForeignData() {}
   void collectEllipse(double cx, double cy, double aa, double bb, double cc, double dd) {}
-  void collectLine() {}
-  void collectFillAndShadow() {}
+  void collectLine(double strokeWidth, Colour c, unsigned linePattern) {}
+  void collectFillAndShadow(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern) {}
   void collectGeomList() {}
   void collectGeometry() {}
   void collectMoveTo() {}
