@@ -223,11 +223,14 @@ void libvisio::VSD11Parser::handlePages(WPXInputStream *input)
 
 void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
 {
+  long endPos = 0;
+
   m_groupXForms.clear();
 
   while (!input->atEOS())
   {
     getChunkHeader(input);
+    endPos = m_header.dataLength+m_header.trailer+input->tell();
     int index = -1;
     for (int i = 0; (index < 0) && chunkHandlers[i].type; i++)
     {
@@ -269,16 +272,9 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
         m_painter->endGraphics();
       m_painter->startGraphics(pageProps);
       m_isPageStarted = true;
+    }
 
-      input->seek(m_header.dataLength+m_header.trailer-45, WPX_SEEK_CUR);
-    }
-    else // Skip chunk
-    {
-      m_header.dataLength += m_header.trailer;
-      VSD_DEBUG_MSG(("Skipping chunk by %x (%d) bytes\n",
-                     m_header.dataLength, m_header.dataLength));
-      input->seek(m_header.dataLength, WPX_SEEK_CUR);
-    }
+    input->seek(endPos, WPX_SEEK_SET);
   }
 }
 
@@ -303,7 +299,7 @@ void libvisio::VSD11Parser::handleColours(WPXInputStream *input)
 
 void libvisio::VSD11Parser::shapeChunk(WPXInputStream *input)
 {
-  unsigned long streamPos = 0;
+  long endPos = 0;
 
   m_gradientProps = WPXPropertyListVector();
   m_foreignType = 0; // Tracks current foreign data type
@@ -336,7 +332,7 @@ void libvisio::VSD11Parser::shapeChunk(WPXInputStream *input)
   while (!input->atEOS())
   {
     getChunkHeader(input);
-    streamPos = input->tell();
+    endPos = m_header.dataLength+m_header.trailer+input->tell();
 
     // Break once a chunk that is not nested in the shape is found
     if (m_header.level < 2)
@@ -396,7 +392,7 @@ void libvisio::VSD11Parser::shapeChunk(WPXInputStream *input)
       break;
     }
 
-    input->seek(m_header.dataLength+m_header.trailer-(input->tell()-streamPos), WPX_SEEK_CUR);
+    input->seek(endPos, WPX_SEEK_SET);
   }
   _flushCurrentPath();
   _flushCurrentForeignData();
