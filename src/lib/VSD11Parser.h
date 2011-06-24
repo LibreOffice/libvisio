@@ -80,7 +80,7 @@ private:
     unsigned int a;
   };
 
-  void getChunkHeader(WPXInputStream *input);
+  bool getChunkHeader(WPXInputStream *input);
   void rotatePoint(double &x, double &y, const XForm &xform);
   void flipPoint(double &x, double &y, const XForm &xform);
   

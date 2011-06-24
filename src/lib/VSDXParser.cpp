@@ -27,14 +27,13 @@
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), 
-    m_pageHeight(0.0), m_scale(1.0), m_x(0.0), m_y(0.0), m_currentShapeId(0),
-    m_foreignType(0), m_foreignFormat(0), m_lineColour("black"), m_fillType("none"),
-    m_linePattern(1), m_fillPattern(1), m_noLine(false), m_noFill(false), m_noShow(false)
+    m_pageHeight(0.0), m_scale(1.0), m_x(0.0), m_y(0.0), m_xform(), m_header(),
+    m_currentGeometryOrder(), m_currentGeometry(), m_currentComplexGeometry(),
+    m_groupXForms(), m_currentForeignData(), m_currentForeignProps(), m_currentShapeId(0),
+    m_foreignType(0), m_foreignFormat(0), m_styleProps(), m_lineColour("black"),
+    m_fillType("none"), m_linePattern(1), m_fillPattern(1), m_gradientProps(), m_noLine(false),
+	m_noFill(false), m_noShow(false)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
 {}
-
-
-
-

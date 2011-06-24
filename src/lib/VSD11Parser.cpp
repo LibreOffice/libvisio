@@ -229,7 +229,8 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
 
   while (!input->atEOS())
   {
-    getChunkHeader(input);
+    if (!getChunkHeader(input))
+      break;
     endPos = m_header.dataLength+m_header.trailer+input->tell();
     int index = -1;
     for (int i = 0; (index < 0) && chunkHandlers[i].type; i++)
@@ -314,7 +315,8 @@ void libvisio::VSD11Parser::shapeChunk(WPXInputStream *input)
 
   while (!input->atEOS())
   {
-    getChunkHeader(input);
+    if (!getChunkHeader(input))
+      break;
     endPos = m_header.dataLength+m_header.trailer+input->tell();
 
     // Break once a chunk that is not nested in the shape is found
@@ -375,14 +377,14 @@ void libvisio::VSD11Parser::shapeChunk(WPXInputStream *input)
   m_x = 0; m_y = 0;
 }
 
-void libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
+bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
 {
   unsigned char tmpChar = 0;
   while (!input->atEOS() && !tmpChar)
     tmpChar = readU8(input);
 
   if (input->atEOS())
-    return;
+    return false;
   else
     input->seek(-1, WPX_SEEK_CUR);
 
@@ -417,6 +419,7 @@ void libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
   {
     m_header.trailer = 0;
   }
+  return true;
 }
 
 void libvisio::VSD11Parser::rotatePoint(double &x, double &y, const XForm &xform)
