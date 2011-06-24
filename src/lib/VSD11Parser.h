@@ -45,6 +45,11 @@ private:
   void readLine(WPXInputStream *input);
   void readFillAndShadow(WPXInputStream *input);
   void readGeomList(WPXInputStream *input);
+  void readGeometry(WPXInputStream *input);
+  void readMoveTo(WPXInputStream *input);
+  void readLineTo(WPXInputStream *input);
+  void readArcTo(WPXInputStream *input);
+  
 
   typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&);
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};

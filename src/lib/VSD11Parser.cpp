@@ -343,106 +343,25 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream)
       m_groupXForms[readU32(&stream)] = m_xform;
       break;
     case VSD_LINE:
-	  readLine(&stream);
+      readLine(&stream);
       break;
     case VSD_FILL_AND_SHADOW:
-	  readFillAndShadow(&stream);
+      readFillAndShadow(&stream);
       break;
     case VSD_GEOM_LIST:
       readGeomList(&stream);
       break;
     case VSD_GEOMETRY:
-    {
-      m_x = 0.0; m_x = 0.0;
-      unsigned int geomFlags = readU8(&stream);
-      m_noFill = ((geomFlags & 1) == 1);
-      m_noLine = ((geomFlags & 2) == 2);
-      m_noShow = ((geomFlags & 4) == 4);
-      if (m_noLine || m_linePattern == 0)
-        m_styleProps.insert("svg:stroke-color", "none");
-      else
-        m_styleProps.insert("svg:stroke-color", m_lineColour);
-      if (m_noFill || m_fillPattern == 0)
-        m_styleProps.insert("svg:fill", "none");
-      else
-        m_styleProps.insert("svg:fill", m_fillType);
-      VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
-      m_painter->setStyle(m_styleProps, m_gradientProps);
-    }
+      readGeometry(&stream);
       break;
     case VSD_MOVE_TO:
-    {
-      WPXPropertyList end;
-      stream.seek(1, WPX_SEEK_CUR);
-      m_x = readDouble(&stream) + m_xform.x;
-      stream.seek(1, WPX_SEEK_CUR);
-      m_y = (m_xform.height - readDouble(&stream)) + m_xform.y;
-      rotatePoint(m_x, m_y, m_xform);
-      flipPoint(m_x, m_y, m_xform);
-
-      end.insert("svg:x", m_scale*m_x);
-      end.insert("svg:y", m_scale*m_y);
-      end.insert("libwpg:path-action", "M");
-      m_currentGeometry[m_header.id] = end;
-    }
+      readMoveTo(&stream);
       break;
     case VSD_LINE_TO:
-    {
-      WPXPropertyList end;
-      stream.seek(1, WPX_SEEK_CUR);
-      m_x = readDouble(&stream) + m_xform.x;
-      stream.seek(1, WPX_SEEK_CUR);
-      m_y = (m_xform.height - readDouble(&stream)) + m_xform.y;
-      rotatePoint(m_x, m_y, m_xform);
-      flipPoint(m_x, m_y, m_xform);
-
-      end.insert("svg:x", m_scale*m_x);
-      end.insert("svg:y", m_scale*m_y);
-      end.insert("libwpg:path-action", "L");
-      m_currentGeometry[m_header.id] = end;
-    }
-    break;
+      readLineTo(&stream);
+      break;
     case VSD_ARC_TO:
-    {
-      stream.seek(1, WPX_SEEK_CUR);
-      double x2 = readDouble(&stream) + m_xform.x;
-      stream.seek(1, WPX_SEEK_CUR);
-      double y2 = (m_xform.height - readDouble(&stream)) + m_xform.y;
-      stream.seek(1, WPX_SEEK_CUR);
-      double bow = readDouble(&stream);
-
-      rotatePoint(x2, y2, m_xform);
-      flipPoint(x2, y2, m_xform);
-
-      if (bow == 0)
-      {
-        m_x = x2; m_y = y2;
-        WPXPropertyList end;
-        end.insert("svg:x", m_scale*m_x);
-        end.insert("svg:y", m_scale*m_y);
-        end.insert("libwpg:path-action", "L");
-        m_currentGeometry[m_header.id] = end;
-      }
-      else
-      {
-        WPXPropertyList arc;
-        double chord = sqrt(pow((y2 - m_y),2) + pow((x2 - m_x),2));
-        double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
-        VSD_DEBUG_MSG(("ArcTo with bow %f radius %f and chord %f\n", bow, radius, chord));
-        int largeArc = fabs(bow) > radius ? 1 : 0;
-        int sweep = bow < 0 ? 1 : 0;
-        m_x = x2; m_y = y2;
-        arc.insert("svg:rx", m_scale*radius);
-        arc.insert("svg:ry", m_scale*radius);
-        arc.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
-        arc.insert("libwpg:large-arc", largeArc);
-        arc.insert("libwpg:sweep", sweep);
-        arc.insert("svg:x", m_scale*m_x);
-        arc.insert("svg:y", m_scale*m_y);
-        arc.insert("libwpg:path-action", "A");
-        m_currentGeometry[m_header.id] = arc;
-      }
-    }
+      readArcTo(&stream);
       break;
     case VSD_ELLIPSE:
       readEllipse(&stream);
@@ -714,7 +633,7 @@ void libvisio::VSD11Parser::_flushCurrentForeignData()
   m_currentForeignProps.clear();
 }
 
-// --- READERS --- 
+// --- READERS ---
 
 void libvisio::VSD11Parser::readEllipticalArcTo(WPXInputStream *input)
 {
@@ -1026,4 +945,97 @@ void libvisio::VSD11Parser::readGeomList(WPXInputStream *input)
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     m_currentGeometryOrder.push_back(readU32(input));
   m_noShow = false;
-}    
+}
+
+void libvisio::VSD11Parser::readGeometry(WPXInputStream *input)
+{
+  m_x = 0.0; m_x = 0.0;
+  unsigned int geomFlags = readU8(input);
+  m_noFill = ((geomFlags & 1) == 1);
+  m_noLine = ((geomFlags & 2) == 2);
+  m_noShow = ((geomFlags & 4) == 4);
+  if (m_noLine || m_linePattern == 0)
+    m_styleProps.insert("svg:stroke-color", "none");
+  else
+    m_styleProps.insert("svg:stroke-color", m_lineColour);
+  if (m_noFill || m_fillPattern == 0)
+    m_styleProps.insert("svg:fill", "none");
+  else
+    m_styleProps.insert("svg:fill", m_fillType);
+  VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
+  m_painter->setStyle(m_styleProps, m_gradientProps);
+}
+
+void libvisio::VSD11Parser::readMoveTo(WPXInputStream *input)
+{
+  WPXPropertyList end;
+  input->seek(1, WPX_SEEK_CUR);
+  m_x = readDouble(input) + m_xform.x;
+  input->seek(1, WPX_SEEK_CUR);
+  m_y = (m_xform.height - readDouble(input)) + m_xform.y;
+  rotatePoint(m_x, m_y, m_xform);
+  flipPoint(m_x, m_y, m_xform);
+
+  end.insert("svg:x", m_scale*m_x);
+  end.insert("svg:y", m_scale*m_y);
+  end.insert("libwpg:path-action", "M");
+  m_currentGeometry[m_header.id] = end;
+}
+
+void libvisio::VSD11Parser::readLineTo(WPXInputStream *input)
+{
+  WPXPropertyList end;
+  input->seek(1, WPX_SEEK_CUR);
+  m_x = readDouble(input) + m_xform.x;
+  input->seek(1, WPX_SEEK_CUR);
+  m_y = (m_xform.height - readDouble(input)) + m_xform.y;
+  rotatePoint(m_x, m_y, m_xform);
+  flipPoint(m_x, m_y, m_xform);
+
+  end.insert("svg:x", m_scale*m_x);
+  end.insert("svg:y", m_scale*m_y);
+  end.insert("libwpg:path-action", "L");
+  m_currentGeometry[m_header.id] = end;
+}
+
+void libvisio::VSD11Parser::readArcTo(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  double x2 = readDouble(input) + m_xform.x;
+  input->seek(1, WPX_SEEK_CUR);
+  double y2 = (m_xform.height - readDouble(input)) + m_xform.y;
+  input->seek(1, WPX_SEEK_CUR);
+  double bow = readDouble(input);
+
+  rotatePoint(x2, y2, m_xform);
+  flipPoint(x2, y2, m_xform);
+
+  if (bow == 0)
+  {
+    m_x = x2; m_y = y2;
+    WPXPropertyList end;
+    end.insert("svg:x", m_scale*m_x);
+    end.insert("svg:y", m_scale*m_y);
+    end.insert("libwpg:path-action", "L");
+    m_currentGeometry[m_header.id] = end;
+  }
+  else
+  {
+    WPXPropertyList arc;
+    double chord = sqrt(pow((y2 - m_y),2) + pow((x2 - m_x),2));
+    double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
+    VSD_DEBUG_MSG(("ArcTo with bow %f radius %f and chord %f\n", bow, radius, chord));
+    int largeArc = fabs(bow) > radius ? 1 : 0;
+    int sweep = bow < 0 ? 1 : 0;
+    m_x = x2; m_y = y2;
+    arc.insert("svg:rx", m_scale*radius);
+    arc.insert("svg:ry", m_scale*radius);
+    arc.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
+    arc.insert("libwpg:large-arc", largeArc);
+    arc.insert("libwpg:sweep", sweep);
+    arc.insert("svg:x", m_scale*m_x);
+    arc.insert("svg:y", m_scale*m_y);
+    arc.insert("libwpg:path-action", "A");
+    m_currentGeometry[m_header.id] = arc;
+  }
+}
