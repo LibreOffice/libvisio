@@ -58,10 +58,26 @@ protected:
               flipX(false), flipY(false), x(0.0), y(0.0) {}
   };
 
+  // Utilities
+  struct ChunkHeader
+  {
+    unsigned int chunkType;  // 4 bytes
+    unsigned int id;         // 4 bytes
+    unsigned int list;       // 4 bytes
+    unsigned int dataLength; // 4 bytes
+    unsigned int level;      // 2 bytes
+    unsigned int unknown;    // 1 byte
+    unsigned int trailer; // Derived
+  };
+
   bool m_isPageStarted;
   double m_pageWidth;
   double m_pageHeight;
   double m_scale;
+  double m_x;
+  double m_y;
+  XForm m_xform;
+  ChunkHeader m_header;
   std::vector<unsigned int> m_currentGeometryOrder;
   std::map<unsigned int, WPXPropertyList> m_currentGeometry;
   std::map<unsigned int, WPXPropertyListVector> m_currentComplexGeometry;

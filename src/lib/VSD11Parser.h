@@ -38,6 +38,8 @@ public:
   ~VSD11Parser();
   bool parse(libwpg::WPGPaintInterface *iface);
 private:
+  // reader functions
+  void readEllipticalArcTo(WPXInputStream *input);
 
   typedef void (VSD11Parser::*StreamMethod)(VSDInternalStream&, libwpg::WPGPaintInterface*);
   struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};
@@ -56,18 +58,6 @@ private:
   void shapeChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
   void foreignChunk(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter);
 
-  // Utilities
-  struct ChunkHeader
-  {
-    unsigned int chunkType;  // 4 bytes
-    unsigned int id;         // 4 bytes
-    unsigned int list;       // 4 bytes
-    unsigned int dataLength; // 4 bytes
-    unsigned int level;      // 2 bytes
-    unsigned int unknown;    // 1 byte
-    unsigned int trailer; // Derived
-  };
-
   struct Colour
   {
     unsigned int r;
@@ -76,7 +66,7 @@ private:
     unsigned int a;
   };
 
-  void getChunkHeader(VSDInternalStream &stream, ChunkHeader &header);
+  void getChunkHeader(VSDInternalStream &stream);
   void rotatePoint(double &x, double &y, const XForm &xform);
   void flipPoint(double &x, double &y, const XForm &xform);
   

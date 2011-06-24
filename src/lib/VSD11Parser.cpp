@@ -206,36 +206,35 @@ void libvisio::VSD11Parser::handlePages(VSDInternalStream &stream, libwpg::WPGPa
 
 void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPaintInterface *painter)
 {
-  ChunkHeader header;
   m_groupXForms.clear();
 
   while (!stream.atEOS())
   {
-    getChunkHeader(stream, header);
+    getChunkHeader(stream);
     int index = -1;
     for (int i = 0; (index < 0) && chunkHandlers[i].type; i++)
     {
-      if (chunkHandlers[i].type == header.chunkType)
+      if (chunkHandlers[i].type == m_header.chunkType)
         index = i;
     }
 
     if (index >= 0)
     {
       // Skip rest of this chunk
-      stream.seek(header.dataLength + header.trailer, WPX_SEEK_CUR);
+      stream.seek(m_header.dataLength + m_header.trailer, WPX_SEEK_CUR);
       ChunkMethod chunkHandler = chunkHandlers[index].handler;
       if (chunkHandler)
       {
-        m_currentShapeId = header.id;
+        m_currentShapeId = m_header.id;
         (this->*chunkHandler)(stream, painter);
       }
       continue;
     }
 
     VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
-                   header.chunkType, header.trailer, header.dataLength));
+                   m_header.chunkType, m_header.trailer, m_header.dataLength));
 
-    if (header.chunkType == VSD_PAGE_PROPS) // Page properties
+    if (m_header.chunkType == VSD_PAGE_PROPS) // Page properties
     {
       // Skip bytes representing unit to *display* (value is always inches)
       stream.seek(1, WPX_SEEK_CUR);
@@ -254,14 +253,14 @@ void libvisio::VSD11Parser::handlePage(VSDInternalStream &stream, libwpg::WPGPai
       painter->startGraphics(pageProps);
       m_isPageStarted = true;
 
-      stream.seek(header.dataLength+header.trailer-45, WPX_SEEK_CUR);
+      stream.seek(m_header.dataLength+m_header.trailer-45, WPX_SEEK_CUR);
     }
     else // Skip chunk
     {
-      header.dataLength += header.trailer;
+      m_header.dataLength += m_header.trailer;
       VSD_DEBUG_MSG(("Skipping chunk by %x (%d) bytes\n",
-                     header.dataLength, header.dataLength));
-      stream.seek(header.dataLength, WPX_SEEK_CUR);
+                     m_header.dataLength, m_header.dataLength));
+      stream.seek(m_header.dataLength, WPX_SEEK_CUR);
     }
   }
 }
@@ -290,14 +289,14 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
   WPXPropertyListVector path;
   WPXPropertyList styleProps;
   WPXPropertyListVector gradientProps;
-  XForm xform; // Shape xform data
   unsigned int foreignType = 0; // Tracks current foreign data type
   unsigned int foreignFormat = 0; // Tracks foreign data format
-  ChunkHeader header;
   unsigned long tmpBytesRead = 0;
   unsigned long streamPos = 0;
 
-  double x = 0; double y = 0;
+  m_x = 0; m_y = 0;
+  m_xform = XForm();
+  m_header = ChunkHeader();
 
   // Geometry flags
   bool noLine = false;
@@ -319,31 +318,31 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
 
   while (!stream.atEOS())
   {
-    getChunkHeader(stream, header);
+    getChunkHeader(stream);
     streamPos = stream.tell();
 
     // Break once a chunk that is not nested in the shape is found
-    if (header.level < 2)
+    if (m_header.level < 2)
     {
       stream.seek(-19, WPX_SEEK_CUR);
       break;
     }
 
     // Until the next geometry chunk, don't parse if geometry is not to be shown
-    if (header.chunkType != VSD_GEOM_LIST && noShow)
+    if (m_header.chunkType != VSD_GEOM_LIST && noShow)
     {
-      stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
+      stream.seek(m_header.dataLength+m_header.trailer, WPX_SEEK_CUR);
       continue;
     }
 
-    VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", header.chunkType));
-    switch (header.chunkType)
+    VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
+    switch (m_header.chunkType)
     {
     case VSD_XFORM_DATA: // XForm data
-      xform = _transformXForm(_parseXForm(&stream));
+      m_xform = _transformXForm(_parseXForm(&stream));
       break;
     case VSD_SHAPE_ID:
-      m_groupXForms[readU32(&stream)] = xform;
+      m_groupXForms[readU32(&stream)] = m_xform;
       break;
     case VSD_LINE:
     {
@@ -478,6 +477,7 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     }    
     case VSD_GEOMETRY:
     {
+	  m_x = 0.0; m_x = 0.0;
       unsigned int geomFlags = readU8(&stream);
       noFill = ((geomFlags & 1) == 1);
       noLine = ((geomFlags & 2) == 2);
@@ -498,73 +498,73 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
     {
       WPXPropertyList end;
       stream.seek(1, WPX_SEEK_CUR);
-      x = readDouble(&stream) + xform.x;
+      m_x = readDouble(&stream) + m_xform.x;
       stream.seek(1, WPX_SEEK_CUR);
-      y = (xform.height - readDouble(&stream)) + xform.y;
-      rotatePoint(x, y, xform);
-      flipPoint(x, y, xform);
+      m_y = (m_xform.height - readDouble(&stream)) + m_xform.y;
+      rotatePoint(m_x, m_y, m_xform);
+      flipPoint(m_x, m_y, m_xform);
 
-      end.insert("svg:x", m_scale*x);
-      end.insert("svg:y", m_scale*y);
+      end.insert("svg:x", m_scale*m_x);
+      end.insert("svg:y", m_scale*m_y);
       end.insert("libwpg:path-action", "M");
-      m_currentGeometry[header.id] = end;
+      m_currentGeometry[m_header.id] = end;
     }
       break;
     case VSD_LINE_TO:
     {
       WPXPropertyList end;
       stream.seek(1, WPX_SEEK_CUR);
-      x = readDouble(&stream) + xform.x;
+      m_x = readDouble(&stream) + m_xform.x;
       stream.seek(1, WPX_SEEK_CUR);
-      y = (xform.height - readDouble(&stream)) + xform.y;
-      rotatePoint(x, y, xform);
-      flipPoint(x, y, xform);
+      m_y = (m_xform.height - readDouble(&stream)) + m_xform.y;
+      rotatePoint(m_x, m_y, m_xform);
+      flipPoint(m_x, m_y, m_xform);
 
-      end.insert("svg:x", m_scale*x);
-      end.insert("svg:y", m_scale*y);
+      end.insert("svg:x", m_scale*m_x);
+      end.insert("svg:y", m_scale*m_y);
       end.insert("libwpg:path-action", "L");
-      m_currentGeometry[header.id] = end;
+      m_currentGeometry[m_header.id] = end;
     }
     break;
     case VSD_ARC_TO:
     {
       stream.seek(1, WPX_SEEK_CUR);
-      double x2 = readDouble(&stream) + xform.x;
+      double x2 = readDouble(&stream) + m_xform.x;
       stream.seek(1, WPX_SEEK_CUR);
-      double y2 = (xform.height - readDouble(&stream)) + xform.y;
+      double y2 = (m_xform.height - readDouble(&stream)) + m_xform.y;
       stream.seek(1, WPX_SEEK_CUR);
       double bow = readDouble(&stream);
 
-      rotatePoint(x2, y2, xform);
-      flipPoint(x2, y2, xform);
+      rotatePoint(x2, y2, m_xform);
+      flipPoint(x2, y2, m_xform);
 
       if (bow == 0)
       {
-        x = x2; y = y2;
+        m_x = x2; m_y = y2;
         WPXPropertyList end;
-        end.insert("svg:x", m_scale*x);
-        end.insert("svg:y", m_scale*y);
+        end.insert("svg:x", m_scale*m_x);
+        end.insert("svg:y", m_scale*m_y);
         end.insert("libwpg:path-action", "L");
-        m_currentGeometry[header.id] = end;
+        m_currentGeometry[m_header.id] = end;
       }
       else
       {
         WPXPropertyList arc;
-        double chord = sqrt(pow((y2 - y),2) + pow((x2 - x),2));
+        double chord = sqrt(pow((y2 - m_y),2) + pow((x2 - m_x),2));
         double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
         VSD_DEBUG_MSG(("ArcTo with bow %f radius %f and chord %f\n", bow, radius, chord));
         int largeArc = fabs(bow) > radius ? 1 : 0;
         int sweep = bow < 0 ? 1 : 0;
-        x = x2; y = y2;
+        m_x = x2; m_y = y2;
         arc.insert("svg:rx", m_scale*radius);
         arc.insert("svg:ry", m_scale*radius);
-        arc.insert("libwpg:rotate", xform.angle * (180/M_PI));
+        arc.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
         arc.insert("libwpg:large-arc", largeArc);
         arc.insert("libwpg:sweep", sweep);
-        arc.insert("svg:x", m_scale*x);
-        arc.insert("svg:y", m_scale*y);
+        arc.insert("svg:x", m_scale*m_x);
+        arc.insert("svg:y", m_scale*m_y);
         arc.insert("libwpg:path-action", "A");
-        m_currentGeometry[header.id] = arc;
+        m_currentGeometry[m_header.id] = arc;
       }
     }
       break;
@@ -585,69 +585,16 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       double dd = readDouble(&stream);
       ellipse.insert("svg:rx", m_scale*(aa-cx));
       ellipse.insert("svg:ry", m_scale*(dd-cy));
-      ellipse.insert("svg:cx", m_scale*(xform.x+cx));
-      ellipse.insert("svg:cy", m_scale*(xform.y+cy));
-      ellipse.insert("libwpg:rotate", xform.angle * (180/M_PI));
+      ellipse.insert("svg:cx", m_scale*(m_xform.x+cx));
+      ellipse.insert("svg:cy", m_scale*(m_xform.y+cy));
+      ellipse.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
       painter->drawEllipse(ellipse);
-      stream.seek(header.dataLength+header.trailer-54, WPX_SEEK_CUR);
+      stream.seek(m_header.dataLength+m_header.trailer-54, WPX_SEEK_CUR);
     }
     break;
     case VSD_ELLIPTICAL_ARC_TO:
     {
-      stream.seek(1, WPX_SEEK_CUR);
-      double x3 = readDouble(&stream) + xform.x; // End x
-      stream.seek(1, WPX_SEEK_CUR);
-      double y3 = (xform.height - readDouble(&stream)) + xform.y; // End y
-      stream.seek(1, WPX_SEEK_CUR);
-      double x2 = readDouble(&stream) + xform.x; // Mid x
-      stream.seek(1, WPX_SEEK_CUR);
-      double y2 = (xform.height - readDouble(&stream)) + xform.y; // Mid y
-      stream.seek(1, WPX_SEEK_CUR);
-      double angle = readDouble(&stream); // Angle
-      stream.seek(1, WPX_SEEK_CUR);
-      double ecc = readDouble(&stream); // Eccentricity
-
-      rotatePoint(x2, y2, xform);
-      rotatePoint(x3, y3, xform);
-      flipPoint(x2, y2, xform);
-      flipPoint(x3, y3, xform);
-
-      double x1 = x;
-      double y1 = y;
-      double x0 = ((x1-x2)*(x1+x2)*(y2-y3) - (x2-x3)*(x2+x3)*(y1-y2) +
-                   ecc*ecc*(y1-y2)*(y2-y3)*(y1-y3)) /
-                   (2*((x1-x2)*(y2-y3) - (x2-x3)*(y1-y2)));
-      double y0 = ((x1-x2)*(x2-x3)*(x1-x3) + ecc*ecc*(x2-x3)*(y1-y2)*(y1+y2) -
-                   ecc*ecc*(x1-x2)*(y2-y3)*(y2+y3)) /
-                   (2*ecc*ecc*((x2-x3)*(y1-y2) - (x1-x2)*(y2-y3)));
-      VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
-      double rx = sqrt(pow(x1-x0, 2) + ecc*ecc*pow(y1-y0, 2));
-      double ry = rx / ecc;
-
-      x = x3; y = y3;
-      WPXPropertyList arc;
-      int largeArc = 0;
-      int sweep = 1;
-
-      // Calculate side of chord that ellipse centre and control point fall on
-      double centreSide = (x3-x1)*(y0-y1) - (y3-y1)*(x0-x1);
-      double midSide = (x3-x1)*(y2-y1) - (y3-y1)*(x2-x1);
-      // Large arc if centre and control point are on the same side
-      if ((centreSide > 0 && midSide > 0) || (centreSide < 0 && midSide < 0))
-        largeArc = 1;
-      // Change direction depending of side of control point
-      if (midSide > 0)
-        sweep = 0;
-
-      arc.insert("svg:rx", m_scale*rx);
-      arc.insert("svg:ry", m_scale*ry);
-      arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + xform.angle * (180 / M_PI)));
-      arc.insert("libwpg:large-arc", largeArc);
-      arc.insert("libwpg:sweep", sweep);
-      arc.insert("svg:x", m_scale*x);
-      arc.insert("svg:y", m_scale*y);
-      arc.insert("libwpg:path-action", "A");
-      m_currentGeometry[header.id] = arc;
+	  readEllipticalArcTo(&stream);
     }
       break;
     case VSD_FOREIGN_DATA_TYPE:
@@ -656,15 +603,15 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       stream.seek(0xb, WPX_SEEK_CUR);
       foreignFormat = readU32(&stream);
 
-      stream.seek(header.dataLength+header.trailer-0x35, WPX_SEEK_CUR);
+      stream.seek(m_header.dataLength+m_header.trailer-0x35, WPX_SEEK_CUR);
       VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
 
       break;
     case VSD_FOREIGN_DATA:
       if (foreignType == 1 || foreignType == 4) // Image
       {
-        const unsigned char *buffer = stream.read(header.dataLength, tmpBytesRead);
-        // If bmp data found, reconstruct header
+        const unsigned char *buffer = stream.read(m_header.dataLength, tmpBytesRead);
+        // If bmp data found, reconstruct m_header
         if (foreignType == 1 && foreignFormat == 0)
         {
           m_currentForeignData.append(0x42);
@@ -717,12 +664,12 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
         }
 #endif
 
-        m_currentForeignProps.insert("svg:width", m_scale*xform.width);
-        m_currentForeignProps.insert("svg:height", m_scale*xform.height);
-        m_currentForeignProps.insert("svg:x", m_scale*(xform.pinX - xform.pinLocX));
+        m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
+        m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
+        m_currentForeignProps.insert("svg:x", m_scale*(m_xform.pinX - m_xform.pinLocX));
         // Y axis starts at the bottom not top
         m_currentForeignProps.insert("svg:y", m_scale*(m_pageHeight -
-                            xform.pinY + xform.pinLocY - xform.height));
+                            m_xform.pinY + m_xform.pinLocY - m_xform.height));
 
         if (foreignType == 1)
         {
@@ -756,18 +703,19 @@ void libvisio::VSD11Parser::shapeChunk(VSDInternalStream &stream, libwpg::WPGPai
       }
       else
       {
-        stream.seek(header.dataLength+header.trailer, WPX_SEEK_CUR);
+        stream.seek(m_header.dataLength+m_header.trailer, WPX_SEEK_CUR);
       }
       break;
     }
 
-    stream.seek(header.dataLength+header.trailer-(stream.tell()-streamPos), WPX_SEEK_CUR);
+    stream.seek(m_header.dataLength+m_header.trailer-(stream.tell()-streamPos), WPX_SEEK_CUR);
   }
   _flushCurrentPath(painter);
   _flushCurrentForeignData(painter);
+  m_x = 0.0; m_y = 0.0;
 }
 
-void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream, libvisio::VSD11Parser::ChunkHeader &header)
+void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream)
 {
   unsigned char tmpChar = 0;
   while (!stream.atEOS() && !tmpChar)
@@ -778,36 +726,36 @@ void libvisio::VSD11Parser::getChunkHeader(VSDInternalStream &stream, libvisio::
   else
     stream.seek(-1, WPX_SEEK_CUR);
 
-  header.chunkType = readU32(&stream);
-  header.id = readU32(&stream);
-  header.list = readU32(&stream);
+  m_header.chunkType = readU32(&stream);
+  m_header.id = readU32(&stream);
+  m_header.list = readU32(&stream);
 
    // Certain chunk types seem to always have a trailer
-  header.trailer = 0;
-  if (header.list != 0 || header.chunkType == 0x71 || header.chunkType == 0x70 ||
-      header.chunkType == 0x6b || header.chunkType == 0x6a || header.chunkType == 0x69 ||
-      header.chunkType == 0x66 || header.chunkType == 0x65 || header.chunkType == 0x2c)
-    header.trailer += 8; // 8 byte trailer
+  m_header.trailer = 0;
+  if (m_header.list != 0 || m_header.chunkType == 0x71 || m_header.chunkType == 0x70 ||
+      m_header.chunkType == 0x6b || m_header.chunkType == 0x6a || m_header.chunkType == 0x69 ||
+      m_header.chunkType == 0x66 || m_header.chunkType == 0x65 || m_header.chunkType == 0x2c)
+    m_header.trailer += 8; // 8 byte trailer
 
-  header.dataLength = readU32(&stream);
-  header.level = readU16(&stream);
-  header.unknown = readU8(&stream);
+  m_header.dataLength = readU32(&stream);
+  m_header.level = readU16(&stream);
+  m_header.unknown = readU8(&stream);
 
   // Add word separator under certain circumstances for v11
   // Below are known conditions, may be more or a simpler pattern
-  if (header.list != 0 || (header.level == 2 && header.unknown == 0x55) ||
-      (header.level == 2 && header.unknown == 0x54 && header.chunkType == 0xaa)
-      || (header.level == 3 && header.unknown != 0x50 && header.unknown != 0x54) ||
-      header.chunkType == 0x69 || header.chunkType == 0x6a || header.chunkType == 0x6b ||
-      header.chunkType == 0x71 || header.chunkType == 0xb6 || header.chunkType == 0xb9 ||
-      header.chunkType == 0xa9 || header.chunkType == 0x92)
+  if (m_header.list != 0 || (m_header.level == 2 && m_header.unknown == 0x55) ||
+      (m_header.level == 2 && m_header.unknown == 0x54 && m_header.chunkType == 0xaa)
+      || (m_header.level == 3 && m_header.unknown != 0x50 && m_header.unknown != 0x54) ||
+      m_header.chunkType == 0x69 || m_header.chunkType == 0x6a || m_header.chunkType == 0x6b ||
+      m_header.chunkType == 0x71 || m_header.chunkType == 0xb6 || m_header.chunkType == 0xb9 ||
+      m_header.chunkType == 0xa9 || m_header.chunkType == 0x92)
   {
-    header.trailer += 4;
+    m_header.trailer += 4;
   }
   // 0x1f (OLE data) and 0xc9 (Name ID) never have trailer
-  if (header.chunkType == 0x1f || header.chunkType == 0xc9)
+  if (m_header.chunkType == 0x1f || m_header.chunkType == 0xc9)
   {
-    header.trailer = 0;
+    m_header.trailer = 0;
   }
 }
 
@@ -1007,4 +955,63 @@ void libvisio::VSD11Parser::_flushCurrentForeignData(libwpg::WPGPaintInterface *
     painter->drawGraphicObject(m_currentForeignProps, m_currentForeignData);
   m_currentForeignData.clear();
   m_currentForeignProps.clear();
+}
+
+
+void libvisio::VSD11Parser::readEllipticalArcTo(WPXInputStream *input)
+{
+      input->seek(1, WPX_SEEK_CUR);
+      double x3 = readDouble(input) + m_xform.x; // End x
+      input->seek(1, WPX_SEEK_CUR);
+      double y3 = (m_xform.height - readDouble(input)) + m_xform.y; // End y
+      input->seek(1, WPX_SEEK_CUR);
+      double x2 = readDouble(input) + m_xform.x; // Mid x
+      input->seek(1, WPX_SEEK_CUR);
+      double y2 = (m_xform.height - readDouble(input)) + m_xform.y; // Mid y
+      input->seek(1, WPX_SEEK_CUR);
+      double angle = readDouble(input); // Angle
+      input->seek(1, WPX_SEEK_CUR);
+      double ecc = readDouble(input); // Eccentricity
+
+      rotatePoint(x2, y2, m_xform);
+      rotatePoint(x3, y3, m_xform);
+      flipPoint(x2, y2, m_xform);
+      flipPoint(x3, y3, m_xform);
+
+      double x1 = m_x;
+      double y1 = m_y;
+      double x0 = ((x1-x2)*(x1+x2)*(y2-y3) - (x2-x3)*(x2+x3)*(y1-y2) +
+                   ecc*ecc*(y1-y2)*(y2-y3)*(y1-y3)) /
+                   (2*((x1-x2)*(y2-y3) - (x2-x3)*(y1-y2)));
+      double y0 = ((x1-x2)*(x2-x3)*(x1-x3) + ecc*ecc*(x2-x3)*(y1-y2)*(y1+y2) -
+                   ecc*ecc*(x1-x2)*(y2-y3)*(y2+y3)) /
+                   (2*ecc*ecc*((x2-x3)*(y1-y2) - (x1-x2)*(y2-y3)));
+      VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
+      double rx = sqrt(pow(x1-x0, 2) + ecc*ecc*pow(y1-y0, 2));
+      double ry = rx / ecc;
+
+      m_x = x3; m_y = y3;
+      WPXPropertyList arc;
+      int largeArc = 0;
+      int sweep = 1;
+
+      // Calculate side of chord that ellipse centre and control point fall on
+      double centreSide = (x3-x1)*(y0-y1) - (y3-y1)*(x0-x1);
+      double midSide = (x3-x1)*(y2-y1) - (y3-y1)*(x2-x1);
+      // Large arc if centre and control point are on the same side
+      if ((centreSide > 0 && midSide > 0) || (centreSide < 0 && midSide < 0))
+        largeArc = 1;
+      // Change direction depending of side of control point
+      if (midSide > 0)
+        sweep = 0;
+
+      arc.insert("svg:rx", m_scale*rx);
+      arc.insert("svg:ry", m_scale*ry);
+      arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + m_xform.angle * (180 / M_PI)));
+      arc.insert("libwpg:large-arc", largeArc);
+      arc.insert("libwpg:sweep", sweep);
+      arc.insert("svg:x", m_scale*m_x);
+      arc.insert("svg:y", m_scale*m_y);
+      arc.insert("libwpg:path-action", "A");
+      m_currentGeometry[m_header.id] = arc;
 }
