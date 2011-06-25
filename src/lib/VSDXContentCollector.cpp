@@ -64,7 +64,7 @@ void libvisio::VSDXContentCollector::flipPoint(double &x, double &y, const XForm
 
 
 
-void libvisio::VSDXContentCollector::collectEllipticalArcTo(double x3, double y3, double x2, double y2, double angle, double ecc, unsigned id)
+void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
   x3 += m_xform.x;
   y3 = m_xform.height - y3 + m_xform.y;
@@ -114,7 +114,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(double x3, double y3
   m_currentGeometry[id] = arc;
 }
 
-void libvisio::VSDXContentCollector::collectEllipse(double cx, double cy, double aa, double bb, double cc, double dd)
+void libvisio::VSDXContentCollector::collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double bb, double cc, double dd)
 {
   WPXPropertyList ellipse;
   ellipse.insert("svg:rx", m_scale*(aa-cx));
@@ -129,7 +129,7 @@ void libvisio::VSDXContentCollector::collectEllipse(double cx, double cy, double
   }
 }
 
-void libvisio::VSDXContentCollector::collectLine(double strokeWidth, Colour c, unsigned linePattern)
+void libvisio::VSDXContentCollector::collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern)
 {
   m_linePattern = linePattern;
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
@@ -167,7 +167,7 @@ void libvisio::VSDXContentCollector::collectLine(double strokeWidth, Colour c, u
   // patt ID is 0xfe, link to stencil name is in 'Line' blocks
 }
 
-void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
+void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
 {
   m_fillPattern = fillPattern;
   if (m_fillPattern == 1)

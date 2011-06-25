@@ -32,27 +32,29 @@
 #include "VSDXParser.h"
 
 namespace libvisio {
- 
+
 class VSDXContentCollector : public VSDXCollector
 {
 public:
   VSDXContentCollector(libwpg::WPGPaintInterface *painter);
   virtual ~VSDXContentCollector() {};
 
-  void collectEllipticalArcTo(double x3, double y3, double x2, double y2, double angle, double ecc, unsigned id);
-  void collectForeignData() {}
-  void collectEllipse(double cx, double cy, double aa, double bb, double cc, double dd);
-  void collectLine(double strokeWidth, Colour c, unsigned linePattern);
-  void collectFillAndShadow(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern);
-  void collectGeomList() {}
-  void collectGeometry() {}
-  void collectMoveTo() {}
-  void collectLineTo() {}
-  void collectArcTo() {}
-  void collectXFormData() {}
-  void collectShapeID() {}
-  void collectForeignDataType() {}
-  void collectPageProps() {}
+  void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
+  void collectForeignData(unsigned id, unsigned level) {}
+  void collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double bb, double cc, double dd);
+  void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern);
+  void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern);
+  void collectGeomList(unsigned id, unsigned level) {}
+  void collectGeometry(unsigned id, unsigned level) {}
+  void collectMoveTo(unsigned id, unsigned level) {}
+  void collectLineTo(unsigned id, unsigned level) {}
+  void collectArcTo(unsigned id, unsigned level) {}
+  void collectXFormData(unsigned id, unsigned level) {}
+  void collectShapeID(unsigned id, unsigned level) {}
+  void collectForeignDataType(unsigned id, unsigned level) {}
+  void collectPageProps(unsigned id, unsigned level) {}
+
+  void collectUnhandledChunk(unsigned id, unsigned level) {}
 
 
 private:
@@ -62,10 +64,10 @@ private:
 
   void rotatePoint(double &x, double &y, const XForm &xform);
   void flipPoint(double &x, double &y, const XForm &xform);
-  
+
   void _flushCurrentPath();
   void _flushCurrentForeignData();
-  
+
   const ::WPXString getColourString(const Colour& c) const;
 
   bool m_isPageStarted;
@@ -75,7 +77,6 @@ private:
   double m_x;
   double m_y;
   XForm m_xform;
-  ChunkHeader m_header;
   std::vector<unsigned> m_currentGeometryOrder;
   std::map<unsigned, WPXPropertyList> m_currentGeometry;
   std::map<unsigned, WPXPropertyListVector> m_currentComplexGeometry;

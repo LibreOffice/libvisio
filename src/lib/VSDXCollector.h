@@ -22,7 +22,7 @@
 #define VSDXCOLLECTOR_H
 
 #include "VSDXParser.h"
- 
+
 namespace libvisio {
 
 class VSDXCollector
@@ -31,21 +31,23 @@ public:
   VSDXCollector();
   virtual ~VSDXCollector() {}
 
-  virtual void collectEllipticalArcTo(double x3, double y3, double x2, double y2, double angle, double ecc, unsigned id) = 0;
-  virtual void collectForeignData() = 0;
-  virtual void collectEllipse(double cx, double cy, double aa, double bb, double cc, double dd) = 0;
-  virtual void collectLine(double strokeWidth, Colour c, unsigned linePattern) = 0;
-  virtual void collectFillAndShadow(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern) = 0;
-  virtual void collectGeomList() = 0;
-  virtual void collectGeometry() = 0;
-  virtual void collectMoveTo() = 0;
-  virtual void collectLineTo() = 0;
-  virtual void collectArcTo() = 0;
-  virtual void collectXFormData() = 0;
-  virtual void collectShapeID() = 0;
-  virtual void collectForeignDataType() = 0;
-  virtual void collectPageProps() = 0;
-  
+  virtual void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) = 0;
+  virtual void collectForeignData(unsigned id, unsigned level) = 0;
+  virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double bb, double cc, double dd) = 0;
+  virtual void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern) = 0;
+  virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern) = 0;
+  virtual void collectGeomList(unsigned id, unsigned level) = 0;
+  virtual void collectGeometry(unsigned id, unsigned level) = 0;
+  virtual void collectMoveTo(unsigned id, unsigned level) = 0;
+  virtual void collectLineTo(unsigned id, unsigned level) = 0;
+  virtual void collectArcTo(unsigned id, unsigned level) = 0;
+  virtual void collectXFormData(unsigned id, unsigned level) = 0;
+  virtual void collectShapeID(unsigned id, unsigned level) = 0;
+  virtual void collectForeignDataType(unsigned id, unsigned level) = 0;
+  virtual void collectPageProps(unsigned id, unsigned level) = 0;
+
+  virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;
+
 
 
 private:
