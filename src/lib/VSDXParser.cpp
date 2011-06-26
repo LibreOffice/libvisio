@@ -720,23 +720,28 @@ void libvisio::VSDXParser::readShapeID(WPXInputStream *input)
 void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
 {
   input->seek(0x24, WPX_SEEK_CUR);
-  m_foreignType = readU16(input);
+  unsigned foreignType = readU16(input);
   input->seek(0xb, WPX_SEEK_CUR);
-  m_foreignFormat = readU32(input);
+  unsigned foreignFormat = readU32(input);
 
-  VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", m_foreignType, m_foreignFormat));
+  VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
+  
+  m_foreignType = foreignType;
+  m_foreignFormat = foreignFormat;
 }
 
 void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
 {
   // Skip bytes representing unit to *display* (value is always inches)
   input->seek(1, WPX_SEEK_CUR);
-  m_pageWidth = readDouble(input);
+  double pageWidth = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  m_pageHeight = readDouble(input);
+  double pageHeight = readDouble(input);
   input->seek(19, WPX_SEEK_CUR);
   /* m_scale = */ readDouble(input);
 
+  m_pageWidth = pageWidth;
+  m_pageHeight = pageHeight;
   WPXPropertyList pageProps;
   pageProps.insert("svg:width", m_scale*m_pageWidth);
   pageProps.insert("svg:height", m_scale*m_pageHeight);
