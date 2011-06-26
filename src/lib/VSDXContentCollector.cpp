@@ -170,7 +170,12 @@ void libvisio::VSDXContentCollector::collectLine(unsigned id, unsigned level, do
 void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
 {
   m_fillPattern = fillPattern;
-  if (m_fillPattern == 1)
+  if (m_fillPattern == 0)
+  {
+    m_fillType = "none";
+    m_styleProps.insert("draw:fill", "none");
+  }
+  else if (m_fillPattern == 1)
   {
     m_fillType = "solid";
     m_styleProps.insert("draw:fill", "solid");
@@ -234,5 +239,12 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned 
     }
     m_gradientProps.append(startColour);
     m_gradientProps.append(endColour);
+  }
+  else
+  // fill types we don't handle right, but let us approximate with solid fill
+  {
+    m_fillType = "solid";
+    m_styleProps.insert("draw:fill", "solid");
+    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
   }
 }

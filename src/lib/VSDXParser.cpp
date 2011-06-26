@@ -498,7 +498,12 @@ void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
   m_collector->collectFillAndShadow(colourIndexFG, colourIndexBG, fillPattern);
 #else
   m_fillPattern = fillPattern;
-  if (m_fillPattern == 1)
+  if (m_fillPattern == 0)
+  {
+    m_fillType = "none";
+    m_styleProps.insert("draw:fill", "none");
+  }
+  else if (m_fillPattern == 1)
   {
     m_fillType = "solid";
     m_styleProps.insert("draw:fill", "solid");
@@ -559,9 +564,16 @@ void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
     case 34:
       m_styleProps.insert("draw:angle", 135);
       break;
-    }
+    }      
     m_gradientProps.append(startColour);
     m_gradientProps.append(endColour);
+  }
+  else
+  // fill types we don't handle right, but let us approximate with solid fill
+  {
+    m_fillType = "solid";
+    m_styleProps.insert("draw:fill", "solid");
+    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
   }
 #endif
 }
