@@ -29,13 +29,6 @@
 #include "VSDXContentCollector.h"
 #include "VSDXStylesCollector.h"
 
-const libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] = {
-  {VSD_PAGE, "Page", &libvisio::VSD11Parser::handlePage},
-  {VSD_COLORS, "Colors", &libvisio::VSD11Parser::readColours},
-  {VSD_PAGES, "Pages", &libvisio::VSD11Parser::handlePages},
-  {0, 0, 0}
-};
-
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : VSDXParser(input, painter)
 {}
@@ -109,38 +102,26 @@ bool libvisio::VSD11Parser::parseDocument(WPXInputStream *input)
     ptrLength = readU32(input);
     ptrFormat = readU16(input);
 
-    int index = -1;
-    for (int j = 0; (index < 0) && streamHandlers[j].type; j++)
-    {
-      if (streamHandlers[j].type == ptrType)
-        index = j;
-    }
+    bool compressed = ((ptrFormat & 2) == 2);
+    m_input->seek(ptrOffset, WPX_SEEK_SET);
+    WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
 
-    if (index < 0)
-    {
-      VSD_DEBUG_MSG(("Unknown stream pointer type 0x%02x found in trailer at %li\n",
-                     ptrType, input->tell() - 18));
-    }
-    else
-    {
-      StreamMethod streamHandler = streamHandlers[index].handler;
-      if (!streamHandler)
-        VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li ignored\n",
-                       streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
-                       input->tell() - 18));
-      else
-      {
-        VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li handled\n",
-                       streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
-                       input->tell() - 18));
+	switch (ptrType)
+	{
+    case VSD_PAGE:
+	  handlePage(tmpInput);
+	  break;
+	case VSD_PAGES:
+	  handlePages(tmpInput);
+	  break;
+	case VSD_COLORS:
+	  readColours(tmpInput);
+	  break;
+	default:
+	  break;
+	}
 
-        bool compressed = ((ptrFormat & 2) == 2);
-        m_input->seek(ptrOffset, WPX_SEEK_SET);
-        WPXInputStream *input = new VSDInternalStream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(input);
-        delete input;
-      }
-    }
+    delete tmpInput;
   }
 
   m_collector->endPage();
@@ -194,15 +175,16 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
 
 void libvisio::VSD11Parser::handlePages(WPXInputStream *input)
 {
+  unsigned int ptrType;
+  unsigned int ptrOffset;
+  unsigned int ptrLength;
+  unsigned int ptrFormat;
+
   unsigned int offset = readU32(input);
   input->seek(offset, WPX_SEEK_SET);
   unsigned int pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
-  unsigned int ptrType;
-  unsigned int ptrOffset;
-  unsigned int ptrLength;
-  unsigned int ptrFormat;
   for (unsigned int i = 0; i < pointerCount; i++)
   {
     ptrType = readU32(input);
@@ -211,38 +193,26 @@ void libvisio::VSD11Parser::handlePages(WPXInputStream *input)
     ptrLength = readU32(input);
     ptrFormat = readU16(input);
 
-    int index = -1;
-    for (int j = 0; (index < 0) && streamHandlers[j].type; j++)
-    {
-      if (streamHandlers[j].type == ptrType)
-        index = j;
-    }
+    bool compressed = ((ptrFormat & 2) == 2);
+    m_input->seek(ptrOffset, WPX_SEEK_SET);
+    WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
 
-    if (index < 0)
-    {
-      VSD_DEBUG_MSG(("Unknown stream pointer type 0x%02x found in pages at %li\n",
-                     ptrType, input->tell() - 18));
-    }
-    else
-    {
-      StreamMethod streamHandler = streamHandlers[index].handler;
-      if (!streamHandler)
-        VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li ignored\n",
-                       streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
-                       input->tell() - 18));
-      else
-      {
-        VSD_DEBUG_MSG(("Stream '%s', type 0x%02x, format 0x%02x at %li handled\n",
-                       streamHandlers[index].name, streamHandlers[index].type, ptrFormat,
-                       input->tell() - 18));
+	switch (ptrType)
+	{
+    case VSD_PAGE:
+	  handlePage(tmpInput);
+	  break;
+	case VSD_PAGES:
+	  handlePages(tmpInput);
+	  break;
+	case VSD_COLORS:
+	  readColours(tmpInput);
+	  break;
+	default:
+	  break;
+	}
 
-        bool compressed = ((ptrFormat & 2) == 2);
-        m_input->seek(ptrOffset, WPX_SEEK_SET);
-        WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
-        (this->*streamHandler)(tmpInput);
-        delete tmpInput;
-      }
-    }
+    delete tmpInput;
   }
 }
 

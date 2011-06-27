@@ -42,10 +42,6 @@ private:
   // parser of one pass
   bool parseDocument(WPXInputStream *input);
 
-  typedef void (VSD11Parser::*StreamMethod)(WPXInputStream*);
-  struct StreamHandler { unsigned int type; const char *name; StreamMethod handler;};
-  static const StreamHandler streamHandlers[];
-
   // Stream handlers
   void handlePages(WPXInputStream *input);
   void handlePage(WPXInputStream *input);
