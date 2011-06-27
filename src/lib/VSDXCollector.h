@@ -46,14 +46,13 @@ public:
   virtual void collectShapeID(unsigned id, unsigned level, unsigned shapeId) = 0;
   virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat) = 0;
   virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight) = 0;
+  virtual void collectShape(unsigned id, unsigned level) = 0;
 
   virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;
 
   virtual void collectColours(const std::vector<Colour> &colours) = 0;
 
   // Temporary hack
-  virtual void shapeChunkBegin(unsigned id, unsigned level) = 0;
-  virtual void shapeChunkEnd(unsigned id, unsigned level) = 0;
   virtual void startPage() = 0;
   virtual void endPage() = 0;
 

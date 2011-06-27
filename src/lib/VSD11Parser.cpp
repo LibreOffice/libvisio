@@ -36,29 +36,6 @@ const libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers
   {0, 0, 0}
 };
 
-const struct libvisio::VSD11Parser::ChunkHandler libvisio::VSD11Parser::chunkHandlers[] =
-{
-  {VSD_SHAPE_GROUP, "ShapeType=\"Group\"", &libvisio::VSD11Parser::shapeChunk},
-  {VSD_SHAPE_SHAPE, "ShapeType=\"Shape\"", &libvisio::VSD11Parser::shapeChunk},
-  {VSD_SHAPE_FOREIGN, "ShapeType=\"Foreign\"", &libvisio::VSD11Parser::shapeChunk},
-#if 0
-  {VSD_XFORM_DATA, "XForm Data", &libvisio::VSD11Parser::readXFormData},
-  {VSD_SHAPE_ID, "Shape Id", &libvisio::VSD11Parser::readShapeID},
-  {VSD_LINE, "Line", &libvisio::VSD11Parser::readLine},
-  {VSD_FILL_AND_SHADOW, "Fill and Shadow", &libvisio::VSD11Parser::readFillAndShadow},
-  {VSD_GEOM_LIST, "Geom List", &libvisio::VSD11Parser::readGeomList},
-  {VSD_GEOMETRY, "Geometry", &libvisio::VSD11Parser::readGeometry},
-  {VSD_MOVE_TO, "Move To", &libvisio::VSD11Parser::readMoveTo},
-  {VSD_LINE_TO, "Line To", &libvisio::VSD11Parser::readLineTo},
-  {VSD_ARC_TO, "Arc To", &libvisio::VSD11Parser::readArcTo},
-  {VSD_ELLIPSE, "Ellipse", &libvisio::VSD11Parser::readEllipse},
-  {VSD_ELLIPTICAL_ARC_TO, "Elliptical Arc To", &libvisio::VSD11Parser::readEllipticalArcTo},
-  {VSD_FOREIGN_DATA_TYPE, "Foreign Data Type", &libvisio::VSD11Parser::readForeignDataType},
-  {VSD_FOREIGN_DATA, "Foreign Data", &libvisio::VSD11Parser::readForeignData},
-#endif
-  {0, 0, 0}
-};
-
 libvisio::VSD11Parser::VSD11Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : VSDXParser(input, painter)
 {}
@@ -280,28 +257,59 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
     if (!getChunkHeader(input))
       break;
     endPos = m_header.dataLength+m_header.trailer+input->tell();
-    int index = -1;
-    for (int i = 0; (index < 0) && chunkHandlers[i].type; i++)
+
+    VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
+    switch (m_header.chunkType)
     {
-      if (chunkHandlers[i].type == m_header.chunkType)
-        index = i;
+	case VSD_SHAPE_GROUP:
+	case VSD_SHAPE_SHAPE:
+	case VSD_SHAPE_FOREIGN:
+	  readShape(input);
+	  break;
+    case VSD_XFORM_DATA:
+      readXFormData(input);
+      break;
+    case VSD_SHAPE_ID:
+      readShapeID(input);
+      break;
+    case VSD_LINE:
+      readLine(input);
+      break;
+    case VSD_FILL_AND_SHADOW:
+      readFillAndShadow(input);
+      break;
+    case VSD_GEOM_LIST:
+      readGeomList(input);
+      break;
+    case VSD_GEOMETRY:
+      readGeometry(input);
+      break;
+    case VSD_MOVE_TO:
+      readMoveTo(input);
+      break;
+    case VSD_LINE_TO:
+      readLineTo(input);
+      break;
+    case VSD_ARC_TO:
+      readArcTo(input);
+      break;
+    case VSD_ELLIPSE:
+      readEllipse(input);
+      break;
+    case VSD_ELLIPTICAL_ARC_TO:
+      readEllipticalArcTo(input);
+      break;
+    case VSD_FOREIGN_DATA_TYPE:
+      readForeignDataType(input);
+      break;
+    case VSD_FOREIGN_DATA:
+      readForeignData(input);
+      break;
+	case VSD_PAGE_PROPS:
+	  readPageProps(input);
+	default:
+	  m_collector->collectUnhandledChunk(m_header.id, m_header.level);
     }
-
-    if (index >= 0)
-    {
-      // Skip rest of this chunk
-      input->seek(m_header.dataLength + m_header.trailer, WPX_SEEK_CUR);
-      ChunkMethod chunkHandler = chunkHandlers[index].handler;
-      if (chunkHandler)
-        (this->*chunkHandler)(input);
-      continue;
-    }
-
-    VSD_DEBUG_MSG(("Parsing chunk type %02x with trailer (%d) and length %x\n",
-                   m_header.chunkType, m_header.trailer, m_header.dataLength));
-
-    if (m_header.chunkType == VSD_PAGE_PROPS)
-      readPageProps(input);
 
     input->seek(endPos, WPX_SEEK_SET);
   }

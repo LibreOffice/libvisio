@@ -59,7 +59,7 @@ protected:
   void readColours(WPXInputStream *input);
   
   // Chunk handlers
-  void shapeChunk(WPXInputStream *input);
+  void readShape(WPXInputStream *input);
   
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
 

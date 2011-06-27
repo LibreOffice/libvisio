@@ -53,14 +53,13 @@ public:
   void collectShapeID(unsigned id, unsigned level, unsigned shapeId);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight);
+  void collectShape(unsigned id, unsigned level);
 
-  void collectUnhandledChunk(unsigned id, unsigned level) {}
+  void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectColours(const std::vector<Colour> &colours);
 
   // Temporary hack
-  void shapeChunkBegin(unsigned id, unsigned level);
-  void shapeChunkEnd(unsigned id, unsigned level);
   void startPage();
   void endPage();
 
@@ -77,6 +76,8 @@ private:
   void _flushCurrentForeignData();
 
   const ::WPXString getColourString(const Colour& c) const;
+  
+  void _handleLevelChange(unsigned level);
 
   bool m_isPageStarted;
   double m_pageWidth;
@@ -104,6 +105,7 @@ private:
   bool m_noFill;
   bool m_noShow;
   std::vector<Colour> m_colours;
+  unsigned m_currentLevel;
 };
 
 } // namespace libvisio

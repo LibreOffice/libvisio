@@ -232,6 +232,11 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
   m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight);
 }
 
+void libvisio::VSDXParser::readShape(WPXInputStream *input)
+{
+  m_collector->collectShape(m_header.id, m_header.level);
+}
+
 void libvisio::VSDXParser::readColours(WPXInputStream *input)
 {
   input->seek(6, WPX_SEEK_SET);
@@ -252,73 +257,5 @@ void libvisio::VSDXParser::readColours(WPXInputStream *input)
     colours.push_back(tmpColour);
   }
   m_collector->collectColours(colours);
-}
-
-void libvisio::VSDXParser::shapeChunk(WPXInputStream *input)
-{
-  long endPos = 0;
-
-  m_collector->shapeChunkBegin(m_header.id, m_header.level);
-
-  while (!input->atEOS())
-  {
-    if (!getChunkHeader(input))
-      break;
-    endPos = m_header.dataLength+m_header.trailer+input->tell();
-
-    // Break once a chunk that is not nested in the shape is found
-    if (m_header.level < 2)
-    {
-      input->seek(-19, WPX_SEEK_CUR);
-      break;
-    }
-
-    VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
-    switch (m_header.chunkType)
-    {
-    case VSD_XFORM_DATA: // XForm data
-      readXFormData(input);
-      break;
-    case VSD_SHAPE_ID:
-      readShapeID(input);
-      break;
-    case VSD_LINE:
-      readLine(input);
-      break;
-    case VSD_FILL_AND_SHADOW:
-      readFillAndShadow(input);
-      break;
-    case VSD_GEOM_LIST:
-      readGeomList(input);
-      break;
-    case VSD_GEOMETRY:
-      readGeometry(input);
-      break;
-    case VSD_MOVE_TO:
-      readMoveTo(input);
-      break;
-    case VSD_LINE_TO:
-      readLineTo(input);
-      break;
-    case VSD_ARC_TO:
-      readArcTo(input);
-      break;
-    case VSD_ELLIPSE:
-      readEllipse(input);
-      break;
-    case VSD_ELLIPTICAL_ARC_TO:
-      readEllipticalArcTo(input);
-      break;
-    case VSD_FOREIGN_DATA_TYPE:
-      readForeignDataType(input);
-      break;
-    case VSD_FOREIGN_DATA:
-      readForeignData(input);
-      break;
-    }
-
-    input->seek(endPos, WPX_SEEK_SET);
-  }
-  m_collector->shapeChunkEnd(m_header.id, m_header.level);
 }
 

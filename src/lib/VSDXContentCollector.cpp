@@ -27,7 +27,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(libwpg::WPGPaintInterface *
   m_currentComplexGeometry(), m_groupXForms(), m_currentForeignData(), m_currentForeignProps(),
   m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
   m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
-  m_gradientProps(), m_noLine(false), m_noFill(false), m_noShow(false)
+  m_gradientProps(), m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0)
 {
 }
 
@@ -213,6 +213,7 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 
 void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
+  _handleLevelChange(level);
   x3 += m_xform.x;
   y3 = m_xform.height - y3 + m_xform.y;
   x2 += m_xform.x;
@@ -263,6 +264,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned id, unsigne
 
 void libvisio::VSDXContentCollector::collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd)
 {
+  _handleLevelChange(level);
   WPXPropertyList ellipse;
   ellipse.insert("svg:rx", m_scale*(aa-cx));
   ellipse.insert("svg:ry", m_scale*(dd-cy));
@@ -278,6 +280,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned id, unsigned level,
 
 void libvisio::VSDXContentCollector::collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern)
 {
+  _handleLevelChange(level);
   m_linePattern = linePattern;
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
   m_lineColour = getColourString(c);
@@ -316,6 +319,7 @@ void libvisio::VSDXContentCollector::collectLine(unsigned id, unsigned level, do
 
 void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
 {
+  _handleLevelChange(level);
   m_fillPattern = fillPattern;
   if (m_fillPattern == 0)
   {
@@ -399,6 +403,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned 
 
 void libvisio::VSDXContentCollector::collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData)
 {
+  _handleLevelChange(level);
   if (m_foreignType == 1 || m_foreignType == 4) // Image
   {
     // If bmp data found, reconstruct header
@@ -495,6 +500,7 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned id, unsigned le
 
 void libvisio::VSDXContentCollector::collectGeomList(unsigned id, unsigned level, const std::vector<unsigned> &geometryOrder)
 {
+  _handleLevelChange(level);
   _flushCurrentPath();
   m_currentGeometryOrder.clear();
   for (unsigned j = 0; j< geometryOrder.size(); j++)
@@ -504,6 +510,7 @@ void libvisio::VSDXContentCollector::collectGeomList(unsigned id, unsigned level
 
 void libvisio::VSDXContentCollector::collectGeometry(unsigned id, unsigned level, unsigned geomFlags)
 {
+  _handleLevelChange(level);
   m_x = 0.0; m_x = 0.0;
   m_noFill = ((geomFlags & 1) == 1);
   m_noLine = ((geomFlags & 2) == 2);
@@ -521,6 +528,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned id, unsigned level
 
 void libvisio::VSDXContentCollector::collectMoveTo(unsigned id, unsigned level, double x, double y)
 {
+  _handleLevelChange(level);
   WPXPropertyList end;
   m_x = x + m_xform.x;
   m_y = m_xform.height - y + m_xform.y;
@@ -534,6 +542,7 @@ void libvisio::VSDXContentCollector::collectMoveTo(unsigned id, unsigned level, 
 
 void libvisio::VSDXContentCollector::collectLineTo(unsigned id, unsigned level, double x, double y)
 {
+  _handleLevelChange(level);
   WPXPropertyList end;
   m_x = x + m_xform.x;
   m_y = m_xform.height - y + m_xform.y;
@@ -547,6 +556,7 @@ void libvisio::VSDXContentCollector::collectLineTo(unsigned id, unsigned level, 
 
 void libvisio::VSDXContentCollector::collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow)
 {
+  _handleLevelChange(level);
   x2 += m_xform.x;
   y2 = m_xform.height - y2 + m_xform.y;
   rotatePoint(x2, y2, m_xform);
@@ -584,6 +594,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned id, unsigned level, d
 
 void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned level, const XForm &xform)
 {
+  _handleLevelChange(level);
   m_xform = xform;
 
   std::map<unsigned int, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
@@ -599,17 +610,20 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned leve
 
 void libvisio::VSDXContentCollector::collectShapeID(unsigned id, unsigned level, unsigned shapeId)
 {
+  _handleLevelChange(level);
   m_groupXForms[shapeId] = m_xform;
 }
 
 void libvisio::VSDXContentCollector::collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat)
 {
+  _handleLevelChange(level);
   m_foreignType = foreignType;
   m_foreignFormat = foreignFormat;
 }
 
 void libvisio::VSDXContentCollector::collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight)
 {
+  _handleLevelChange(level);
   m_pageWidth = pageWidth;
   m_pageHeight = pageHeight;
   WPXPropertyList pageProps;
@@ -622,18 +636,7 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned id, unsigned leve
   m_isPageStarted = true;
 }
 
-void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &colours)
-{
-  m_colours.clear();
-  m_colours.reserve(colours.size());
-  for (unsigned i = 0; i < colours.size(); i++)
-    m_colours.push_back(colours[i]);
-}
-
-
-// TEMPORARY HACKS
-
-void libvisio::VSDXContentCollector::shapeChunkBegin(unsigned id, unsigned level)
+void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
 {
   _flushCurrentPath();
   _flushCurrentForeignData();
@@ -666,15 +669,71 @@ void libvisio::VSDXContentCollector::shapeChunkBegin(unsigned id, unsigned level
   m_currentShapeId = id;
 }
 
-void libvisio::VSDXContentCollector::shapeChunkEnd(unsigned id, unsigned level)
+void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned id, unsigned level)
 {
-  _flushCurrentPath();
-  _flushCurrentForeignData();
-  m_x = 0; m_y = 0;
+  _handleLevelChange(level);
 }
+
+void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &colours)
+{
+  m_colours.clear();
+  m_colours.reserve(colours.size());
+  for (unsigned i = 0; i < colours.size(); i++)
+    m_colours.push_back(colours[i]);
+}
+
+void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
+{
+  if (m_currentLevel == level)
+    return;
+  if (m_currentLevel >= 2 && level < 2)
+  {
+    _flushCurrentPath();
+    _flushCurrentForeignData();
+    m_x = 0; m_y = 0;
+  }
+  else if (m_currentLevel == 1 && level > 1)
+  {
+    _flushCurrentPath();
+    _flushCurrentForeignData();
+
+    m_gradientProps = WPXPropertyListVector();
+    m_foreignType = 0; // Tracks current foreign data type
+    m_foreignFormat = 0; // Tracks foreign data format
+
+    m_x = 0; m_y = 0;
+    m_xform = XForm();
+
+    // Geometry flags
+    m_noLine = false;
+    m_noFill = false;
+    m_noShow = false;
+
+    // Save line colour and pattern, fill type and pattern
+    m_lineColour = "black";
+    m_fillType = "none";
+    m_linePattern = 1; // same as "solid"
+    m_fillPattern = 1; // same as "solid"
+
+    // Reset style
+    m_styleProps.clear();
+    m_styleProps.insert("svg:stroke-width", m_scale*0.0138889);
+    m_styleProps.insert("svg:stroke-color", m_lineColour);
+    m_styleProps.insert("draw:fill", m_fillType);
+    m_styleProps.insert("svg:stroke-dasharray", "solid");
+  }
+  
+  m_currentLevel = level;
+}
+
+
+// TEMPORARY HACKS
 
 void libvisio::VSDXContentCollector::startPage()
 {
+   _flushCurrentPath();
+   _flushCurrentForeignData();
+   m_x = 0; m_y = 0;
    m_groupXForms.clear();
 }
 
@@ -682,6 +741,12 @@ void libvisio::VSDXContentCollector::endPage()
 {
   // End page if one is started
   if (m_isPageStarted)
+  {
+     _flushCurrentPath();
+     _flushCurrentForeignData();
+     m_x = 0; m_y = 0;
+
     m_painter->endGraphics();
+  }
   m_groupXForms.clear();
 }
