@@ -54,7 +54,6 @@ public:
   // Temporary hack
   virtual void shapeChunkBegin(unsigned id, unsigned level) = 0;
   virtual void shapeChunkEnd(unsigned id, unsigned level) = 0;
-  virtual void pageChunkBegin(unsigned id, unsigned level) = 0;
   virtual void startPage() = 0;
   virtual void endPage() = 0;
 

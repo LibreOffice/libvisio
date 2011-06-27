@@ -274,11 +274,7 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
 {
   long endPos = 0;
   
-#if 1
-  m_collector->pageChunkBegin(m_header.id, m_header.level);
-#else
-  m_groupXForms.clear();
-#endif
+  m_collector->startPage();
 
   while (!input->atEOS())
   {

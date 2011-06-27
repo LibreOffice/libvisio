@@ -54,7 +54,6 @@ public:
   // Temporary hack
   void shapeChunkBegin(unsigned id, unsigned level) {}
   void shapeChunkEnd(unsigned id, unsigned level) {}
-  void pageChunkBegin(unsigned id, unsigned level) {}
   void startPage() {}
   void endPage() {}
 

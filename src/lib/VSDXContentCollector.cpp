@@ -675,6 +675,7 @@ void libvisio::VSDXContentCollector::shapeChunkEnd(unsigned id, unsigned level)
 
 void libvisio::VSDXContentCollector::startPage()
 {
+   m_groupXForms.clear();
 }
 
 void libvisio::VSDXContentCollector::endPage()
@@ -682,9 +683,5 @@ void libvisio::VSDXContentCollector::endPage()
   // End page if one is started
   if (m_isPageStarted)
     m_painter->endGraphics();
-}
-
-void libvisio::VSDXContentCollector::pageChunkBegin(unsigned id, unsigned level)
-{
   m_groupXForms.clear();
 }
