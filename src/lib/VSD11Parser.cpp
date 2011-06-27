@@ -89,7 +89,6 @@ bool libvisio::VSD11Parser::parse()
   m_input->seek(offset, WPX_SEEK_SET);
   WPXInputStream *trailerStream = new VSDInternalStream(m_input, length, compressed);
 
-/*  
   VSDXStylesCollector stylesCollector;
   m_collector = &stylesCollector;
   if (!parseDocument(trailerStream))
@@ -97,7 +96,7 @@ bool libvisio::VSD11Parser::parse()
     delete trailerStream;
     return false;
   }
-*/
+
   VSDXContentCollector contentCollector(m_painter);
   m_collector = &contentCollector;
   if (!parseDocument(trailerStream))
