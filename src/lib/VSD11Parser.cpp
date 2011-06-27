@@ -31,7 +31,7 @@
 
 const libvisio::VSD11Parser::StreamHandler libvisio::VSD11Parser::streamHandlers[] = {
   {VSD_PAGE, "Page", &libvisio::VSD11Parser::handlePage},
-  {VSD_COLORS, "Colors", &libvisio::VSD11Parser::handleColours},
+  {VSD_COLORS, "Colors", &libvisio::VSD11Parser::readColours},
   {VSD_PAGES, "Pages", &libvisio::VSD11Parser::handlePages},
   {0, 0, 0}
 };
@@ -167,9 +167,7 @@ bool libvisio::VSD11Parser::parseDocument(WPXInputStream *input)
     }
   }
 
-  // End page if one is started
-  if (m_isPageStarted)
-    m_painter->endGraphics();
+  m_collector->endPage();
   return true;
 }
 
@@ -275,8 +273,12 @@ void libvisio::VSD11Parser::handlePages(WPXInputStream *input)
 void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
 {
   long endPos = 0;
-
+  
+#if 1
+  m_collector->pageChunkBegin(m_header.id, m_header.level);
+#else
   m_groupXForms.clear();
+#endif
 
   while (!input->atEOS())
   {
@@ -296,10 +298,7 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
       input->seek(m_header.dataLength + m_header.trailer, WPX_SEEK_CUR);
       ChunkMethod chunkHandler = chunkHandlers[index].handler;
       if (chunkHandler)
-      {
-        m_currentShapeId = m_header.id;
         (this->*chunkHandler)(input);
-      }
       continue;
     }
 
@@ -312,23 +311,3 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
     input->seek(endPos, WPX_SEEK_SET);
   }
 }
-
-void libvisio::VSD11Parser::handleColours(WPXInputStream *input)
-{
-  input->seek(6, WPX_SEEK_SET);
-  unsigned int numColours = readU8(input);
-  Colour tmpColour;
-
-  input->seek(1, WPX_SEEK_CUR);
-
-  for (unsigned int i = 0; i < numColours; i++)
-  {
-    tmpColour.r = readU8(input);
-    tmpColour.g = readU8(input);
-    tmpColour.b = readU8(input);
-    tmpColour.a = readU8(input);
-
-    m_colours.push_back(tmpColour);
-  }
-}
-

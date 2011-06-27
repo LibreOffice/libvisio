@@ -46,6 +46,11 @@ private:
   void handlePage(WPXInputStream *input);
   
   bool getChunkHeader(WPXInputStream *input) { return false; }
+
+  bool m_isPageStarted;
+  double m_pageWidth;
+  double m_pageHeight;
+  double m_scale;
 };
 
 } // namespace libvisio

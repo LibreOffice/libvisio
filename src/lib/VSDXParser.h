@@ -56,50 +56,16 @@ protected:
   void readShapeID(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
-  
-  void rotatePoint(double &x, double &y, const XForm &xform);
-  void flipPoint(double &x, double &y, const XForm &xform);
-  
-  void _flushCurrentPath();
-  void _flushCurrentForeignData();
+  void readColours(WPXInputStream *input);
   
   // Chunk handlers
   void shapeChunk(WPXInputStream *input);
   
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
 
-  const ::WPXString getColourString(const Colour& c) const;
-
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
-  bool m_isPageStarted;
-  double m_pageWidth;
-  double m_pageHeight;
-  double m_scale;
-  double m_x;
-  double m_y;
-  XForm m_xform;
   ChunkHeader m_header;
-  std::vector<unsigned> m_currentGeometryOrder;
-  std::map<unsigned, WPXPropertyList> m_currentGeometry;
-  std::map<unsigned, WPXPropertyListVector> m_currentComplexGeometry;
-  std::map<unsigned, XForm> m_groupXForms;
-  WPXBinaryData m_currentForeignData;
-  WPXPropertyList m_currentForeignProps;
-  unsigned m_currentShapeId;
-  unsigned m_foreignType;
-  unsigned m_foreignFormat;
-  WPXPropertyList m_styleProps;
-  ::WPXString m_lineColour;
-  ::WPXString m_fillType;
-  unsigned m_linePattern;
-  unsigned m_fillPattern;
-  WPXPropertyListVector m_gradientProps;
-  bool m_noLine;
-  bool m_noFill;
-  bool m_noShow;
-  std::vector<Colour> m_colours;
-
   VSDXCollector *m_collector;
 };
 

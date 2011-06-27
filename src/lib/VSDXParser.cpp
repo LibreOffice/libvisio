@@ -41,197 +41,11 @@ static unsigned bitmapId = 0;
 #endif
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), 
-    m_pageHeight(0.0), m_scale(1.0), m_x(0.0), m_y(0.0), m_xform(), m_header(),
-    m_currentGeometryOrder(), m_currentGeometry(), m_currentComplexGeometry(),
-    m_groupXForms(), m_currentForeignData(), m_currentForeignProps(), m_currentShapeId(0),
-    m_foreignType(0), m_foreignFormat(0), m_styleProps(), m_lineColour("black"),
-    m_fillType("none"), m_linePattern(1), m_fillPattern(1), m_gradientProps(), m_noLine(false),
-    m_noFill(false), m_noShow(false), m_collector(0)
+  : m_input(input), m_painter(painter), m_header(), m_collector(0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
 {}
-
-
-const ::WPXString libvisio::VSDXParser::getColourString(const struct Colour &c) const
-{
-    ::WPXString sColour;
-    sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
-    return sColour;
-}
-
-void libvisio::VSDXParser::rotatePoint(double &x, double &y, const XForm &xform)
-{
-  if (xform.angle == 0.0) return;
-
-  // Calculate co-ordinates using pin position as origin
-  double tmpX = x - xform.pinX;
-  double tmpY = (m_pageHeight - y) - xform.pinY; // Start from bottom left
-
-  // Rotate around pin and move back to bottom left as origin
-  x = (tmpX * cos(xform.angle)) - (tmpY * sin(xform.angle)) + xform.pinX;
-  y = (tmpX * sin(xform.angle)) + (tmpY * cos(xform.angle)) + xform.pinY;
-  y = m_pageHeight - y; // Flip Y for screen co-ordinate
-}
-
-void libvisio::VSDXParser::flipPoint(double &x, double &y, const XForm &xform)
-{
-  if (!xform.flipX && !xform.flipY) return;
-
-  double tmpX = x - xform.x;
-  double tmpY = y - xform.y;
-
-  if (xform.flipX)
-    tmpX = xform.width - tmpX;
-  if (xform.flipY)
-    tmpY = xform.height - tmpY;
-  x = tmpX + xform.x;
-  y = tmpY + xform.y;
-}
-
-void libvisio::VSDXParser::_flushCurrentPath()
-{
-  double startX = 0; double startY = 0;
-  double x = 0; double y = 0;
-  bool firstPoint = true;
-
-  WPXPropertyListVector path;
-  std::map<unsigned int, WPXPropertyList>::iterator iter;
-  std::map<unsigned int, WPXPropertyListVector>::iterator itervec;
-  if (m_currentGeometryOrder.size())
-  {
-    for (unsigned i = 0; i < m_currentGeometryOrder.size(); i++)
-    {
-      iter = m_currentGeometry.find(m_currentGeometryOrder[i]);
-      if (iter != m_currentGeometry.end())
-      {
-        if (firstPoint)
-        {
-          x = (iter->second)["svg:x"]->getDouble();
-          y = (iter->second)["svg:y"]->getDouble();
-          startX = x;
-          startY = y;
-          firstPoint = false;
-        }
-        else if ((iter->second)["libwpg:path-action"]->getStr() == "M")
-        {
-          if (startX == x && startY == y)
-          {
-             WPXPropertyList closedPath;
-             closedPath.insert("libwpg:path-action", "Z");
-             path.append(closedPath);
-          }
-          if (path.count() && !m_noShow)
-          {
-            m_painter->setStyle(m_styleProps, m_gradientProps);
-            m_painter->drawPath(path);
-          }
-
-          path = WPXPropertyListVector();
-          x = (iter->second)["svg:x"]->getDouble();
-          y = (iter->second)["svg:y"]->getDouble();
-          startX = x;
-          startY = y;
-        }
-        else
-        {
-          x = (iter->second)["svg:x"]->getDouble();
-          y = (iter->second)["svg:y"]->getDouble();
-        }
-        path.append(iter->second);
-      }
-      else
-      {
-        itervec = m_currentComplexGeometry.find(m_currentGeometryOrder[i]);
-        if (itervec != m_currentComplexGeometry.end())
-        {
-          WPXPropertyListVector::Iter iter2(itervec->second);
-          for (; iter2.next();)
-          {
-            if (firstPoint)
-            {
-              x = (iter2())["svg:x"]->getDouble();
-              y = (iter2())["svg:y"]->getDouble();
-              startX = x;
-              startY = y;
-              firstPoint = false;
-            }
-            else if ((iter2())["libwpg:path-action"]->getStr() == "M")
-            {
-              if (startX == x && startY == y)
-              {
-                WPXPropertyList closedPath;
-                closedPath.insert("libwpg:path-action", "Z");
-                path.append(closedPath);
-              }
-              if (path.count() && !m_noShow)
-              {
-                m_painter->setStyle(m_styleProps, m_gradientProps);
-                m_painter->drawPath(path);
-              }
-
-              path = WPXPropertyListVector();
-              x = (iter2())["svg:x"]->getDouble();
-              y = (iter2())["svg:y"]->getDouble();
-              startX = x;
-              startY = y;
-            }
-            else
-            {
-              x = (iter2())["svg:x"]->getDouble();
-              y = (iter2())["svg:y"]->getDouble();
-            }
-          path.append(iter2());
-          }
-        }
-      }
-    }
-
-    if (startX == x && startY == y && path.count())
-    {
-      WPXPropertyList closedPath;
-      closedPath.insert("libwpg:path-action", "Z");
-      path.append(closedPath);
-    }
-    if (path.count() && !m_noShow)
-    {
-      m_painter->setStyle(m_styleProps, m_gradientProps);
-      m_painter->drawPath(path);
-    }
-  }
-  else
-  {
-    for (iter=m_currentGeometry.begin(); iter != m_currentGeometry.end(); iter++)
-      path.append(iter->second);
-    for (itervec=m_currentComplexGeometry.begin(); itervec != m_currentComplexGeometry.end(); itervec++)
-    {
-      WPXPropertyListVector::Iter iter2(itervec->second);
-      for (; iter2.next();)
-        path.append(iter2());
-    }
-    if (path.count() && !m_noShow)
-    {
-      m_painter->setStyle(m_styleProps, m_gradientProps);
-      m_painter->drawPath(path);
-    }
-  }
-  m_currentGeometry.clear();
-  m_currentComplexGeometry.clear();
-  m_currentGeometryOrder.clear();
-}
-
-void libvisio::VSDXParser::_flushCurrentForeignData()
-{
-  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
-  {
-    m_painter->setStyle(m_styleProps, m_gradientProps);
-    m_painter->drawGraphicObject(m_currentForeignProps, m_currentForeignData);
-  }
-  m_currentForeignData.clear();
-  m_currentForeignProps.clear();
-}
-
 
 
 // --- READERS ---
@@ -251,8 +65,8 @@ void libvisio::VSDXParser::readEllipticalArcTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double ecc = readDouble(input); // Eccentricity
 
-#if 0
-  m_collector->collectEllipticalArcTo(x3, y3, x2, y2, angle, ecc, m_header.id);
+#if 1
+  m_collector->collectEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
 #else
   x3 += m_xform.x;
   y3 = m_xform.height - y3 + m_xform.y;
@@ -306,20 +120,26 @@ void libvisio::VSDXParser::readEllipticalArcTo(WPXInputStream *input)
 
 void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
 {
+  unsigned long tmpBytesRead = 0;
+  const unsigned char *buffer = input->read(m_header.dataLength, tmpBytesRead);
+  if (m_header.dataLength != tmpBytesRead)
+    return;
+  WPXBinaryData binaryData(buffer, tmpBytesRead);
+#if 1
+  m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
+#else
   if (m_foreignType == 1 || m_foreignType == 4) // Image
   {
-    unsigned long tmpBytesRead = 0;
-    const unsigned char *buffer = input->read(m_header.dataLength, tmpBytesRead);
     // If bmp data found, reconstruct header
     if (m_foreignType == 1 && m_foreignFormat == 0)
     {
       m_currentForeignData.append(0x42);
       m_currentForeignData.append(0x4d);
 
-      m_currentForeignData.append((unsigned char)((tmpBytesRead + 14) & 0x000000ff));
-      m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0x0000ff00) >> 8));
-      m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0x00ff0000) >> 16));
-      m_currentForeignData.append((unsigned char)(((tmpBytesRead + 14) & 0xff000000) >> 24));
+      m_currentForeignData.append((unsigned char)((binaryData.size() + 14) & 0x000000ff));
+      m_currentForeignData.append((unsigned char)(((binaryData.size() + 14) & 0x0000ff00) >> 8));
+      m_currentForeignData.append((unsigned char)(((binaryData.size() + 14) & 0x00ff0000) >> 16));
+      m_currentForeignData.append((unsigned char)(((binaryData.size() + 14) & 0xff000000) >> 24));
 
       m_currentForeignData.append(0x00);
       m_currentForeignData.append(0x00);
@@ -331,7 +151,7 @@ void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
       m_currentForeignData.append(0x00);
       m_currentForeignData.append(0x00);
     }
-    m_currentForeignData.append(buffer, tmpBytesRead);
+    m_currentForeignData.append(binaryData);
 
 #if DUMP_BITMAP
     if (m_foreignType == 1 || m_foreignType == 4)
@@ -400,6 +220,7 @@ void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
       }
     }
   }
+#endif
 }
 
 void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
@@ -417,8 +238,8 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double dd = readDouble(input);
 
-#if 0
-  m_collector->collectEllipse(cx, cy, aa, bb, cc, dd);
+#if 1
+  m_collector->collectEllipse(m_header.id, m_header.level, cx, cy, aa, dd);
 #else
   WPXPropertyList ellipse;
   ellipse.insert("svg:rx", m_scale*(aa-cx));
@@ -446,8 +267,8 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
   c.a = readU8(input);
   unsigned linePattern = readU8(input);
 
-#if 0
-  m_collector->collectLine(strokeWidth, c, linePattern);
+#if 1
+  m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern);
 #else
   m_linePattern = linePattern;
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
@@ -494,8 +315,8 @@ void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
   input->seek(4, WPX_SEEK_CUR);
   unsigned fillPattern = readU8(input);
 
-#if 0
-  m_collector->collectFillAndShadow(colourIndexFG, colourIndexBG, fillPattern);
+#if 1
+  m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern);
 #else
   m_fillPattern = fillPattern;
   if (m_fillPattern == 0)
@@ -584,16 +405,30 @@ void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
   input->seek(subHeaderLength, WPX_SEEK_CUR);
-  _flushCurrentPath();
+  std::vector<unsigned> geometryOrder;
+  geometryOrder.reserve(childrenListLength / sizeof(uint32_t));
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-    m_currentGeometryOrder.push_back(readU32(input));
+    geometryOrder.push_back(readU32(input));
+
+#if 1
+  m_collector->collectGeomList(m_header.id, m_header.level, geometryOrder);
+#else
+  _flushCurrentPath();
+  m_currentGeometryOrder.clear();
+  for (unsigned j = 0; j< geometryOrder.size(); j++)
+    m_currentGeometryOrder.push_back(geometryOrder[j]);
   m_noShow = false;
+#endif
 }
 
 void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
 {
+  unsigned geomFlags = readU8(input);
+  
+#if 1
+  m_collector->collectGeometry(m_header.id, m_header.level, geomFlags);
+#else
   m_x = 0.0; m_x = 0.0;
-  unsigned int geomFlags = readU8(input);
   m_noFill = ((geomFlags & 1) == 1);
   m_noLine = ((geomFlags & 2) == 2);
   m_noShow = ((geomFlags & 4) == 4);
@@ -606,15 +441,22 @@ void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
   else
     m_styleProps.insert("svg:fill", m_fillType);
   VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
+#endif
 }
 
 void libvisio::VSDXParser::readMoveTo(WPXInputStream *input)
 {
+  input->seek(1, WPX_SEEK_CUR);
+  double x = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double y = readDouble(input);
+
+#if 1
+  m_collector->collectMoveTo(m_header.id, m_header.level, x, y);
+#else
   WPXPropertyList end;
-  input->seek(1, WPX_SEEK_CUR);
-  m_x = readDouble(input) + m_xform.x;
-  input->seek(1, WPX_SEEK_CUR);
-  m_y = (m_xform.height - readDouble(input)) + m_xform.y;
+  m_x = x + m_xform.x;
+  m_y = m_xform.height - y + m_xform.y;
   rotatePoint(m_x, m_y, m_xform);
   flipPoint(m_x, m_y, m_xform);
 
@@ -622,33 +464,45 @@ void libvisio::VSDXParser::readMoveTo(WPXInputStream *input)
   end.insert("svg:y", m_scale*m_y);
   end.insert("libwpg:path-action", "M");
   m_currentGeometry[m_header.id] = end;
+#endif
 }
 
 void libvisio::VSDXParser::readLineTo(WPXInputStream *input)
 {
+  input->seek(1, WPX_SEEK_CUR);
+  double x = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double y = readDouble(input);
+
+#if 1
+  m_collector->collectLineTo(m_header.id, m_header.level, x, y);
+#else
   WPXPropertyList end;
-  input->seek(1, WPX_SEEK_CUR);
-  m_x = readDouble(input) + m_xform.x;
-  input->seek(1, WPX_SEEK_CUR);
-  m_y = (m_xform.height - readDouble(input)) + m_xform.y;
+  m_x = x + m_xform.x;
+  m_y = m_xform.height - y + m_xform.y;
   rotatePoint(m_x, m_y, m_xform);
   flipPoint(m_x, m_y, m_xform);
-
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("libwpg:path-action", "L");
   m_currentGeometry[m_header.id] = end;
+#endif
 }
 
 void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
-  double x2 = readDouble(input) + m_xform.x;
+  double x2 = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  double y2 = (m_xform.height - readDouble(input)) + m_xform.y;
+  double y2 = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   double bow = readDouble(input);
 
+#if 1
+  m_collector->collectArcTo(m_header.id, m_header.level, x2, y2, bow);
+#else
+  x2 += m_xform.x;
+  y2 = m_xform.height - y2 + m_xform.y;
   rotatePoint(x2, y2, m_xform);
   flipPoint(x2, y2, m_xform);
 
@@ -680,26 +534,33 @@ void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
     arc.insert("libwpg:path-action", "A");
     m_currentGeometry[m_header.id] = arc;
   }
+#endif
 }
 
 void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
 {
+  XForm xform;
   input->seek(1, WPX_SEEK_CUR);
-  m_xform.pinX = readDouble(input);
+  xform.pinX = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  m_xform.pinY = readDouble(input);
+  xform.pinY = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  m_xform.width = readDouble(input);
+  xform.width = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  m_xform.height = readDouble(input);
+  xform.height = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  m_xform.pinLocX = readDouble(input);
+  xform.pinLocX = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  m_xform.pinLocY = readDouble(input);
+  xform.pinLocY = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  m_xform.angle = readDouble(input);
-  m_xform.flipX = (readU8(input) != 0);
-  m_xform.flipY = (readU8(input) != 0);
+  xform.angle = readDouble(input);
+  xform.flipX = (readU8(input) != 0);
+  xform.flipY = (readU8(input) != 0);
+
+#if 1
+  m_collector->collectXFormData(m_header.id, m_header.level, xform);
+#else
+  m_xform = xform;
 
   std::map<unsigned int, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
   if  (iter != m_groupXForms.end()) {
@@ -710,11 +571,17 @@ void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
   }
   m_xform.x = m_xform.pinX - m_xform.pinLocX;
   m_xform.y = m_pageHeight - m_xform.pinY + m_xform.pinLocY - m_xform.height;
+#endif
 }
 
 void libvisio::VSDXParser::readShapeID(WPXInputStream *input)
 {
-  m_groupXForms[readU32(input)] = m_xform;
+  unsigned shapeId = readU32(input);
+#if 1
+  m_collector->collectShapeID(m_header.id, m_header.level, shapeId);
+#else
+  m_groupXForms[shapeId] = m_xform;
+#endif
 }
 
 void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
@@ -725,9 +592,13 @@ void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
   unsigned foreignFormat = readU32(input);
 
   VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
-  
+
+#if 1
+  m_collector->collectForeignDataType(m_header.id, m_header.level, foreignType, foreignFormat);
+#else
   m_foreignType = foreignType;
   m_foreignFormat = foreignFormat;
+#endif
 }
 
 void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
@@ -740,6 +611,9 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
   input->seek(19, WPX_SEEK_CUR);
   /* m_scale = */ readDouble(input);
 
+#if 1
+  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight);
+#else
   m_pageWidth = pageWidth;
   m_pageHeight = pageHeight;
   WPXPropertyList pageProps;
@@ -750,21 +624,46 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
     m_painter->endGraphics();
   m_painter->startGraphics(pageProps);
   m_isPageStarted = true;
+#endif
+}
+
+void libvisio::VSDXParser::readColours(WPXInputStream *input)
+{
+  input->seek(6, WPX_SEEK_SET);
+  unsigned int numColours = readU8(input);
+  Colour tmpColour;
+
+  input->seek(1, WPX_SEEK_CUR);
+
+  std::vector<Colour> colours;
+
+  for (unsigned int i = 0; i < numColours; i++)
+  {
+    tmpColour.r = readU8(input);
+    tmpColour.g = readU8(input);
+    tmpColour.b = readU8(input);
+    tmpColour.a = readU8(input);
+
+    colours.push_back(tmpColour);
+  }
+  m_collector->collectColours(colours);
 }
 
 void libvisio::VSDXParser::shapeChunk(WPXInputStream *input)
 {
   long endPos = 0;
 
+#if 1
+  m_collector->shapeChunkBegin(m_header.id, m_header.level);
+#else
+  _flushCurrentPath();
+  _flushCurrentForeignData();
   m_gradientProps = WPXPropertyListVector();
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
 
-  _flushCurrentPath();
-  _flushCurrentForeignData();
   m_x = 0; m_y = 0;
   m_xform = XForm();
-  m_header = ChunkHeader();
 
   // Geometry flags
   m_noLine = false;
@@ -783,6 +682,7 @@ void libvisio::VSDXParser::shapeChunk(WPXInputStream *input)
   m_styleProps.insert("svg:stroke-color", m_lineColour);
   m_styleProps.insert("draw:fill", m_fillType);
   m_styleProps.insert("svg:stroke-dasharray", "solid");
+#endif
 
   while (!input->atEOS())
   {
@@ -843,8 +743,12 @@ void libvisio::VSDXParser::shapeChunk(WPXInputStream *input)
 
     input->seek(endPos, WPX_SEEK_SET);
   }
+#if 1
+  m_collector->shapeChunkEnd(m_header.id, m_header.level);
+#else
   _flushCurrentPath();
   _flushCurrentForeignData();
   m_x = 0; m_y = 0;
+#endif
 }
 

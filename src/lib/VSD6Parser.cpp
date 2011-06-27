@@ -33,8 +33,9 @@ const libvisio::VSD6Parser::StreamHandler libvisio::VSD6Parser::handlers[] = {
   {0, 0, 0}
 };
 
-libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : VSDXParser(input, painter)
+libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter) :
+  VSDXParser(input, painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
+  m_scale(1.0)
 {}
 
 libvisio::VSD6Parser::~VSD6Parser()

@@ -54,7 +54,7 @@ private:
   // Stream handlers
   void handlePages(WPXInputStream *input);
   void handlePage(WPXInputStream *input);
-  void handleColours(WPXInputStream *input);
+  void readColours(WPXInputStream *input) { VSDXParser::readColours(input); }
 
   bool getChunkHeader(WPXInputStream *input);
 };

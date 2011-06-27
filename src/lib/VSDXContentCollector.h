@@ -40,21 +40,30 @@ public:
   virtual ~VSDXContentCollector() {};
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
-  void collectForeignData(unsigned id, unsigned level) {}
-  void collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double bb, double cc, double dd);
+  void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
+  void collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd);
   void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern);
-  void collectGeomList(unsigned id, unsigned level) {}
-  void collectGeometry(unsigned id, unsigned level) {}
-  void collectMoveTo(unsigned id, unsigned level) {}
-  void collectLineTo(unsigned id, unsigned level) {}
-  void collectArcTo(unsigned id, unsigned level) {}
-  void collectXFormData(unsigned id, unsigned level) {}
-  void collectShapeID(unsigned id, unsigned level) {}
-  void collectForeignDataType(unsigned id, unsigned level) {}
-  void collectPageProps(unsigned id, unsigned level) {}
+  void collectGeomList(unsigned id, unsigned level, const std::vector<unsigned> &geometryOrder);
+  void collectGeometry(unsigned id, unsigned level, unsigned geomFlags);
+  void collectMoveTo(unsigned id, unsigned level, double x, double y);
+  void collectLineTo(unsigned id, unsigned level, double x, double y);
+  void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
+  void collectXFormData(unsigned id, unsigned level, const XForm &xform);
+  void collectShapeID(unsigned id, unsigned level, unsigned shapeId);
+  void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
+  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight);
 
   void collectUnhandledChunk(unsigned id, unsigned level) {}
+
+  void collectColours(const std::vector<Colour> &colours);
+
+  // Temporary hack
+  void shapeChunkBegin(unsigned id, unsigned level);
+  void shapeChunkEnd(unsigned id, unsigned level);
+  void pageChunkBegin(unsigned id, unsigned level);
+  void startPage();
+  void endPage();
 
 
 private:
