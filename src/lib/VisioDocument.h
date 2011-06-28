@@ -36,7 +36,7 @@ public:
 
   static bool isSupported(WPXInputStream* input);
 
-t  static bool parse(WPXInputStream* input, libwpg::WPGPaintInterface* painter);
+  static bool parse(WPXInputStream* input, libwpg::WPGPaintInterface* painter);
 
   static bool generateSVG(WPXInputStream* input, WPXString& output);
 };
