@@ -622,12 +622,7 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned leve
       shapeId = iter->second;
       std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
       if (iterX != m_groupXForms.end())
-      {
-        m_xform.pinX += iterX->second.pinX;
-        m_xform.pinY += iterX->second.pinY;
-        m_xform.pinLocX += iterX->second.pinLocX;
-        m_xform.pinLocY += iterX->second.pinLocY;
-      }
+	    transformXForm(m_xform, iterX->second);
     }
     else
       break;
@@ -784,4 +779,30 @@ void libvisio::VSDXContentCollector::endPage()
     m_painter->endGraphics();
 	m_isPageStarted = false;
   }
+}
+
+void libvisio::VSDXContentCollector::transformXForm(XForm &xform1, const XForm &xform2)
+{
+  double xmin = xform1.pinX - xform1.pinLocX;
+  double xmax = xmin + xform1.width;
+  double ymin = xform1.pinY - xform1.pinLocY;
+  double ymax = ymin + xform1.width;
+  
+  flipPoint(xmin, ymin, xform2);
+  flipPoint(xmax, ymin, xform2);
+  if (xmin > xmax)
+    std::swap(xmin, xmax);
+  if (ymin > ymax)
+    std::swap(ymin, ymax);
+
+  xform1.pinX = xmin + xform1.pinLocX;
+  xform1.pinY = ymin + xform1.pinLocY;
+
+  xform1.pinX += xform2.pinX;
+  xform1.pinY += xform2.pinY;
+  xform1.pinLocX += xform2.pinLocX;
+  xform1.pinLocY += xform2.pinLocY;
+  xform1.flipX ^= xform2.flipX;
+  xform1.flipY ^= xform2.flipY;
+  
 }

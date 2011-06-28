@@ -75,6 +75,7 @@ private:
 
   void rotatePoint(double &x, double &y, const XForm &xform);
   void flipPoint(double &x, double &y, const XForm &xform);
+  void transformXForm(XForm &xform1, const XForm &xform2);
 
   void _flushCurrentPath();
   void _flushCurrentForeignData();
