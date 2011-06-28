@@ -36,7 +36,11 @@ namespace libvisio {
 class VSDXContentCollector : public VSDXCollector
 {
 public:
-  VSDXContentCollector(libwpg::WPGPaintInterface *painter);
+  VSDXContentCollector(
+    libwpg::WPGPaintInterface *painter,
+    std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
+    std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence
+  );
   virtual ~VSDXContentCollector() {};
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
@@ -89,7 +93,7 @@ private:
   std::vector<unsigned> m_currentGeometryOrder;
   std::map<unsigned, WPXPropertyList> m_currentGeometry;
   std::map<unsigned, WPXPropertyListVector> m_currentComplexGeometry;
-  std::map<unsigned, XForm> m_groupXForms;
+  std::map<unsigned, XForm> &m_groupXForms;
   WPXBinaryData m_currentForeignData;
   WPXPropertyList m_currentForeignProps;
   unsigned m_currentShapeId;
@@ -106,6 +110,11 @@ private:
   bool m_noShow;
   std::vector<Colour> m_colours;
   unsigned m_currentLevel;
+  bool m_isShapeStarted;
+  std::map<unsigned, unsigned> &m_groupMemberships;
+  std::vector<std::map<unsigned, XForm> > &m_groupXFormsSequence;
+  std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
+  unsigned m_currentPageNumber;
 };
 
 } // namespace libvisio

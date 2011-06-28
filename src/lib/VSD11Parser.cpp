@@ -58,8 +58,11 @@ bool libvisio::VSD11Parser::parse()
 
   m_input->seek(offset, WPX_SEEK_SET);
   WPXInputStream *trailerStream = new VSDInternalStream(m_input, length, compressed);
-
-  VSDXStylesCollector stylesCollector;
+  
+  std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
+  std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
+  
+  VSDXStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence);
   m_collector = &stylesCollector;
   if (!parseDocument(trailerStream))
   {
@@ -67,7 +70,7 @@ bool libvisio::VSD11Parser::parse()
     return false;
   }
 
-  VSDXContentCollector contentCollector(m_painter);
+  VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence);
   m_collector = &contentCollector;
   if (!parseDocument(trailerStream))
   {
@@ -124,7 +127,6 @@ bool libvisio::VSD11Parser::parseDocument(WPXInputStream *input)
     delete tmpInput;
   }
 
-  m_collector->endPage();
   return true;
 }
 
@@ -283,4 +285,5 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
 
     input->seek(endPos, WPX_SEEK_SET);
   }
+  m_collector->endPage();
 }

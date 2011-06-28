@@ -21,13 +21,20 @@
 #include "VSDXContentCollector.h"
 #include "VSDXParser.h"
 
-libvisio::VSDXContentCollector::VSDXContentCollector(libwpg::WPGPaintInterface *painter) :
+libvisio::VSDXContentCollector::VSDXContentCollector(
+  libwpg::WPGPaintInterface *painter,
+  std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
+  std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence
+  ) :
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_scale(1.0), m_x(0.0), m_y(0.0), m_xform(), m_currentGeometryOrder(), m_currentGeometry(),
-  m_currentComplexGeometry(), m_groupXForms(), m_currentForeignData(), m_currentForeignProps(),
-  m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
+  m_currentComplexGeometry(), m_groupXForms(groupXFormsSequence[0]), m_currentForeignData(),
+  m_currentForeignProps(), m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
   m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
-  m_gradientProps(), m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0)
+  m_gradientProps(), m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
+  m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
+  m_groupXFormsSequence(groupXFormsSequence),
+  m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0)
 {
 }
 
@@ -595,14 +602,35 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned id, unsigned level, d
 void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);
-  m_xform = xform;
 
-  std::map<unsigned int, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
-  if  (iter != m_groupXForms.end()) {
-    m_xform.pinX += iter->second.pinX;
-    m_xform.pinY += iter->second.pinY;
-    m_xform.pinLocX += iter->second.pinLocX;
-    m_xform.pinLocY += iter->second.pinLocY;
+  m_xform = xform;
+  
+  // We are interested for the while in shapes xforms only
+  if (!m_isShapeStarted)
+    return;
+
+  if (!m_currentShapeId)
+    return;
+  
+  unsigned shapeId = m_currentShapeId;
+  
+  while (true)
+  {
+    std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
+    if  (iter != m_groupMemberships.end())
+    {
+      shapeId = iter->second;
+      std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
+      if (iterX != m_groupXForms.end())
+      {
+        m_xform.pinX += iterX->second.pinX;
+        m_xform.pinY += iterX->second.pinY;
+        m_xform.pinLocX += iterX->second.pinLocX;
+        m_xform.pinLocY += iterX->second.pinLocY;
+      }
+    }
+    else
+      break;
   }
   m_xform.x = m_xform.pinX - m_xform.pinLocX;
   m_xform.y = m_pageHeight - m_xform.pinY + m_xform.pinLocY - m_xform.height;
@@ -611,7 +639,8 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned leve
 void libvisio::VSDXContentCollector::collectShapeID(unsigned id, unsigned level, unsigned shapeId)
 {
   _handleLevelChange(level);
-  m_groupXForms[shapeId] = m_xform;
+  m_currentShapeId = id;
+  m_isShapeStarted = true;
 }
 
 void libvisio::VSDXContentCollector::collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat)
@@ -667,6 +696,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
   m_styleProps.insert("svg:stroke-dasharray", "solid");
 
   m_currentShapeId = id;
+  m_isShapeStarted = true;
 }
 
 void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned id, unsigned level)
@@ -691,6 +721,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
     _flushCurrentPath();
     _flushCurrentForeignData();
     m_x = 0; m_y = 0;
+	m_isShapeStarted = false;
   }
   else if (m_currentLevel == 1 && level > 1)
   {
@@ -734,7 +765,11 @@ void libvisio::VSDXContentCollector::startPage()
    _flushCurrentPath();
    _flushCurrentForeignData();
    m_x = 0; m_y = 0;
-   m_groupXForms.clear();
+   m_currentPageNumber++;
+   if (m_groupXFormsSequence.size() >= m_currentPageNumber)
+     m_groupXForms = m_groupXFormsSequence[m_currentPageNumber-1];
+   if (m_groupMembershipsSequence.size() >= m_currentPageNumber)
+     m_groupMemberships = m_groupMembershipsSequence[m_currentPageNumber-1];
 }
 
 void libvisio::VSDXContentCollector::endPage()
@@ -747,6 +782,6 @@ void libvisio::VSDXContentCollector::endPage()
      m_x = 0; m_y = 0;
 
     m_painter->endGraphics();
+	m_isPageStarted = false;
   }
-  m_groupXForms.clear();
 }

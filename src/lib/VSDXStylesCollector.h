@@ -21,6 +21,7 @@
 #ifndef VSDXSTYLESCOLLECTOR_H
 #define VSDXSTYLESCOLLECTOR_H
 
+#include <map>
 #include "VSDXCollector.h"
 #include "VSDXParser.h"
 
@@ -29,7 +30,10 @@ namespace libvisio {
 class VSDXStylesCollector : public VSDXCollector
 {
 public:
-  VSDXStylesCollector();
+  VSDXStylesCollector(
+    std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
+    std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence
+  );
   virtual ~VSDXStylesCollector() {};
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
@@ -60,6 +64,17 @@ public:
 private:
   VSDXStylesCollector(const VSDXStylesCollector&);
   VSDXStylesCollector& operator=(const VSDXStylesCollector&);
+
+  void _handleLevelChange(unsigned level);
+
+  unsigned m_currentLevel;
+  bool m_isShapeStarted;
+
+  unsigned m_currentShapeId;
+  std::map<unsigned, XForm> m_groupXForms;
+  std::map<unsigned, unsigned> m_groupMemberships;
+  std::vector<std::map<unsigned, XForm> > &m_groupXFormsSequence;
+  std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
 };
 
 }
