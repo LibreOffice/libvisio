@@ -241,6 +241,9 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
     case VSD_XFORM_DATA:
       readXFormData(input);
       break;
+    case VSD_SHAPE_LIST:
+      readShapeList(input);
+      break;
     case VSD_SHAPE_ID:
       readShapeID(input);
       break;

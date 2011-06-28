@@ -98,6 +98,11 @@ void libvisio::VSDXStylesCollector::collectShapeID(unsigned id, unsigned level, 
     m_groupMemberships[shapeId] = m_currentShapeId;
 }
 
+void libvisio::VSDXStylesCollector::collectShapeList(unsigned id, unsigned level, std::vector<unsigned int> /*shapeList*/)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat)
 {
   _handleLevelChange(level);

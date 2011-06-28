@@ -54,6 +54,7 @@ protected:
   void readArcTo(WPXInputStream *input);
   void readXFormData(WPXInputStream *input);
   void readShapeID(WPXInputStream *input);
+  void readShapeList(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
   void readColours(WPXInputStream *input);

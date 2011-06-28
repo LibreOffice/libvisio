@@ -638,6 +638,12 @@ void libvisio::VSDXContentCollector::collectShapeID(unsigned id, unsigned level,
   m_isShapeStarted = true;
 }
 
+
+void libvisio::VSDXContentCollector::collectShapeList(unsigned id, unsigned level, std::vector<unsigned int> /*shapeList*/)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXContentCollector::collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat)
 {
   _handleLevelChange(level);

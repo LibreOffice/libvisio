@@ -207,6 +207,19 @@ void libvisio::VSDXParser::readShapeID(WPXInputStream *input)
   m_collector->collectShapeID(m_header.id, m_header.level, shapeId);
 }
 
+void libvisio::VSDXParser::readShapeList(WPXInputStream *input)
+{
+  input->seek(0x33, WPX_SEEK_CUR);
+
+  std::vector<unsigned int> shapeList;
+  for (unsigned int i = 0; i < m_header.list; i++)
+  {
+    shapeList.push_back(readU32(input));
+  }
+
+  m_collector->collectShapeList(m_header.id, m_header.level, shapeList);
+}
+
 void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
 {
   input->seek(0x24, WPX_SEEK_CUR);

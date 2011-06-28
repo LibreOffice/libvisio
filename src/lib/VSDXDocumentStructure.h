@@ -39,6 +39,7 @@
 
 #define VSD_STYLE_SHEET 0x4a
 
+#define VSD_SHAPE_LIST 0x65
 #define VSD_FONT_IX 0x69
 
 #define VSD_GEOM_LIST 0x6c

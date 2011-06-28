@@ -44,6 +44,7 @@ public:
   virtual void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow) = 0;
   virtual void collectXFormData(unsigned id, unsigned level, const XForm &xform) = 0;
   virtual void collectShapeID(unsigned id, unsigned level, unsigned shapeId) = 0;
+  virtual void collectShapeList(unsigned id, unsigned level, std::vector<unsigned> shapeList) = 0;
   virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat) = 0;
   virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight) = 0;
   virtual void collectShape(unsigned id, unsigned level) = 0;

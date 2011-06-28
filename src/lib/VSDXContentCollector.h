@@ -55,6 +55,7 @@ public:
   void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
   void collectXFormData(unsigned id, unsigned level, const XForm &xform);
   void collectShapeID(unsigned id, unsigned level, unsigned shapeId);
+  void collectShapeList(unsigned id, unsigned level, std::vector<unsigned int> shapeList);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight);
   void collectShape(unsigned id, unsigned level);
