@@ -49,7 +49,7 @@ public:
   void collectShape(unsigned id, unsigned level) {}
 
   void collectUnhandledChunk(unsigned id, unsigned level) {}
-  
+
   void collectColours(const std::vector<Colour> &colours) {}
 
   // Temporary hack

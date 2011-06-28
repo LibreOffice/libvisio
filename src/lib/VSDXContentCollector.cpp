@@ -33,9 +33,9 @@ libvisio::VSDXContentCollector::VSDXContentCollector(libwpg::WPGPaintInterface *
 
 const ::WPXString libvisio::VSDXContentCollector::getColourString(const struct Colour &c) const
 {
-    ::WPXString sColour;
-    sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
-    return sColour;
+  ::WPXString sColour;
+  sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
+  return sColour;
 }
 
 void libvisio::VSDXContentCollector::rotatePoint(double &x, double &y, const XForm &xform)
@@ -665,7 +665,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
   m_styleProps.insert("svg:stroke-color", m_lineColour);
   m_styleProps.insert("draw:fill", m_fillType);
   m_styleProps.insert("svg:stroke-dasharray", "solid");
-  
+
   m_currentShapeId = id;
 }
 
@@ -722,7 +722,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
     m_styleProps.insert("draw:fill", m_fillType);
     m_styleProps.insert("svg:stroke-dasharray", "solid");
   }
-  
+
   m_currentLevel = level;
 }
 

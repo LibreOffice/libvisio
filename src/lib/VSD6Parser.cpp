@@ -195,7 +195,7 @@ void libvisio::VSD6Parser::handlePage(WPXInputStream *input)
     unsigned int list = readU32(input);
     unsigned int trailer = 0;
     if (list != 0 || chunkType == 0x71 || chunkType == 0x70 ||
-        chunkType == 0x6b || chunkType == 0x6a || chunkType == 0x69 || 
+        chunkType == 0x6b || chunkType == 0x6a || chunkType == 0x69 ||
         chunkType == 0x66 || chunkType == 0x65 || chunkType == 0x2c)
       trailer += 8; // 8 byte trailer
 
@@ -235,7 +235,7 @@ void libvisio::VSD6Parser::handlePage(WPXInputStream *input)
         WPXBinaryData binaryData;
 
         if (foreignType == 1)
-        {        
+        {
           // v6 always uses bmp for images which needs header reconstruction
           binaryData.append(0x42);
           binaryData.append(0x4d);
@@ -263,7 +263,7 @@ void libvisio::VSD6Parser::handlePage(WPXInputStream *input)
         foreignProps.insert("svg:height", m_scale*xform.height);
         foreignProps.insert("svg:x", m_scale*(xform.pinX - xform.pinLocX));
         // Y axis starts at the bottom not top
-        foreignProps.insert("svg:y", m_scale*(pageProps["svg:height"]->getDouble() 
+        foreignProps.insert("svg:y", m_scale*(pageProps["svg:height"]->getDouble()
         - xform.pinY + xform.pinLocY - xform.height));
 
         if (foreignType == 1)

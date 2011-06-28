@@ -107,6 +107,6 @@
 #define VSD_NURBS_TO_ECELL 0xd1
 
 
- 
+
 
 #endif /* VSDXDOCUMENTSTRUCTURE_H */

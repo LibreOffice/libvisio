@@ -30,41 +30,41 @@ namespace libvisio
 
 class VSDSVGGenerator : public libwpg::WPGPaintInterface {
 public:
-	VSDSVGGenerator(std::ostream & output_sink);
-	~VSDSVGGenerator();
+  VSDSVGGenerator(std::ostream & output_sink);
+  ~VSDSVGGenerator();
 
-	void startGraphics(const ::WPXPropertyList &propList);
-	void endGraphics();
-	void startLayer(const ::WPXPropertyList& propList);
-	void endLayer();
-	void startEmbeddedGraphics(const ::WPXPropertyList & /*propList*/) {}
-	void endEmbeddedGraphics() {}
+  void startGraphics(const ::WPXPropertyList &propList);
+  void endGraphics();
+  void startLayer(const ::WPXPropertyList& propList);
+  void endLayer();
+  void startEmbeddedGraphics(const ::WPXPropertyList & /*propList*/) {}
+  void endEmbeddedGraphics() {}
 
-	void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
+  void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
 
-	void drawRectangle(const ::WPXPropertyList &propList);
-	void drawEllipse(const ::WPXPropertyList &propList);
-	void drawPolyline(const ::WPXPropertyListVector &vertices);
-	void drawPolygon(const ::WPXPropertyListVector &vertices);
-	void drawPath(const ::WPXPropertyListVector &path);
-	void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-	void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
-	void endTextObject();
-	void startTextLine(const ::WPXPropertyList & /* propList */) {}
-	void endTextLine() {}
-	void startTextSpan(const ::WPXPropertyList &propList);
-	void endTextSpan();
-	void insertText(const ::WPXString &str);
+  void drawRectangle(const ::WPXPropertyList &propList);
+  void drawEllipse(const ::WPXPropertyList &propList);
+  void drawPolyline(const ::WPXPropertyListVector &vertices);
+  void drawPolygon(const ::WPXPropertyListVector &vertices);
+  void drawPath(const ::WPXPropertyListVector &path);
+  void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
+  void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
+  void endTextObject();
+  void startTextLine(const ::WPXPropertyList & /* propList */) {}
+  void endTextLine() {}
+  void startTextSpan(const ::WPXPropertyList &propList);
+  void endTextSpan();
+  void insertText(const ::WPXString &str);
 
 private:
-	::WPXPropertyListVector m_gradient;
-	::WPXPropertyList m_style;
-	int m_gradientIndex;
-	bool m_isFirstPage;
-	void writeStyle(bool isClosed=true);
-	void drawPolySomething(const ::WPXPropertyListVector& vertices, bool isClosed);
+  ::WPXPropertyListVector m_gradient;
+  ::WPXPropertyList m_style;
+  int m_gradientIndex;
+  bool m_isFirstPage;
+  void writeStyle(bool isClosed=true);
+  void drawPolySomething(const ::WPXPropertyListVector& vertices, bool isClosed);
 
-	std::ostream & m_outputSink;
+  std::ostream & m_outputSink;
 };
 
 } // namespace libvisio

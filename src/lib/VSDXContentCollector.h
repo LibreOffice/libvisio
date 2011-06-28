@@ -76,7 +76,7 @@ private:
   void _flushCurrentForeignData();
 
   const ::WPXString getColourString(const Colour& c) const;
-  
+
   void _handleLevelChange(unsigned level);
 
   bool m_isPageStarted;

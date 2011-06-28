@@ -12,8 +12,8 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the 
- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02111-1301 USA
  */
 
@@ -23,50 +23,50 @@
 
 uint8_t readU8(WPXInputStream *input)
 {
-	if (!input || input->atEOS())
-		return (uint8_t)0;
-	unsigned long numBytesRead;
-	uint8_t const * p = input->read(sizeof(uint8_t), numBytesRead);
-	
-	if (p && numBytesRead == sizeof(uint8_t))
-		return *(uint8_t const *)(p);
-	return (uint8_t)0;
+  if (!input || input->atEOS())
+    return (uint8_t)0;
+  unsigned long numBytesRead;
+  uint8_t const * p = input->read(sizeof(uint8_t), numBytesRead);
+
+  if (p && numBytesRead == sizeof(uint8_t))
+    return *(uint8_t const *)(p);
+  return (uint8_t)0;
 }
 
 uint16_t readU16(WPXInputStream *input)
 {
-	uint16_t p0 = (uint16_t)readU8(input);
-	uint16_t p1 = (uint16_t)readU8(input);
-	return (uint16_t)(p0|(p1<<8));
+  uint16_t p0 = (uint16_t)readU8(input);
+  uint16_t p1 = (uint16_t)readU8(input);
+  return (uint16_t)(p0|(p1<<8));
 }
 
 uint32_t readU32(WPXInputStream *input)
 {
-	uint32_t p0 = (uint32_t)readU8(input);
-	uint32_t p1 = (uint32_t)readU8(input);
-	uint32_t p2 = (uint32_t)readU8(input);
-	uint32_t p3 = (uint32_t)readU8(input);
-	return (uint32_t)(p0|(p1<<8)|(p2<<16)|(p3<<24));
+  uint32_t p0 = (uint32_t)readU8(input);
+  uint32_t p1 = (uint32_t)readU8(input);
+  uint32_t p2 = (uint32_t)readU8(input);
+  uint32_t p3 = (uint32_t)readU8(input);
+  return (uint32_t)(p0|(p1<<8)|(p2<<16)|(p3<<24));
 }
 
 uint64_t readU64(WPXInputStream *input)
 {
-	uint64_t p0 = (uint64_t)readU8(input);
-	uint64_t p1 = (uint64_t)readU8(input);
-	uint64_t p2 = (uint64_t)readU8(input);
-	uint64_t p3 = (uint64_t)readU8(input);
-	uint64_t p4 = (uint64_t)readU8(input);
-	uint64_t p5 = (uint64_t)readU8(input);
-	uint64_t p6 = (uint64_t)readU8(input);
-	uint64_t p7 = (uint64_t)readU8(input);
-	return (uint64_t)(p0|(p1<<8)|(p2<<16)|(p3<<24)|(p4<<32)|(p5<<40)|(p6<<48)|(p7<<56));
+  uint64_t p0 = (uint64_t)readU8(input);
+  uint64_t p1 = (uint64_t)readU8(input);
+  uint64_t p2 = (uint64_t)readU8(input);
+  uint64_t p3 = (uint64_t)readU8(input);
+  uint64_t p4 = (uint64_t)readU8(input);
+  uint64_t p5 = (uint64_t)readU8(input);
+  uint64_t p6 = (uint64_t)readU8(input);
+  uint64_t p7 = (uint64_t)readU8(input);
+  return (uint64_t)(p0|(p1<<8)|(p2<<16)|(p3<<24)|(p4<<32)|(p5<<40)|(p6<<48)|(p7<<56));
 }
 
 double readDouble(WPXInputStream *input)
 {
-	uint64_t value = readU64(input);
-	
-	double *doublePointer = reinterpret_cast<double *>(&value);
-	
-	return *doublePointer;
+  uint64_t value = readU64(input);
+
+  double *doublePointer = reinterpret_cast<double *>(&value);
+
+  return *doublePointer;
 }

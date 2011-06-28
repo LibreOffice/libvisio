@@ -24,8 +24,8 @@ libvisio::VSDXStyleOutputElement::VSDXStyleOutputElement(const WPXPropertyList &
 
 void libvisio::VSDXStyleOutputElement::draw(libwpg::WPGPaintInterface *painter)
 {
-   if (painter)
-     painter->setStyle(m_propList, m_propListVec);
+  if (painter)
+    painter->setStyle(m_propList, m_propListVec);
 }
 
 
@@ -34,8 +34,8 @@ libvisio::VSDXEllipseOutputElement::VSDXEllipseOutputElement(const WPXPropertyLi
 
 void libvisio::VSDXEllipseOutputElement::draw(libwpg::WPGPaintInterface *painter)
 {
-   if (painter)
-     painter->drawEllipse(m_propList);
+  if (painter)
+    painter->drawEllipse(m_propList);
 }
 
 
@@ -44,8 +44,8 @@ libvisio::VSDXPathOutputElement::VSDXPathOutputElement(const WPXPropertyListVect
 
 void libvisio::VSDXPathOutputElement::draw(libwpg::WPGPaintInterface *painter)
 {
-   if (painter)
-     painter->drawPath(m_propListVec);
+  if (painter)
+    painter->drawPath(m_propListVec);
 }
 
 
@@ -54,7 +54,7 @@ libvisio::VSDXGraphicObjectOutputElement::VSDXGraphicObjectOutputElement(const W
 
 void libvisio::VSDXGraphicObjectOutputElement::draw(libwpg::WPGPaintInterface *painter)
 {
-   if (painter)
-     painter->drawGraphicObject(m_propList, m_binaryData);
+  if (painter)
+    painter->drawGraphicObject(m_propList, m_binaryData);
 }
 

@@ -57,10 +57,10 @@ protected:
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
   void readColours(WPXInputStream *input);
-  
+
   // Chunk handlers
   void readShape(WPXInputStream *input);
-  
+
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
 
   WPXInputStream *m_input;

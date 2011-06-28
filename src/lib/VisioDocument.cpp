@@ -12,8 +12,8 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the 
- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02111-1301 USA
  */
 
@@ -43,7 +43,7 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream* input)
 
   unsigned char version = readU8(tmpDocStream);
   delete tmpDocStream;
-  
+
   VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
 
   // Versions 2k (6) and 2k3 (11)
@@ -52,7 +52,7 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream* input)
     return true;
   }
 
-	return false;
+  return false;
 }
 
 /**
@@ -107,12 +107,12 @@ Provided as a convenience function for applications that support SVG internally.
 */
 bool libvisio::VisioDocument::generateSVG(::WPXInputStream* input, WPXString& output)
 {
-	std::ostringstream tmpOutputStream;
-	libvisio::VSDSVGGenerator generator(tmpOutputStream);
-	bool result = libvisio::VisioDocument::parse(input, &generator);
-	if (result)
-		output = WPXString(tmpOutputStream.str().c_str());
-	else
-		output = WPXString("");
-	return result;
+  std::ostringstream tmpOutputStream;
+  libvisio::VSDSVGGenerator generator(tmpOutputStream);
+  bool result = libvisio::VisioDocument::parse(input, &generator);
+  if (result)
+    output = WPXString(tmpOutputStream.str().c_str());
+  else
+    output = WPXString("");
+  return result;
 }

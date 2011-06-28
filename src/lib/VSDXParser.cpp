@@ -141,7 +141,7 @@ void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
 void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
 {
   unsigned geomFlags = readU8(input);
-  
+
   m_collector->collectGeometry(m_header.id, m_header.level, geomFlags);
 }
 

@@ -12,8 +12,8 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the 
- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02111-1301 USA
  */
 
@@ -52,19 +52,19 @@ typedef unsigned __int64 uint64_t;
 
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
-	#ifdef VERBOSE_DEBUG
-		#define VSD_DEBUG_MSG(M) printf("%15s:%5d: ", __FILE__, __LINE__); printf M
-		#define VSD_DEBUG(M) M
-	#else
-		#define VSD_DEBUG_MSG(M) printf M
-		#define VSD_DEBUG(M) M
-	#endif
+  #ifdef VERBOSE_DEBUG
+    #define VSD_DEBUG_MSG(M) printf("%15s:%5d: ", __FILE__, __LINE__); printf M
+    #define VSD_DEBUG(M) M
+  #else
+    #define VSD_DEBUG_MSG(M) printf M
+    #define VSD_DEBUG(M) M
+  #endif
 #else
-	#define VSD_DEBUG_MSG(M)
-	#define VSD_DEBUG(M)
+  #define VSD_DEBUG_MSG(M)
+  #define VSD_DEBUG(M)
 #endif
 
-uint8_t readU8(WPXInputStream *input); 
+uint8_t readU8(WPXInputStream *input);
 uint16_t readU16(WPXInputStream *input);
 uint32_t readU32(WPXInputStream *input);
 uint64_t readU64(WPXInputStream *input);

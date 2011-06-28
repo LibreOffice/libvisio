@@ -44,7 +44,7 @@ private:
   static const StreamHandler handlers[];
   void handlePages(WPXInputStream *input);
   void handlePage(WPXInputStream *input);
-  
+
   bool getChunkHeader(WPXInputStream *input) { return false; }
 
   bool m_isPageStarted;

@@ -74,7 +74,7 @@ bool libvisio::VSD11Parser::parse()
     delete trailerStream;
     return false;
   }
-  
+
   delete trailerStream;
   return true;
 }
@@ -106,20 +106,20 @@ bool libvisio::VSD11Parser::parseDocument(WPXInputStream *input)
     m_input->seek(ptrOffset, WPX_SEEK_SET);
     WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
 
-	switch (ptrType)
-	{
+    switch (ptrType)
+    {
     case VSD_PAGE:
-	  handlePage(tmpInput);
-	  break;
-	case VSD_PAGES:
-	  handlePages(tmpInput);
-	  break;
-	case VSD_COLORS:
-	  readColours(tmpInput);
-	  break;
-	default:
-	  break;
-	}
+      handlePage(tmpInput);
+      break;
+    case VSD_PAGES:
+      handlePages(tmpInput);
+      break;
+    case VSD_COLORS:
+      readColours(tmpInput);
+      break;
+    default:
+      break;
+    }
 
     delete tmpInput;
   }
@@ -197,20 +197,20 @@ void libvisio::VSD11Parser::handlePages(WPXInputStream *input)
     m_input->seek(ptrOffset, WPX_SEEK_SET);
     WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
 
-	switch (ptrType)
-	{
+    switch (ptrType)
+    {
     case VSD_PAGE:
-	  handlePage(tmpInput);
-	  break;
-	case VSD_PAGES:
-	  handlePages(tmpInput);
-	  break;
-	case VSD_COLORS:
-	  readColours(tmpInput);
-	  break;
-	default:
-	  break;
-	}
+      handlePage(tmpInput);
+      break;
+    case VSD_PAGES:
+      handlePages(tmpInput);
+      break;
+    case VSD_COLORS:
+      readColours(tmpInput);
+      break;
+    default:
+      break;
+    }
 
     delete tmpInput;
   }
@@ -219,7 +219,7 @@ void libvisio::VSD11Parser::handlePages(WPXInputStream *input)
 void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
 {
   long endPos = 0;
-  
+
   m_collector->startPage();
 
   while (!input->atEOS())
@@ -231,11 +231,11 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
     VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
     switch (m_header.chunkType)
     {
-	case VSD_SHAPE_GROUP:
-	case VSD_SHAPE_SHAPE:
-	case VSD_SHAPE_FOREIGN:
-	  readShape(input);
-	  break;
+    case VSD_SHAPE_GROUP:
+    case VSD_SHAPE_SHAPE:
+    case VSD_SHAPE_FOREIGN:
+      readShape(input);
+      break;
     case VSD_XFORM_DATA:
       readXFormData(input);
       break;
@@ -275,10 +275,10 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
     case VSD_FOREIGN_DATA:
       readForeignData(input);
       break;
-	case VSD_PAGE_PROPS:
-	  readPageProps(input);
-	default:
-	  m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+    case VSD_PAGE_PROPS:
+      readPageProps(input);
+    default:
+      m_collector->collectUnhandledChunk(m_header.id, m_header.level);
     }
 
     input->seek(endPos, WPX_SEEK_SET);

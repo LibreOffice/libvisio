@@ -12,8 +12,8 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the 
- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, 
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA  02111-1301 USA
  *
  * For further information visit http://libwpg.sourceforge.net
@@ -33,12 +33,12 @@ namespace libvisio
 class VisioDocument
 {
 public:
-	
-	static bool isSupported(WPXInputStream* input);
-	
-	static bool parse(WPXInputStream* input, libwpg::WPGPaintInterface* painter);
 
-	static bool generateSVG(WPXInputStream* input, WPXString& output);
+  static bool isSupported(WPXInputStream* input);
+
+t  static bool parse(WPXInputStream* input, libwpg::WPGPaintInterface* painter);
+
+  static bool generateSVG(WPXInputStream* input, WPXString& output);
 };
 
 } // namespace libvisio
