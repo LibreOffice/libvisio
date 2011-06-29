@@ -395,6 +395,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned 
   {
     m_fillType = "gradient";
     m_styleProps.insert("draw:fill", "gradient");
+    m_styleProps.insert("draw:style", "linear");
     WPXPropertyList startColour;
     startColour.insert("svg:stop-color",
                        getColourString(m_colours[colourIndexFG]));
@@ -449,6 +450,51 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned 
     }
     m_gradientProps.append(startColour);
     m_gradientProps.append(endColour);
+  }
+  else if (m_fillPattern >= 35 && m_fillPattern <= 40)
+  {
+    m_fillType = "gradient";
+    m_styleProps.insert("draw:fill", "gradient");
+    m_styleProps.insert("draw:style", "radial");
+    m_styleProps.insert("svg:r", 1, WPX_PERCENT);
+    WPXPropertyList startColour;
+    startColour.insert("svg:stop-color",
+                       getColourString(m_colours[colourIndexFG]));
+    startColour.insert("svg:offset", 0, WPX_PERCENT);
+    startColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+    WPXPropertyList endColour;
+    endColour.insert("svg:stop-color",
+                     getColourString(m_colours[colourIndexBG]));
+    endColour.insert("svg:offset", 1, WPX_PERCENT);
+    endColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+    m_gradientProps.append(startColour);
+    m_gradientProps.append(endColour);
+
+    switch(m_fillPattern)
+    {
+    case 35:
+    case 40:
+      m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
+      m_styleProps.insert("svg:r", 0.5, WPX_PERCENT);
+      break;
+    case 36:
+      m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
+      break;
+    case 37:
+      m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
+      break;
+    case 38:
+      m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
+      break;
+    case 39:
+      m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
+      break;
+    }
   }
   else
   // fill types we don't handle right, but let us approximate with solid fill

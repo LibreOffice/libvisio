@@ -88,32 +88,50 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 
   if(propList["draw:fill"] && propList["draw:fill"]->getStr() == "gradient" && m_gradient.count())
   {
-    double angle = (m_style["draw:angle"] ? m_style["draw:angle"]->getDouble() : 0.0);
-
-    m_outputSink << "<svg:defs>\n";
-    m_outputSink << "  <svg:linearGradient id=\"grad" << m_gradientIndex++ << "\" >\n";
-    for(unsigned c = 0; c < m_gradient.count(); c++)
+    if (propList["draw:style"] && propList["draw:style"]->getStr() == "radial")
     {
-      m_outputSink << "    <svg:stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
+      m_outputSink << "<svg:defs>\n";
+      m_outputSink << "  <svg:radialGradient id=\"grad" << m_gradientIndex++ << "\" cx=\"" << propList["svg:cx"]->getStr().cstr() << "\" cy=\"" << propList["svg:cy"]->getStr().cstr() << "\" r=\"" << propList["svg:r"]->getStr().cstr() << "\" >\n";
+      for(unsigned c = 0; c < m_gradient.count(); c++)
+      {
+        m_outputSink << "    <svg:stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
 
-      m_outputSink << " stop-color=\"" << m_gradient[c]["svg:stop-color"]->getStr().cstr() << "\"";
-      m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getStr().cstr() << "\" />" << std::endl;
+        m_outputSink << " stop-color=\"" << m_gradient[c]["svg:stop-color"]->getStr().cstr() << "\"";
+        m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getStr().cstr() << "\" />" << std::endl;
 
+      }
+      m_outputSink << "  </svg:radialGradient>\n";
+      m_outputSink << "</svg:defs>\n";
     }
-    m_outputSink << "  </svg:linearGradient>\n";
-
-    // not a simple horizontal gradient
-    if(angle != -90)
+    else
     {
-      m_outputSink << "  <svg:linearGradient xlink:href=\"#grad" << m_gradientIndex-1 << "\"";
-      m_outputSink << " id=\"grad" << m_gradientIndex++ << "\" ";
-      m_outputSink << "x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\" ";
-      m_outputSink << "gradientTransform=\"rotate(" << angle << " .5 .5)\" ";
-      m_outputSink << "gradientUnits=\"objectBoundingBox\" >\n";
+      double angle = (m_style["draw:angle"] ? m_style["draw:angle"]->getDouble() : 0.0);
+
+      m_outputSink << "<svg:defs>\n";
+      m_outputSink << "  <svg:linearGradient id=\"grad" << m_gradientIndex++ << "\" >\n";
+      for(unsigned c = 0; c < m_gradient.count(); c++)
+      {
+        m_outputSink << "    <svg:stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
+
+        m_outputSink << " stop-color=\"" << m_gradient[c]["svg:stop-color"]->getStr().cstr() << "\"";
+        m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getStr().cstr() << "\" />" << std::endl;
+
+      }
       m_outputSink << "  </svg:linearGradient>\n";
-    }
 
-    m_outputSink << "</svg:defs>\n";
+      // not a simple horizontal gradient
+      if(angle != -90)
+      {
+        m_outputSink << "  <svg:linearGradient xlink:href=\"#grad" << m_gradientIndex-1 << "\"";
+        m_outputSink << " id=\"grad" << m_gradientIndex++ << "\" ";
+        m_outputSink << "x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\" ";
+        m_outputSink << "gradientTransform=\"rotate(" << angle << " .5 .5)\" ";
+        m_outputSink << "gradientUnits=\"objectBoundingBox\" >\n";
+        m_outputSink << "  </svg:linearGradient>\n";
+      }
+
+      m_outputSink << "</svg:defs>\n";
+    }
   }
 
 }
