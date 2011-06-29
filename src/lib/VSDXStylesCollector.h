@@ -32,7 +32,9 @@ class VSDXStylesCollector : public VSDXCollector
 public:
   VSDXStylesCollector(
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
-    std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence
+    std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
+    std::vector<std::vector<unsigned> > &documentPageShapeOrders,
+    std::vector<std::map<unsigned, std::vector<unsigned> > > &documentGroupShapeOrders
   );
   virtual ~VSDXStylesCollector() {};
 
@@ -67,6 +69,7 @@ private:
   VSDXStylesCollector& operator=(const VSDXStylesCollector&);
 
   void _handleLevelChange(unsigned level);
+  void _flushShapeList();
 
   unsigned m_currentLevel;
   bool m_isShapeStarted;
@@ -77,8 +80,12 @@ private:
   std::vector<std::map<unsigned, XForm> > &m_groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
   std::vector<unsigned> m_pageShapeOrder;
-  std::vector<std::vector<unsigned> > m_documentPageShapeOrders;
-  std::map<unsigned, unsigned> m_shapeList;
+  std::vector<std::vector<unsigned> > &m_documentPageShapeOrders;
+  std::map<unsigned, std::vector<unsigned> > m_groupShapeOrder;
+  std::vector<std::map<unsigned, std::vector<unsigned> > > &m_documentGroupShapeOrders;
+  std::map<unsigned, unsigned> m_shapeIds;
+  std::vector<unsigned> m_shapeList;
+  unsigned m_currentShapeListLevel;
 };
 
 }

@@ -61,15 +61,17 @@ bool libvisio::VSD11Parser::parse()
   
   std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
+  std::vector<std::vector<unsigned> > documentPageShapeOrders;
+  std::vector<std::map<unsigned, std::vector<unsigned> > > documentGroupShapeOrders;
   
-  VSDXStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence);
+  VSDXStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, documentGroupShapeOrders);
   m_collector = &stylesCollector;
   if (!parseDocument(trailerStream))
   {
     delete trailerStream;
     return false;
   }
-
+  
   VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence);
   m_collector = &contentCollector;
   if (!parseDocument(trailerStream))

@@ -24,14 +24,20 @@
 
 libvisio::VSDXStylesCollector::VSDXStylesCollector(
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
-  std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence
+  std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
+  std::vector<std::vector<unsigned> > &documentPageShapeOrders,
+  std::vector<std::map<unsigned, std::vector<unsigned> > > &documentGroupShapeOrders
 ) :
   m_currentShapeId(0), m_groupXForms(), m_groupMemberships(),
   m_groupXFormsSequence(groupXFormsSequence),
-  m_groupMembershipsSequence(groupMembershipsSequence)
+  m_groupMembershipsSequence(groupMembershipsSequence), m_pageShapeOrder(),
+  m_documentPageShapeOrders(documentPageShapeOrders),
+  m_documentGroupShapeOrders(documentGroupShapeOrders),
+  m_shapeIds(), m_shapeList(), m_currentShapeListLevel(0)
 {
   m_groupXFormsSequence.clear();
   m_groupMembershipsSequence.clear();
+  m_documentPageShapeOrders.clear();
 }
 
 void libvisio::VSDXStylesCollector::collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
@@ -96,11 +102,15 @@ void libvisio::VSDXStylesCollector::collectShapeID(unsigned id, unsigned level, 
   _handleLevelChange(level);
   if (m_isShapeStarted)
     m_groupMemberships[shapeId] = m_currentShapeId;
+  m_shapeIds[id] = shapeId;
 }
 
-void libvisio::VSDXStylesCollector::collectShapeList(unsigned id, unsigned level, const std::vector<unsigned int> & /*shapeList*/)
+void libvisio::VSDXStylesCollector::collectShapeList(unsigned id, unsigned level, const std::vector<unsigned int> &shapeList)
 {
   _handleLevelChange(level);
+  for (unsigned i = 0; i < shapeList.size(); i++)
+    m_shapeList.push_back(shapeList[i]);
+  m_currentShapeListLevel = level;
 }
 
 void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat)
@@ -131,22 +141,47 @@ void libvisio::VSDXStylesCollector::collectColours(const std::vector<Colour> &co
 
 void libvisio::VSDXStylesCollector::startPage()
 {
+  m_groupXForms.clear();
+  m_groupMemberships.clear();
+  m_pageShapeOrder.clear();
+  m_groupShapeOrder.clear();
 }
 
 void libvisio::VSDXStylesCollector::endPage()
 {
   m_groupXFormsSequence.push_back(m_groupXForms);
-  m_groupXForms.clear();
   m_groupMembershipsSequence.push_back(m_groupMemberships);
-  m_groupMemberships.clear();
+  m_documentPageShapeOrders.push_back(m_pageShapeOrder);
+  m_documentGroupShapeOrders.push_back(m_groupShapeOrder);
 }
 
 void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
 {
+  if (m_currentShapeListLevel && m_currentShapeListLevel <= level)
+    _flushShapeList();
   if (m_currentLevel == level)
     return;
   if (level < 2)
     m_isShapeStarted = false;
 
   m_currentLevel = level;
+}
+
+void libvisio::VSDXStylesCollector::_flushShapeList()
+{
+  std::vector<unsigned> shapesOrder;
+  std::map<unsigned, unsigned>::iterator iter;
+  for (unsigned i = 0; i < m_shapeList.size(); i++)
+  {
+    iter = m_shapeIds.find(m_shapeList[i]);
+    if (iter != m_shapeIds.end())
+      shapesOrder.push_back(iter->second);
+  }
+  if (m_isShapeStarted)
+    m_groupShapeOrder[m_currentShapeId] = shapesOrder;
+  else
+    m_pageShapeOrder = shapesOrder;
+  m_shapeList.clear();
+  m_shapeIds.clear();
+  m_currentShapeListLevel = 0; 
 }
