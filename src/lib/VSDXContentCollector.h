@@ -30,6 +30,7 @@
 #include "libvisio_utils.h"
 #include "VSDXCollector.h"
 #include "VSDXParser.h"
+#include "VSDXOutputElement.h"
 
 namespace libvisio {
 
@@ -80,6 +81,7 @@ private:
 
   void _flushCurrentPath();
   void _flushCurrentForeignData();
+  void _flushCurrentPage();
 
   const ::WPXString getColourString(const Colour& c) const;
 
@@ -117,6 +119,9 @@ private:
   std::vector<std::map<unsigned, XForm> > &m_groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
   unsigned m_currentPageNumber;
+  std::vector<unsigned> m_shapeList;
+  std::vector<VSDXOutputElement *> *m_shapeOutput;
+  std::map<unsigned, std::vector<VSDXOutputElement *> > m_pageOutput;
 };
 
 } // namespace libvisio
