@@ -65,7 +65,7 @@ void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned id, unsigned l
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectGeomList(unsigned id, unsigned level, const std::vector<unsigned> &geometryOrder)
+void libvisio::VSDXStylesCollector::collectGeomList(unsigned id, unsigned level)
 {
   _handleLevelChange(level);
 }

@@ -49,7 +49,7 @@ public:
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd);
   void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern);
-  void collectGeomList(unsigned id, unsigned level, const std::vector<unsigned> &geometryOrder);
+  void collectGeomList(unsigned id, unsigned level);
   void collectGeometry(unsigned id, unsigned level, unsigned geomFlags);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
@@ -94,9 +94,7 @@ private:
   double m_x;
   double m_y;
   XForm m_xform;
-  std::vector<unsigned> m_currentGeometryOrder;
-  std::map<unsigned, WPXPropertyList> m_currentGeometry;
-  std::map<unsigned, WPXPropertyListVector> m_currentComplexGeometry;
+  std::vector<WPXPropertyList> m_currentGeometry;
   std::map<unsigned, XForm> &m_groupXForms;
   WPXBinaryData m_currentForeignData;
   WPXPropertyList m_currentForeignProps;

@@ -27,9 +27,9 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence
   ) :
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
-  m_scale(1.0), m_x(0.0), m_y(0.0), m_xform(), m_currentGeometryOrder(), m_currentGeometry(),
-  m_currentComplexGeometry(), m_groupXForms(groupXFormsSequence[0]), m_currentForeignData(),
-  m_currentForeignProps(), m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
+  m_scale(1.0), m_x(0.0), m_y(0.0), m_xform(), m_currentGeometry(),
+  m_groupXForms(groupXFormsSequence[0]), m_currentForeignData(), m_currentForeignProps(),
+  m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
   m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
   m_gradientProps(), m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
   m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
@@ -77,153 +77,64 @@ void libvisio::VSDXContentCollector::flipPoint(double &x, double &y, const XForm
 
 void libvisio::VSDXContentCollector::_flushCurrentPath()
 {
+  WPXPropertyListVector path;
   double startX = 0; double startY = 0;
   double x = 0; double y = 0;
   bool firstPoint = true;
 
-  WPXPropertyListVector path;
-  std::map<unsigned int, WPXPropertyList>::iterator iter;
-  std::map<unsigned int, WPXPropertyListVector>::iterator itervec;
-  if (m_currentGeometryOrder.size())
+  for (unsigned i = 0; i < m_currentGeometry.size(); i++)
   {
-    for (unsigned i = 0; i < m_currentGeometryOrder.size(); i++)
+    if (firstPoint)
     {
-      iter = m_currentGeometry.find(m_currentGeometryOrder[i]);
-      if (iter != m_currentGeometry.end())
+       x = m_currentGeometry[i]["svg:x"]->getDouble();
+       y = m_currentGeometry[i]["svg:y"]->getDouble();
+       startX = x;
+       startY = y;
+       firstPoint = false;
+    }
+    else if (m_currentGeometry[i]["libwpg:path-action"]->getStr() == "M")
+    {
+      if (startX == x && startY == y)
       {
-        if (firstPoint)
-        {
-          x = (iter->second)["svg:x"]->getDouble();
-          y = (iter->second)["svg:y"]->getDouble();
-          startX = x;
-          startY = y;
-          firstPoint = false;
-        }
-        else if ((iter->second)["libwpg:path-action"]->getStr() == "M")
-        {
-          if (startX == x && startY == y)
-          {
-             WPXPropertyList closedPath;
-             closedPath.insert("libwpg:path-action", "Z");
-             path.append(closedPath);
-          }
-          if (path.count() && !m_noShow)
-          {
-#if 0
-            m_shapeOutput->push_back(new VSDXStyleOutputElement(m_styleProps, m_gradientProps));
-            m_shapeOutput->push_back(new VSDXPathOutputElement(path));
-#else
-            m_painter->setStyle(m_styleProps, m_gradientProps);
-            m_painter->drawPath(path);
-#endif
-          }
-
-          path = WPXPropertyListVector();
-          x = (iter->second)["svg:x"]->getDouble();
-          y = (iter->second)["svg:y"]->getDouble();
-          startX = x;
-          startY = y;
-        }
-        else
-        {
-          x = (iter->second)["svg:x"]->getDouble();
-          y = (iter->second)["svg:y"]->getDouble();
-        }
-        path.append(iter->second);
+         WPXPropertyList closedPath;
+         closedPath.insert("libwpg:path-action", "Z");
+         path.append(closedPath);
       }
-      else
+      if (path.count() && !m_noShow)
       {
-        itervec = m_currentComplexGeometry.find(m_currentGeometryOrder[i]);
-        if (itervec != m_currentComplexGeometry.end())
-        {
-          WPXPropertyListVector::Iter iter2(itervec->second);
-          for (; iter2.next();)
-          {
-            if (firstPoint)
-            {
-              x = (iter2())["svg:x"]->getDouble();
-              y = (iter2())["svg:y"]->getDouble();
-              startX = x;
-              startY = y;
-              firstPoint = false;
-            }
-            else if ((iter2())["libwpg:path-action"]->getStr() == "M")
-            {
-              if (startX == x && startY == y)
-              {
-                WPXPropertyList closedPath;
-                closedPath.insert("libwpg:path-action", "Z");
-                path.append(closedPath);
-              }
-              if (path.count() && !m_noShow)
-              {
 #if 0
-                m_shapeOutput->push_back(new VSDXStyleOutputElement(m_styleProps, m_gradientProps));
-                m_shapeOutput->push_back(new VSDXPathOutputElement(path));
+         m_shapeOutput->push_back(new VSDXStyleOutputElement(m_styleProps, m_gradientProps));
+         m_shapeOutput->push_back(new VSDXPathOutputElement(path));
 #else
-                m_painter->setStyle(m_styleProps, m_gradientProps);
-                m_painter->drawPath(path);
+         m_painter->setStyle(m_styleProps, m_gradientProps);
+         m_painter->drawPath(path);
 #endif
-              }
-
-              path = WPXPropertyListVector();
-              x = (iter2())["svg:x"]->getDouble();
-              y = (iter2())["svg:y"]->getDouble();
-              startX = x;
-              startY = y;
-            }
-            else
-            {
-              x = (iter2())["svg:x"]->getDouble();
-              y = (iter2())["svg:y"]->getDouble();
-            }
-          path.append(iter2());
-          }
-        }
       }
-    }
 
-    if (startX == x && startY == y && path.count())
-    {
-      WPXPropertyList closedPath;
-      closedPath.insert("libwpg:path-action", "Z");
-      path.append(closedPath);
+      path = WPXPropertyListVector();
+      x = m_currentGeometry[i]["svg:x"]->getDouble();
+      y = m_currentGeometry[i]["svg:y"]->getDouble();
+      startX = x;
+      startY = y;
     }
-    if (path.count() && !m_noShow)
+    else
     {
-#if 0
-      m_shapeOutput->push_back(new VSDXStyleOutputElement(m_styleProps, m_gradientProps));
-      m_shapeOutput->push_back(new VSDXPathOutputElement(path));
-#else
-      m_painter->setStyle(m_styleProps, m_gradientProps);
-      m_painter->drawPath(path);
-#endif
+      x = m_currentGeometry[i]["svg:x"]->getDouble();
+      y = m_currentGeometry[i]["svg:y"]->getDouble();
     }
+    path.append(m_currentGeometry[i]);
   }
-  else
+  if (path.count() && !m_noShow)
   {
-    for (iter=m_currentGeometry.begin(); iter != m_currentGeometry.end(); iter++)
-      path.append(iter->second);
-    for (itervec=m_currentComplexGeometry.begin(); itervec != m_currentComplexGeometry.end(); itervec++)
-    {
-      WPXPropertyListVector::Iter iter2(itervec->second);
-      for (; iter2.next();)
-        path.append(iter2());
-    }
-    if (path.count() && !m_noShow)
-    {
 #if 0
-      m_shapeOutput->push_back(new VSDXStyleOutputElement(m_styleProps, m_gradientProps));
-      m_shapeOutput->push_back(new VSDXPathOutputElement(path));
+    m_shapeOutput->push_back(new VSDXStyleOutputElement(m_styleProps, m_gradientProps));
+    m_shapeOutput->push_back(new VSDXPathOutputElement(path));
 #else
-      m_painter->setStyle(m_styleProps, m_gradientProps);
-      m_painter->drawPath(path);
+    m_painter->setStyle(m_styleProps, m_gradientProps);
+    m_painter->drawPath(path);
 #endif
-    }
   }
   m_currentGeometry.clear();
-  m_currentComplexGeometry.clear();
-  m_currentGeometryOrder.clear();
 }
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
@@ -313,7 +224,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned id, unsigne
   arc.insert("svg:x", m_scale*m_x);
   arc.insert("svg:y", m_scale*m_y);
   arc.insert("libwpg:path-action", "A");
-  m_currentGeometry[id] = arc;
+  m_currentGeometry.push_back(arc);
 }
 
 void libvisio::VSDXContentCollector::collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd)
@@ -603,13 +514,10 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned id, unsigned le
   }
 }
 
-void libvisio::VSDXContentCollector::collectGeomList(unsigned id, unsigned level, const std::vector<unsigned> &geometryOrder)
+void libvisio::VSDXContentCollector::collectGeomList(unsigned id, unsigned level)
 {
   _flushCurrentPath();
   _handleLevelChange(level);
-  m_currentGeometryOrder.clear();
-  for (unsigned j = 0; j< geometryOrder.size(); j++)
-    m_currentGeometryOrder.push_back(geometryOrder[j]);
   m_noShow = false;
 }
 
@@ -642,7 +550,7 @@ void libvisio::VSDXContentCollector::collectMoveTo(unsigned id, unsigned level, 
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("libwpg:path-action", "M");
-  m_currentGeometry[id] = end;
+  m_currentGeometry.push_back(end);
 }
 
 void libvisio::VSDXContentCollector::collectLineTo(unsigned id, unsigned level, double x, double y)
@@ -656,7 +564,7 @@ void libvisio::VSDXContentCollector::collectLineTo(unsigned id, unsigned level, 
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("libwpg:path-action", "L");
-  m_currentGeometry[id] = end;
+  m_currentGeometry.push_back(end);
 }
 
 void libvisio::VSDXContentCollector::collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow)
@@ -674,7 +582,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned id, unsigned level, d
     end.insert("svg:x", m_scale*m_x);
     end.insert("svg:y", m_scale*m_y);
     end.insert("libwpg:path-action", "L");
-    m_currentGeometry[id] = end;
+    m_currentGeometry.push_back(end);
   }
   else
   {
@@ -693,7 +601,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned id, unsigned level, d
     arc.insert("svg:x", m_scale*m_x);
     arc.insert("svg:y", m_scale*m_y);
     arc.insert("libwpg:path-action", "A");
-    m_currentGeometry[id] = arc;
+    m_currentGeometry.push_back(arc);
   }
 }
 

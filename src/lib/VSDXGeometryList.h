@@ -23,11 +23,11 @@
 
 #include <vector>
 #include <map>
-#include "VSDXCollector.h"
 
 namespace libvisio {
 
 class VSDXGeometryListElement;
+class VSDXCollector;
 
 class VSDXGeometryList
 {
@@ -44,6 +44,7 @@ public:
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDXCollector *collector);
   void clear();
+  bool empty() const { return (!m_elements.size()); }
 private:
   std::map<unsigned, VSDXGeometryListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;

@@ -28,6 +28,7 @@
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
 #include "VSDXTypes.h"
+#include "VSDXGeometryList.h"
 
 namespace libvisio
 {
@@ -68,6 +69,8 @@ protected:
   libwpg::WPGPaintInterface *m_painter;
   ChunkHeader m_header;
   VSDXCollector *m_collector;
+  VSDXGeometryList m_geomList;
+  
 };
 
 } // namespace libvisio

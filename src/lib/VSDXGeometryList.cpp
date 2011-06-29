@@ -17,6 +17,7 @@
  * Boston, MA  02111-1301 USA
  */
 
+#include "VSDXCollector.h"
 #include "VSDXGeometryList.h"
 
 namespace libvisio {
@@ -35,7 +36,7 @@ public:
   VSDXGeometry(unsigned id, unsigned level, unsigned geomFlags) :
     m_id(id), m_level(level), m_geomFlags(geomFlags) {}
   ~VSDXGeometry() {}
-  void handle(VSDXCollector *collector) { collector->collectGeometry(m_id, m_level, m_geomFlags); }
+  void handle(VSDXCollector *collector);
 private:
   unsigned m_id;
   unsigned m_level;
@@ -48,7 +49,7 @@ public:
   VSDXMoveTo(unsigned id, unsigned level, double x, double y) :
     m_id(id), m_level(level), m_x(x), m_y(y) {}
   ~VSDXMoveTo() {}
-  void handle(VSDXCollector *collector) { collector->collectMoveTo(m_id, m_level, m_x, m_y); }  
+  void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;
   double m_x, m_y;
@@ -60,7 +61,7 @@ public:
   VSDXLineTo(unsigned id, unsigned level, double x, double y) :
     m_id(id), m_level(level), m_x(x), m_y(y) {}
   ~VSDXLineTo() {}
-  void handle(VSDXCollector *collector) { collector->collectLineTo(m_id, m_level, m_x, m_y); }  
+  void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;
   double m_x, m_y;
@@ -72,7 +73,7 @@ public:
   VSDXArcTo(unsigned id, unsigned level, double x2, double y2, double bow) :
     m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_bow(bow) {}
   ~VSDXArcTo() {}
-  void handle(VSDXCollector *collector) { collector->collectArcTo(m_id, m_level, m_x2, m_y2, m_bow); }
+  void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;
   double m_x2, m_y2, m_bow;
@@ -84,7 +85,7 @@ public:
   VSDXEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd) :
     m_id(id), m_level(level), m_cx(cx), m_cy(cy), m_aa(aa), m_dd(dd) {}
   ~VSDXEllipse() {}
-  void handle(VSDXCollector *collector) { collector->collectEllipse(m_id, m_level, m_cx, m_cy, m_aa, m_dd); }
+  void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;
   double m_cx, m_cy, m_aa, m_dd;
@@ -96,7 +97,7 @@ public:
   VSDXEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) :
     m_id(id), m_level(level), m_x3(x3), m_y3(y3), m_x2(x2), m_y2(y2), m_angle(angle), m_ecc(ecc) {}
   ~VSDXEllipticalArcTo() {}
-  void handle(VSDXCollector *collector) { collector->collectEllipticalArcTo(m_id, m_level, m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc); }
+  void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;
   double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
@@ -104,6 +105,36 @@ private:
 
 } // namespace libvisio
 
+
+void libvisio::VSDXGeometry::handle(VSDXCollector *collector)
+{
+  collector->collectGeometry(m_id, m_level, m_geomFlags);
+}
+
+void libvisio::VSDXMoveTo::handle(VSDXCollector *collector)
+{
+  collector->collectMoveTo(m_id, m_level, m_x, m_y);
+}
+
+void libvisio::VSDXLineTo::handle(VSDXCollector *collector)
+{
+  collector->collectLineTo(m_id, m_level, m_x, m_y);
+}
+
+void libvisio::VSDXArcTo::handle(VSDXCollector *collector)
+{
+  collector->collectArcTo(m_id, m_level, m_x2, m_y2, m_bow);
+}
+
+void libvisio::VSDXEllipse::handle(VSDXCollector *collector)
+{
+  collector->collectEllipse(m_id, m_level, m_cx, m_cy, m_aa, m_dd);
+}
+
+void libvisio::VSDXEllipticalArcTo::handle(VSDXCollector *collector)
+{
+  collector->collectEllipticalArcTo(m_id, m_level, m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc);
+}
 
 libvisio::VSDXGeometryList::VSDXGeometryList()
 {
@@ -153,6 +184,8 @@ void libvisio::VSDXGeometryList::setElementsOrder(const std::vector<unsigned> &e
 
 void libvisio::VSDXGeometryList::handle(VSDXCollector *collector)
 {
+  if (empty())
+    return;
   std::map<unsigned, VSDXGeometryListElement *>::iterator iter;
   if (m_elementsOrder.size())
   {
@@ -174,4 +207,6 @@ void libvisio::VSDXGeometryList::clear()
 {
   for (std::map<unsigned, VSDXGeometryListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
     delete iter->second;
+  m_elements.clear();
+  m_elementsOrder.clear();
 }

@@ -71,7 +71,7 @@ bool libvisio::VSD11Parser::parse()
     delete trailerStream;
     return false;
   }
-  
+
   VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence);
   m_collector = &contentCollector;
   if (!parseDocument(trailerStream))
@@ -173,6 +173,12 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
   if (m_header.chunkType == 0x1f || m_header.chunkType == 0xc9)
   {
     m_header.trailer = 0;
+  }
+
+  if (m_header.level < 3)
+  {
+    m_geomList.handle(m_collector);
+    m_geomList.clear();
   }
   return true;
 }
@@ -290,5 +296,7 @@ void libvisio::VSD11Parser::handlePage(WPXInputStream *input)
 
     input->seek(endPos, WPX_SEEK_SET);
   }
+  m_geomList.handle(m_collector);
+  m_geomList.clear();
   m_collector->endPage();
 }
