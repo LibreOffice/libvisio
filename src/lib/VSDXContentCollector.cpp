@@ -507,8 +507,8 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned id, unsigned le
 
 void libvisio::VSDXContentCollector::collectGeomList(unsigned id, unsigned level, const std::vector<unsigned> &geometryOrder)
 {
-  _handleLevelChange(level);
   _flushCurrentPath();
+  _handleLevelChange(level);
   m_currentGeometryOrder.clear();
   for (unsigned j = 0; j< geometryOrder.size(); j++)
     m_currentGeometryOrder.push_back(geometryOrder[j]);
@@ -622,7 +622,7 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned leve
       shapeId = iter->second;
       std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
       if (iterX != m_groupXForms.end())
-	    transformXForm(m_xform, iterX->second);
+        transformXForm(m_xform, iterX->second);
     }
     else
       break;
@@ -634,8 +634,6 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned leve
 void libvisio::VSDXContentCollector::collectShapeID(unsigned id, unsigned level, unsigned shapeId)
 {
   _handleLevelChange(level);
-  m_currentShapeId = id;
-  m_isShapeStarted = true;
 }
 
 
@@ -668,8 +666,12 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned id, unsigned leve
 
 void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
 {
-  _flushCurrentPath();
-  _flushCurrentForeignData();
+  if (m_isShapeStarted)
+  {
+    _flushCurrentPath();
+    _flushCurrentForeignData();
+    m_isShapeStarted = false;
+  }
 
   m_gradientProps = WPXPropertyListVector();
   m_foreignType = 0; // Tracks current foreign data type
@@ -719,15 +721,22 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
     return;
   if (m_currentLevel >= 2 && level < 2)
   {
-    _flushCurrentPath();
-    _flushCurrentForeignData();
+    if (m_isShapeStarted)
+    {
+      _flushCurrentPath();
+      _flushCurrentForeignData();
+      m_isShapeStarted = false;
+    }
     m_x = 0; m_y = 0;
-	m_isShapeStarted = false;
   }
   else if (m_currentLevel == 1 && level > 1)
   {
-    _flushCurrentPath();
-    _flushCurrentForeignData();
+    if (m_isShapeStarted)
+    {
+      _flushCurrentPath();
+      _flushCurrentForeignData();
+      m_isShapeStarted = false;
+    }
 
     m_gradientProps = WPXPropertyListVector();
     m_foreignType = 0; // Tracks current foreign data type
@@ -763,14 +772,18 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 
 void libvisio::VSDXContentCollector::startPage()
 {
-   _flushCurrentPath();
-   _flushCurrentForeignData();
-   m_x = 0; m_y = 0;
-   m_currentPageNumber++;
-   if (m_groupXFormsSequence.size() >= m_currentPageNumber)
-     m_groupXForms = m_groupXFormsSequence[m_currentPageNumber-1];
-   if (m_groupMembershipsSequence.size() >= m_currentPageNumber)
-     m_groupMemberships = m_groupMembershipsSequence[m_currentPageNumber-1];
+  if (m_isShapeStarted)
+  {
+    _flushCurrentPath();
+    _flushCurrentForeignData();
+    m_isShapeStarted = false;
+  }
+  m_x = 0; m_y = 0;
+  m_currentPageNumber++;
+  if (m_groupXFormsSequence.size() >= m_currentPageNumber)
+    m_groupXForms = m_groupXFormsSequence[m_currentPageNumber-1];
+  if (m_groupMembershipsSequence.size() >= m_currentPageNumber)
+    m_groupMemberships = m_groupMembershipsSequence[m_currentPageNumber-1];
 }
 
 void libvisio::VSDXContentCollector::endPage()
@@ -778,12 +791,16 @@ void libvisio::VSDXContentCollector::endPage()
   // End page if one is started
   if (m_isPageStarted)
   {
-     _flushCurrentPath();
-     _flushCurrentForeignData();
+    if (m_isShapeStarted)
+    {
+      _flushCurrentPath();
+      _flushCurrentForeignData();
+      m_isShapeStarted = false;
+    }
      m_x = 0; m_y = 0;
 
     m_painter->endGraphics();
-	m_isPageStarted = false;
+    m_isPageStarted = false;
   }
 }
 
