@@ -30,12 +30,8 @@
 #include "VSDXCollector.h"
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_header(), m_collector(0)
+  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList()
 {}
-
-libvisio::VSDXParser::~VSDXParser()
-{}
-
 
 bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 {
@@ -62,24 +58,22 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 
     bool compressed = ((ptrFormat & 2) == 2);
     m_input->seek(ptrOffset, WPX_SEEK_SET);
-    WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
+    VSDInternalStream tmpInput(m_input, ptrLength, compressed);
 
     switch (ptrType)
     {
     case VSD_PAGE:
-      handlePage(tmpInput);
+      handlePage(&tmpInput);
       break;
     case VSD_PAGES:
-      handlePages(tmpInput);
+      handlePages(&tmpInput);
       break;
     case VSD_COLORS:
-      readColours(tmpInput);
+      readColours(&tmpInput);
       break;
     default:
       break;
     }
-
-    delete tmpInput;
   }
 
   return true;

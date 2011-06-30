@@ -85,7 +85,6 @@ private:
   std::vector<std::map<unsigned, std::vector<unsigned> > > &m_documentGroupShapeOrders;
   std::map<unsigned, unsigned> m_shapeIds;
   std::vector<unsigned> m_shapeList;
-  unsigned m_currentShapeListLevel;
 };
 
 }

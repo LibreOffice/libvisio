@@ -57,7 +57,7 @@ bool libvisio::VSD6Parser::parse()
   bool compressed = ((format & 2) == 2);
 
   m_input->seek(offset, WPX_SEEK_SET);
-  WPXInputStream *trailerStream = new VSDInternalStream(m_input, length, compressed);
+  VSDInternalStream trailerStream(m_input, length, compressed);
   
   std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
@@ -66,21 +66,14 @@ bool libvisio::VSD6Parser::parse()
   
   VSDXStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, documentGroupShapeOrders);
   m_collector = &stylesCollector;
-  if (!parseDocument(trailerStream))
-  {
-    delete trailerStream;
+  if (!parseDocument(&trailerStream))
     return false;
-  }
 
   VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence);
   m_collector = &contentCollector;
-  if (!parseDocument(trailerStream))
-  {
-    delete trailerStream;
+  if (!parseDocument(&trailerStream))
     return false;
-  }
 
-  delete trailerStream;
   return true;
 }
 

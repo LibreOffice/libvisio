@@ -40,8 +40,9 @@ class VSDXParser
 {
 public:
   explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
-  virtual ~VSDXParser();
+  virtual ~VSDXParser() {}
   virtual bool parse() = 0;
+
 protected:
   // reader functions
   void readEllipticalArcTo(WPXInputStream *input);
@@ -76,7 +77,11 @@ protected:
   ChunkHeader m_header;
   VSDXCollector *m_collector;
   VSDXGeometryList m_geomList;
-  
+
+private:
+  VSDXParser();
+  VSDXParser(const VSDXParser&);
+  VSDXParser &operator=(const VSDXParser&);
 };
 
 } // namespace libvisio

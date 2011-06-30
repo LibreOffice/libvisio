@@ -28,16 +28,18 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   std::vector<std::vector<unsigned> > &documentPageShapeOrders,
   std::vector<std::map<unsigned, std::vector<unsigned> > > &documentGroupShapeOrders
 ) :
+  m_currentLevel(0), m_isShapeStarted(false),
   m_currentShapeId(0), m_groupXForms(), m_groupMemberships(),
   m_groupXFormsSequence(groupXFormsSequence),
   m_groupMembershipsSequence(groupMembershipsSequence), m_pageShapeOrder(),
   m_documentPageShapeOrders(documentPageShapeOrders),
   m_documentGroupShapeOrders(documentGroupShapeOrders),
-  m_shapeIds(), m_shapeList(), m_currentShapeListLevel(0)
+  m_shapeIds(), m_shapeList()
 {
   m_groupXFormsSequence.clear();
   m_groupMembershipsSequence.clear();
   m_documentPageShapeOrders.clear();
+  m_documentGroupShapeOrders.clear();
 }
 
 void libvisio::VSDXStylesCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double /* x3 */, double /* y3 */, double /* x2 */, double /* y2 */, double /* angle */, double /* ecc */)
@@ -110,7 +112,6 @@ void libvisio::VSDXStylesCollector::collectShapeList(unsigned /* id */, unsigned
   _handleLevelChange(level);
   for (unsigned i = 0; i < shapeList.size(); i++)
     m_shapeList.push_back(shapeList[i]);
-  m_currentShapeListLevel = level;
 }
 
 void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */)
@@ -157,31 +158,42 @@ void libvisio::VSDXStylesCollector::endPage()
 
 void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
 {
-  if (m_currentShapeListLevel && m_currentShapeListLevel <= level)
-    _flushShapeList();
   if (m_currentLevel == level)
     return;
   if (level < 2)
     m_isShapeStarted = false;
+  if (level < 3)
+    _flushShapeList();
 
   m_currentLevel = level;
 }
 
 void libvisio::VSDXStylesCollector::_flushShapeList()
 {
+  if (!m_shapeIds.size())
+    return;
   std::vector<unsigned> shapesOrder;
   std::map<unsigned, unsigned>::iterator iter;
-  for (unsigned i = 0; i < m_shapeList.size(); i++)
+  if (m_shapeList.size())
   {
-    iter = m_shapeIds.find(m_shapeList[i]);
-    if (iter != m_shapeIds.end())
-      shapesOrder.push_back(iter->second);
+    for (unsigned i = 0; i < m_shapeList.size(); i++)
+    {
+      iter = m_shapeIds.find(m_shapeList[i]);
+      if (iter != m_shapeIds.end())
+        shapesOrder.push_back(iter->second);
+    }
   }
+  else
+  {
+    for (iter = m_shapeIds.begin(); iter != m_shapeIds.end(); iter++)
+	  shapesOrder.push_back(iter->second);
+  }
+ 
   if (m_isShapeStarted)
     m_groupShapeOrder[m_currentShapeId] = shapesOrder;
   else
     m_pageShapeOrder = shapesOrder;
+
   m_shapeList.clear();
   m_shapeIds.clear();
-  m_currentShapeListLevel = 0; 
 }

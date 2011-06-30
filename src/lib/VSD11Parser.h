@@ -39,6 +39,10 @@ public:
   bool parse();
 private:
   bool getChunkHeader(WPXInputStream *input);
+
+  VSD11Parser();
+  VSD11Parser(const VSDXParser&);
+  VSD11Parser &operator=(const VSDXParser&);
 };
 
 } // namespace libvisio
