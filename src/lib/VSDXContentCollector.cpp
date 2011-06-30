@@ -187,7 +187,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
 #endif
 }
 
-void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
+void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
   _handleLevelChange(level);
   x3 += m_xform.x;
@@ -238,7 +238,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned id, unsigne
   m_currentGeometry.push_back(arc);
 }
 
-void libvisio::VSDXContentCollector::collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd)
+void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned level, double cx, double cy, double aa, double dd)
 {
   _handleLevelChange(level);
   WPXPropertyList ellipse;
@@ -259,7 +259,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned id, unsigned level,
   }
 }
 
-void libvisio::VSDXContentCollector::collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern)
+void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern)
 {
   _handleLevelChange(level);
   m_linePattern = linePattern;
@@ -298,7 +298,7 @@ void libvisio::VSDXContentCollector::collectLine(unsigned id, unsigned level, do
   // patt ID is 0xfe, link to stencil name is in 'Line' blocks
 }
 
-void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
+void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
 {
   _handleLevelChange(level);
   m_fillPattern = fillPattern;
@@ -428,7 +428,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned 
 }
 
 
-void libvisio::VSDXContentCollector::collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData)
+void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData &binaryData)
 {
   _handleLevelChange(level);
   if (m_foreignType == 1 || m_foreignType == 4) // Image
@@ -525,14 +525,14 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned id, unsigned le
   }
 }
 
-void libvisio::VSDXContentCollector::collectGeomList(unsigned id, unsigned level)
+void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
   _flushCurrentPath();
   _handleLevelChange(level);
   m_noShow = false;
 }
 
-void libvisio::VSDXContentCollector::collectGeometry(unsigned id, unsigned level, unsigned geomFlags)
+void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned geomFlags)
 {
   _handleLevelChange(level);
   m_x = 0.0; m_x = 0.0;
@@ -550,7 +550,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned id, unsigned level
   VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
 }
 
-void libvisio::VSDXContentCollector::collectMoveTo(unsigned id, unsigned level, double x, double y)
+void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
   WPXPropertyList end;
@@ -564,7 +564,7 @@ void libvisio::VSDXContentCollector::collectMoveTo(unsigned id, unsigned level, 
   m_currentGeometry.push_back(end);
 }
 
-void libvisio::VSDXContentCollector::collectLineTo(unsigned id, unsigned level, double x, double y)
+void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
   WPXPropertyList end;
@@ -578,7 +578,7 @@ void libvisio::VSDXContentCollector::collectLineTo(unsigned id, unsigned level, 
   m_currentGeometry.push_back(end);
 }
 
-void libvisio::VSDXContentCollector::collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow)
+void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned level, double x2, double y2, double bow)
 {
   _handleLevelChange(level);
   x2 += m_xform.x;
@@ -616,7 +616,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned id, unsigned level, d
   }
 }
 
-void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned level, const XForm &xform)
+void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);
 
@@ -648,13 +648,13 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned id, unsigned leve
   m_xform.y = m_pageHeight - m_xform.pinY + m_xform.pinLocY - m_xform.height;
 }
 
-void libvisio::VSDXContentCollector::collectShapeID(unsigned id, unsigned level, unsigned shapeId)
+void libvisio::VSDXContentCollector::collectShapeID(unsigned /* id */, unsigned level, unsigned /* shapeId */)
 {
   _handleLevelChange(level);
 }
 
 
-void libvisio::VSDXContentCollector::collectShapeList(unsigned id, unsigned level, const std::vector<unsigned int> &shapeList)
+void libvisio::VSDXContentCollector::collectShapeList(unsigned /* id */, unsigned level, const std::vector<unsigned int> &shapeList)
 {
   _handleLevelChange(level);
   m_shapeList.clear();
@@ -662,14 +662,14 @@ void libvisio::VSDXContentCollector::collectShapeList(unsigned id, unsigned leve
     m_shapeList.push_back(shapeList[i]);
 }
 
-void libvisio::VSDXContentCollector::collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat)
+void libvisio::VSDXContentCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned foreignType, unsigned foreignFormat)
 {
   _handleLevelChange(level);
   m_foreignType = foreignType;
   m_foreignFormat = foreignFormat;
 }
 
-void libvisio::VSDXContentCollector::collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight)
+void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight)
 {
   _handleLevelChange(level);
   m_pageWidth = pageWidth;
@@ -686,6 +686,7 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned id, unsigned leve
 
 void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
 {
+  _handleLevelChange(level);
   if (m_isShapeStarted)
   {
     _flushCurrentPath();
@@ -724,7 +725,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
   m_isShapeStarted = true;
 }
 
-void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned id, unsigned level)
+void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
 }

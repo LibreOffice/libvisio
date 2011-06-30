@@ -402,7 +402,7 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
   m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight);
 }
 
-void libvisio::VSDXParser::readShape(WPXInputStream *input)
+void libvisio::VSDXParser::readShape(WPXInputStream * /* input */)
 {
   m_collector->collectShape(m_header.id, m_header.level);
 }

@@ -40,57 +40,57 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   m_documentPageShapeOrders.clear();
 }
 
-void libvisio::VSDXStylesCollector::collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
+void libvisio::VSDXStylesCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double /* x3 */, double /* y3 */, double /* x2 */, double /* y2 */, double /* angle */, double /* ecc */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData)
+void libvisio::VSDXStylesCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData & /* binaryData */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd)
+void libvisio::VSDXStylesCollector::collectEllipse(unsigned /* id */, unsigned level, double /* cx */, double /* cy */, double /* aa */, double /* dd */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern)
+void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned /* linePattern */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
+void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned /* colourIndexFG */, unsigned /* colourIndexBG */, unsigned /* fillPattern */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectGeomList(unsigned id, unsigned level)
+void libvisio::VSDXStylesCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectGeometry(unsigned id, unsigned level, unsigned geomFlags)
+void libvisio::VSDXStylesCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned /* geomFlags */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectMoveTo(unsigned id, unsigned level, double x, double y)
+void libvisio::VSDXStylesCollector::collectMoveTo(unsigned /* id */, unsigned level, double /* x */, double /* y */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectLineTo(unsigned id, unsigned level, double x, double y)
+void libvisio::VSDXStylesCollector::collectLineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow)
+void libvisio::VSDXStylesCollector::collectArcTo(unsigned /* id */, unsigned level, double /* x2 */, double /* y2 */, double /* bow */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectXFormData(unsigned id, unsigned level, const XForm &xform)
+void libvisio::VSDXStylesCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);
   if (m_isShapeStarted)
@@ -105,7 +105,7 @@ void libvisio::VSDXStylesCollector::collectShapeID(unsigned id, unsigned level, 
   m_shapeIds[id] = shapeId;
 }
 
-void libvisio::VSDXStylesCollector::collectShapeList(unsigned id, unsigned level, const std::vector<unsigned int> &shapeList)
+void libvisio::VSDXStylesCollector::collectShapeList(unsigned /* id */, unsigned level, const std::vector<unsigned int> &shapeList)
 {
   _handleLevelChange(level);
   for (unsigned i = 0; i < shapeList.size(); i++)
@@ -113,12 +113,12 @@ void libvisio::VSDXStylesCollector::collectShapeList(unsigned id, unsigned level
   m_currentShapeListLevel = level;
 }
 
-void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat)
+void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight)
+void libvisio::VSDXStylesCollector::collectPageProps(unsigned /* id */, unsigned level, double /* pageWidth */, double /* pageHeight */)
 {
   _handleLevelChange(level);
 }
@@ -130,12 +130,12 @@ void libvisio::VSDXStylesCollector::collectShape(unsigned id, unsigned level)
   m_isShapeStarted = true;
 }
 
-void libvisio::VSDXStylesCollector::collectUnhandledChunk(unsigned id, unsigned level)
+void libvisio::VSDXStylesCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectColours(const std::vector<Colour> &colours)
+void libvisio::VSDXStylesCollector::collectColours(const std::vector<Colour> & /* colours */)
 {
 }
 
