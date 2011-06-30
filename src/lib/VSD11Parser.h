@@ -38,15 +38,6 @@ public:
   ~VSD11Parser();
   bool parse();
 private:
-
-  // parser of one pass
-  bool parseDocument(WPXInputStream *input);
-
-  // Stream handlers
-  void handlePages(WPXInputStream *input);
-  void handlePage(WPXInputStream *input);
-  void readColours(WPXInputStream *input) { VSDXParser::readColours(input); }
-
   bool getChunkHeader(WPXInputStream *input);
 };
 

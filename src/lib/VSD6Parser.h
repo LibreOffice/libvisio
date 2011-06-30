@@ -38,19 +38,7 @@ public:
   ~VSD6Parser();
   bool parse();
 private:
-
-  typedef void (VSD6Parser::*Method)(WPXInputStream*);
-  struct StreamHandler { unsigned int type; const char *name; Method handler;};
-  static const StreamHandler handlers[];
-  void handlePages(WPXInputStream *input);
-  void handlePage(WPXInputStream *input);
-
-  bool getChunkHeader(WPXInputStream *input) { return false; }
-
-  bool m_isPageStarted;
-  double m_pageWidth;
-  double m_pageHeight;
-  double m_scale;
+  bool getChunkHeader(WPXInputStream *input);
 };
 
 } // namespace libvisio

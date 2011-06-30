@@ -26,6 +26,7 @@
 #include <vector>
 #include <map>
 #include <libwpd/libwpd.h>
+#include <libwpd-stream/libwpd-stream.h>
 #include <libwpg/libwpg.h>
 #include "VSDXTypes.h"
 #include "VSDXGeometryList.h"
@@ -58,10 +59,15 @@ protected:
   void readShapeList(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
+  void readShape(WPXInputStream *input);
   void readColours(WPXInputStream *input);
 
-  // Chunk handlers
-  void readShape(WPXInputStream *input);
+  // parser of one pass
+  bool parseDocument(WPXInputStream *input);
+
+  // Stream handlers
+  void handlePages(WPXInputStream *input);
+  void handlePage(WPXInputStream *input);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
 
