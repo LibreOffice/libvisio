@@ -111,7 +111,27 @@ SOURCE=..\..\src\lib\VSDSVGGenerator.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXCollector.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXContentCollector.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXGeometryList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXOutputElement.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDXParser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXStylesCollector.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -147,7 +167,35 @@ SOURCE=..\..\src\lib\VSDSVGGenerator.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXCollector.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXContentCollector.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXDocumentStructure.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXGeometryList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXOutputElement.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDXParser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXStylesCollector.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXTypes.h
 # End Source File
 # End Group
 # End Target

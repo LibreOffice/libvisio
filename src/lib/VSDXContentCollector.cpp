@@ -21,6 +21,17 @@
 #include "VSDXContentCollector.h"
 #include "VSDXParser.h"
 
+#define DUMP_BITMAP 0
+
+#if DUMP_BITMAP
+static unsigned bitmapId = 0;
+#include <sstream>
+#endif
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 libvisio::VSDXContentCollector::VSDXContentCollector(
   libwpg::WPGPaintInterface *painter,
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,

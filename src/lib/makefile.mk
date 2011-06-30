@@ -35,7 +35,12 @@ SLOFILES= \
 	$(SLO)$/VSD6Parser.obj \
 	$(SLO)$/VSDInternalStream.obj \
 	$(SLO)$/VSDSVGGenerator.obj \
-	$(SLO)$/VSDXParser.obj
+	$(SLO)$/VSDXCollector.obj \
+	$(SLO)$/VSDXContentCollector.obj \
+	$(SLO)$/VSDXGeometryList.obj \
+	$(SLO)$/VSDXOutputElement.obj \
+	$(SLO)$/VSDXParser.obj \
+	$(SLO)$/VSDXStylesCollector.obj
 
 LIB1ARCHIV=$(LB)$/libvisiolib.a
 LIB1TARGET=$(SLB)$/$(TARGET).lib
