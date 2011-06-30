@@ -687,12 +687,6 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
 void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
 {
   _handleLevelChange(level);
-  if (m_isShapeStarted)
-  {
-    _flushCurrentPath();
-    _flushCurrentForeignData();
-    m_isShapeStarted = false;
-  }
 
   m_gradientProps = WPXPropertyListVector();
   m_foreignType = 0; // Tracks current foreign data type
@@ -742,7 +736,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)
     return;
-  if (m_currentLevel >= 2 && level < 2)
+  if (level < 2)
   {
     if (m_isShapeStarted)
     {
@@ -751,40 +745,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
       m_isShapeStarted = false;
     }
     m_x = 0; m_y = 0;
-  }
-  else if (m_currentLevel == 1 && level > 1)
-  {
-    if (m_isShapeStarted)
-    {
-      _flushCurrentPath();
-      _flushCurrentForeignData();
-      m_isShapeStarted = false;
-    }
-
-    m_gradientProps = WPXPropertyListVector();
-    m_foreignType = 0; // Tracks current foreign data type
-    m_foreignFormat = 0; // Tracks foreign data format
-
-    m_x = 0; m_y = 0;
-    m_xform = XForm();
-
-    // Geometry flags
-    m_noLine = false;
-    m_noFill = false;
-    m_noShow = false;
-
-    // Save line colour and pattern, fill type and pattern
-    m_lineColour = "black";
-    m_fillType = "none";
-    m_linePattern = 1; // same as "solid"
-    m_fillPattern = 1; // same as "solid"
-
-    // Reset style
-    m_styleProps.clear();
-    m_styleProps.insert("svg:stroke-width", m_scale*0.0138889);
-    m_styleProps.insert("svg:stroke-color", m_lineColour);
-    m_styleProps.insert("draw:fill", m_fillType);
-    m_styleProps.insert("svg:stroke-dasharray", "solid");
   }
 
   m_currentLevel = level;
