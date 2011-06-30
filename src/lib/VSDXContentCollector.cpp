@@ -135,6 +135,12 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
     }
     path.append(m_currentGeometry[i]);
   }
+  if (startX == x && startY == y)
+  {
+     WPXPropertyList closedPath;
+     closedPath.insert("libwpg:path-action", "Z");
+     path.append(closedPath);
+  }
   if (path.count() && !m_noShow)
   {
 #if 0
@@ -544,9 +550,9 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   else
     m_styleProps.insert("svg:stroke-color", m_lineColour);
   if (m_noFill || m_fillPattern == 0)
-    m_styleProps.insert("svg:fill", "none");
+    m_styleProps.insert("draw:fill", "none");
   else
-    m_styleProps.insert("svg:fill", m_fillType);
+    m_styleProps.insert("draw:fill", m_fillType);
   VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
 }
 
