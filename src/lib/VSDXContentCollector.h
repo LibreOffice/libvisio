@@ -121,10 +121,10 @@ private:
   std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
   unsigned m_currentPageNumber;
   std::vector<unsigned> m_shapeList;
-  std::vector<VSDXOutputElement *> *m_shapeOutput;
-  std::map<unsigned, std::vector<VSDXOutputElement *> > m_pageOutput;
+  VSDXOutputElementList *m_shapeOutput;
+  std::map<unsigned, VSDXOutputElementList> m_pageOutput;
   std::vector<std::list<unsigned> > &m_documentPageShapeOrders;
-  std::list<unsigned> &m_groupShapeOrder;
+  std::list<unsigned> &m_pageShapeOrder;
 };
 
 } // namespace libvisio

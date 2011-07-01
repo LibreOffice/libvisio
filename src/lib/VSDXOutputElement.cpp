@@ -19,6 +19,64 @@
 
 #include "VSDXOutputElement.h"
 
+namespace libvisio {
+
+class VSDXOutputElement
+{
+public:
+  VSDXOutputElement() {}
+  virtual ~VSDXOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter) = 0;
+};
+
+
+class VSDXStyleOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXStyleOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
+  virtual ~VSDXStyleOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+private:
+  WPXPropertyList m_propList;
+  WPXPropertyListVector m_propListVec;
+};
+
+
+class VSDXEllipseOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXEllipseOutputElement(const WPXPropertyList &propList);
+  virtual ~VSDXEllipseOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+private:
+  WPXPropertyList m_propList;
+};
+
+
+class VSDXPathOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXPathOutputElement(const WPXPropertyListVector &propListVec);
+  virtual ~VSDXPathOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+private:
+  WPXPropertyListVector m_propListVec;
+};
+
+
+class VSDXGraphicObjectOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXGraphicObjectOutputElement(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
+  virtual ~VSDXGraphicObjectOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+private:
+  WPXPropertyList m_propList;
+  WPXBinaryData m_binaryData;
+};
+
+} // namespace libvisio
+
 libvisio::VSDXStyleOutputElement::VSDXStyleOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec) :
   m_propList(propList), m_propListVec(propListVec) {}
 
@@ -58,3 +116,43 @@ void libvisio::VSDXGraphicObjectOutputElement::draw(libwpg::WPGPaintInterface *p
     painter->drawGraphicObject(m_propList, m_binaryData);
 }
 
+
+libvisio::VSDXOutputElementList::~VSDXOutputElementList()
+{
+  for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+    delete (*iter);
+  m_elements.clear();
+}
+
+void libvisio::VSDXOutputElementList::draw(libwpg::WPGPaintInterface *painter)
+{
+  for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+    (*iter)->draw(painter);
+}
+
+void libvisio::VSDXOutputElementList::addStyle(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec)
+{
+  m_elements.push_back(new VSDXStyleOutputElement(propList, propListVec));
+}
+
+void libvisio::VSDXOutputElementList::addEllipse(const WPXPropertyList &propList)
+{
+  m_elements.push_back(new VSDXEllipseOutputElement(propList));
+}
+
+void libvisio::VSDXOutputElementList::addPath(const WPXPropertyListVector &propListVec)
+{
+  m_elements.push_back(new VSDXPathOutputElement(propListVec));
+}
+
+void libvisio::VSDXOutputElementList::addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData)
+{
+  m_elements.push_back(new VSDXGraphicObjectOutputElement(propList, binaryData));
+}
+
+void libvisio::VSDXOutputElementList::clear()
+{
+  for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+    delete (*iter);
+  m_elements.clear();
+}

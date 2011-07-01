@@ -18,68 +18,36 @@
  * Boston, MA  02111-1301 USA
  */
 
-#ifndef __VSDXOUTPUTELEMENT_H__
-#define __VSDXOUTPUTELEMENT_H__
+#ifndef __VSDXOUTPUTELEMENTLIST_H__
+#define __VSDXOUTPUTELEMENTLIST_H__
 
+#include <map>
+#include <list>
+#include <vector>
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
 
 namespace libvisio {
 
-class VSDXOutputElement
+class VSDXOutputElement;
+
+class VSDXOutputElementList
 {
 public:
-  VSDXOutputElement() {}
-  virtual ~VSDXOutputElement() {}
-  virtual void draw(libwpg::WPGPaintInterface *painter) = 0;
-};
-
-
-class VSDXStyleOutputElement : public VSDXOutputElement
-{
-public:
-  VSDXStyleOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
-  virtual ~VSDXStyleOutputElement() {}
-  virtual void draw(libwpg::WPGPaintInterface *painter);
+  VSDXOutputElementList() : m_elements() {}
+  virtual ~VSDXOutputElementList();
+  void draw(libwpg::WPGPaintInterface *painter);
+  void addStyle(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
+  void addEllipse(const WPXPropertyList &propList);
+  void addPath(const WPXPropertyListVector &propListVec);
+  void addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
+  bool empty() const  { return !m_elements.size(); }
+  void clear();
 private:
-  WPXPropertyList m_propList;
-  WPXPropertyListVector m_propListVec;
+  std::vector<VSDXOutputElement *> m_elements;
 };
 
-
-class VSDXEllipseOutputElement : public VSDXOutputElement
-{
-public:
-  VSDXEllipseOutputElement(const WPXPropertyList &propList);
-  virtual ~VSDXEllipseOutputElement() {}
-  virtual void draw(libwpg::WPGPaintInterface *painter);
-private:
-  WPXPropertyList m_propList;
-};
-
-
-class VSDXPathOutputElement : public VSDXOutputElement
-{
-public:
-  VSDXPathOutputElement(const WPXPropertyListVector &propListVec);
-  virtual ~VSDXPathOutputElement() {}
-  virtual void draw(libwpg::WPGPaintInterface *painter);
-private:
-  WPXPropertyListVector m_propListVec;
-};
-
-
-class VSDXGraphicObjectOutputElement : public VSDXOutputElement
-{
-public:
-  VSDXGraphicObjectOutputElement(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-  virtual ~VSDXGraphicObjectOutputElement() {}
-  virtual void draw(libwpg::WPGPaintInterface *painter);
-private:
-  WPXPropertyList m_propList;
-  WPXBinaryData m_binaryData;
-};
 
 } // namespace libvisio
 
-#endif // __VSDXOUTPUTELEMENT_H__
+#endif // __VSDXOUTPUTELEMENTLIST_H__
