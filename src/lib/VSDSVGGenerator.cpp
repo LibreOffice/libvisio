@@ -337,15 +337,12 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
 
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "none")
     m_outputSink << "fill: none; ";
-
-  if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "bitmap")
+  else
     if(m_style["svg:fill-rule"])
       m_outputSink << "fill-rule: " << m_style["svg:fill-rule"]->getStr().cstr() << "; ";
 
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "gradient")
     m_outputSink << "fill: url(#grad" << m_gradientIndex-1 << "); ";
-    if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "gradient")
-      m_outputSink << "fill: url(#grad" << m_gradientIndex-1 << "); ";
 
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "solid")
     if (m_style["draw:fill-color"])
