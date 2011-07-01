@@ -115,13 +115,8 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
       }
       if (path.count() && !m_noShow)
       {
-#if 1
          m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
          m_shapeOutput->addPath(path);
-#else
-         m_painter->setStyle(m_styleProps, m_gradientProps);
-         m_painter->drawPath(path);
-#endif
       }
 
       path = WPXPropertyListVector();
@@ -145,13 +140,8 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
   }
   if (path.count() && !m_noShow)
   {
-#if 1
     m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
     m_shapeOutput->addPath(path);
-#else
-    m_painter->setStyle(m_styleProps, m_gradientProps);
-    m_painter->drawPath(path);
-#endif
   }
   m_currentGeometry.clear();
 }
@@ -160,13 +150,8 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
   {
-#if 1
     m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
     m_shapeOutput->addGraphicObject(m_currentForeignProps, m_currentForeignData);
-#else
-    m_painter->setStyle(m_styleProps, m_gradientProps);
-    m_painter->drawGraphicObject(m_currentForeignProps, m_currentForeignData);
-#endif
   }
   m_currentForeignData.clear();
   m_currentForeignProps.clear();
@@ -249,13 +234,8 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   ellipse.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
   if (!m_noShow)
   {
-#if 1
     m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
     m_shapeOutput->addEllipse(ellipse);
-#else
-    m_painter->setStyle(m_styleProps, m_gradientProps);
-    m_painter->drawEllipse(ellipse);
-#endif
   }
 }
 
