@@ -22,6 +22,8 @@
 #define VSDXSTYLESCOLLECTOR_H
 
 #include <map>
+#include <vector>
+#include <list>
 #include "VSDXCollector.h"
 #include "VSDXParser.h"
 
@@ -33,8 +35,7 @@ public:
   VSDXStylesCollector(
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
     std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
-    std::vector<std::vector<unsigned> > &documentPageShapeOrders,
-    std::vector<std::map<unsigned, std::vector<unsigned> > > &documentGroupShapeOrders
+    std::vector<std::list<unsigned> > &documentPageShapeOrders
   );
   virtual ~VSDXStylesCollector() {};
 
@@ -49,8 +50,8 @@ public:
   void collectLineTo(unsigned id, unsigned level, double x, double y);
   void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
   void collectXFormData(unsigned id, unsigned level, const XForm &xform);
-  void collectShapeID(unsigned id, unsigned level, unsigned shapeId);
-  void collectShapeList(unsigned id, unsigned level, const std::vector<unsigned int> &shapeList);
+  void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
+  void collectShapeList(unsigned id, unsigned level);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight);
   void collectShape(unsigned id, unsigned level);
@@ -79,12 +80,10 @@ private:
   std::map<unsigned, unsigned> m_groupMemberships;
   std::vector<std::map<unsigned, XForm> > &m_groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
-  std::vector<unsigned> m_pageShapeOrder;
-  std::vector<std::vector<unsigned> > &m_documentPageShapeOrders;
-  std::map<unsigned, std::vector<unsigned> > m_groupShapeOrder;
-  std::vector<std::map<unsigned, std::vector<unsigned> > > &m_documentGroupShapeOrders;
-  std::map<unsigned, unsigned> m_shapeIds;
-  std::vector<unsigned> m_shapeList;
+  std::list<unsigned> m_pageShapeOrder;
+  std::vector<std::list<unsigned> > &m_documentPageShapeOrders;
+  std::map<unsigned, std::list<unsigned> > m_groupShapeOrder;
+  std::list<unsigned> m_shapeList;
 };
 
 }

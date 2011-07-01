@@ -36,7 +36,6 @@ class VSD6Parser : public VSDXParser
 public:
   explicit VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   ~VSD6Parser();
-  bool parse();
 private:
   bool getChunkHeader(WPXInputStream *input);
 

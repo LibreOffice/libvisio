@@ -18,32 +18,31 @@
  * Boston, MA  02111-1301 USA
  */
 
-#ifndef __VSD11PARSER_H__
-#define __VSD11PARSER_H__
+#ifndef __VSDXSHAPELIST_H__
+#define __VSDXSHAPELIST_H__
 
-#include <stdio.h>
-#include <iostream>
-#include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
-#include "VSDXParser.h"
-#include "VSDInternalStream.h"
+#include <vector>
+#include <map>
 
-namespace libvisio
-{
+namespace libvisio {
 
-class VSD11Parser : public VSDXParser
+class VSDXShapeListElement;
+
+class VSDXShapeList
 {
 public:
-  explicit VSD11Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
-  ~VSD11Parser();
+  VSDXShapeList();
+  ~VSDXShapeList();
+  void addShapeId(unsigned id, unsigned level, unsigned shapeId);
+  void setElementsOrder(const std::vector<unsigned> &elementsOrder);
+  void handle(VSDXCollector *collector);
+  void clear();
+  bool empty() const { return (!m_elements.size()); }
 private:
-  bool getChunkHeader(WPXInputStream *input);
-
-  VSD11Parser();
-  VSD11Parser(const VSDXParser&);
-  VSD11Parser &operator=(const VSDXParser&);
+  std::map<unsigned, VSDXShapeListElement *> m_elements;
+  std::vector<unsigned> m_elementsOrder;
 };
 
 } // namespace libvisio
 
-#endif // __VSD11PARSER_H__
+#endif // __VSDXSHAPELIST_H__

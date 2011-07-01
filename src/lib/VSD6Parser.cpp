@@ -36,47 +36,6 @@ libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterfac
 libvisio::VSD6Parser::~VSD6Parser()
 {}
 
-/** Parses VSD 2003 input stream content, making callbacks to functions provided
-by WPGPaintInterface class implementation as needed.
-\param iface A WPGPaintInterface implementation
-\return A value indicating whether parsing was successful
-*/
-bool libvisio::VSD6Parser::parse()
-{
-  if (!m_input)
-  {
-    return false;
-  }
-  // Seek to trailer stream pointer
-  m_input->seek(0x24, WPX_SEEK_SET);
-
-  m_input->seek(8, WPX_SEEK_CUR);
-  unsigned int offset = readU32(m_input);
-  unsigned int length = readU32(m_input);
-  unsigned short format = readU16(m_input);
-  bool compressed = ((format & 2) == 2);
-
-  m_input->seek(offset, WPX_SEEK_SET);
-  VSDInternalStream trailerStream(m_input, length, compressed);
-  
-  std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
-  std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
-  std::vector<std::vector<unsigned> > documentPageShapeOrders;
-  std::vector<std::map<unsigned, std::vector<unsigned> > > documentGroupShapeOrders;
-  
-  VSDXStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, documentGroupShapeOrders);
-  m_collector = &stylesCollector;
-  if (!parseDocument(&trailerStream))
-    return false;
-
-  VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence);
-  m_collector = &contentCollector;
-  if (!parseDocument(&trailerStream))
-    return false;
-
-  return true;
-}
-
 bool libvisio::VSD6Parser::getChunkHeader(WPXInputStream *input)
 {
   unsigned char tmpChar = 0;
@@ -107,12 +66,6 @@ bool libvisio::VSD6Parser::getChunkHeader(WPXInputStream *input)
   if (m_header.chunkType == 0x1f || m_header.chunkType == 0xc9)
   {
     m_header.trailer = 0;
-  }
-
-  if (m_header.level < 3)
-  {
-    m_geomList.handle(m_collector);
-    m_geomList.clear();
   }
   return true;
 }

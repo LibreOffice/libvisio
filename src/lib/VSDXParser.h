@@ -30,6 +30,7 @@
 #include <libwpg/libwpg.h>
 #include "VSDXTypes.h"
 #include "VSDXGeometryList.h"
+#include "VSDXShapeList.h"
 
 namespace libvisio
 {
@@ -41,7 +42,7 @@ class VSDXParser
 public:
   explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   virtual ~VSDXParser() {}
-  virtual bool parse() = 0;
+  virtual bool parse();
 
 protected:
   // reader functions
@@ -56,7 +57,7 @@ protected:
   void readLineTo(WPXInputStream *input);
   void readArcTo(WPXInputStream *input);
   void readXFormData(WPXInputStream *input);
-  void readShapeID(WPXInputStream *input);
+  void readShapeId(WPXInputStream *input);
   void readShapeList(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
@@ -71,12 +72,15 @@ protected:
   void handlePage(WPXInputStream *input);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
+  void _handleLevelChange(unsigned level);
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
   ChunkHeader m_header;
   VSDXCollector *m_collector;
   VSDXGeometryList m_geomList;
+  VSDXShapeList m_shapeList;
+  unsigned m_currentLevel;
 
 private:
   VSDXParser();

@@ -32,29 +32,31 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -e
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_utils.cpp \
 	VisioDocument.cpp \
+	VSD11Parser.cpp \
+	VSD6Parser.cpp \
+	VSDInternalStream.cpp \
+	VSDSVGGenerator.cpp \
 	VSDXCollector.cpp \
 	VSDXContentCollector.cpp \
 	VSDXGeometryList.cpp \
-	VSDXStylesCollector.cpp \
 	VSDXOutputElement.cpp \
 	VSDXParser.cpp \
-	VSD6Parser.cpp \
-	VSD11Parser.cpp \
-	VSDInternalStream.cpp \
-	VSDSVGGenerator.cpp \
+	VSDXShapeList.cpp \
+	VSDXStylesCollector.cpp \
 	libvisio_utils.h \
-	VSDXDocumentStructure.h \
+	VSD11Parser.h \
+	VSD6Parser.h \
+	VSDInternalStream.h \
+	VSDSVGGenerator.h \
 	VSDXCollector.h \
 	VSDXContentCollector.h \
+	VSDXDocumentStructure.h \
 	VSDXGeometryList.h \
-	VSDXStylesCollector.h \
 	VSDXOutputElement.h \
 	VSDXParser.h \
-	VSDXTypes.h \
-	VSD6Parser.h \
-	VSD11Parser.h \
-	VSDInternalStream.h \
-	VSDSVGGenerator.h
+	VSDXShapeList.h \
+	VSDXStylesCollector.h \
+	VSDXTypes.h
 
 if OS_WIN32
 

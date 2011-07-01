@@ -27,11 +27,70 @@
 #include "VSDXParser.h"
 #include "VSDInternalStream.h"
 #include "VSDXDocumentStructure.h"
-#include "VSDXCollector.h"
+#include "VSDXContentCollector.h"
+#include "VSDXStylesCollector.h"
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList()
+  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(),
+    m_shapeList(), m_currentLevel(0)
 {}
+
+/** Parses Visio input stream content, making callbacks to functions provided
+by WPGPaintInterface class implementation as needed.
+\param iface A WPGPaintInterface implementation
+\return A value indicating whether parsing was successful
+*/
+bool libvisio::VSDXParser::parse()
+{
+  if (!m_input)
+  {
+    return false;
+  }
+  // Seek to trailer stream pointer
+  m_input->seek(0x24, WPX_SEEK_SET);
+
+  m_input->seek(8, WPX_SEEK_CUR);
+  unsigned int offset = readU32(m_input);
+  unsigned int length = readU32(m_input);
+  unsigned short format = readU16(m_input);
+  bool compressed = ((format & 2) == 2);
+
+  m_input->seek(offset, WPX_SEEK_SET);
+  WPXInputStream *trailerStream = new VSDInternalStream(m_input, length, compressed);
+  
+  std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
+  std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
+  std::vector<std::list<unsigned> > documentPageShapeOrders;
+
+  VSDXStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
+  m_collector = &stylesCollector;
+  if (!parseDocument(trailerStream))
+  {
+    delete trailerStream;
+    return false;
+  }
+
+/*
+  for (unsigned i = 0; i < documentPageShapeOrders.size(); i++)
+  {
+    printf("FRIDRICH Page %i, Shape count %lu @@@@ ", i, documentPageShapeOrders[i].size());
+	for (std::list<unsigned>::iterator j = documentPageShapeOrders[i].begin(); j != documentPageShapeOrders[i].end(); j++)
+	  printf(" --> %i", (*j));
+	printf("\n");
+  }
+*/
+
+  VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
+  m_collector = &contentCollector;
+  if (!parseDocument(trailerStream))
+  {
+    delete trailerStream;
+    return false;
+  }
+
+  delete trailerStream;
+  return true;
+}
 
 bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 {
@@ -122,6 +181,20 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input)
   }
 }
 
+void libvisio::VSDXParser::_handleLevelChange(unsigned level)
+{
+  if (level == m_currentLevel)
+    return;
+  if (level < 3)
+  {
+    m_geomList.handle(m_collector);
+    m_geomList.clear();
+	m_shapeList.handle(m_collector);
+	m_shapeList.clear();
+  }
+  m_currentLevel = level;
+}
+
 void libvisio::VSDXParser::handlePage(WPXInputStream *input)
 {
   long endPos = 0;
@@ -134,6 +207,7 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       break;
     endPos = m_header.dataLength+m_header.trailer+input->tell();
 
+    _handleLevelChange(m_header.level);
     VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
     switch (m_header.chunkType)
     {
@@ -149,7 +223,7 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       readShapeList(input);
       break;
     case VSD_SHAPE_ID:
-      readShapeID(input);
+      readShapeId(input);
       break;
     case VSD_LINE:
       readLine(input);
@@ -192,8 +266,7 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
 
     input->seek(endPos, WPX_SEEK_SET);
   }
-  m_geomList.handle(m_collector);
-  m_geomList.clear();
+  _handleLevelChange(0);
   m_collector->endPage();
 }
 
@@ -351,11 +424,11 @@ void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
   m_collector->collectXFormData(m_header.id, m_header.level, xform);
 }
 
-void libvisio::VSDXParser::readShapeID(WPXInputStream *input)
+void libvisio::VSDXParser::readShapeId(WPXInputStream *input)
 {
   unsigned shapeId = readU32(input);
 
-  m_collector->collectShapeID(m_header.id, m_header.level, shapeId);
+  m_shapeList.addShapeId(m_header.id, m_header.level, shapeId);
 }
 
 void libvisio::VSDXParser::readShapeList(WPXInputStream *input)
@@ -363,12 +436,14 @@ void libvisio::VSDXParser::readShapeList(WPXInputStream *input)
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
   input->seek(subHeaderLength, WPX_SEEK_CUR);
-  std::vector<unsigned> shapeList;
-  shapeList.reserve(childrenListLength / sizeof(uint32_t));
+  std::vector<unsigned> shapeOrder;
+  shapeOrder.reserve(childrenListLength / sizeof(uint32_t));
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-    shapeList.push_back(readU32(input));
+    shapeOrder.push_back(readU32(input));
 
-  m_collector->collectShapeList(m_header.id, m_header.level, shapeList);
+  m_shapeList.setElementsOrder(shapeOrder);
+  // We want the collectors to still get the level information
+  m_collector->collectShapeList(m_header.id, m_header.level);
 }
 
 void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)

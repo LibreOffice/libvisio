@@ -35,18 +35,21 @@ static unsigned bitmapId = 0;
 libvisio::VSDXContentCollector::VSDXContentCollector(
   libwpg::WPGPaintInterface *painter,
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
-  std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence
+  std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
+  std::vector<std::list<unsigned> > &documentPageShapeOrders
   ) :
-  m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
-  m_scale(1.0), m_x(0.0), m_y(0.0), m_xform(), m_currentGeometry(),
-  m_groupXForms(groupXFormsSequence[0]), m_currentForeignData(), m_currentForeignProps(),
-  m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
-  m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
-  m_gradientProps(), m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
-  m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
-  m_groupXFormsSequence(groupXFormsSequence),
-  m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
-  m_shapeList(), m_shapeOutput(0), m_pageOutput()
+    m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
+    m_scale(1.0), m_x(0.0), m_y(0.0), m_xform(), m_currentGeometry(),
+    m_groupXForms(groupXFormsSequence[0]), m_currentForeignData(), m_currentForeignProps(),
+    m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
+    m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
+    m_gradientProps(), m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
+    m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
+    m_groupXFormsSequence(groupXFormsSequence),
+    m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
+    m_shapeList(), m_shapeOutput(0), m_pageOutput(),
+    m_documentPageShapeOrders(documentPageShapeOrders),
+    m_groupShapeOrder(documentPageShapeOrders[0])
 {
 }
 
@@ -654,18 +657,15 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigne
   m_xform.y = m_pageHeight - m_xform.pinY + m_xform.pinLocY - m_xform.height;
 }
 
-void libvisio::VSDXContentCollector::collectShapeID(unsigned /* id */, unsigned level, unsigned /* shapeId */)
+void libvisio::VSDXContentCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned /* shapeId */)
 {
   _handleLevelChange(level);
 }
 
 
-void libvisio::VSDXContentCollector::collectShapeList(unsigned /* id */, unsigned level, const std::vector<unsigned int> &shapeList)
+void libvisio::VSDXContentCollector::collectShapeList(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
-  m_shapeList.clear();
-  for (unsigned i = 0; i< shapeList.size(); i++)
-    m_shapeList.push_back(shapeList[i]);
 }
 
 void libvisio::VSDXContentCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned foreignType, unsigned foreignFormat)
@@ -780,14 +780,7 @@ void libvisio::VSDXContentCollector::endPage()
   // End page if one is started
   if (m_isPageStarted)
   {
-    if (m_isShapeStarted)
-    {
-      _flushCurrentPath();
-      _flushCurrentForeignData();
-      m_isShapeStarted = false;
-    }
-    m_x = 0; m_y = 0;
-
+    _handleLevelChange(0);
     _flushCurrentPage();
 
     m_painter->endGraphics();

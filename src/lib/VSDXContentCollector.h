@@ -26,6 +26,8 @@
 #include <string>
 #include <cmath>
 #include <map>
+#include <list>
+#include <vector>
 #include <libwpg/libwpg.h>
 #include "libvisio_utils.h"
 #include "VSDXCollector.h"
@@ -40,7 +42,8 @@ public:
   VSDXContentCollector(
     libwpg::WPGPaintInterface *painter,
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
-    std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence
+    std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
+    std::vector<std::list<unsigned> > &documentPageShapeOrders
   );
   virtual ~VSDXContentCollector() {};
 
@@ -55,8 +58,8 @@ public:
   void collectLineTo(unsigned id, unsigned level, double x, double y);
   void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
   void collectXFormData(unsigned id, unsigned level, const XForm &xform);
-  void collectShapeID(unsigned id, unsigned level, unsigned shapeId);
-  void collectShapeList(unsigned id, unsigned level, const std::vector<unsigned int> &shapeList);
+  void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
+  void collectShapeList(unsigned id, unsigned level);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight);
   void collectShape(unsigned id, unsigned level);
@@ -120,6 +123,8 @@ private:
   std::vector<unsigned> m_shapeList;
   std::vector<VSDXOutputElement *> *m_shapeOutput;
   std::map<unsigned, std::vector<VSDXOutputElement *> > m_pageOutput;
+  std::vector<std::list<unsigned> > &m_documentPageShapeOrders;
+  std::list<unsigned> &m_groupShapeOrder;
 };
 
 } // namespace libvisio
