@@ -39,7 +39,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXCollector.cpp \
 	VSDXContentCollector.cpp \
 	VSDXGeometryList.cpp \
-	VSDXOutputElement.cpp \
+	VSDXOutputElementList.cpp \
 	VSDXParser.cpp \
 	VSDXShapeList.cpp \
 	VSDXStylesCollector.cpp \
@@ -52,7 +52,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXContentCollector.h \
 	VSDXDocumentStructure.h \
 	VSDXGeometryList.h \
-	VSDXOutputElement.h \
+	VSDXOutputElementList.h \
 	VSDXParser.h \
 	VSDXShapeList.h \
 	VSDXStylesCollector.h \

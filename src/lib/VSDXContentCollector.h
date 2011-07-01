@@ -32,7 +32,7 @@
 #include "libvisio_utils.h"
 #include "VSDXCollector.h"
 #include "VSDXParser.h"
-#include "VSDXOutputElement.h"
+#include "VSDXOutputElementList.h"
 
 namespace libvisio {
 

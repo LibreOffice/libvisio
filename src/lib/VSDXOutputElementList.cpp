@@ -17,7 +17,7 @@
  * Boston, MA  02111-1301 USA
  */
 
-#include "VSDXOutputElement.h"
+#include "VSDXOutputElementList.h"
 
 namespace libvisio {
 
