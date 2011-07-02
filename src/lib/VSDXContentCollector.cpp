@@ -236,6 +236,8 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   ellipse.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
   if (!m_noShow)
   {
+    // Here we want to maintain drawing order even though we might lose some evenodd goodness
+    _flushCurrentPath();
     m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
     m_shapeOutput->addEllipse(ellipse);
   }
