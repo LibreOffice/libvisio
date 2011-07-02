@@ -125,7 +125,6 @@ private:
   std::map<unsigned, VSDXOutputElementList> m_pageOutput;
   std::vector<std::list<unsigned> > &m_documentPageShapeOrders;
   std::list<unsigned> &m_pageShapeOrder;
-  bool m_isFirstGeometry;
 };
 
 } // namespace libvisio
