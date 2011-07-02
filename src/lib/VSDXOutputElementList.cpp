@@ -75,6 +75,26 @@ private:
   WPXBinaryData m_binaryData;
 };
 
+
+class VSDXStartLayerOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXStartLayerOutputElement(const WPXPropertyList &propList);
+  virtual ~VSDXStartLayerOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+private:
+  WPXPropertyList m_propList;
+};
+
+
+class VSDXEndLayerOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXEndLayerOutputElement();
+  virtual ~VSDXEndLayerOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+};
+
 } // namespace libvisio
 
 libvisio::VSDXStyleOutputElement::VSDXStyleOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec) :
@@ -117,6 +137,25 @@ void libvisio::VSDXGraphicObjectOutputElement::draw(libwpg::WPGPaintInterface *p
 }
 
 
+libvisio::VSDXStartLayerOutputElement::VSDXStartLayerOutputElement(const WPXPropertyList &propList) :
+  m_propList(propList) {}
+
+void libvisio::VSDXStartLayerOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->startLayer(m_propList);
+}
+
+
+libvisio::VSDXEndLayerOutputElement::VSDXEndLayerOutputElement() {}
+
+void libvisio::VSDXEndLayerOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->endLayer();
+}
+
+
 libvisio::VSDXOutputElementList::~VSDXOutputElementList()
 {
   for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
@@ -148,6 +187,16 @@ void libvisio::VSDXOutputElementList::addPath(const WPXPropertyListVector &propL
 void libvisio::VSDXOutputElementList::addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData)
 {
   m_elements.push_back(new VSDXGraphicObjectOutputElement(propList, binaryData));
+}
+
+void libvisio::VSDXOutputElementList::addStartLayer(const WPXPropertyList &propList)
+{
+  m_elements.push_back(new VSDXStartLayerOutputElement(propList));
+}
+
+void libvisio::VSDXOutputElementList::addEndLayer()
+{
+  m_elements.push_back(new VSDXEndLayerOutputElement());
 }
 
 void libvisio::VSDXOutputElementList::clear()

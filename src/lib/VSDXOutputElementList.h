@@ -41,6 +41,8 @@ public:
   void addEllipse(const WPXPropertyList &propList);
   void addPath(const WPXPropertyListVector &propListVec);
   void addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
+  void addStartLayer(const WPXPropertyList &propList);
+  void addEndLayer();
   bool empty() const  { return !m_elements.size(); }
   void clear();
 private:
