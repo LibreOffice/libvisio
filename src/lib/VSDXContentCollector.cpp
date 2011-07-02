@@ -48,7 +48,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupXFormsSequence(groupXFormsSequence),
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0])
+    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true)
 {
 }
 
@@ -113,7 +113,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
          closedPath.insert("libwpg:path-action", "Z");
          path.append(closedPath);
       }
-
+#if 0
       if (path.count() && !m_noShow)
       {
          m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
@@ -121,7 +121,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
       }
 
       path = WPXPropertyListVector();
-
+#endif
       x = m_currentGeometry[i]["svg:x"]->getDouble();
       y = m_currentGeometry[i]["svg:y"]->getDouble();
       startX = x;
@@ -510,7 +510,6 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
 void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
-  _flushCurrentPath();
   m_noShow = false;
 }
 
@@ -518,9 +517,14 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
 {
   _handleLevelChange(level);
   m_x = 0.0; m_x = 0.0;
-  m_noFill = ((geomFlags & 1) == 1);
-  m_noLine = ((geomFlags & 2) == 2);
+  bool noFill = ((geomFlags & 1) == 1);
+  bool noLine = ((geomFlags & 2) == 2);
   m_noShow = ((geomFlags & 4) == 4);
+  if (((m_noFill ^ noFill) || (m_noLine ^ noLine)) && !m_isFirstGeometry)
+    _flushCurrentPath();
+  m_isFirstGeometry = false;
+  m_noFill = noFill;
+  m_noLine = noLine;
   if (m_noLine || m_linePattern == 0)
     m_styleProps.insert("svg:stroke-color", "none");
   else
@@ -528,7 +532,10 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   if (m_noFill || m_fillPattern == 0)
     m_styleProps.insert("draw:fill", "none");
   else
+  {
     m_styleProps.insert("draw:fill", m_fillType);
+    m_styleProps.insert("svg:fill-rule", "evenodd");
+  }
   VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
 }
 
@@ -696,6 +703,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
   m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
   m_shapeOutput = &m_pageOutput[m_currentShapeId];
   m_isShapeStarted = true;
+  m_isFirstGeometry = true;
 }
 
 void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
