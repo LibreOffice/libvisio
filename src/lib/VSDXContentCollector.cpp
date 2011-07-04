@@ -637,17 +637,13 @@ void libvisio::VSDXContentCollector::transformAngle(double &angle)
   if (!m_currentShapeId)
     return;
 
-  std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(m_currentShapeId);
-  if (iterX != m_groupXForms.end())
-  {
-    double x0 = iterX->second.pinLocX;
-    double y0 = iterX->second.pinLocY;
-    double x1 = iterX->second.pinLocX + cos(angle);
-    double y1 = iterX->second.pinLocY + sin(angle);
-    transformPoint(x0, y0);
-    transformPoint(x1, y1);
-    angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0))), 2.0*M_PI);
-  }
+  double x0 = m_xform.pinLocX;
+  double y0 = m_xform.pinLocY;
+  double x1 = m_xform.pinLocX + cos(angle);
+  double y1 =m_xform.pinLocY + sin(angle);
+  transformPoint(x0, y0);
+  transformPoint(x1, y1);
+  angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0))), 2.0*M_PI);
 }
 
 void libvisio::VSDXContentCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned /* shapeId */)
