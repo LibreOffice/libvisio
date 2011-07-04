@@ -443,16 +443,13 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
     }
 #endif
 
-    XForm xform;
-    std::map<unsigned, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
-    if (iter != m_groupXForms.end())
-      xform = iter->second;
-    m_currentForeignProps.insert("svg:width", m_scale*xform.width);
-    m_currentForeignProps.insert("svg:height", m_scale*xform.height);
-    m_currentForeignProps.insert("svg:x", m_scale*(xform.pinX - xform.pinLocX));
+    m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
+    m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
+	double x = 0.0; double y = 0.0;
+	transformPoint(x,y);
+    m_currentForeignProps.insert("svg:x", m_scale*x);
     // Y axis starts at the bottom not top
-    m_currentForeignProps.insert("svg:y", m_scale*(m_pageHeight -
-                        xform.pinY + xform.pinLocY - xform.height));
+    m_currentForeignProps.insert("svg:y", m_scale*(y - m_xform.height));
 
     if (m_foreignType == 1)
     {
@@ -499,7 +496,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   bool noFill = ((geomFlags & 1) == 1);
   bool noLine = ((geomFlags & 2) == 2);
   m_noShow = ((geomFlags & 4) == 4);
-  if (((m_noFill ^ noFill) || (m_noLine ^ noLine)) && !m_isFirstGeometry)
+  if (((m_noFill != noFill) || (m_noLine != noLine)) && !m_isFirstGeometry)
     _flushCurrentPath();
   m_isFirstGeometry = false;
   m_noFill = noFill;
@@ -584,8 +581,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
 void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);
-  if (!m_isShapeStarted)
-    m_xform = xform;
+  m_xform = xform;
 }
 
 void libvisio::VSDXContentCollector::transformPoint(double &x, double &y)
