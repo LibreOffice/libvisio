@@ -123,11 +123,15 @@ SOURCE=..\..\src\lib\VSDXGeometryList.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSDXOutputElement.cpp
+SOURCE=..\..\src\lib\VSDXOutputElementList.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXParser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXShapeList.cpp
 # End Source File
 # Begin Source File
 
@@ -183,11 +187,15 @@ SOURCE=..\..\src\lib\VSDXGeometryList.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSDXOutputElement.h
+SOURCE=..\..\src\lib\VSDXOutputElementList.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXParser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXShapeList.h
 # End Source File
 # Begin Source File
 

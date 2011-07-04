@@ -96,7 +96,7 @@ void libvisio::VSDXStylesCollector::collectXFormData(unsigned /* id */, unsigned
     m_groupXForms[m_currentShapeId] = xform;
 }
 
-void libvisio::VSDXStylesCollector::collectShapeId(unsigned id, unsigned level, unsigned shapeId)
+void libvisio::VSDXStylesCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned shapeId)
 {
   _handleLevelChange(level);
   if (m_isShapeStarted)
