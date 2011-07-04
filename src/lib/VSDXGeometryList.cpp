@@ -82,13 +82,13 @@ private:
 class VSDXEllipse : public VSDXGeometryListElement
 {
 public:
-  VSDXEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd) :
-    m_id(id), m_level(level), m_cx(cx), m_cy(cy), m_aa(aa), m_dd(dd) {}
+  VSDXEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) :
+    m_id(id), m_level(level), m_cx(cx), m_cy(cy), m_xleft(xleft), m_yleft(yleft), m_xtop(xtop), m_ytop(ytop) {}
   ~VSDXEllipse() {}
   void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;
-  double m_cx, m_cy, m_aa, m_dd;
+  double m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop;
 };
 
 class VSDXEllipticalArcTo : public VSDXGeometryListElement
@@ -128,7 +128,7 @@ void libvisio::VSDXArcTo::handle(VSDXCollector *collector)
 
 void libvisio::VSDXEllipse::handle(VSDXCollector *collector)
 {
-  collector->collectEllipse(m_id, m_level, m_cx, m_cy, m_aa, m_dd);
+  collector->collectEllipse(m_id, m_level, m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop);
 }
 
 void libvisio::VSDXEllipticalArcTo::handle(VSDXCollector *collector)
@@ -165,9 +165,9 @@ void libvisio::VSDXGeometryList::addArcTo(unsigned id, unsigned level, double x2
   m_elements[id] = new VSDXArcTo(id, level, x2, y2, bow);
 }
 
-void libvisio::VSDXGeometryList::addEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd)
+void libvisio::VSDXGeometryList::addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)
 {
-  m_elements[id] = new VSDXEllipse(id, level, cx, cy, aa, dd);
+  m_elements[id] = new VSDXEllipse(id, level, cx, cy, xleft, yleft, xtop, ytop);
 }
 
 void libvisio::VSDXGeometryList::addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)

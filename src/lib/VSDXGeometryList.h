@@ -39,7 +39,7 @@ public:
   void addMoveTo(unsigned id, unsigned level, double x, double y);
   void addLineTo(unsigned id, unsigned level, double x, double y);
   void addArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
-  void addEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd);
+  void addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDXCollector *collector);

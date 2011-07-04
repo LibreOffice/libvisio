@@ -57,7 +57,7 @@ bool libvisio::VSDXParser::parse()
 
   m_input->seek(offset, WPX_SEEK_SET);
   WPXInputStream *trailerStream = new VSDInternalStream(m_input, length, compressed);
-  
+
   std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
   std::vector<std::list<unsigned> > documentPageShapeOrders;
@@ -69,16 +69,6 @@ bool libvisio::VSDXParser::parse()
     delete trailerStream;
     return false;
   }
-
-/*
-  for (unsigned i = 0; i < documentPageShapeOrders.size(); i++)
-  {
-    printf("FRIDRICH Page %i, Shape count %lu @@@@ ", i, documentPageShapeOrders[i].size());
-	for (std::list<unsigned>::iterator j = documentPageShapeOrders[i].begin(); j != documentPageShapeOrders[i].end(); j++)
-	  printf(" --> %i", (*j));
-	printf("\n");
-  }
-*/
 
   VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
   m_collector = &contentCollector;
@@ -189,8 +179,8 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
   {
     m_geomList.handle(m_collector);
     m_geomList.clear();
-	m_shapeList.handle(m_collector);
-	m_shapeList.clear();
+    m_shapeList.handle(m_collector);
+    m_shapeList.clear();
   }
   m_currentLevel = level;
 }
@@ -309,15 +299,15 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double cy = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  double aa = readDouble(input);
+  double xleft = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  /* double bb = */ readDouble(input);
+  double yleft = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  /* double cc = */ readDouble(input);
+  double xtop = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  double dd = readDouble(input);
+  double ytop = readDouble(input);
 
-  m_geomList.addEllipse(m_header.id, m_header.level, cx, cy, aa, dd);
+  m_geomList.addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
 }
 
 void libvisio::VSDXParser::readLine(WPXInputStream *input)

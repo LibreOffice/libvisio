@@ -59,35 +59,6 @@ const ::WPXString libvisio::VSDXContentCollector::getColourString(const struct C
   return sColour;
 }
 
-void libvisio::VSDXContentCollector::rotatePoint(double &x, double &y, const XForm &xform)
-{
-  if (xform.angle == 0.0) return;
-
-  // Calculate co-ordinates using pin position as origin
-  double tmpX = x - xform.pinX;
-  double tmpY = (m_pageHeight - y) - xform.pinY; // Start from bottom left
-
-  // Rotate around pin and move back to bottom left as origin
-  x = (tmpX * cos(xform.angle)) - (tmpY * sin(xform.angle)) + xform.pinX;
-  y = (tmpX * sin(xform.angle)) + (tmpY * cos(xform.angle)) + xform.pinY;
-  y = m_pageHeight - y; // Flip Y for screen co-ordinate
-}
-
-void libvisio::VSDXContentCollector::flipPoint(double &x, double &y, const XForm &xform)
-{
-  if (!xform.flipX && !xform.flipY) return;
-
-  double tmpX = x - xform.x;
-  double tmpY = y - xform.y;
-
-  if (xform.flipX)
-    tmpX = xform.width - tmpX;
-  if (xform.flipY)
-    tmpY = xform.height - tmpY;
-  x = tmpX + xform.x;
-  y = tmpY + xform.y;
-}
-
 void libvisio::VSDXContentCollector::_flushCurrentPath()
 {
   WPXPropertyListVector path;
@@ -168,7 +139,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
     {
       iter = m_pageOutput.find(*iterList);
       if (iter != m_pageOutput.end())
-	    iter->second.draw(m_painter);
+        iter->second.draw(m_painter);
     }
   }
   m_pageOutput.clear();
@@ -177,15 +148,10 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
 void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
   _handleLevelChange(level);
-  x3 += m_xform.x;
-  y3 = m_xform.height - y3 + m_xform.y;
-  x2 += m_xform.x;
-  y2 = m_xform.height - y2 + m_xform.y;
 
-  rotatePoint(x2, y2, m_xform);
-  rotatePoint(x3, y3, m_xform);
-  flipPoint(x2, y2, m_xform);
-  flipPoint(x3, y3, m_xform);
+  transformPoint(x2, y2);
+  transformPoint(x3, y3);
+  transformAngle(angle);
 
   double x1 = m_x;
   double y1 = m_y;
@@ -216,7 +182,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
 
   arc.insert("svg:rx", m_scale*rx);
   arc.insert("svg:ry", m_scale*ry);
-  arc.insert("libwpg:rotate", -(angle * (180 / M_PI) + m_xform.angle * (180 / M_PI)));
+  arc.insert("libwpg:rotate", angle * 180 / M_PI);
   arc.insert("libwpg:large-arc", largeArc);
   arc.insert("libwpg:sweep", sweep);
   arc.insert("svg:x", m_scale*m_x);
@@ -225,15 +191,22 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
   m_currentGeometry.push_back(arc);
 }
 
-void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned level, double cx, double cy, double aa, double dd)
+void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)
 {
   _handleLevelChange(level);
   WPXPropertyList ellipse;
-  ellipse.insert("svg:rx", m_scale*(aa-cx));
-  ellipse.insert("svg:ry", m_scale*(dd-cy));
-  ellipse.insert("svg:cx", m_scale*(m_xform.x+cx));
-  ellipse.insert("svg:cy", m_scale*(m_xform.y+cy));
-  ellipse.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
+  transformPoint(cx, cy);
+  transformPoint(xleft, yleft);
+  transformPoint(xtop, ytop);
+  double rx = sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy));
+  double ry = sqrt((xtop - cx)*(xtop - cx) + (ytop - cy)*(ytop - cy));
+  ellipse.insert("svg:rx", m_scale*rx);
+  ellipse.insert("svg:ry", m_scale*ry);
+  ellipse.insert("svg:cx", m_scale*cx);
+  ellipse.insert("svg:cy", m_scale*cy);
+  double angle = 0.0;
+  transformAngle(angle);
+  ellipse.insert("libwpg:rotate", angle * 180/M_PI);
   if (!m_noShow)
   {
     // Here we want to maintain drawing order even though we might lose some evenodd goodness
@@ -470,12 +443,16 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
     }
 #endif
 
-    m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
-    m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
-    m_currentForeignProps.insert("svg:x", m_scale*(m_xform.pinX - m_xform.pinLocX));
+    XForm xform;
+    std::map<unsigned, XForm>::iterator iter = m_groupXForms.find(m_currentShapeId);
+    if (iter != m_groupXForms.end())
+      xform = iter->second;
+    m_currentForeignProps.insert("svg:width", m_scale*xform.width);
+    m_currentForeignProps.insert("svg:height", m_scale*xform.height);
+    m_currentForeignProps.insert("svg:x", m_scale*(xform.pinX - xform.pinLocX));
     // Y axis starts at the bottom not top
     m_currentForeignProps.insert("svg:y", m_scale*(m_pageHeight -
-                        m_xform.pinY + m_xform.pinLocY - m_xform.height));
+                        xform.pinY + xform.pinLocY - xform.height));
 
     if (m_foreignType == 1)
     {
@@ -544,11 +521,10 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
 void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
+  transformPoint(x, y);
+  m_x = x;
+  m_y = y;
   WPXPropertyList end;
-  m_x = x + m_xform.x;
-  m_y = m_xform.height - y + m_xform.y;
-  rotatePoint(m_x, m_y, m_xform);
-  flipPoint(m_x, m_y, m_xform);
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("libwpg:path-action", "M");
@@ -558,11 +534,10 @@ void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned l
 void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
+  transformPoint(x, y);
+  m_x = x;
+  m_y = y;
   WPXPropertyList end;
-  m_x = x + m_xform.x;
-  m_y = m_xform.height - y + m_xform.y;
-  rotatePoint(m_x, m_y, m_xform);
-  flipPoint(m_x, m_y, m_xform);
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("libwpg:path-action", "L");
@@ -572,10 +547,9 @@ void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned l
 void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned level, double x2, double y2, double bow)
 {
   _handleLevelChange(level);
-  x2 += m_xform.x;
-  y2 = m_xform.height - y2 + m_xform.y;
-  rotatePoint(x2, y2, m_xform);
-  flipPoint(x2, y2, m_xform);
+  transformPoint(x2, y2);
+  double angle = 0.0;
+  transformAngle(angle);
 
   if (bow == 0)
   {
@@ -597,7 +571,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
     m_x = x2; m_y = y2;
     arc.insert("svg:rx", m_scale*radius);
     arc.insert("svg:ry", m_scale*radius);
-    arc.insert("libwpg:rotate", m_xform.angle * (180/M_PI));
+    arc.insert("libwpg:rotate", angle*180/M_PI);
     arc.insert("libwpg:large-arc", largeArc);
     arc.insert("libwpg:sweep", sweep);
     arc.insert("svg:x", m_scale*m_x);
@@ -610,9 +584,12 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
 void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);
+  if (!m_isShapeStarted)
+    m_xform = xform;
+}
 
-  m_xform = xform;
-
+void libvisio::VSDXContentCollector::transformPoint(double &x, double &y)
+{
   // We are interested for the while in shapes xforms only
   if (!m_isShapeStarted)
     return;
@@ -624,19 +601,57 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigne
 
   while (true)
   {
-    std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
-    if  (iter != m_groupMemberships.end())
+    std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
+    if (iterX != m_groupXForms.end())
     {
-      shapeId = iter->second;
-      std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
-      if (iterX != m_groupXForms.end())
-        transformXForm(m_xform, iterX->second);
+      XForm xform = iterX->second;
+      x -= xform.pinLocX;
+      y -= xform.pinLocY;
+      if (xform.flipX)
+        x = xform.width - x - 2.0*xform.pinLocX;
+      if (xform.flipY)
+        y = xform.height -y - 2.0*xform.pinLocY;
+      if (xform.angle != 0.0)
+      {
+        double tmpX = x*cos(xform.angle) - y*sin(xform.angle);
+        double tmpY = y*cos(xform.angle) + x*sin(xform.angle);
+        x = tmpX;
+        y = tmpY;
+      }
+      x += xform.pinX;
+      y += xform.pinY;
     }
     else
       break;
+    std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
+    if (iter != m_groupMemberships.end())
+      shapeId = iter->second;
+    else
+      break;
   }
-  m_xform.x = m_xform.pinX - m_xform.pinLocX;
-  m_xform.y = m_pageHeight - m_xform.pinY + m_xform.pinLocY - m_xform.height;
+  y = m_pageHeight - y;
+}
+
+void libvisio::VSDXContentCollector::transformAngle(double &angle)
+{
+  // We are interested for the while in shape xforms only
+  if (!m_isShapeStarted)
+    return;
+
+  if (!m_currentShapeId)
+    return;
+
+  std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(m_currentShapeId);
+  if (iterX != m_groupXForms.end())
+  {
+    double x0 = iterX->second.pinLocX;
+    double y0 = iterX->second.pinLocY;
+    double x1 = iterX->second.pinLocX + cos(angle);
+    double y1 = iterX->second.pinLocY + sin(angle);
+    transformPoint(x0, y0);
+    transformPoint(x1, y1);
+    angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0))), 2.0*M_PI);
+  }
 }
 
 void libvisio::VSDXContentCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned /* shapeId */)
@@ -681,7 +696,6 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
   m_foreignFormat = 0; // Tracks foreign data format
 
   m_x = 0; m_y = 0;
-  m_xform = XForm();
 
   // Geometry flags
   m_noLine = false;
@@ -740,8 +754,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 }
 
 
-// TEMPORARY HACKS
-
 void libvisio::VSDXContentCollector::startPage()
 {
   if (m_isShapeStarted)
@@ -771,30 +783,4 @@ void libvisio::VSDXContentCollector::endPage()
     m_painter->endGraphics();
     m_isPageStarted = false;
   }
-}
-
-void libvisio::VSDXContentCollector::transformXForm(XForm &xform1, const XForm &xform2)
-{
-  double xmin = xform1.pinX - xform1.pinLocX;
-  double xmax = xmin + xform1.width;
-  double ymin = xform1.pinY - xform1.pinLocY;
-  double ymax = ymin + xform1.width;
-
-  flipPoint(xmin, ymin, xform2);
-  flipPoint(xmax, ymin, xform2);
-  if (xmin > xmax)
-    std::swap(xmin, xmax);
-  if (ymin > ymax)
-    std::swap(ymin, ymax);
-
-  xform1.pinX = xmin + xform1.pinLocX;
-  xform1.pinY = ymin + xform1.pinLocY;
-
-  xform1.pinX += xform2.pinX;
-  xform1.pinY += xform2.pinY;
-  xform1.pinLocX += xform2.pinLocX;
-  xform1.pinLocY += xform2.pinLocY;
-  xform1.flipX ^= xform2.flipX;
-  xform1.flipY ^= xform2.flipY;
-
 }

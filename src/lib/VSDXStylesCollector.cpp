@@ -49,7 +49,7 @@ void libvisio::VSDXStylesCollector::collectForeignData(unsigned /* id */, unsign
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectEllipse(unsigned /* id */, unsigned level, double /* cx */, double /* cy */, double /* aa */, double /* dd */)
+void libvisio::VSDXStylesCollector::collectEllipse(unsigned /* id */, unsigned level, double /* cx */, double /* cy */, double /* xleft */, double /* yleft */, double /* xtop */, double /* ytop */)
 {
   _handleLevelChange(level);
 }

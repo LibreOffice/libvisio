@@ -41,7 +41,7 @@ public:
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
-  void collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd);
+  void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern);
   void collectGeomList(unsigned id, unsigned level);

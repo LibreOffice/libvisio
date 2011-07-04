@@ -49,7 +49,7 @@ public:
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
-  void collectEllipse(unsigned id, unsigned level, double cx, double cy, double aa, double dd);
+  void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern);
   void collectGeomList(unsigned id, unsigned level);
@@ -68,7 +68,6 @@ public:
 
   void collectColours(const std::vector<Colour> &colours);
 
-  // Temporary hack
   void startPage();
   void endPage();
 
@@ -78,9 +77,8 @@ private:
   VSDXContentCollector& operator=(const VSDXContentCollector&);
   libwpg::WPGPaintInterface *m_painter;
 
-  void rotatePoint(double &x, double &y, const XForm &xform);
-  void flipPoint(double &x, double &y, const XForm &xform);
-  void transformXForm(XForm &xform1, const XForm &xform2);
+  void transformPoint(double &x, double &y);
+  void transformAngle(double &angle);
 
   void _flushCurrentPath();
   void _flushCurrentForeignData();
