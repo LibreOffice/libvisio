@@ -486,7 +486,6 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
 void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
-  m_noShow = false;
 }
 
 void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned geomFlags)
@@ -495,12 +494,13 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   m_x = 0.0; m_x = 0.0;
   bool noFill = ((geomFlags & 1) == 1);
   bool noLine = ((geomFlags & 2) == 2);
-  m_noShow = ((geomFlags & 4) == 4);
-  if (((m_noFill != noFill) || (m_noLine != noLine)) && !m_isFirstGeometry)
+  bool noShow = ((geomFlags & 4) == 4);
+  if ((m_noFill != noFill) || (m_noLine != noLine) || (m_noShow != noShow) || m_isFirstGeometry)
     _flushCurrentPath();
   m_isFirstGeometry = false;
   m_noFill = noFill;
   m_noLine = noLine;
+  m_noShow = noShow;
   if (m_noLine || m_linePattern == 0)
     m_styleProps.insert("svg:stroke-color", "none");
   else
