@@ -103,6 +103,23 @@ private:
   double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
 };
 
+class VSDXNURBSTo : public VSDXGeometryListElement
+{
+public:
+  VSDXNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) :
+    m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_xType(xType), m_yType(yType), m_degree(degree), m_controlPoints(controlPoints), m_knotVector(knotVector), m_weights(weights) {}
+  ~VSDXNURBSTo() {}
+  void handle(VSDXCollector *collector);
+private:
+  unsigned m_id, m_level;
+  double m_x2, m_y2;
+  unsigned m_xType, m_yType;
+  double m_degree;
+  std::vector<std::pair<double, double> > m_controlPoints;
+  std::vector<double> m_knotVector, m_weights;
+};
+
+
 } // namespace libvisio
 
 
@@ -136,6 +153,11 @@ void libvisio::VSDXEllipticalArcTo::handle(VSDXCollector *collector)
   collector->collectEllipticalArcTo(m_id, m_level, m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc);
 }
 
+void libvisio::VSDXNURBSTo::handle(VSDXCollector *collector)
+{
+  collector->collectNURBSTo(m_id, m_level, m_x2, m_y2, m_xType, m_yType, m_degree, m_controlPoints, m_knotVector, m_weights);
+}
+
 libvisio::VSDXGeometryList::VSDXGeometryList()
 {
 }
@@ -163,6 +185,11 @@ void libvisio::VSDXGeometryList::addLineTo(unsigned id, unsigned level, double x
 void libvisio::VSDXGeometryList::addArcTo(unsigned id, unsigned level, double x2, double y2, double bow)
 {
   m_elements[id] = new VSDXArcTo(id, level, x2, y2, bow);
+}
+
+void libvisio::VSDXGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+{
+  m_elements[id] = new VSDXNURBSTo(id, level, x2, y2, xType, yType, degree, controlPoints, knotVector, weights);
 }
 
 void libvisio::VSDXGeometryList::addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)

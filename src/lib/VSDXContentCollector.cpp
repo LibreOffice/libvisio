@@ -560,6 +560,78 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
   }
 }
 
+void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+{
+  _handleLevelChange(level);
+
+  // Fill in end knots
+  while (knotVector.size() < (controlPoints.size() + degree + 1))
+    knotVector.push_back(knotVector.back());
+
+  // Convert control points to static co-ordinates
+  for (std::vector<std::pair<double, double> >::iterator it = controlPoints.begin();
+       it != controlPoints.end(); it++)
+  {
+    if (xType == 0) // Percentage
+      (*it).first = (*it).first * m_xform.width;
+
+    if (yType == 0) // Percentage
+      (*it).second = (*it).second * m_xform.height;
+  }
+
+  controlPoints.push_back(std::pair<double,double>(x2, y2));
+
+  // Generate NURBS using 50 polylines
+  WPXPropertyList NURBS;
+  double step = (knotVector.back() - knotVector[0]) / 50;
+ 
+  for (unsigned i = 0; i < 50; i++)
+  {
+    NURBS.clear();
+    NURBS.insert("libwpg:path-action", "L");
+    double nextX = 0; double nextY = 0; double denominator = 0.0000001;
+
+    for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
+    {
+      double basis = _NURBSBasis(p, degree, i * step, controlPoints.size(), knotVector);
+      nextX += basis * controlPoints[p].first * weights[p];
+      nextY += basis * controlPoints[p].second * weights[p];
+      denominator += weights[p] * basis;
+    }
+    nextX = (nextX/denominator) + m_xform.x;
+    nextY = m_xform.height - (nextY/denominator) + m_xform.y;
+    rotatePoint(nextX, nextY, m_xform);
+    flipPoint(nextX, nextY, m_xform);
+    NURBS.insert("svg:x", m_scale*nextX);
+    NURBS.insert("svg:y", m_scale*nextY);
+    m_currentGeometry.push_back(NURBS);
+  }
+
+  m_x = x2 + m_xform.x;
+  m_y = m_xform.height - y2 + m_xform.y;
+  rotatePoint(m_x, m_y, m_xform);
+  flipPoint(m_x, m_y, m_xform);
+}
+
+double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, double controlCount, const std::vector<double> &knotVector)
+{
+  if (degree == 0)
+  {
+    if (knotVector[knot] <= point && point < knotVector[knot+1])
+      return 1;
+    else
+      return 0;
+  }
+  double basis = 0;
+  if (knotVector[knot+degree]-knotVector[knot] > 0)
+    basis = (point-knotVector[knot])/(knotVector[knot+degree]-knotVector[knot]) * _NURBSBasis(knot, degree-1, point, controlCount, knotVector);
+
+  if (knot <= controlCount && knotVector[knot+degree+1] - knotVector[knot+1] > 0)
+    basis += (knotVector[knot+degree+1]-point)/(knotVector[knot+degree+1]-knotVector[knot+1]) * _NURBSBasis(knot+1, degree-1, point, controlCount, knotVector);
+
+  return basis;  
+}
+
 void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);

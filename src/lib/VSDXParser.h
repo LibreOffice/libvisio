@@ -56,6 +56,7 @@ protected:
   void readMoveTo(WPXInputStream *input);
   void readLineTo(WPXInputStream *input);
   void readArcTo(WPXInputStream *input);
+  void readNURBSTo(WPXInputStream *input);
   void readXFormData(WPXInputStream *input);
   void readShapeId(WPXInputStream *input);
   void readShapeList(WPXInputStream *input);

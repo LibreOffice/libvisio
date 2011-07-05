@@ -88,6 +88,10 @@ void libvisio::VSDXStylesCollector::collectArcTo(unsigned /* id */, unsigned lev
 {
   _handleLevelChange(level);
 }
+void libvisio::VSDXStylesCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+{
+  _handleLevelChange(level);
+}
 
 void libvisio::VSDXStylesCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
 {

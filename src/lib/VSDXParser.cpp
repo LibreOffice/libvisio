@@ -242,6 +242,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
     case VSD_ELLIPTICAL_ARC_TO:
       readEllipticalArcTo(input);
       break;
+    case VSD_NURBS_TO:
+      readNURBSTo(input);
+      break;
     case VSD_FOREIGN_DATA_TYPE:
       readForeignDataType(input);
       break;
@@ -389,6 +392,138 @@ void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
   double bow = readDouble(input);
 
   m_geomList.addArcTo(m_header.id, m_header.level, x2, y2, bow);
+}
+
+void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
+{
+  /*input->seek(1, WPX_SEEK_CUR);
+  double x = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double y = readDouble(input);
+  double a = readDouble(input); // Second last knot
+  double b = readDouble(input); // Last weight
+  double c = readDouble(input); // First knot
+  double d = readDouble(input); // First weight
+
+  std::vector<double> knotVector;
+  knotVector.push_back(c);
+  std::vector<std::pair<double, double> > controlPoints;
+  std::vector<double> weights;
+  weights.push_back(d);
+
+  input->seek(11, WPX_SEEK_CUR); // Seek to blocks at offset 0x50 (80)
+
+  // Find formula block referring to cell E (cell 6)
+  unsigned cellRef = 0;
+  unsigned length = 0;
+  unsigned long inputPos = input->tell();
+  unsigned long bytesRead = 0;
+  while (cellRef != 6)
+  {
+    length = readU32(input);
+    input->seek(1, WPX_SEEK_CUR);
+    cellRef = readU8(input);
+    if (cellRef != 6)
+      input->seek(length - 6, WPX_SEEK_CUR);
+  }
+
+  // Indicates whether it's a "simple" NURBS block with a static format
+  // or a complex block where parameters each have a type
+  unsigned paramType = readU8(input);
+  unsigned short valueType = 0;
+
+  double lastKnot = 0; unsigned degree = 0; 
+  unsigned xType = 0; unsigned yType = 0;
+  unsigned repetitions = 0;
+
+  // Read formula's static first four parameters
+  if (paramType == 0x8a)
+  {
+    lastKnot = readDouble(input);
+    degree = readU16(input);
+    xType = readU8(input);
+    yType = readU8(input);
+    repetitions = readU32(input);
+  }
+  else
+  {
+    valueType = paramType;
+    if (valueType == 0x20)
+      lastKnot = readDouble(input);
+    else
+      lastKnot = readU16(input);
+
+    input->seek(1, WPX_SEEK_CUR);
+    degree = readU16(input);
+    input->seek(1, WPX_SEEK_CUR);
+    xType = readU16(input);
+    input->seek(1, WPX_SEEK_CUR);
+    yType = readU16(input);
+  }
+
+  // Read sequences of (x, y, knot, weight) until finished
+  bytesRead = input->tell() - inputPos;
+  unsigned flag = 0;
+  if (paramType != 0x8a) flag = readU8(input);
+  while ((flag != 0x81 || (paramType == 0x8a && repetitions > 0)) && bytesRead < length)
+  {
+    inputPos = input->tell();
+    double knot = 0;
+    double weight = 0;
+    double controlX = 0;
+    double controlY = 0;
+
+    if (paramType == 0x8a) // Parameters have static format
+    {
+      controlX = readDouble(input);
+      controlY = readDouble(input);
+      knot = readDouble(input);
+      weight = readDouble(input);
+    }
+    else // Parameters have types
+    {
+      valueType = flag;
+      if (valueType == 0x20)
+        controlX = readDouble(input);
+      else
+        controlX = readU16(input);
+
+      valueType = readU8(input);
+      if (valueType == 0x20)
+        controlY = readDouble(input);
+      else
+      controlY = readU16(input);
+
+      valueType = readU8(input);
+      if (valueType == 0x20)
+        knot = readDouble(input);
+      else if (valueType == 0x62)
+        knot = readU16(input);
+
+      valueType = readU8(input);
+      if (valueType == 0x20)
+        weight = readDouble(input);
+      else if (valueType == 0x62)
+        weight = readU16(input);
+    }
+    controlPoints.push_back(std::pair<double, double>(controlX, controlY));
+    knotVector.push_back(knot);
+    weights.push_back(weight);
+
+    if (paramType != 0x8a) flag = readU8(input);
+    else repetitions--;
+    bytesRead += input->tell() - inputPos;
+  }
+
+  knotVector.push_back(a);
+  knotVector.push_back(lastKnot);
+  weights.push_back(b);
+#if DEBUG
+  VSD_DEBUG_MSG(("Control points: %d, knots: %d, weights: %d, degree: %d\n", controlPoints.size(), knotVector.size(), weights.size(), degree));
+#endif
+
+  m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType,
+  yType, degree, controlPoints, knotVector, weights);*/
 }
 
 void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
