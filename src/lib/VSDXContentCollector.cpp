@@ -291,10 +291,10 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
       m_styleProps.insert("draw:angle", 90);
       break;
     case 28:
-      m_styleProps.insert("draw:angle", 0);
+      m_styleProps.insert("draw:angle", 180);
       break;
     case 30:
-      m_styleProps.insert("draw:angle", 180);
+      m_styleProps.insert("draw:angle", 0);
       break;
     case 31:
       m_styleProps.insert("draw:angle", 225);
