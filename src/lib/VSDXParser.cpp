@@ -396,7 +396,7 @@ void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
 
 void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 {
-  /*input->seek(1, WPX_SEEK_CUR);
+  input->seek(1, WPX_SEEK_CUR);
   double x = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   double y = readDouble(input);
@@ -492,7 +492,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
       if (valueType == 0x20)
         controlY = readDouble(input);
       else
-      controlY = readU16(input);
+        controlY = readU16(input);
 
       valueType = readU8(input);
       if (valueType == 0x20)
@@ -523,7 +523,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 #endif
 
   m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType,
-  yType, degree, controlPoints, knotVector, weights);*/
+  yType, degree, controlPoints, knotVector, weights);
 }
 
 void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
