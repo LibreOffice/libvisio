@@ -600,8 +600,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     }
     nextX = (nextX/denominator) + m_xform.x;
     nextY = m_xform.height - (nextY/denominator) + m_xform.y;
-    rotatePoint(nextX, nextY, m_xform);
-    flipPoint(nextX, nextY, m_xform);
+    transformPoint(nextX, nextY);
     NURBS.insert("svg:x", m_scale*nextX);
     NURBS.insert("svg:y", m_scale*nextY);
     m_currentGeometry.push_back(NURBS);
@@ -609,8 +608,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
 
   m_x = x2 + m_xform.x;
   m_y = m_xform.height - y2 + m_xform.y;
-  rotatePoint(m_x, m_y, m_xform);
-  flipPoint(m_x, m_y, m_xform);
+  transformPoint(m_x, m_y);
 }
 
 double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, double controlCount, const std::vector<double> &knotVector)
