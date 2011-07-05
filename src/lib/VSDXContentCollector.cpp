@@ -43,7 +43,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupXForms(groupXFormsSequence[0]), m_currentForeignData(), m_currentForeignProps(),
     m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
     m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
-    m_gradientProps(), m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
+    m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
     m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
     m_groupXFormsSequence(groupXFormsSequence),
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
@@ -84,15 +84,6 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
          closedPath.insert("libwpg:path-action", "Z");
          path.append(closedPath);
       }
-#if 0
-      if (path.count() && !m_noShow)
-      {
-         m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
-         m_shapeOutput->addPath(path);
-      }
-
-      path = WPXPropertyListVector();
-#endif
       x = m_currentGeometry[i]["svg:x"]->getDouble();
       y = m_currentGeometry[i]["svg:y"]->getDouble();
       startX = x;
@@ -113,7 +104,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
   }
   if (path.count() && !m_noShow)
   {
-    m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
+    m_shapeOutput->addStyle(m_styleProps, WPXPropertyListVector());
     m_shapeOutput->addPath(path);
   }
   m_currentGeometry.clear();
@@ -123,7 +114,7 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
   {
-    m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
+    m_shapeOutput->addStyle(m_styleProps, WPXPropertyListVector());
     m_shapeOutput->addGraphicObject(m_currentForeignProps, m_currentForeignData);
   }
   m_currentForeignData.clear();
@@ -211,7 +202,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   {
     // Here we want to maintain drawing order even though we might lose some evenodd goodness
     _flushCurrentPath();
-    m_shapeOutput->addStyle(m_styleProps, m_gradientProps);
+    m_shapeOutput->addStyle(m_styleProps, WPXPropertyListVector());
     m_shapeOutput->addEllipse(ellipse);
   }
 }
@@ -260,43 +251,41 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
   _handleLevelChange(level);
   m_fillPattern = fillPattern;
   if (m_fillPattern == 0)
-  {
     m_fillType = "none";
-    m_styleProps.insert("draw:fill", "none");
-  }
   else if (m_fillPattern == 1)
   {
     m_fillType = "solid";
-    m_styleProps.insert("draw:fill", "solid");
     m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+  }
+  else if (m_fillPattern == 26 || m_fillPattern == 29)
+  {
+    m_fillType = "gradient";
+    m_styleProps.insert("draw:style", "axial");
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
+
+    if (m_fillPattern == 26)
+	  m_styleProps.insert("draw:angle", 90);
+	else
+	  m_styleProps.insert("draw:angle", 0);  
   }
   else if (m_fillPattern >= 25 && m_fillPattern <= 34)
   {
     m_fillType = "gradient";
-    m_styleProps.insert("draw:fill", "gradient");
     m_styleProps.insert("draw:style", "linear");
-    WPXPropertyList startColour;
-    startColour.insert("svg:stop-color",
-                       getColourString(m_colours[colourIndexFG]));
-    startColour.insert("svg:offset", 0, WPX_PERCENT);
-    startColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
-    WPXPropertyList endColour;
-    endColour.insert("svg:stop-color",
-                     getColourString(m_colours[colourIndexBG]));
-    endColour.insert("svg:offset", 1, WPX_PERCENT);
-    endColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     switch(m_fillPattern)
     {
     case 25:
-      m_styleProps.insert("draw:angle", -90);
-      break;
-    case 26:
-      m_styleProps.insert("draw:angle", -90);
-      endColour.insert("svg:offset", 0, WPX_PERCENT);
-      m_gradientProps.append(endColour);
-      endColour.insert("svg:offset", 1, WPX_PERCENT);
-      startColour.insert("svg:offset", 0.5, WPX_PERCENT);
+      m_styleProps.insert("draw:angle", 270);
       break;
     case 27:
       m_styleProps.insert("draw:angle", 90);
@@ -304,59 +293,48 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     case 28:
       m_styleProps.insert("draw:angle", 0);
       break;
-    case 29:
-      m_styleProps.insert("draw:angle", 0);
-      endColour.insert("svg:offset", 0, WPX_PERCENT);
-      m_gradientProps.append(endColour);
-      endColour.insert("svg:offset", 1, WPX_PERCENT);
-      startColour.insert("svg:offset", 0.5, WPX_PERCENT);
-      break;
     case 30:
       m_styleProps.insert("draw:angle", 180);
       break;
     case 31:
-      m_styleProps.insert("draw:angle", -45);
-      break;
-    case 32:
-      m_styleProps.insert("draw:angle", 45);
-      break;
-    case 33:
       m_styleProps.insert("draw:angle", 225);
       break;
-    case 34:
+    case 32:
       m_styleProps.insert("draw:angle", 135);
       break;
+    case 33:
+      m_styleProps.insert("draw:angle", 315);
+      break;
+    case 34:
+      m_styleProps.insert("draw:angle", 45);
+      break;
     }
-    m_gradientProps.append(startColour);
-    m_gradientProps.append(endColour);
   }
-  else if (m_fillPattern >= 35 && m_fillPattern <= 40)
+  else if (m_fillPattern == 35)
   {
     m_fillType = "gradient";
-    m_styleProps.insert("draw:fill", "gradient");
+    m_styleProps.insert("draw:style", "rectangular");
+    m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
+    m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:angle", 0);
+    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
+  }
+  else if (m_fillPattern >= 36 && m_fillPattern <= 40)
+  {
+    m_fillType = "gradient";
     m_styleProps.insert("draw:style", "radial");
-    m_styleProps.insert("svg:r", 1, WPX_PERCENT);
-    WPXPropertyList startColour;
-    startColour.insert("svg:stop-color",
-                       getColourString(m_colours[colourIndexFG]));
-    startColour.insert("svg:offset", 0, WPX_PERCENT);
-    startColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
-    WPXPropertyList endColour;
-    endColour.insert("svg:stop-color",
-                     getColourString(m_colours[colourIndexBG]));
-    endColour.insert("svg:offset", 1, WPX_PERCENT);
-    endColour.insert("svg:stop-opacity", 1, WPX_PERCENT);
-    m_gradientProps.append(startColour);
-    m_gradientProps.append(endColour);
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     switch(m_fillPattern)
     {
-    case 35:
-    case 40:
-      m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
-      m_styleProps.insert("svg:r", 0.5, WPX_PERCENT);
-      break;
     case 36:
       m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
       m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
@@ -373,15 +351,19 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
       m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
       m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
       break;
+    case 40:
+      m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
+      break;
     }
   }
   else
   // fill types we don't handle right, but let us approximate with solid fill
   {
     m_fillType = "solid";
-    m_styleProps.insert("draw:fill", "solid");
     m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
   }
+  m_styleProps.insert("draw:fill", m_fillType);
 }
 
 
@@ -683,7 +665,6 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
 {
   _handleLevelChange(level);
 
-  m_gradientProps = WPXPropertyListVector();
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
 
