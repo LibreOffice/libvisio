@@ -38,7 +38,6 @@ public:
   ~VSD6Parser();
 private:
   bool getChunkHeader(WPXInputStream *input);
-  void readNURBSTo(WPXInputStream *input);
 
   VSD6Parser();
   VSD6Parser(const VSDXParser&);
