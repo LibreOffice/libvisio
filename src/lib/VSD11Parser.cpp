@@ -105,6 +105,7 @@ void libvisio::VSD11Parser::readNURBSTo(WPXInputStream *input)
   std::vector<double> knotVector;
   knotVector.push_back(c);
   std::vector<std::pair<double, double> > controlPoints;
+  controlPoints.clear();
   std::vector<double> weights;
   weights.push_back(d);
 
@@ -115,14 +116,17 @@ void libvisio::VSD11Parser::readNURBSTo(WPXInputStream *input)
   unsigned length = 0;
   unsigned long inputPos = input->tell();
   unsigned long bytesRead = 0;
-  while (cellRef != 6)
+  while (cellRef != 6 && !input->atEOS())
   {
     length = readU32(input);
     input->seek(1, WPX_SEEK_CUR);
     cellRef = readU8(input);
-    if (cellRef != 6)
+    if (cellRef > 6)
       input->seek(length - 6, WPX_SEEK_CUR);
   }
+  
+  if (input->atEOS())
+    return;
 
   // Indicates whether it's a "simple" NURBS block with a static format
   // or a complex block where parameters each have a type
@@ -216,9 +220,10 @@ void libvisio::VSD11Parser::readNURBSTo(WPXInputStream *input)
   knotVector.push_back(lastKnot);
   weights.push_back(b);
 #if DEBUG
-  VSD_DEBUG_MSG(("Control points: %d, knots: %d, weights: %d, degree: %d\n", controlPoints.size(), knotVector.size(), weights.size(), degree));
+  VSD_DEBUG_MSG(("Control points: %d, knots: %d, weights: %d, degree: %d\n", (int)controlPoints.size(), (int)knotVector.size(), (int)weights.size(), degree));
 #endif
-
+  if (!controlPoints.size())
+    return;
   m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType,
   yType, degree, controlPoints, knotVector, weights);
 }

@@ -571,10 +571,16 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
 void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
+  
+  if (!knotVector.size() || !controlPoints.size() || !weights.size())
+    return;
 
   // Fill in end knots
   while (knotVector.size() < (controlPoints.size() + degree + 1))
-    knotVector.push_back(knotVector.back());
+  {
+    double BaCk = knotVector.back();
+    knotVector.push_back(BaCk);
+  }
 
   // Convert control points to static co-ordinates
   for (std::vector<std::pair<double, double> >::iterator it = controlPoints.begin();
