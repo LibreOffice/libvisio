@@ -62,19 +62,29 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
   m_header.level = readU16(input);
   m_header.unknown = readU8(input);
 
+  unsigned trailerChunks [14] = {0x64, 0x65, 0x66, 0x69, 0x6a, 0x6b, 0x6f, 0x71,
+                                 0x92, 0xa9, 0xb4, 0xb6, 0xb9, 0xc7};
   // Add word separator under certain circumstances for v11
   // Below are known conditions, may be more or a simpler pattern
   if (m_header.list != 0 || (m_header.level == 2 && m_header.unknown == 0x55) ||
       (m_header.level == 2 && m_header.unknown == 0x54 && m_header.chunkType == 0xaa)
-      || (m_header.level == 3 && m_header.unknown != 0x50 && m_header.unknown != 0x54) ||
-      m_header.chunkType == 0x69 || m_header.chunkType == 0x6a || m_header.chunkType == 0x6b ||
-      m_header.chunkType == 0x71 || m_header.chunkType == 0xb6 || m_header.chunkType == 0xb9 ||
-      m_header.chunkType == 0xa9 || m_header.chunkType == 0x92)
+      || (m_header.level == 3 && m_header.unknown != 0x50 && m_header.unknown != 0x54))
   {
     m_header.trailer += 4;
   }
-  // 0x1f (OLE data) and 0xc9 (Name ID) never have trailer
-  if (m_header.chunkType == 0x1f || m_header.chunkType == 0xc9)
+
+  for (unsigned i = 0; i < 14; i++)
+  {
+    if (m_header.chunkType == trailerChunks[i] && m_header.trailer != 12 && m_header.trailer != 4)
+    {
+      m_header.trailer += 4;
+      break;
+    }
+  }
+
+  // Some chunks never have a trailer
+  if (m_header.chunkType == 0x1f || m_header.chunkType == 0xc9 || 
+      m_header.chunkType == 0x2d || m_header.chunkType == 0xd1)
   {
     m_header.trailer = 0;
   }
