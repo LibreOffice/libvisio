@@ -245,6 +245,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
     case VSD_NURBS_TO:
       readNURBSTo(input);
       break;
+    case VSD_POLYLINE_TO:
+      readPolylineTo(input);
+      break;
     case VSD_FOREIGN_DATA_TYPE:
       readForeignDataType(input);
       break;
@@ -501,7 +504,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
     if (cellRef > 6)
       input->seek(length - 6, WPX_SEEK_CUR);
   }
-  
+
   if (input->atEOS())
     return;
 
@@ -600,6 +603,72 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   VSD_DEBUG_MSG(("Control points: %d, knots: %d, weights: %d, degree: %d\n", (int)controlPoints.size(), (int)knotVector.size(), (int)weights.size(), degree));
 #endif
   m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType, yType, degree, controlPoints, knotVector, weights);
+}
+
+void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  double x = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double y = readDouble(input);
+
+  // Blocks start at 0x30
+  input->seek(0xb, WPX_SEEK_CUR);
+
+    // Find formula block referring to cell A (cell 2)
+  unsigned cellRef = 0;
+  unsigned length = 0;
+  unsigned long bytesRead = 0;
+  while (cellRef != 2)
+  {
+    length = readU32(input);
+    input->seek(1, WPX_SEEK_CUR);
+    cellRef = readU8(input);
+    if (cellRef != 2)
+      input->seek(length - 6, WPX_SEEK_CUR);
+  }
+
+  if (input->atEOS())
+    return;
+
+  unsigned long inputPos = input->tell();
+  bytesRead += 6;
+
+  // Parse static first two parameters to function
+  unsigned xType = 0; unsigned yType = 0;
+  input->seek(1, WPX_SEEK_CUR);
+  xType = readU16(input);
+  input->seek(1, WPX_SEEK_CUR);
+  yType = readU16(input);
+
+  // Parse pairs of x,y co-ordinates
+  std::vector<std::pair<double, double> > points;
+  unsigned flag = readU8(input);
+  unsigned valueType = 0; // Holds parameter type indicator
+  bytesRead += input->tell() - inputPos;
+  while (flag != 0x81 && bytesRead < length)
+  {
+    inputPos = input->tell();
+    double x2 = 0; double y2 = 0;
+    
+    valueType = flag;
+    if (valueType == 0x20)
+      x2 = readDouble(input);
+    else
+      x2 = readU16(input);
+
+    valueType = readU8(input);
+    if (valueType == 0x20)
+      y2 = readDouble(input);
+    else
+      y2 = readU16(input);
+
+    points.push_back(std::pair<double, double>(x2, y2));
+    flag = readU8(input);
+    bytesRead += input->tell() - inputPos;
+  }
+
+  m_geomList.addPolylineTo(m_header.id, m_header.level, x, y, xType, yType, points);
 }
 
 void libvisio::VSDXParser::readColours(WPXInputStream *input)

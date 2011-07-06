@@ -98,6 +98,7 @@
 #define VSD_LAYOUT 0xbf
 #define VSD_PAGE_LAYOUT_IX 0xc0
 
+#define VSD_POLYLINE_TO 0xc1
 #define VSD_NURBS_TO 0xc3
 #define VSD_HYPERLINK 0xc4
 #define VSD_REVIEWER 0xc5

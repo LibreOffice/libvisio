@@ -58,6 +58,7 @@ public:
   void collectLineTo(unsigned id, unsigned level, double x, double y);
   void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
   void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);
+  void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points);
   void collectXFormData(unsigned id, unsigned level, const XForm &xform);
   void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
   void collectShapeList(unsigned id, unsigned level);

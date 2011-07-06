@@ -93,6 +93,11 @@ void libvisio::VSDXStylesCollector::collectNURBSTo(unsigned id, unsigned level, 
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);

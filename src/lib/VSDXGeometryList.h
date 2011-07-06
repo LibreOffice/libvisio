@@ -40,6 +40,7 @@ public:
   void addLineTo(unsigned id, unsigned level, double x, double y);
   void addArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
   void addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);
+  void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > points);
   void addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);

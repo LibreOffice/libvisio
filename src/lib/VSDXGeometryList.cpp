@@ -119,6 +119,19 @@ private:
   std::vector<double> m_knotVector, m_weights;
 };
 
+class VSDXPolylineTo : public VSDXGeometryListElement
+{
+public:
+  VSDXPolylineTo(unsigned id , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > points) :
+    m_id(id), m_level(level), m_x(x), m_y(y), m_xType(xType), m_yType(yType), m_points(points) {}
+  ~VSDXPolylineTo() {}
+  void handle(VSDXCollector *collector);
+private:
+  unsigned m_id, m_level;
+  double m_x, m_y;
+  unsigned m_xType, m_yType;
+  std::vector<std::pair<double, double> > m_points;
+};
 
 } // namespace libvisio
 
@@ -158,6 +171,11 @@ void libvisio::VSDXNURBSTo::handle(VSDXCollector *collector)
   collector->collectNURBSTo(m_id, m_level, m_x2, m_y2, m_xType, m_yType, m_degree, m_controlPoints, m_knotVector, m_weights);
 }
 
+void libvisio::VSDXPolylineTo::handle(VSDXCollector *collector)
+{
+  collector->collectPolylineTo(m_id, m_level, m_x, m_y, m_xType, m_yType, m_points);
+}
+
 libvisio::VSDXGeometryList::VSDXGeometryList()
 {
 }
@@ -190,6 +208,11 @@ void libvisio::VSDXGeometryList::addArcTo(unsigned id, unsigned level, double x2
 void libvisio::VSDXGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   m_elements[id] = new VSDXNURBSTo(id, level, x2, y2, xType, yType, degree, controlPoints, knotVector, weights);
+}
+
+void libvisio::VSDXGeometryList::addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > points)
+{
+  m_elements[id] = new VSDXPolylineTo(id, level, x, y, xType, yType, points);
 }
 
 void libvisio::VSDXGeometryList::addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)
