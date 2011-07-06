@@ -501,7 +501,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
     length = readU32(input);
     input->seek(1, WPX_SEEK_CUR);
     cellRef = readU8(input);
-    if (cellRef > 6)
+    if (cellRef < 6)
       input->seek(length - 6, WPX_SEEK_CUR);
   }
 
@@ -619,12 +619,12 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   unsigned cellRef = 0;
   unsigned length = 0;
   unsigned long bytesRead = 0;
-  while (cellRef != 2)
+  while (cellRef != 2 && !input->atEOS())
   {
     length = readU32(input);
     input->seek(1, WPX_SEEK_CUR);
     cellRef = readU8(input);
-    if (cellRef != 2)
+    if (cellRef < 2)
       input->seek(length - 6, WPX_SEEK_CUR);
   }
 
