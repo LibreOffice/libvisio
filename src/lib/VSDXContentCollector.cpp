@@ -572,15 +572,13 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
 {
   _handleLevelChange(level);
   
-  if (!knotVector.size() || !controlPoints.size() || !weights.size())
+  if (!knotVector.size())
+  // Here, maybe we should just draw line to (x2,y2)
     return;
 
   // Fill in end knots
   while (knotVector.size() < (controlPoints.size() + degree + 1))
-  {
-    double BaCk = knotVector.back();
-    knotVector.push_back(BaCk);
-  }
+    knotVector.push_back(knotVector.back());
 
   // Convert control points to static co-ordinates
   for (std::vector<std::pair<double, double> >::iterator it = controlPoints.begin();

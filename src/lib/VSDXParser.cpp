@@ -483,7 +483,6 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   std::vector<double> knotVector;
   knotVector.push_back(c);
   std::vector<std::pair<double, double> > controlPoints;
-  controlPoints.clear();
   std::vector<double> weights;
   weights.push_back(d);
 
@@ -600,10 +599,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 #if DEBUG
   VSD_DEBUG_MSG(("Control points: %d, knots: %d, weights: %d, degree: %d\n", (int)controlPoints.size(), (int)knotVector.size(), (int)weights.size(), degree));
 #endif
-  if (!controlPoints.size())
-    return;
-  m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType,
-  yType, degree, controlPoints, knotVector, weights);
+  m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType, yType, degree, controlPoints, knotVector, weights);
 }
 
 void libvisio::VSDXParser::readColours(WPXInputStream *input)
