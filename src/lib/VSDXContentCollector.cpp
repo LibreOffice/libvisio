@@ -560,6 +560,8 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
   }
 }
 
+#define VSD_NUM_POLYLINES_PER_NURBS 50
+
 void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
@@ -573,19 +575,19 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
        it != controlPoints.end(); it++)
   {
     if (xType == 0) // Percentage
-      (*it).first = (*it).first * m_xform.width;
+      (*it).first *= m_xform.width;
 
     if (yType == 0) // Percentage
-      (*it).second = (*it).second * m_xform.height;
+      (*it).second *= m_xform.height;
   }
 
   controlPoints.push_back(std::pair<double,double>(x2, y2));
 
-  // Generate NURBS using 50 polylines
+  // Generate NURBS using VSD_NUM_POLYLINES_PER_NURBS polylines
   WPXPropertyList NURBS;
-  double step = (knotVector.back() - knotVector[0]) / 50;
+  double step = (knotVector.back() - knotVector[0]) / VSD_NUM_POLYLINES_PER_NURBS;
  
-  for (unsigned i = 0; i < 50; i++)
+  for (unsigned i = 0; i < VSD_NUM_POLYLINES_PER_NURBS; i++)
   {
     NURBS.clear();
     NURBS.insert("libwpg:path-action", "L");
@@ -598,16 +600,16 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
       nextY += basis * controlPoints[p].second * weights[p];
       denominator += weights[p] * basis;
     }
-    nextX = (nextX/denominator) + m_xform.x;
-    nextY = (nextY/denominator) + m_xform.y;
+    nextX = (nextX/denominator);
+    nextY = (nextY/denominator);
     transformPoint(nextX, nextY);
     NURBS.insert("svg:x", m_scale*nextX);
     NURBS.insert("svg:y", m_scale*nextY);
     m_currentGeometry.push_back(NURBS);
   }
 
-  m_x = x2 + m_xform.x;
-  m_y = m_xform.height - y2 + m_xform.y;
+  m_x = x2;
+  m_y = y2;
   transformPoint(m_x, m_y);
 }
 
