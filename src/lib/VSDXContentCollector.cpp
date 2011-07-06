@@ -599,7 +599,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
       denominator += weights[p] * basis;
     }
     nextX = (nextX/denominator) + m_xform.x;
-    nextY = m_xform.height - (nextY/denominator) + m_xform.y;
+    nextY = (nextY/denominator) + m_xform.y;
     transformPoint(nextX, nextY);
     NURBS.insert("svg:x", m_scale*nextX);
     NURBS.insert("svg:y", m_scale*nextY);
