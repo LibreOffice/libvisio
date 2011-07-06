@@ -69,3 +69,7 @@ bool libvisio::VSD6Parser::getChunkHeader(WPXInputStream *input)
   }
   return true;
 }
+
+void libvisio::VSD6Parser::readNURBSTo(WPXInputStream *input)
+{
+}

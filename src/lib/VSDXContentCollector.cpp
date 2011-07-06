@@ -613,7 +613,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
   transformPoint(m_x, m_y);
 }
 
-double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, double controlCount, const std::vector<double> &knotVector)
+double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, unsigned controlCount, const std::vector<double> &knotVector)
 {
   if (degree == 0)
   {
