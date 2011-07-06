@@ -490,22 +490,25 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   weights.push_back(d);
 
   input->seek(11, WPX_SEEK_CUR); // Seek to blocks at offset 0x50 (80)
+  unsigned long chunkBytesRead = 0x50;
 
   // Find formula block referring to cell E (cell 6)
   unsigned cellRef = 0;
   unsigned length = 0;
   unsigned long inputPos = input->tell();
   unsigned long bytesRead = 0;
-  while (cellRef != 6 && !input->atEOS())
+  while (cellRef != 6 && !input->atEOS() && m_header.dataLength - chunkBytesRead > 4)
   {
     length = readU32(input);
     input->seek(1, WPX_SEEK_CUR);
     cellRef = readU8(input);
     if (cellRef < 6)
       input->seek(length - 6, WPX_SEEK_CUR);
+    chunkBytesRead += input->tell() - inputPos;
+    inputPos = input->tell();
   }
 
-  if (input->atEOS())
+  if (input->atEOS() || cellRef != 6)
     return;
 
   // Indicates whether it's a "simple" NURBS block with a static format
@@ -614,25 +617,29 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
 
   // Blocks start at 0x30
   input->seek(0xb, WPX_SEEK_CUR);
+  unsigned long chunkBytesRead = 0x30;
 
     // Find formula block referring to cell A (cell 2)
   unsigned cellRef = 0;
   unsigned length = 0;
-  unsigned long bytesRead = 0;
-  while (cellRef != 2 && !input->atEOS())
+  unsigned long inputPos = input->tell();
+  unsigned long blockBytesRead = 0;
+  while (cellRef != 2 && !input->atEOS() && m_header.dataLength - chunkBytesRead > 4)
   {
     length = readU32(input);
     input->seek(1, WPX_SEEK_CUR);
     cellRef = readU8(input);
     if (cellRef < 2)
       input->seek(length - 6, WPX_SEEK_CUR);
+    chunkBytesRead += input->tell() - inputPos;
+    inputPos = input->tell();
   }
 
-  if (input->atEOS())
+  if (input->atEOS() || cellRef != 2)
     return;
 
-  unsigned long inputPos = input->tell();
-  bytesRead += 6;
+  inputPos = input->tell();
+  blockBytesRead += 6;
 
   // Parse static first two parameters to function
   unsigned xType = 0; unsigned yType = 0;
@@ -645,8 +652,8 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   std::vector<std::pair<double, double> > points;
   unsigned flag = readU8(input);
   unsigned valueType = 0; // Holds parameter type indicator
-  bytesRead += input->tell() - inputPos;
-  while (flag != 0x81 && bytesRead < length)
+  blockBytesRead += input->tell() - inputPos;
+  while (flag != 0x81 && blockBytesRead < length)
   {
     inputPos = input->tell();
     double x2 = 0; double y2 = 0;
@@ -665,7 +672,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
 
     points.push_back(std::pair<double, double>(x2, y2));
     flag = readU8(input);
-    bytesRead += input->tell() - inputPos;
+    blockBytesRead += input->tell() - inputPos;
   }
 
   m_geomList.addPolylineTo(m_header.id, m_header.level, x, y, xType, yType, points);
