@@ -81,7 +81,7 @@ private:
   void transformPoint(double &x, double &y);
   void transformAngle(double &angle);
 
-  double _NURBSBasis(unsigned knot, unsigned degree, double point, unsigned controlCount, const std::vector<double> &knotVector);
+  double _NURBSBasis(unsigned knot, double degree, double point, unsigned controlCount, const std::vector<double> &knotVector);
 
   void _flushCurrentPath();
   void _flushCurrentForeignData();
@@ -97,6 +97,8 @@ private:
   double m_scale;
   double m_x;
   double m_y;
+  double m_originalX;
+  double m_originalY;
   XForm m_xform;
   std::vector<WPXPropertyList> m_currentGeometry;
   std::map<unsigned, XForm> &m_groupXForms;

@@ -39,8 +39,9 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   std::vector<std::list<unsigned> > &documentPageShapeOrders
   ) :
     m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
-    m_scale(1.0), m_x(0.0), m_y(0.0), m_xform(), m_currentGeometry(),
-    m_groupXForms(groupXFormsSequence[0]), m_currentForeignData(), m_currentForeignProps(),
+    m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
+    m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]), 
+    m_currentForeignData(), m_currentForeignProps(),
     m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
     m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
     m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
@@ -157,6 +158,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
   double ry = rx / ecc;
 
   m_x = x3; m_y = y3;
+  m_originalX = m_x; m_originalY = m_y;
   WPXPropertyList arc;
   int largeArc = 0;
   int sweep = 1;
@@ -474,6 +476,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
 {
   _handleLevelChange(level);
   m_x = 0.0; m_x = 0.0;
+  m_originalX = 0.0; m_originalY = 0.0;
   bool noFill = ((geomFlags & 1) == 1);
   bool noLine = ((geomFlags & 2) == 2);
   bool noShow = ((geomFlags & 4) == 4);
@@ -500,6 +503,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
 void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
+  m_originalX = x; m_originalY = y;
   transformPoint(x, y);
   m_x = x;
   m_y = y;
@@ -513,6 +517,7 @@ void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned l
 void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
+  m_originalX = x; m_originalY = y;
   transformPoint(x, y);
   m_x = x;
   m_y = y;
@@ -526,6 +531,7 @@ void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned l
 void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned level, double x2, double y2, double bow)
 {
   _handleLevelChange(level);
+  m_originalX = x2; m_originalY = y2;
   transformPoint(x2, y2);
   double angle = 0.0;
   transformAngle(angle);
@@ -582,6 +588,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
   }
 
   controlPoints.push_back(std::pair<double,double>(x2, y2));
+  controlPoints.insert(controlPoints.begin(), std::pair<double, double>(m_originalX, m_originalY));
 
   // Generate NURBS using VSD_NUM_POLYLINES_PER_NURBS polylines
   WPXPropertyList NURBS;
@@ -608,12 +615,13 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     m_currentGeometry.push_back(NURBS);
   }
 
+  m_originalX = x2; m_originalY = y2;
   m_x = x2;
   m_y = y2;
   transformPoint(m_x, m_y);
 }
 
-double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, unsigned controlCount, const std::vector<double> &knotVector)
+double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, double degree, double point, unsigned controlCount, const std::vector<double> &knotVector)
 {
   if (degree == 0)
   {
@@ -740,6 +748,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
 
+  m_originalX = 0.0; m_originalY = 0.0;
   m_x = 0; m_y = 0;
 
   // Geometry flags
@@ -792,6 +801,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
       _flushCurrentForeignData();
       m_isShapeStarted = false;
     }
+    m_originalX = 0.0; m_originalY = 0.0;
     m_x = 0; m_y = 0;
   }
 
@@ -807,6 +817,7 @@ void libvisio::VSDXContentCollector::startPage()
     _flushCurrentForeignData();
     m_isShapeStarted = false;
   }
+  m_originalX = 0.0; m_originalY = 0.0;
   m_x = 0; m_y = 0;
   m_currentPageNumber++;
   if (m_groupXFormsSequence.size() >= m_currentPageNumber)
