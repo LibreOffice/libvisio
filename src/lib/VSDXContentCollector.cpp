@@ -78,7 +78,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
     }
     else if (m_currentGeometry[i]["libwpg:path-action"]->getStr() == "M")
     {
-      if (startX == x && startY == y)
+      if (((startX == x && startY == y) || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")) && path.count())
       {
          WPXPropertyList closedPath;
          closedPath.insert("libwpg:path-action", "Z");
@@ -96,7 +96,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
     }
     path.append(m_currentGeometry[i]);
   }
-  if (startX == x && startY == y && path.count())
+  if (((startX == x && startY == y) || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")) && path.count())
   {
      WPXPropertyList closedPath;
      closedPath.insert("libwpg:path-action", "Z");
