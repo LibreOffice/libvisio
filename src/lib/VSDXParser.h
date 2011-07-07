@@ -41,7 +41,7 @@ class VSDXParser
 {
 public:
   explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
-  virtual ~VSDXParser() {}
+  virtual ~VSDXParser();
   virtual bool parse();
 
 protected:
@@ -80,7 +80,8 @@ protected:
   libwpg::WPGPaintInterface *m_painter;
   ChunkHeader m_header;
   VSDXCollector *m_collector;
-  VSDXGeometryList m_geomList;
+  VSDXGeometryList *m_geomList;
+  std::vector<VSDXGeometryList *> m_geomListVector;
   VSDXShapeList m_shapeList;
   unsigned m_currentLevel;
 

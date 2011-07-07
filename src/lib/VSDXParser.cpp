@@ -31,9 +31,18 @@
 #include "VSDXStylesCollector.h"
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(),
+  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()), m_geomListVector(),
     m_shapeList(), m_currentLevel(0)
 {}
+
+libvisio::VSDXParser::~VSDXParser()
+{
+  if (m_geomList)
+  {
+    m_geomList->clear();
+    delete m_geomList;
+  }
+}
 
 /** Parses Visio input stream content, making callbacks to functions provided
 by WPGPaintInterface class implementation as needed.
@@ -177,10 +186,21 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
     return;
   if (level < 3)
   {
-    m_geomList.handle(m_collector);
-    m_geomList.clear();
+    m_geomListVector.push_back(m_geomList);
+    // reinitialize, but don't clear, because we want those pointers to be valid until we handle the whole vector
+    m_geomList = new VSDXGeometryList();
     m_shapeList.handle(m_collector);
     m_shapeList.clear();
+  }
+  if (level < 2)
+  {
+    for (std::vector<VSDXGeometryList *>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); iter++)
+    {
+      (*iter)->handle(m_collector);
+      (*iter)->clear();
+      delete *iter;
+    }
+    m_geomListVector.clear();
   }
   m_currentLevel = level;
 }
@@ -258,7 +278,7 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
         break;
       case VSD_PAGE_PROPS:
         readPageProps(input);
-		break;
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -292,7 +312,7 @@ void libvisio::VSDXParser::readEllipticalArcTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double ecc = readDouble(input); // Eccentricity
 
-  m_geomList.addEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
+  m_geomList->addEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
 }
 
 
@@ -322,7 +342,7 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double ytop = readDouble(input);
 
-  m_geomList.addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
+  m_geomList->addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
 }
 
 void libvisio::VSDXParser::readLine(WPXInputStream *input)
@@ -362,7 +382,7 @@ void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     geometryOrder.push_back(readU32(input));
 
-  m_geomList.setElementsOrder(geometryOrder);
+  m_geomList->setElementsOrder(geometryOrder);
   // We want the collectors to still get the level information
   m_collector->collectGeomList(m_header.id, m_header.level);
 }
@@ -371,7 +391,7 @@ void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
 {
   unsigned geomFlags = readU8(input);
 
-  m_geomList.addGeometry(m_header.id, m_header.level, geomFlags);
+  m_geomList->addGeometry(m_header.id, m_header.level, geomFlags);
 }
 
 void libvisio::VSDXParser::readMoveTo(WPXInputStream *input)
@@ -381,7 +401,7 @@ void libvisio::VSDXParser::readMoveTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double y = readDouble(input);
 
-  m_geomList.addMoveTo(m_header.id, m_header.level, x, y);
+  m_geomList->addMoveTo(m_header.id, m_header.level, x, y);
 }
 
 void libvisio::VSDXParser::readLineTo(WPXInputStream *input)
@@ -391,7 +411,7 @@ void libvisio::VSDXParser::readLineTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double y = readDouble(input);
 
-  m_geomList.addLineTo(m_header.id, m_header.level, x, y);
+  m_geomList->addLineTo(m_header.id, m_header.level, x, y);
 }
 
 void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
@@ -403,7 +423,7 @@ void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double bow = readDouble(input);
 
-  m_geomList.addArcTo(m_header.id, m_header.level, x2, y2, bow);
+  m_geomList->addArcTo(m_header.id, m_header.level, x2, y2, bow);
 }
 
 void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
@@ -522,7 +542,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   unsigned paramType = readU8(input);
   unsigned short valueType = 0;
 
-  double lastKnot = 0; unsigned degree = 0; 
+  double lastKnot = 0; unsigned degree = 0;
   unsigned xType = 0; unsigned yType = 0;
   unsigned repetitions = 0;
 
@@ -611,7 +631,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 #if DEBUG
   VSD_DEBUG_MSG(("Control points: %d, knots: %d, weights: %d, degree: %d\n", (int)controlPoints.size(), (int)knotVector.size(), (int)weights.size(), degree));
 #endif
-  m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType, yType, degree, controlPoints, knotVector, weights);
+  m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, xType, yType, degree, controlPoints, knotVector, weights);
 }
 
 void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
@@ -659,7 +679,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   {
     inputPos = input->tell();
     double x2 = 0; double y2 = 0;
-    
+
     valueType = flag;
     if (valueType == 0x20)
       x2 = readDouble(input);
@@ -677,7 +697,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
     bytesRead += input->tell() - inputPos;
   }
 
-  m_geomList.addPolylineTo(m_header.id, m_header.level, x, y, xType, yType, points);
+  m_geomList->addPolylineTo(m_header.id, m_header.level, x, y, xType, yType, points);
 }
 
 void libvisio::VSDXParser::readColours(WPXInputStream *input)
