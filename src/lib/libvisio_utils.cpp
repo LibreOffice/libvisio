@@ -21,26 +21,26 @@
 
 #define VSD_NUM_ELEMENTS(array) sizeof(array)/sizeof(array[0])
 
-uint8_t readU8(WPXInputStream *input)
+uint8_t libvisio::readU8(WPXInputStream *input)
 {
   if (!input || input->atEOS())
-    return (uint8_t)0;
+    throw EndOfStreamException();
   unsigned long numBytesRead;
   uint8_t const * p = input->read(sizeof(uint8_t), numBytesRead);
 
   if (p && numBytesRead == sizeof(uint8_t))
     return *(uint8_t const *)(p);
-  return (uint8_t)0;
+  throw EndOfStreamException();
 }
 
-uint16_t readU16(WPXInputStream *input)
+uint16_t libvisio::readU16(WPXInputStream *input)
 {
   uint16_t p0 = (uint16_t)readU8(input);
   uint16_t p1 = (uint16_t)readU8(input);
   return (uint16_t)(p0|(p1<<8));
 }
 
-uint32_t readU32(WPXInputStream *input)
+uint32_t libvisio::readU32(WPXInputStream *input)
 {
   uint32_t p0 = (uint32_t)readU8(input);
   uint32_t p1 = (uint32_t)readU8(input);
@@ -49,7 +49,7 @@ uint32_t readU32(WPXInputStream *input)
   return (uint32_t)(p0|(p1<<8)|(p2<<16)|(p3<<24));
 }
 
-uint64_t readU64(WPXInputStream *input)
+uint64_t libvisio::readU64(WPXInputStream *input)
 {
   uint64_t p0 = (uint64_t)readU8(input);
   uint64_t p1 = (uint64_t)readU8(input);
@@ -62,7 +62,7 @@ uint64_t readU64(WPXInputStream *input)
   return (uint64_t)(p0|(p1<<8)|(p2<<16)|(p3<<24)|(p4<<32)|(p5<<40)|(p6<<48)|(p7<<56));
 }
 
-double readDouble(WPXInputStream *input)
+double libvisio::readDouble(WPXInputStream *input)
 {
   uint64_t value = readU64(input);
 

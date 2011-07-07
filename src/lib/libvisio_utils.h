@@ -64,11 +64,19 @@ typedef unsigned __int64 uint64_t;
   #define VSD_DEBUG(M)
 #endif
 
+namespace libvisio {
+
 uint8_t readU8(WPXInputStream *input);
 uint16_t readU16(WPXInputStream *input);
 uint32_t readU32(WPXInputStream *input);
 uint64_t readU64(WPXInputStream *input);
 
 double readDouble(WPXInputStream *input);
+
+class EndOfStreamException
+{
+};
+
+} // namespace libvisio
 
 #endif // __LIBVISIO_UTILS_H__

@@ -187,83 +187,92 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
 
 void libvisio::VSDXParser::handlePage(WPXInputStream *input)
 {
-  long endPos = 0;
-
-  m_collector->startPage();
-
-  while (!input->atEOS())
+  try
   {
-    if (!getChunkHeader(input))
-      break;
-    endPos = m_header.dataLength+m_header.trailer+input->tell();
 
-    _handleLevelChange(m_header.level);
-    VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
-    switch (m_header.chunkType)
+    long endPos = 0;
+
+    m_collector->startPage();
+
+    while (!input->atEOS())
     {
-    case VSD_SHAPE_GROUP:
-    case VSD_SHAPE_SHAPE:
-    case VSD_SHAPE_FOREIGN:
-      readShape(input);
-      break;
-    case VSD_XFORM_DATA:
-      readXFormData(input);
-      break;
-    case VSD_SHAPE_LIST:
-      readShapeList(input);
-      break;
-    case VSD_SHAPE_ID:
-      readShapeId(input);
-      break;
-    case VSD_LINE:
-      readLine(input);
-      break;
-    case VSD_FILL_AND_SHADOW:
-      readFillAndShadow(input);
-      break;
-    case VSD_GEOM_LIST:
-      readGeomList(input);
-      break;
-    case VSD_GEOMETRY:
-      readGeometry(input);
-      break;
-    case VSD_MOVE_TO:
-      readMoveTo(input);
-      break;
-    case VSD_LINE_TO:
-      readLineTo(input);
-      break;
-    case VSD_ARC_TO:
-      readArcTo(input);
-      break;
-    case VSD_ELLIPSE:
-      readEllipse(input);
-      break;
-    case VSD_ELLIPTICAL_ARC_TO:
-      readEllipticalArcTo(input);
-      break;
-    case VSD_NURBS_TO:
-      readNURBSTo(input);
-      break;
-    case VSD_POLYLINE_TO:
-      readPolylineTo(input);
-      break;
-    case VSD_FOREIGN_DATA_TYPE:
-      readForeignDataType(input);
-      break;
-    case VSD_FOREIGN_DATA:
-      readForeignData(input);
-      break;
-    case VSD_PAGE_PROPS:
-      readPageProps(input);
-    default:
-      m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-    }
+      getChunkHeader(input);
+      endPos = m_header.dataLength+m_header.trailer+input->tell();
 
-    input->seek(endPos, WPX_SEEK_SET);
+      _handleLevelChange(m_header.level);
+      VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
+      switch (m_header.chunkType)
+      {
+      case VSD_SHAPE_GROUP:
+      case VSD_SHAPE_SHAPE:
+      case VSD_SHAPE_FOREIGN:
+        readShape(input);
+        break;
+      case VSD_XFORM_DATA:
+        readXFormData(input);
+        break;
+      case VSD_SHAPE_LIST:
+        readShapeList(input);
+        break;
+      case VSD_SHAPE_ID:
+        readShapeId(input);
+        break;
+      case VSD_LINE:
+        readLine(input);
+        break;
+      case VSD_FILL_AND_SHADOW:
+        readFillAndShadow(input);
+        break;
+      case VSD_GEOM_LIST:
+        readGeomList(input);
+        break;
+      case VSD_GEOMETRY:
+        readGeometry(input);
+        break;
+      case VSD_MOVE_TO:
+        readMoveTo(input);
+        break;
+      case VSD_LINE_TO:
+        readLineTo(input);
+        break;
+      case VSD_ARC_TO:
+        readArcTo(input);
+        break;
+      case VSD_ELLIPSE:
+        readEllipse(input);
+        break;
+      case VSD_ELLIPTICAL_ARC_TO:
+        readEllipticalArcTo(input);
+        break;
+      case VSD_NURBS_TO:
+        readNURBSTo(input);
+        break;
+      case VSD_POLYLINE_TO:
+        readPolylineTo(input);
+        break;
+      case VSD_FOREIGN_DATA_TYPE:
+        readForeignDataType(input);
+        break;
+      case VSD_FOREIGN_DATA:
+        readForeignData(input);
+        break;
+      case VSD_PAGE_PROPS:
+        readPageProps(input);
+		break;
+      default:
+        m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+      }
+
+      input->seek(endPos, WPX_SEEK_SET);
+    }
+    _handleLevelChange(0);
+    m_collector->endPage();
   }
-  _handleLevelChange(0);
-  m_collector->endPage();
+  catch (EndOfStreamException)
+  {
+    _handleLevelChange(0);
+    m_collector->endPage();
+  }
 }
 
 // --- READERS ---
@@ -490,25 +499,22 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   weights.push_back(d);
 
   input->seek(11, WPX_SEEK_CUR); // Seek to blocks at offset 0x50 (80)
-  unsigned long chunkBytesRead = 0x50;
 
   // Find formula block referring to cell E (cell 6)
   unsigned cellRef = 0;
   unsigned length = 0;
   unsigned long inputPos = input->tell();
   unsigned long bytesRead = 0;
-  while (cellRef != 6 && !input->atEOS() && m_header.dataLength - chunkBytesRead > 4)
+  while (cellRef != 6 && !input->atEOS())
   {
     length = readU32(input);
     input->seek(1, WPX_SEEK_CUR);
     cellRef = readU8(input);
     if (cellRef < 6)
       input->seek(length - 6, WPX_SEEK_CUR);
-    chunkBytesRead += input->tell() - inputPos;
-    inputPos = input->tell();
   }
 
-  if (input->atEOS() || cellRef != 6)
+  if (input->atEOS())
     return;
 
   // Indicates whether it's a "simple" NURBS block with a static format
@@ -617,29 +623,25 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
 
   // Blocks start at 0x30
   input->seek(0xb, WPX_SEEK_CUR);
-  unsigned long chunkBytesRead = 0x30;
 
     // Find formula block referring to cell A (cell 2)
   unsigned cellRef = 0;
   unsigned length = 0;
-  unsigned long inputPos = input->tell();
-  unsigned long blockBytesRead = 0;
-  while (cellRef != 2 && !input->atEOS() && m_header.dataLength - chunkBytesRead > 4)
+  unsigned long bytesRead = 0;
+  while (cellRef != 2 && !input->atEOS())
   {
     length = readU32(input);
     input->seek(1, WPX_SEEK_CUR);
     cellRef = readU8(input);
     if (cellRef < 2)
       input->seek(length - 6, WPX_SEEK_CUR);
-    chunkBytesRead += input->tell() - inputPos;
-    inputPos = input->tell();
   }
 
-  if (input->atEOS() || cellRef != 2)
+  if (input->atEOS())
     return;
 
-  inputPos = input->tell();
-  blockBytesRead += 6;
+  unsigned long inputPos = input->tell();
+  bytesRead += 6;
 
   // Parse static first two parameters to function
   unsigned xType = 0; unsigned yType = 0;
@@ -652,8 +654,8 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   std::vector<std::pair<double, double> > points;
   unsigned flag = readU8(input);
   unsigned valueType = 0; // Holds parameter type indicator
-  blockBytesRead += input->tell() - inputPos;
-  while (flag != 0x81 && blockBytesRead < length)
+  bytesRead += input->tell() - inputPos;
+  while (flag != 0x81 && bytesRead < length)
   {
     inputPos = input->tell();
     double x2 = 0; double y2 = 0;
@@ -672,7 +674,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
 
     points.push_back(std::pair<double, double>(x2, y2));
     flag = readU8(input);
-    blockBytesRead += input->tell() - inputPos;
+    bytesRead += input->tell() - inputPos;
   }
 
   m_geomList.addPolylineTo(m_header.id, m_header.level, x, y, xType, yType, points);
