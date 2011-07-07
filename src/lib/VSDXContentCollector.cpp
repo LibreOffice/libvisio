@@ -568,7 +568,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
 
 #define VSD_NUM_POLYLINES_PER_NURBS 50
 
-void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
   
@@ -644,7 +644,7 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, double degree,
   return basis;  
 }
 
-void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points)
+void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points)
 {
   _handleLevelChange(level);
 
