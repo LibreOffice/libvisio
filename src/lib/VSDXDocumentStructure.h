@@ -106,7 +106,7 @@
 #define VSD_SMART_TAG_DEF 0xc7
 #define VSD_PRINT_PROPS 0xc8
 
-#define VSD_NURBS_TO_ECELL 0xd1
+#define VSD_SHAPE_DATA 0xd1
 
 
 

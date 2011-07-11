@@ -58,6 +58,7 @@ protected:
   void readArcTo(WPXInputStream *input);
   void readNURBSTo(WPXInputStream *input);
   void readPolylineTo(WPXInputStream *input);
+  void readShapeData(WPXInputStream *input);
   void readXFormData(WPXInputStream *input);
   void readShapeId(WPXInputStream *input);
   void readShapeList(WPXInputStream *input);
@@ -85,10 +86,13 @@ protected:
   VSDXShapeList m_shapeList;
   unsigned m_currentLevel;
 
+  std::vector<std::pair<unsigned, NURBSRow> > shapeDataIdList;
+
 private:
   VSDXParser();
   VSDXParser(const VSDXParser&);
   VSDXParser &operator=(const VSDXParser&);
+
 };
 
 } // namespace libvisio

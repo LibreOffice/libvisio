@@ -60,6 +60,24 @@ struct Colour
   unsigned int a;
 };
 
+struct NURBSRow
+{
+  unsigned id;
+  double x;
+  double y;
+  double a;
+  double b;
+  double c;
+  double d;
+};
+
+struct PolylineRow
+{
+  unsigned id;
+  double x;
+  double y;
+};
+
 } // namespace libvisio
 
 #endif /* VSDXTYPES_H */
