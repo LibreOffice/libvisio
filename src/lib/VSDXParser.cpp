@@ -804,7 +804,7 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
     unsigned xType = 0; unsigned yType = 0;
     unsigned pointCount = 0;
     lastKnot = readDouble(input);
-    degree = readU8(input);
+    degree = readU16(input);
     xType = readU8(input);
     yType = readU8(input);
     pointCount = readU32(input);
@@ -820,10 +820,10 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
       double knot = 0; double weight = 0;
       double controlX = 0; double controlY = 0;
 
-      knot = readDouble(input);
-      weight = readDouble(input);
       controlX = readDouble(input);
       controlY = readDouble(input);
+      knot = readDouble(input);
+      weight = readDouble(input);
 
       knotVector.push_back(knot);
       weights.push_back(weight);
