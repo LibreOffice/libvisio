@@ -517,9 +517,10 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 
   // Detect whether to use Shape Data block
   input->seek(1, WPX_SEEK_CUR);
-  unsigned useData = readU32(input);
-  if (useData == 0x28a)
+  unsigned useData = readU8(input);
+  if (useData == 0x8a)
   {
+	input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
     m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
     return;
@@ -666,9 +667,10 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
 
   // Detect whether to use Shape Data block
   input->seek(1, WPX_SEEK_CUR);
-  unsigned useData = readU32(input);
-  if (useData == 0x28b)
+  unsigned useData = readU8(input);
+  if (useData == 0x8b)
   {
+	input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
     m_geomList->addPolylineTo(m_header.id, m_header.level, x, y, dataId);
     return;
@@ -747,14 +749,13 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   {
     m_geomList->addLineTo(m_header.id, m_header.level, x, y);    
   }
-
-  
 }
 
 void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
 {
-  unsigned short dataType = readU8(input);
+  unsigned char dataType = readU8(input);
 
+  input->seek(15, WPX_SEEK_CUR);
   // Polyline data
   if (dataType == 0x80)
   {
@@ -779,11 +780,12 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
   else if (dataType == 0x82) 
   {
     double lastKnot = readDouble(input);
+
     unsigned degree = readU16(input);
     unsigned xType = readU8(input);
     unsigned yType = readU8(input);
     unsigned pointCount = readU32(input);
-
+	
     std::vector<double> knotVector;
     std::vector<std::pair<double, double> > controlPoints;
     std::vector<double> weights;
@@ -799,7 +801,7 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
       weights.push_back(weight);
       controlPoints.push_back(std::pair<double, double>(controlX, controlY));
     }
-    m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, lastKnot, degree, controlPoints, knotVector, weights);
+    m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, degree, lastKnot, controlPoints, knotVector, weights);
   }
 }
 

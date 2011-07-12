@@ -63,7 +63,7 @@ struct Colour
 struct NURBSData
 {
   double lastKnot;
-  double degree;
+  unsigned degree;
   unsigned xType;
   unsigned yType;
   std::vector<double> knots;

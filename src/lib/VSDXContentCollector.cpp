@@ -572,7 +572,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
 
 #define VSD_NUM_POLYLINES_PER_NURBS 1000
 
-void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2, unsigned xType, unsigned yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
   
@@ -623,19 +623,13 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
     m_currentGeometry.push_back(NURBS);
   }
 
-  NURBS.clear();
-  NURBS.insert("libwpg:path-action", "L");
-  NURBS.insert("svg:x", m_scale*x2);
-  NURBS.insert("svg:y", m_scale*y2);
-
-
   m_originalX = x2; m_originalY = y2;
   m_x = x2;
   m_y = y2;
   transformPoint(m_x, m_y);
 }
 
-double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, double degree, double point, unsigned controlCount, const std::vector<double> &knotVector)
+double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, unsigned controlCount, const std::vector<double> &knotVector)
 {
   double basis = 0;
   if (!knotVector.size())
@@ -659,10 +653,12 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, double degree,
 /* NURBS with incomplete data */
 void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
 {
-  if (m_NURBSData.find(dataID) != m_NURBSData.end())
+  std::map<unsigned, NURBSData>::iterator iter = m_NURBSData.find(dataID);
+  if (iter != m_NURBSData.end())
   {
-    NURBSData data = m_NURBSData[dataID];
-    data.knots.insert(data.knots.end()-2, knot);
+    NURBSData data = iter->second;
+	data.knots.push_back(knot); 
+	data.knots.push_back(data.lastKnot);
     data.knots.insert(data.knots.begin(), knotPrev);
     data.weights.push_back(weight);
     data.weights.insert(data.weights.begin(), weightPrev);
@@ -706,9 +702,10 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
 /* Polyline with incomplete data */
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
-  if (m_polylineData.find(dataID) != m_polylineData.end())
+  std::map<unsigned, PolylineData>::iterator iter = m_polylineData.find(dataID);
+  if (iter != m_polylineData.end())
   {
-    PolylineData data = m_polylineData[dataID];
+    PolylineData data = iter->second;
     collectPolylineTo(id, level, x, y, data.xType, data.yType, data.points);
   }
   else
@@ -716,7 +713,7 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned lev
 }
 
 /* NURBS shape data */
-void libvisio::VSDXContentCollector::collectShapeData(unsigned id, unsigned level, unsigned  xType, unsigned yType, double degree, double lastKnot, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+void libvisio::VSDXContentCollector::collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, unsigned degree, double lastKnot, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
   NURBSData data;
@@ -904,6 +901,8 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
     }
     m_originalX = 0.0; m_originalY = 0.0;
     m_x = 0; m_y = 0;
+	m_NURBSData.clear();
+	m_polylineData.clear();
   }
 
   m_currentLevel = level;
