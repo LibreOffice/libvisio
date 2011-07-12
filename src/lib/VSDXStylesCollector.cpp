@@ -88,12 +88,33 @@ void libvisio::VSDXStylesCollector::collectArcTo(unsigned /* id */, unsigned lev
 {
   _handleLevelChange(level);
 }
+
 void libvisio::VSDXStylesCollector::collectNURBSTo(unsigned /* id */, unsigned level, double /* x2 */, double /* y2 */, unsigned /* xType */, unsigned /* yType */, double /* degree */, std::vector<std::pair<double, double> > /* controlPoints */, std::vector<double> /* knotVector */, std::vector<double> /* weights */)
 {
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectNURBSTo(unsigned /* id */, unsigned level, double /* x2 */, double /* y2 */, double /* knot */, double /* knotPrev */, double /* weight */, double /* weightPrev */, unsigned /* dataID */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectPolylineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */, unsigned /* xType */, unsigned /* yType */, std::vector<std::pair<double, double> > & /* points */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectPolylineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */, unsigned /* dataID */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned /* xType */, unsigned /* yType */, double /* degree */, std::vector<std::pair<double, double> > /* controlPoints */, std::vector<double> /* knotVector */, std::vector<double> /* weights */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned /* xType */, unsigned /* yType */, std::vector<std::pair<double, double> > /* points */)
 {
   _handleLevelChange(level);
 }
