@@ -506,32 +506,30 @@ void libvisio::VSDXParser::readShape(WPXInputStream * /* input */)
 
 void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 {
-  NURBSRow row;
   input->seek(1, WPX_SEEK_CUR);
-  row.x = readDouble(input);
+  double x = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  row.y = readDouble(input);
-  row.a = readDouble(input); // Second last knot
-  row.b = readDouble(input); // Last weight
-  row.c = readDouble(input); // First knot
-  row.d = readDouble(input); // First weight
+  double y = readDouble(input);
+  double knot = readDouble(input); // Second last knot
+  double weight = readDouble(input); // Last weight
+  double knotPrev = readDouble(input); // First knot
+  double weightPrev = readDouble(input); // First weight
 
   // Detect whether to use Shape Data block
   input->seek(1, WPX_SEEK_CUR);
   unsigned useData = readU32(input);
   if (useData == 0x28a)
   {
-    row.id = m_header.id;
     unsigned dataId = readU32(input);
-    m_geomList->addNURBSTo(
+    m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
     return;
   }
 
   std::vector<double> knotVector;
-  knotVector.push_back(row.c);
+  knotVector.push_back(knotPrev);
   std::vector<std::pair<double, double> > controlPoints;
   std::vector<double> weights;
-  weights.push_back(row.d);
+  weights.push_back(weightPrev);
 
   input->seek(9, WPX_SEEK_CUR); // Seek to blocks at offset 0x50 (80)
   unsigned long chunkBytesRead = 0x50;
@@ -647,35 +645,32 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
       else repetitions--;
       bytesRead += input->tell() - inputPos;
     }
-    knotVector.push_back(row.a);
+    knotVector.push_back(knot);
     knotVector.push_back(lastKnot);
-    weights.push_back(row.b);  
-    m_geomList->addNURBSTo(m_header.id, m_header.level, row.x, row.y, xType,
+    weights.push_back(weight);  
+    m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, xType,
                            yType, degree, controlPoints, knotVector, weights);
   }
   else // No formula found, use line
   {
-    m_geomList->addLineTo(m_header.id, m_header.level, row.x, row.y);    
+    m_geomList->addLineTo(m_header.id, m_header.level, x,  y);    
   }
 }
 
 void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
 {
-  NURBSRow row = {0};
   input->seek(1, WPX_SEEK_CUR);
-  row.x = readDouble(input);
+  double x = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  row.y = readDouble(input);
+  double y = readDouble(input);
 
   // Detect whether to use Shape Data block
   input->seek(1, WPX_SEEK_CUR);
-  unsigned short useData = readU8(input);
-  if (useData == 0x8b)
+  unsigned useData = readU32(input);
+  if (useData == 0x28b)
   {
-    row.id = m_header.id;
-    input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
-    m_shapeDataIdList.push_back(std::pair<unsigned, NURBSRow>(dataId, row));
+    m_geomList->addPolylineTo(m_header.id, m_header.level, x, y, dataId);
     return;
   }
 
@@ -745,12 +740,12 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
       blockBytesRead += input->tell() - inputPos;
     }
 
-    m_geomList->addPolylineTo(m_header.id, m_header.level, row.x, row.y, xType,
+    m_geomList->addPolylineTo(m_header.id, m_header.level, x, y, xType,
                               yType, points);
   }
   else
   {
-    m_geomList->addLineTo(m_header.id, m_header.level, row.x, row.y);    
+    m_geomList->addLineTo(m_header.id, m_header.level, x, y);    
   }
 
   
@@ -759,28 +754,14 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
 void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
 {
   unsigned short dataType = readU8(input);
-  NURBSRow row;
-  bool found = false;
-  for (unsigned i = 0; i < m_shapeDataIdList.size() && !found; i++)
-  {
-    if (m_shapeDataIdList[i].first == m_header.id)
-    {
-      row = m_shapeDataIdList[i].second;
-      found = true;
-    }
-  }
-  if (!found) return;
-
-  input->seek(0xf, WPX_SEEK_CUR);
 
   // Polyline data
   if (dataType == 0x80)
   {
-    unsigned xType = 0; unsigned yType = 0;
     unsigned pointCount = 0;
     std::vector<std::pair<double, double> > points;
-    xType = readU8(input);
-    yType = readU8(input);
+    unsigned xType = readU8(input);
+    unsigned yType = readU8(input);
     pointCount = readU32(input);
 
     for (unsigned i = 0; i < pointCount; i++)
@@ -791,49 +772,34 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
       points.push_back(std::pair<double, double>(x, y));
     }
 
-    m_geomList->addPolylineTo(row.id, m_header.level, row.x, row.y, xType,
-                              yType, points);
+    m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, points);
   }
 
   // NURBS data
   else if (dataType == 0x82) 
   {
-    double lastKnot = 0; unsigned degree = 0;
-    unsigned xType = 0; unsigned yType = 0;
-    unsigned pointCount = 0;
-    lastKnot = readDouble(input);
-    degree = readU16(input);
-    xType = readU8(input);
-    yType = readU8(input);
-    pointCount = readU32(input);
+    double lastKnot = readDouble(input);
+    unsigned degree = readU16(input);
+    unsigned xType = readU8(input);
+    unsigned yType = readU8(input);
+    unsigned pointCount = readU32(input);
 
     std::vector<double> knotVector;
     std::vector<std::pair<double, double> > controlPoints;
     std::vector<double> weights;
-    knotVector.push_back(row.c);
-    weights.push_back(row.d);
 
     for (unsigned i = 0; i < pointCount; i++)
     {      
-      double knot = 0; double weight = 0;
-      double controlX = 0; double controlY = 0;
-
-      controlX = readDouble(input);
-      controlY = readDouble(input);
-      knot = readDouble(input);
-      weight = readDouble(input);
+      double controlX = readDouble(input);
+      double controlY = readDouble(input);
+      double knot = readDouble(input);
+      double weight = readDouble(input);
 
       knotVector.push_back(knot);
       weights.push_back(weight);
       controlPoints.push_back(std::pair<double, double>(controlX, controlY));
     }
-
-    knotVector.push_back(row.a);
-    knotVector.push_back(lastKnot);
-    weights.push_back(row.b);
-
-    m_geomList->addNURBSTo(row.id, m_header.level, row.x, row.y, xType,
-                           yType, degree, controlPoints, knotVector, weights);
+    m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, lastKnot, degree, controlPoints, knotVector, weights);
   }
 }
 
