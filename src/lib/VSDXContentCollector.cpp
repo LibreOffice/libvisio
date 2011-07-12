@@ -576,7 +576,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
 {
   _handleLevelChange(level);
   
-  if (!knotVector.size())
+  if (!knotVector.size() || !controlPoints.size() || !weights.size())
   // Here, maybe we should just draw line to (x2,y2)
     return;
 
@@ -631,6 +631,9 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
 
 double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, double degree, double point, unsigned controlCount, const std::vector<double> &knotVector)
 {
+  double basis = 0;
+  if (!knotVector.size())
+    return basis;
   if (degree == 0)
   {
     if (knotVector[knot] <= point && point < knotVector[knot+1])
@@ -638,11 +641,10 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, double degree,
     else
       return 0;
   }
-  double basis = 0;
-  if (knotVector[knot+degree]-knotVector[knot] > 0)
+  if (knotVector.size() > knot+degree && knotVector[knot+degree]-knotVector[knot] > 0)
     basis = (point-knotVector[knot])/(knotVector[knot+degree]-knotVector[knot]) * _NURBSBasis(knot, degree-1, point, controlCount, knotVector);
 
-  if (knot <= controlCount && knotVector[knot+degree+1] - knotVector[knot+1] > 0)
+  if (knotVector.size() > knot+degree+1 && knot <= controlCount && knotVector[knot+degree+1] - knotVector[knot+1] > 0)
     basis += (knotVector[knot+degree+1]-point)/(knotVector[knot+degree+1]-knotVector[knot+1]) * _NURBSBasis(knot+1, degree-1, point, controlCount, knotVector);
 
   return basis;  
