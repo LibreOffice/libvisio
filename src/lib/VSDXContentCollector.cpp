@@ -145,18 +145,22 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
   transformPoint(x3, y3);
   transformAngle(angle);
 
-  double x1 = m_x;
-  double y1 = m_y;
-  double x0 = ((x1-x2)*(x1+x2)*(y2-y3) - (x2-x3)*(x2+x3)*(y1-y2) +
-               ecc*ecc*(y1-y2)*(y2-y3)*(y1-y3)) /
-               (2*((x1-x2)*(y2-y3) - (x2-x3)*(y1-y2)));
-  double y0 = ((x1-x2)*(x2-x3)*(x1-x3) + ecc*ecc*(x2-x3)*(y1-y2)*(y1+y2) -
-               ecc*ecc*(x1-x2)*(y2-y3)*(y2+y3)) /
-               (2*ecc*ecc*((x2-x3)*(y1-y2) - (x1-x2)*(y2-y3)));
-  VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
-  double rx = sqrt(pow(x1-x0, 2) + ecc*ecc*pow(y1-y0, 2));
-  double ry = rx / ecc;
+  double x1 = m_x*cos(angle) + m_y*sin(angle);
+  double y1 = ecc*(m_y*cos(angle) - m_x*sin(angle));
+  double x2n = x2*cos(angle) + y2*sin(angle);
+  double y2n = ecc*(y2*cos(angle) -x2*sin(angle));
+  double x3n = x3*cos(angle) + y3*sin(angle);
+  double y3n = ecc*(y3*cos(angle) - x3*sin(angle));
+  double x0 = ((x1-x2n)*(x1+x2n)*(y2n-y3n) - (x2n-x3n)*(x2n+x3n)*(y1-y2n) +
+               (y1-y2n)*(y2n-y3n)*(y1-y3n)) /
+               (2*((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n)));
+  double y0 = ((x1-x2n)*(x2n-x3n)*(x1-x3n) + (x2n-x3n)*(y1-y2n)*(y1+y2n) -
+               (x1-x2n)*(y2n-y3n)*(y2n+y3n)) /
+               (2*((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n)));
 
+  VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
+  double rx = sqrt(pow(x1-x0, 2) + pow(y1-y0, 2));
+  double ry = rx / ecc;
   m_x = x3; m_y = y3;
   m_originalX = m_x; m_originalY = m_y;
   WPXPropertyList arc;
@@ -164,8 +168,8 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
   int sweep = 1;
 
   // Calculate side of chord that ellipse centre and control point fall on
-  double centreSide = (x3-x1)*(y0-y1) - (y3-y1)*(x0-x1);
-  double midSide = (x3-x1)*(y2-y1) - (y3-y1)*(x2-x1);
+  double centreSide = (x3n-x1)*(y0-y1) - (y3n-y1)*(x0-x1);
+  double midSide = (x3n-x1)*(y2n-y1) - (y3n-y1)*(x2n-x1);
   // Large arc if centre and control point are on the same side
   if ((centreSide > 0 && midSide > 0) || (centreSide < 0 && midSide < 0))
     largeArc = 1;
