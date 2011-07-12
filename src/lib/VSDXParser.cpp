@@ -502,12 +502,12 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
 void libvisio::VSDXParser::readShape(WPXInputStream * /* input */)
 {
   m_collector->collectShape(m_header.id, m_header.level);
-  shapeDataIdList.clear();
+  m_shapeDataIdList.clear();
 }
 
 void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 {
-  NURBSRow row = {0};
+  NURBSRow row;
   input->seek(1, WPX_SEEK_CUR);
   row.x = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
@@ -519,13 +519,12 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 
   // Detect whether to use Shape Data block
   input->seek(1, WPX_SEEK_CUR);
-  unsigned short useData = readU8(input);
-  if (useData == 0x8a)
+  unsigned useData = readU32(input);
+  if (useData == 0x28a)
   {
     row.id = m_header.id;
-    input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
-    shapeDataIdList.push_back(std::pair<unsigned, NURBSRow>(dataId, row));
+    m_shapeDataIdList.push_back(std::pair<unsigned, NURBSRow>(dataId, row));
     return;
   }
 
@@ -677,7 +676,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
     row.id = m_header.id;
     input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
-    shapeDataIdList.push_back(std::pair<unsigned, NURBSRow>(dataId, row));
+    m_shapeDataIdList.push_back(std::pair<unsigned, NURBSRow>(dataId, row));
     return;
   }
 
@@ -761,13 +760,13 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
 void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
 {
   unsigned short dataType = readU8(input);
-  NURBSRow row = {0};
+  NURBSRow row;
   bool found = false;
-  for (unsigned i = 0; i < shapeDataIdList.size() && !found; i++)
+  for (unsigned i = 0; i < m_shapeDataIdList.size() && !found; i++)
   {
-    if (shapeDataIdList[i].first == m_header.id)
+    if (m_shapeDataIdList[i].first == m_header.id)
     {
-      row = shapeDataIdList[i].second;
+      row = m_shapeDataIdList[i].second;
       found = true;
     }
   }
