@@ -86,8 +86,6 @@ protected:
   VSDXShapeList m_shapeList;
   unsigned m_currentLevel;
 
-  std::vector<std::pair<unsigned, NURBSRow> > m_shapeDataIdList;
-
 private:
   VSDXParser();
   VSDXParser(const VSDXParser&);

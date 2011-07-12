@@ -502,7 +502,6 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
 void libvisio::VSDXParser::readShape(WPXInputStream * /* input */)
 {
   m_collector->collectShape(m_header.id, m_header.level);
-  m_shapeDataIdList.clear();
 }
 
 void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
@@ -524,7 +523,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   {
     row.id = m_header.id;
     unsigned dataId = readU32(input);
-    m_shapeDataIdList.push_back(std::pair<unsigned, NURBSRow>(dataId, row));
+    m_geomList->addNURBSTo(
     return;
   }
 

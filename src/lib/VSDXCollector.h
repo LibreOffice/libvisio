@@ -46,7 +46,7 @@ public:
   virtual void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) = 0;
   virtual void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points) = 0;
   virtual void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID) = 0;
-  virtual void collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, double degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) = 0;
+  virtual void collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, double degree, double lastKnot, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) = 0;
   virtual void collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > points) = 0;
   virtual void collectXFormData(unsigned id, unsigned level, const XForm &xform) = 0;
   virtual void collectShapeId(unsigned id, unsigned level, unsigned shapeId) = 0;

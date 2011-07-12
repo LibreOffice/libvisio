@@ -109,7 +109,7 @@ void libvisio::VSDXStylesCollector::collectPolylineTo(unsigned /* id */, unsigne
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned /* xType */, unsigned /* yType */, double /* degree */, std::vector<std::pair<double, double> > /* controlPoints */, std::vector<double> /* knotVector */, std::vector<double> /* weights */)
+void libvisio::VSDXStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned /* xType */, unsigned /* yType */, double /* degree */, double /*lastKnot*/, std::vector<std::pair<double, double> > /* controlPoints */, std::vector<double> /* knotVector */, std::vector<double> /* weights */)
 {
   _handleLevelChange(level);
 }

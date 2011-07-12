@@ -656,10 +656,22 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, double degree,
   return basis;  
 }
 
-
-void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double /* x2 */, double /* y2 */, double /* knot */, double /* knotPrev */, double /* weight */, double /* weightPrev */, unsigned /* dataID */)
+/* NURBS with incomplete data */
+void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
 {
-  _handleLevelChange(level);
+  if (m_NURBSData.find(dataID) != m_NURBSData.end())
+  {
+    NURBSData data = m_NURBSData[dataID];
+    data.knots.insert(data.knots.end()-2, knot);
+    data.knots.insert(data.knots.begin(), knotPrev);
+    data.weights.push_back(weight);
+    data.weights.insert(data.weights.begin(), weightPrev);
+
+    collectNURBSTo(id, level, x2, y2, data.xType, data.yType, data.degree, data.points, data.knots, data.weights);
+  }
+  else
+    _handleLevelChange(level);
+  
 }
 
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points)
@@ -691,19 +703,42 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
   m_currentGeometry.push_back(polyline);
 }
 
-void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */, unsigned /* dataID */)
+/* Polyline with incomplete data */
+void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
-  _handleLevelChange(level);
+  if (m_polylineData.find(dataID) != m_polylineData.end())
+  {
+    PolylineData data = m_polylineData[dataID];
+    collectPolylineTo(id, level, x, y, data.xType, data.yType, data.points);
+  }
+  else
+    _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned /* xType */, unsigned /* yType */, double /* degree */, std::vector<std::pair<double, double> > /* controlPoints */, std::vector<double> /* knotVector */, std::vector<double> /* weights */)
+/* NURBS shape data */
+void libvisio::VSDXContentCollector::collectShapeData(unsigned id, unsigned level, unsigned  xType, unsigned yType, double degree, double lastKnot, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
+  NURBSData data;
+  data.xType = xType;
+  data.yType = yType;
+  data.degree = degree;
+  data.lastKnot = lastKnot;
+  data.points = controlPoints;
+  data.knots = knotVector;
+  data.weights = weights;
+  m_NURBSData[id] = data;
 }
 
-void libvisio::VSDXContentCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned /* xType */, unsigned /* yType */, std::vector<std::pair<double, double> > /* points */)
+/* Polyline shape data */
+void libvisio::VSDXContentCollector::collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > points)
 {
   _handleLevelChange(level);
+  PolylineData data;
+  data.xType = xType;
+  data.yType = yType;
+  data.points = points;
+  m_polylineData[id] = data;
 }
 
 void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)

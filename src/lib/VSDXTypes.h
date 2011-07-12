@@ -60,22 +60,22 @@ struct Colour
   unsigned int a;
 };
 
-struct NURBSRow
+struct NURBSData
 {
-  unsigned id;
-  double x;
-  double y;
-  double a;
-  double b;
-  double c;
-  double d;
+  double lastKnot;
+  double degree;
+  unsigned xType;
+  unsigned yType;
+  std::vector<double> knots;
+  std::vector<double> weights;
+  std::vector<std::pair<double, double> > points;  
 };
 
-struct PolylineRow
+struct PolylineData
 {
-  unsigned id;
-  double x;
-  double y;
+  unsigned xType;
+  unsigned yType;
+  std::vector<std::pair<double, double> > points;
 };
 
 } // namespace libvisio
