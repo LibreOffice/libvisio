@@ -623,6 +623,12 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
     m_currentGeometry.push_back(NURBS);
   }
 
+  NURBS.clear();
+  NURBS.insert("libwpg:path-action", "L");
+  NURBS.insert("svg:x", m_scale*x2);
+  NURBS.insert("svg:y", m_scale*y2);
+
+
   m_originalX = x2; m_originalY = y2;
   m_x = x2;
   m_y = y2;
