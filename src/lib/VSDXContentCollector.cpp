@@ -195,22 +195,28 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   transformPoint(cx, cy);
   transformPoint(xleft, yleft);
   transformPoint(xtop, ytop);
-  double rx = sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy));
-  double ry = sqrt((xtop - cx)*(xtop - cx) + (ytop - cy)*(ytop - cy));
-  ellipse.insert("svg:rx", m_scale*rx);
-  ellipse.insert("svg:ry", m_scale*ry);
-  ellipse.insert("svg:cx", m_scale*cx);
-  ellipse.insert("svg:cy", m_scale*cy);
   double angle = 0.0;
   transformAngle(angle);
+  
+  double rx = sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy));
+  double ry = sqrt((xtop - cx)*(xtop - cx) + (ytop - cy)*(ytop - cy));
+
+  ellipse.insert("svg:x",m_scale*xleft);
+  ellipse.insert("svg:y",m_scale*yleft);
+  ellipse.insert("libwpg:path-action", "M");
+  m_currentGeometry.push_back(ellipse);
+  ellipse.insert("svg:rx",m_scale*rx);
+  ellipse.insert("svg:ry",m_scale*ry);
+  ellipse.insert("svg:x",m_scale*xtop);
+  ellipse.insert("svg:y",m_scale*ytop);
+  ellipse.insert("libwpg:path-action", "A");
   ellipse.insert("libwpg:rotate", angle * 180/M_PI);
-  if (!m_noShow)
-  {
-    // Here we want to maintain drawing order even though we might lose some evenodd goodness
-    _flushCurrentPath();
-    m_shapeOutput->addStyle(m_styleProps, WPXPropertyListVector());
-    m_shapeOutput->addEllipse(ellipse);
-  }
+  m_currentGeometry.push_back(ellipse);
+  ellipse.insert("svg:x",m_scale*xleft);
+  ellipse.insert("svg:y",m_scale*yleft);
+  ellipse.insert("libwpg:large-arc", 0);
+  m_currentGeometry.push_back(ellipse);
+
 }
 
 void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern)
