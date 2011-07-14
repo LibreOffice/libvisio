@@ -192,10 +192,10 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
 {
   _handleLevelChange(level);
   WPXPropertyList ellipse;
+  double angle = fmod(2.0*M_PI + (cy > yleft ? 1.0 : -1.0)*acos((cx-xleft) / sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy))), 2.0*M_PI);
   transformPoint(cx, cy);
   transformPoint(xleft, yleft);
   transformPoint(xtop, ytop);
-  double angle = 0.0;
   transformAngle(angle);
   
   double rx = sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy));
