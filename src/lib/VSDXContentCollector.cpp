@@ -201,6 +201,12 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   double rx = sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy));
   double ry = sqrt((xtop - cx)*(xtop - cx) + (ytop - cy)*(ytop - cy));
 
+  int largeArc = 0;
+  double centreSide = (xleft-xtop)*(cy-ytop) - (yleft-ytop)*(cx-xtop);
+  if (centreSide > 0)
+  {
+    largeArc = 1;
+  }
   ellipse.insert("svg:x",m_scale*xleft);
   ellipse.insert("svg:y",m_scale*yleft);
   ellipse.insert("libwpg:path-action", "M");
@@ -209,12 +215,13 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   ellipse.insert("svg:ry",m_scale*ry);
   ellipse.insert("svg:x",m_scale*xtop);
   ellipse.insert("svg:y",m_scale*ytop);
+  ellipse.insert("libwpg:large-arc", largeArc?1:0);
   ellipse.insert("libwpg:path-action", "A");
   ellipse.insert("libwpg:rotate", angle * 180/M_PI);
   m_currentGeometry.push_back(ellipse);
   ellipse.insert("svg:x",m_scale*xleft);
   ellipse.insert("svg:y",m_scale*yleft);
-  ellipse.insert("libwpg:large-arc", 0);
+  ellipse.insert("libwpg:large-arc", largeArc?0:1);
   m_currentGeometry.push_back(ellipse);
 
 }
