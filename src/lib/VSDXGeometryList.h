@@ -45,6 +45,7 @@ public:
   void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID);
   void addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
+  void addText(unsigned id, unsigned level, const std::string &text);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDXCollector *collector);
   void clear();

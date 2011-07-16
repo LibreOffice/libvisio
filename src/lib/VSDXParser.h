@@ -66,6 +66,7 @@ protected:
   void readPageProps(WPXInputStream *input);
   void readShape(WPXInputStream *input);
   void readColours(WPXInputStream *input);
+  void readText(WPXInputStream *input);
 
   // parser of one pass
   bool parseDocument(WPXInputStream *input);

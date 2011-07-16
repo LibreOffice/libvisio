@@ -282,6 +282,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       case VSD_PAGE_PROPS:
         readPageProps(input);
         break;
+      case VSD_TEXT:
+        readText(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -825,5 +828,23 @@ void libvisio::VSDXParser::readColours(WPXInputStream *input)
     colours.push_back(tmpColour);
   }
   m_collector->collectColours(colours);
+}
+
+void libvisio::VSDXParser::readText(WPXInputStream *input)
+{
+  input->seek(8, WPX_SEEK_CUR);
+  std::string text;
+  unsigned bytesRead = 8;
+
+  // Read up to end of chunk in byte pairs (except from last 2 bytes)
+  while (bytesRead < m_header.dataLength-2)
+  {
+    bytesRead += 2;
+    char c = readU8(input);
+    input->seek(1, WPX_SEEK_CUR);
+    text.push_back(c);
+  }
+
+  m_geomList->addText(m_header.id, m_header.level, text);
 }
 

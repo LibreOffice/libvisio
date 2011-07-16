@@ -893,6 +893,19 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
     m_colours.push_back(colours[i]);
 }
 
+void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const std::string &text)
+{
+  _handleLevelChange(level);
+  VSD_DEBUG_MSG(("Text: %s\n", text.c_str()));
+
+  WPXPropertyList textCoords;
+  textCoords.insert("svg:x", m_scale * m_x);
+  textCoords.insert("svg:y", m_scale * m_y);
+  m_painter->startTextObject(textCoords, WPXPropertyListVector());
+  m_painter->insertText(WPXString(text.c_str()));
+  m_painter->endTextObject();
+}
+
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)

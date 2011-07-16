@@ -74,6 +74,8 @@ public:
 
   void collectColours(const std::vector<Colour> &colours);
 
+  void collectText(unsigned id, unsigned level, const std::string &text);
+
   void startPage();
   void endPage();
 

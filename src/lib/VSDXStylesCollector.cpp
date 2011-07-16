@@ -165,6 +165,11 @@ void libvisio::VSDXStylesCollector::collectColours(const std::vector<Colour> & /
 {
 }
 
+void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level, const std::string & /*text*/)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::startPage()
 {
   m_groupXForms.clear();
