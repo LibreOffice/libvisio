@@ -69,6 +69,11 @@ void libvisio::VSDXStylesCollector::collectGeomList(unsigned /* id */, unsigned 
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectCharList(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned /* geomFlags */)
 {
   _handleLevelChange(level);
@@ -165,7 +170,7 @@ void libvisio::VSDXStylesCollector::collectColours(const std::vector<Colour> & /
 {
 }
 
-void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level, const std::string & /*text*/)
+void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level, const WPXString & /*text*/)
 {
   _handleLevelChange(level);
 }

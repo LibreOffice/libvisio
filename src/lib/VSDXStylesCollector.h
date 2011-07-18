@@ -65,7 +65,8 @@ public:
 
   void collectColours(const std::vector<Colour> &colours);
 
-  void collectText(unsigned id, unsigned level, const std::string &text);
+  void collectCharList(unsigned id, unsigned level);
+  void collectText(unsigned id, unsigned level, const WPXString &text);
 
   // Temporary hack
   void startPage();

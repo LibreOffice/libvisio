@@ -43,6 +43,9 @@ public:
   void addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
   void addStartLayer(const WPXPropertyList &propList);
   void addEndLayer();
+  void addStartTextObject(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
+  void addInsertText(const WPXString &text);
+  void addEndTextObject();
   bool empty() const  { return !m_elements.size(); }
   void clear();
 private:

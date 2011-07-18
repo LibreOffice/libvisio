@@ -32,7 +32,7 @@
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()), m_geomListVector(),
-    m_shapeList(), m_currentLevel(0)
+    m_charList(new VSDXCharacterList()), m_charListVector(), m_shapeList(), m_currentLevel(0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
@@ -41,6 +41,11 @@ libvisio::VSDXParser::~VSDXParser()
   {
     m_geomList->clear();
     delete m_geomList;
+  }
+  if (m_charList)
+  {
+    m_charList->clear();
+	delete m_charList;
   }
 }
 
@@ -187,8 +192,10 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
   if (level < 3)
   {
     m_geomListVector.push_back(m_geomList);
+	m_charListVector.push_back(m_charList);
     // reinitialize, but don't clear, because we want those pointers to be valid until we handle the whole vector
     m_geomList = new VSDXGeometryList();
+	m_charList = new VSDXCharacterList();
     m_shapeList.handle(m_collector);
     m_shapeList.clear();
   }
@@ -201,6 +208,13 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       delete *iter;
     }
     m_geomListVector.clear();
+    for (std::vector<VSDXCharacterList *>::iterator iter = m_charListVector.begin(); iter != m_charListVector.end(); iter++)
+    {
+      (*iter)->handle(m_collector);
+      (*iter)->clear();
+      delete *iter;
+    }
+    m_charListVector.clear();
   }
   m_currentLevel = level;
 }
@@ -281,6 +295,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
         break;
       case VSD_PAGE_PROPS:
         readPageProps(input);
+        break;
+      case VSD_CHAR_LIST:
+        readCharList(input);
         break;
       case VSD_TEXT:
         readText(input);
@@ -391,6 +408,21 @@ void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
   m_geomList->setElementsOrder(geometryOrder);
   // We want the collectors to still get the level information
   m_collector->collectGeomList(m_header.id, m_header.level);
+}
+
+void libvisio::VSDXParser::readCharList(WPXInputStream *input)
+{
+  uint32_t subHeaderLength = readU32(input);
+  uint32_t childrenListLength = readU32(input);
+  input->seek(subHeaderLength, WPX_SEEK_CUR);
+  std::vector<unsigned> characterOrder;
+  characterOrder.reserve(childrenListLength / sizeof(uint32_t));
+  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    characterOrder.push_back(readU32(input));
+
+  m_charList->setElementsOrder(characterOrder);
+  // We want the collectors to still get the level information
+  m_collector->collectCharList(m_header.id, m_header.level);
 }
 
 void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
@@ -833,7 +865,7 @@ void libvisio::VSDXParser::readColours(WPXInputStream *input)
 void libvisio::VSDXParser::readText(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR);
-  std::string text;
+  WPXString text;
   unsigned bytesRead = 8;
 
   // Read up to end of chunk in byte pairs (except from last 2 bytes)
@@ -842,9 +874,9 @@ void libvisio::VSDXParser::readText(WPXInputStream *input)
     bytesRead += 2;
     char c = readU8(input);
     input->seek(1, WPX_SEEK_CUR);
-    text.push_back(c);
+    text.append(c);
   }
 
-  m_geomList->addText(m_header.id, m_header.level, text);
+  m_charList->addText(m_header.id, m_header.level, text);
 }
 

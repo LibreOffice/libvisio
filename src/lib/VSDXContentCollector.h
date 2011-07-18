@@ -74,7 +74,8 @@ public:
 
   void collectColours(const std::vector<Colour> &colours);
 
-  void collectText(unsigned id, unsigned level, const std::string &text);
+  void collectCharList(unsigned id, unsigned level);
+  void collectText(unsigned id, unsigned level, const WPXString &text);
 
   void startPage();
   void endPage();
@@ -88,7 +89,7 @@ private:
   void transformPoint(double &x, double &y);
   void transformAngle(double &angle);
 
-  double _NURBSBasis(unsigned knot, unsigned degree, double point, unsigned controlCount, const std::vector<double> &knotVector);
+  double _NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector);
 
   void _flushCurrentPath();
   void _flushCurrentForeignData();

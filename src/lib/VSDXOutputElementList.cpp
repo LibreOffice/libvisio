@@ -95,6 +95,38 @@ public:
   virtual void draw(libwpg::WPGPaintInterface *painter);
 };
 
+
+class VSDXStartTextObjectOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXStartTextObjectOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
+  virtual ~VSDXStartTextObjectOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+private:
+  WPXPropertyList m_propList;
+  WPXPropertyListVector m_propListVec;
+};
+
+
+class VSDXInsertTextOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXInsertTextOutputElement(const WPXString &text);
+  virtual ~VSDXInsertTextOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+private:
+  WPXString m_text;
+};
+
+
+class VSDXEndTextObjectOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXEndTextObjectOutputElement();
+  virtual ~VSDXEndTextObjectOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+};
+
 } // namespace libvisio
 
 libvisio::VSDXStyleOutputElement::VSDXStyleOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec) :
@@ -156,6 +188,35 @@ void libvisio::VSDXEndLayerOutputElement::draw(libwpg::WPGPaintInterface *painte
 }
 
 
+libvisio::VSDXStartTextObjectOutputElement::VSDXStartTextObjectOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec) :
+  m_propList(propList), m_propListVec(propListVec) {}
+
+void libvisio::VSDXStartTextObjectOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->startTextObject(m_propList, m_propListVec);
+}
+
+
+libvisio::VSDXInsertTextOutputElement::VSDXInsertTextOutputElement(const WPXString &text) :
+  m_text(text) {}
+
+void libvisio::VSDXInsertTextOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->insertText(m_text);
+}
+
+
+libvisio::VSDXEndTextObjectOutputElement::VSDXEndTextObjectOutputElement() {}
+
+void libvisio::VSDXEndTextObjectOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->endTextObject();
+}
+
+
 libvisio::VSDXOutputElementList::~VSDXOutputElementList()
 {
   for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
@@ -197,6 +258,21 @@ void libvisio::VSDXOutputElementList::addStartLayer(const WPXPropertyList &propL
 void libvisio::VSDXOutputElementList::addEndLayer()
 {
   m_elements.push_back(new VSDXEndLayerOutputElement());
+}
+
+void libvisio::VSDXOutputElementList::addStartTextObject(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec)
+{
+  m_elements.push_back(new VSDXStartTextObjectOutputElement(propList, propListVec));
+}
+
+void libvisio::VSDXOutputElementList::addInsertText(const WPXString &text)
+{
+  m_elements.push_back(new VSDXInsertTextOutputElement(text));
+}
+
+void libvisio::VSDXOutputElementList::addEndTextObject()
+{
+  m_elements.push_back(new VSDXEndTextObjectOutputElement());
 }
 
 void libvisio::VSDXOutputElementList::clear()

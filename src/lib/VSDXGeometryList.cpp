@@ -160,18 +160,6 @@ private:
   double m_x, m_y;
   unsigned m_dataID;
 };
-
-class VSDXText : public VSDXGeometryListElement
-{
-public:
-  VSDXText(unsigned id , unsigned level, const std::string &text) :
-    m_id(id), m_level(level), m_text(text) {}
-  ~VSDXText() {} 
-  void handle(VSDXCollector *collector);
-private:
-  unsigned m_id, m_level;
-  const std::string m_text;
-};
 } // namespace libvisio
 
 
@@ -223,11 +211,6 @@ void libvisio::VSDXPolylineTo1::handle(VSDXCollector *collector)
 void libvisio::VSDXPolylineTo2::handle(VSDXCollector *collector)
 {
   collector->collectPolylineTo(m_id, m_level, m_x, m_y, m_dataID);
-}
-
-void libvisio::VSDXText::handle(VSDXCollector *collector)
-{
-  collector->collectText(m_id, m_level, m_text);
 }
 
 libvisio::VSDXGeometryList::VSDXGeometryList()
@@ -287,11 +270,6 @@ void libvisio::VSDXGeometryList::addEllipse(unsigned id, unsigned level, double 
 void libvisio::VSDXGeometryList::addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
   m_elements[id] = new VSDXEllipticalArcTo(id, level, x3, y3, x2, y2, angle, ecc);
-}
-
-void libvisio::VSDXGeometryList::addText(unsigned id, unsigned level, const std::string &text)
-{
-  m_elements[id] = new VSDXText(id, level, text);
 }
 
 void libvisio::VSDXGeometryList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

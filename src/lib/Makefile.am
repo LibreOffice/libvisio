@@ -36,6 +36,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSD6Parser.cpp \
 	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
+	VSDXCharacterList.cpp \
 	VSDXCollector.cpp \
 	VSDXContentCollector.cpp \
 	VSDXGeometryList.cpp \
@@ -48,6 +49,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSD6Parser.h \
 	VSDInternalStream.h \
 	VSDSVGGenerator.h \
+	VSDXCharacterList.h \
 	VSDXCollector.h \
 	VSDXContentCollector.h \
 	VSDXDocumentStructure.h \

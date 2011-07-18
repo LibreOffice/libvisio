@@ -489,6 +489,11 @@ void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXContentCollector::collectCharList(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned geomFlags)
 {
   _handleLevelChange(level);
@@ -623,7 +628,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
 
     for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
     {
-      double basis = _NURBSBasis(p, degree, i * step, controlPoints.size(), knotVector);
+      double basis = _NURBSBasis(p, degree, i * step, knotVector);
       nextX += basis * controlPoints[p].first * weights[p];
       nextY += basis * controlPoints[p].second * weights[p];
       denominator += weights[p] * basis;
@@ -642,7 +647,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
   transformPoint(m_x, m_y);
 }
 
-double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, unsigned controlCount, const std::vector<double> &knotVector)
+double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector)
 {
   double basis = 0;
   if (!knotVector.size())
@@ -655,10 +660,10 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degre
       return 0;
   }
   if (knotVector.size() > knot+degree && knotVector[knot+degree]-knotVector[knot] > 0)
-    basis = (point-knotVector[knot])/(knotVector[knot+degree]-knotVector[knot]) * _NURBSBasis(knot, degree-1, point, controlCount, knotVector);
+    basis = (point-knotVector[knot])/(knotVector[knot+degree]-knotVector[knot]) * _NURBSBasis(knot, degree-1, point, knotVector);
 
-  if (knotVector.size() > knot+degree+1 && knot <= controlCount && knotVector[knot+degree+1] - knotVector[knot+1] > 0)
-    basis += (knotVector[knot+degree+1]-point)/(knotVector[knot+degree+1]-knotVector[knot+1]) * _NURBSBasis(knot+1, degree-1, point, controlCount, knotVector);
+  if (knotVector.size() > knot+degree+1 && knotVector[knot+degree+1] - knotVector[knot+1] > 0)
+    basis += (knotVector[knot+degree+1]-point)/(knotVector[knot+degree+1]-knotVector[knot+1]) * _NURBSBasis(knot+1, degree-1, point, knotVector);
 
   return basis;  
 }
@@ -900,7 +905,7 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
     m_colours.push_back(colours[i]);
 }
 
-void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const std::string &text)
+void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const WPXString &text)
 {
   _handleLevelChange(level);
   VSD_DEBUG_MSG(("Text: %s\n", text.c_str()));
@@ -908,9 +913,9 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   WPXPropertyList textCoords;
   textCoords.insert("svg:x", m_scale * m_x);
   textCoords.insert("svg:y", m_scale * m_y);
-  m_painter->startTextObject(textCoords, WPXPropertyListVector());
-  m_painter->insertText(WPXString(text.c_str()));
-  m_painter->endTextObject();
+  m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
+  m_shapeOutput->addInsertText(text);
+  m_shapeOutput->addEndTextObject();
 }
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)

@@ -30,6 +30,7 @@
 #include <libwpg/libwpg.h>
 #include "VSDXTypes.h"
 #include "VSDXGeometryList.h"
+#include "VSDXCharacterList.h"
 #include "VSDXShapeList.h"
 
 namespace libvisio
@@ -66,6 +67,7 @@ protected:
   void readPageProps(WPXInputStream *input);
   void readShape(WPXInputStream *input);
   void readColours(WPXInputStream *input);
+  void readCharList(WPXInputStream *input);
   void readText(WPXInputStream *input);
 
   // parser of one pass
@@ -84,6 +86,8 @@ protected:
   VSDXCollector *m_collector;
   VSDXGeometryList *m_geomList;
   std::vector<VSDXGeometryList *> m_geomListVector;
+  VSDXCharacterList *m_charList;
+  std::vector<VSDXCharacterList *> m_charListVector;
   VSDXShapeList m_shapeList;
   unsigned m_currentLevel;
 
