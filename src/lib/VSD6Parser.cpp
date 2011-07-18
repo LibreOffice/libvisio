@@ -69,3 +69,14 @@ bool libvisio::VSD6Parser::getChunkHeader(WPXInputStream *input)
   }
   return true;
 }
+
+void libvisio::VSD6Parser::readText(WPXInputStream *input)
+{
+  input->seek(8, WPX_SEEK_CUR);
+  WPXString text;
+
+  for (unsigned bytesRead = 0; bytesRead < m_header.dataLength-1; bytesRead++)
+    text.append(readU8(input));
+
+  m_charList->addText(m_header.id, m_header.level, text);
+}

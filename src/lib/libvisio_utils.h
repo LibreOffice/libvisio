@@ -77,6 +77,10 @@ class EndOfStreamException
 {
 };
 
+class GenericException
+{
+};
+
 } // namespace libvisio
 
 #endif // __LIBVISIO_UTILS_H__

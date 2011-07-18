@@ -91,3 +91,16 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
   return true;
 }
 
+void libvisio::VSD11Parser::readText(WPXInputStream *input)
+{
+  input->seek(8, WPX_SEEK_CUR);
+  WPXString text;
+  text.clear();
+
+  // Read up to end of chunk in byte pairs (except from last 2 bytes)
+  for (unsigned bytesRead = 0; bytesRead < m_header.dataLength-2; bytesRead+=2)
+    _appendUTF16LE(text, readU16(input));
+
+  m_charList->addText(m_header.id, m_header.level, text);
+}
+

@@ -45,7 +45,7 @@ libvisio::VSDXParser::~VSDXParser()
   if (m_charList)
   {
     m_charList->clear();
-	delete m_charList;
+    delete m_charList;
   }
 }
 
@@ -192,10 +192,10 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
   if (level < 3)
   {
     m_geomListVector.push_back(m_geomList);
-	m_charListVector.push_back(m_charList);
+    m_charListVector.push_back(m_charList);
     // reinitialize, but don't clear, because we want those pointers to be valid until we handle the whole vector
     m_geomList = new VSDXGeometryList();
-	m_charList = new VSDXCharacterList();
+    m_charList = new VSDXCharacterList();
     m_shapeList.handle(m_collector);
     m_shapeList.clear();
   }
@@ -217,6 +217,96 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
     m_charListVector.clear();
   }
   m_currentLevel = level;
+}
+
+#define SURROGATE_VALUE(h,l) (((h) - 0xd800) * 0x400 + (l) - 0xdc00 + 0x10000)
+
+void libvisio::VSDXParser::_appendUTF16LE(WPXString &text, const unsigned short character)
+{
+  uint16_t high_surrogate = 0;
+  bool fail = false;
+  uint32_t ucs4Character = 0;
+  while (true)
+  {
+    if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
+    {
+      if (high_surrogate)
+      {
+        ucs4Character = SURROGATE_VALUE(high_surrogate, character);
+        high_surrogate = 0;
+        break;
+      }
+      else
+      {
+        fail = true;
+        break;
+      }
+    }
+    else
+    {
+      if (high_surrogate)
+      {
+        fail = true;
+        break;
+      }
+      if (character >= 0xd800 && character < 0xdc00) /* high surrogate */
+      {
+        high_surrogate = character;
+      }
+      else
+      {
+        ucs4Character = character;
+        break;
+      }
+    }
+  }
+  if (fail)
+    throw GenericException();
+
+  uint8_t first;
+  int len;
+  if (ucs4Character < 0x80)
+  {
+    first = 0;
+    len = 1;
+  }
+  else if (ucs4Character < 0x800)
+  {
+    first = 0xc0;
+    len = 2;
+  }
+  else if (ucs4Character < 0x10000)
+  {
+    first = 0xe0;
+    len = 3;
+  }
+  else if (ucs4Character < 0x200000)
+  {
+    first = 0xf0;
+    len = 4;
+  }
+  else if (ucs4Character < 0x4000000)
+  {
+    first = 0xf8;
+    len = 5;
+  }
+  else
+  {
+    first = 0xfc;
+    len = 6;
+  }
+
+  uint8_t outbuf[6] = { 0, 0, 0, 0, 0, 0};
+  int i;
+  for (i = len - 1; i > 0; --i)
+  {
+    outbuf[i] = (ucs4Character & 0x3f) | 0x80;
+    ucs4Character >>= 6;
+  }
+  outbuf[0] = ucs4Character | first;
+
+  for (i = 0; i < len; i++)
+    text.append(outbuf[i]);
 }
 
 void libvisio::VSDXParser::handlePage(WPXInputStream *input)
@@ -555,7 +645,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   unsigned useData = readU8(input);
   if (useData == 0x8a)
   {
-	input->seek(3, WPX_SEEK_CUR);
+    input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
     m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
     return;
@@ -705,7 +795,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   unsigned useData = readU8(input);
   if (useData == 0x8b)
   {
-	input->seek(3, WPX_SEEK_CUR);
+    input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
     m_geomList->addPolylineTo(m_header.id, m_header.level, x, y, dataId);
     return;
@@ -820,7 +910,7 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
     unsigned xType = readU8(input);
     unsigned yType = readU8(input);
     unsigned pointCount = readU32(input);
-	
+    
     std::vector<double> knotVector;
     std::vector<std::pair<double, double> > controlPoints;
     std::vector<double> weights;
@@ -861,22 +951,3 @@ void libvisio::VSDXParser::readColours(WPXInputStream *input)
   }
   m_collector->collectColours(colours);
 }
-
-void libvisio::VSDXParser::readText(WPXInputStream *input)
-{
-  input->seek(8, WPX_SEEK_CUR);
-  WPXString text;
-  unsigned bytesRead = 8;
-
-  // Read up to end of chunk in byte pairs (except from last 2 bytes)
-  while (bytesRead < m_header.dataLength-2)
-  {
-    bytesRead += 2;
-    char c = readU8(input);
-    input->seek(1, WPX_SEEK_CUR);
-    text.append(c);
-  }
-
-  m_charList->addText(m_header.id, m_header.level, text);
-}
-

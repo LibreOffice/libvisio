@@ -68,7 +68,7 @@ protected:
   void readShape(WPXInputStream *input);
   void readColours(WPXInputStream *input);
   void readCharList(WPXInputStream *input);
-  void readText(WPXInputStream *input);
+  virtual void readText(WPXInputStream *input) = 0;
 
   // parser of one pass
   bool parseDocument(WPXInputStream *input);
@@ -79,6 +79,7 @@ protected:
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);
+  void _appendUTF16LE(WPXString &text, unsigned short character);
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
