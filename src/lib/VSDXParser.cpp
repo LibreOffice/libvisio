@@ -386,9 +386,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       case VSD_PAGE_PROPS:
         readPageProps(input);
         break;
-      case VSD_CHAR_LIST:
-        readCharList(input);
-        break;
+//      case VSD_CHAR_LIST:
+//        readCharList(input);
+//        break;
       case VSD_TEXT:
         readText(input);
         break;
