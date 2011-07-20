@@ -294,6 +294,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:style", "axial");
     m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.insert("draw:opacity",1.0);
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0));
     else
@@ -315,6 +316,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:style", "linear");
     m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.insert("draw:opacity",1.0);
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0));
     else
@@ -361,6 +363,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
     m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.insert("draw:opacity",1.0);
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0));
     else
@@ -378,6 +381,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:style", "radial");
     m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.insert("draw:opacity",1.0);
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0));
     else
