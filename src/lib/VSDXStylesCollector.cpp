@@ -59,7 +59,7 @@ void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned leve
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned /* colourIndexFG */, unsigned /* colourIndexBG */, unsigned /* fillPattern */)
+void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned /* colourIndexFG */, unsigned /* colourIndexBG */, unsigned /* fillPattern */, unsigned /* fillTransparency */)
 {
   _handleLevelChange(level);
 }

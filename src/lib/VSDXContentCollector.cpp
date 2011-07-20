@@ -43,7 +43,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_txtxform(), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]), 
     m_currentForeignData(), m_currentForeignProps(),
     m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
-    m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
+    m_lineColour("black"), m_fillType("none"), m_linePattern(1),
+    m_fillPattern(1), m_fillTransparency(0),
     m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
     m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
     m_groupXFormsSequence(groupXFormsSequence),
@@ -233,6 +234,10 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
   m_lineColour = getColourString(c);
   m_styleProps.insert("svg:stroke-color", m_lineColour);
+  if (c.a)
+    m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0));
+  else
+    m_styleProps.insert("svg:stroke-opacity", 1.0);   
   const char* patterns[] = {
     /*  0 */  "none",
     /*  1 */  "solid",
@@ -265,10 +270,15 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
   // patt ID is 0xfe, link to stencil name is in 'Line' blocks
 }
 
-void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern)
+void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillTransparency)
 {
   _handleLevelChange(level);
   m_fillPattern = fillPattern;
+  m_fillTransparency = fillTransparency;
+  if (m_fillTransparency > 0)
+    m_styleProps.insert("draw:opacity", (double)(1 - m_fillTransparency/255.0));
+  else
+    m_styleProps.insert("draw:opacity",1.0);
   if (m_fillPattern == 0)
     m_fillType = "none";
   else if (m_fillPattern == 1)
@@ -883,6 +893,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
   m_fillType = "none";
   m_linePattern = 1; // same as "solid"
   m_fillPattern = 1; // same as "solid"
+  m_fillTransparency = 0;
 
   // Reset style
   m_styleProps.clear();

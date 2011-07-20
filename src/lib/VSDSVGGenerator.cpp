@@ -466,6 +466,7 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "solid")
     if (m_style["draw:fill-color"])
       m_outputSink << "fill: " << m_style["draw:fill-color"]->getStr().cstr() << "; ";
-
+  if(m_style["draw:opacity"] && m_style["draw:opacity"]->getDouble() < 1)
+    m_outputSink << "fill-opacity: " << doubleToString(m_style["draw:opacity"]->getDouble()) << "; ";
   m_outputSink << "\""; // style
 }

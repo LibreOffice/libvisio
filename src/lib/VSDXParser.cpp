@@ -479,12 +479,13 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
 void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
 {
   unsigned int colourIndexFG = readU8(input);
-  input->seek(4, WPX_SEEK_CUR);
+  input->seek(3, WPX_SEEK_CUR);
+  unsigned int fillTransparency = readU8(input);
   unsigned int colourIndexBG = readU8(input);
   input->seek(4, WPX_SEEK_CUR);
   unsigned fillPattern = readU8(input);
 
-  m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern);
+  m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillTransparency);
 }
 
 
