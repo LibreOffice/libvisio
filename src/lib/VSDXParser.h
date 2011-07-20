@@ -61,7 +61,7 @@ protected:
   void readPolylineTo(WPXInputStream *input);
   void readShapeData(WPXInputStream *input);
   void readXFormData(WPXInputStream *input);
-  void readXForm(WPXInputStream *input);
+  void readTxtXForm(WPXInputStream *input);
   void readShapeId(WPXInputStream *input);
   void readShapeList(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);

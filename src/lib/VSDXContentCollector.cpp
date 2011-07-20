@@ -762,7 +762,7 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigne
   m_xform = xform;
 }
 
-void libvisio::VSDXContentCollector::collectXForm(unsigned /* id */, unsigned level, const XForm &txtxform)
+void libvisio::VSDXContentCollector::collectTxtXForm(unsigned /* id */, unsigned level, const XForm &txtxform)
 {
   _handleLevelChange(level);
   m_txtxform = txtxform;

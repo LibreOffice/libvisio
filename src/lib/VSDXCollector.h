@@ -49,7 +49,7 @@ public:
   virtual void collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, unsigned degree, double lastKnot, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) = 0;
   virtual void collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > points) = 0;
   virtual void collectXFormData(unsigned id, unsigned level, const XForm &xform) = 0;
-  virtual void collectXForm(unsigned id, unsigned level, const XForm &txtxform) = 0;
+  virtual void collectTxtXForm(unsigned id, unsigned level, const XForm &txtxform) = 0;
   virtual void collectShapeId(unsigned id, unsigned level, unsigned shapeId) = 0;
   virtual void collectShapeList(unsigned id, unsigned level) = 0;
   virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat) = 0;
