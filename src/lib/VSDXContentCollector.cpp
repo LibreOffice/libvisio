@@ -40,7 +40,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   ) :
     m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
     m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
-    m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]), 
+    m_txtxform(), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]), 
     m_currentForeignData(), m_currentForeignProps(),
     m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
     m_lineColour("black"), m_fillType("none"), m_linePattern(1), m_fillPattern(1),
@@ -762,6 +762,12 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigne
   m_xform = xform;
 }
 
+void libvisio::VSDXContentCollector::collectTxtXForm(unsigned /* id */, unsigned level, const TxtXForm &txtxform)
+{
+  _handleLevelChange(level);
+  m_txtxform = txtxform;
+}
+
 void libvisio::VSDXContentCollector::transformPoint(double &x, double &y)
 {
   // We are interested for the while in shapes xforms only
@@ -909,10 +915,16 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
 {
   _handleLevelChange(level);
   VSD_DEBUG_MSG(("Text: %s\n", text.c_str()));
-
+  double angle = 0.0;
+  transformAngle(angle);
+  
   WPXPropertyList textCoords;
   textCoords.insert("svg:x", m_scale * m_x);
   textCoords.insert("svg:y", m_scale * m_y);
+  textCoords.insert("svg:cx", m_scale * m_x);
+  textCoords.insert("svg:cy", m_scale * m_y);
+  textCoords.insert("libwpg:rotate", -angle*180/M_PI);
+
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
   m_shapeOutput->addInsertText(text);
   m_shapeOutput->addEndTextObject();

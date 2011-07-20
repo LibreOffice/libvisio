@@ -335,6 +335,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       case VSD_XFORM_DATA:
         readXFormData(input);
         break;
+      case VSD_TEXT_XFORM:
+        readTxtXForm(input);
+        break;
       case VSD_SHAPE_LIST:
         readShapeList(input);
         break;
@@ -575,6 +578,27 @@ void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
   xform.flipY = (readU8(input) != 0);
 
   m_collector->collectXFormData(m_header.id, m_header.level, xform);
+}
+
+void libvisio::VSDXParser::readTxtXForm(WPXInputStream *input)
+{
+  TxtXForm txtxform;
+  input->seek(1, WPX_SEEK_CUR);
+  txtxform.pinX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  txtxform.pinY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  txtxform.width = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  txtxform.height = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  txtxform.pinLocX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  txtxform.pinLocY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  txtxform.angle = readDouble(input);
+
+  m_collector->collectTxtXForm(m_header.id, m_header.level, txtxform);
 }
 
 void libvisio::VSDXParser::readShapeId(WPXInputStream *input)

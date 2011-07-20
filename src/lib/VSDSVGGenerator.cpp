@@ -390,7 +390,15 @@ void libvisio::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propLis
 {
   m_outputSink << "<svg:text ";
   if (propList["svg:x"] && propList["svg:y"])
-  m_outputSink << "x=\"" << doubleToString(72*(propList["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(propList["svg:y"]->getDouble())) << "\">\n";
+  m_outputSink << "x=\"" << doubleToString(72*(propList["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(propList["svg:y"]->getDouble())) << "\"";
+  if (propList["libwpg:rotate"] && propList["libwpg:rotate"]->getDouble() != 0.0)
+    m_outputSink << " transform=\"translate(" << doubleToString(72*propList["svg:cx"]->getDouble()) << ", " << doubleToString(72*propList["svg:cy"]->getDouble())
+    << ") rotate(" << doubleToString(-propList["libwpg:rotate"]->getDouble())
+    << ") translate(" << doubleToString(-72*propList["svg:cx"]->getDouble())
+    << ", " << doubleToString(-72*propList["svg:cy"]->getDouble())
+    << ")\"";
+  m_outputSink << ">\n";
+
 }
 
 void libvisio::VSDSVGGenerator::endTextObject()

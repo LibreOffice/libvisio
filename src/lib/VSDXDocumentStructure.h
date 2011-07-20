@@ -72,7 +72,7 @@
 
 #define VSD_XFORM_DATA 0x9b
 #define VSD_TEXT_XFORM 0x9c
-#define VSD_XFORM_ID 0x9d
+#define VSD_XFORM_1D 0x9d
 #define VSD_SCRATCH 0x9e
 
 #define VSD_PROTECTION 0xa0

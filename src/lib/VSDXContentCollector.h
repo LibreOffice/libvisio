@@ -64,6 +64,7 @@ public:
   void collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, unsigned degree, double lastKnot, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);
   void collectShapeData(unsigned id, unsigned level, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > points);
   void collectXFormData(unsigned id, unsigned level, const XForm &xform);
+  void collectTxtXForm(unsigned id, unsigned level, const TxtXForm &txtxform);
   void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
   void collectShapeList(unsigned id, unsigned level);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
@@ -108,6 +109,7 @@ private:
   double m_originalX;
   double m_originalY;
   XForm m_xform;
+  TxtXForm m_txtxform;
   std::vector<WPXPropertyList> m_currentGeometry;
   std::map<unsigned, XForm> &m_groupXForms;
   WPXBinaryData m_currentForeignData;

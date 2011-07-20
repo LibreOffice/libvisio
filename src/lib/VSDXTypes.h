@@ -40,6 +40,22 @@ struct XForm
             flipX(false), flipY(false), x(0.0), y(0.0) {}
 };
 
+struct TxtXForm
+{
+  double pinX;
+  double pinY;
+  double height;
+  double width;
+  double pinLocX;
+  double pinLocY;
+  double angle;
+  double x;
+  double y;
+  TxtXForm() : pinX(0.0), pinY(0.0), height(0.0), width(0.0),
+            pinLocX(0.0), pinLocY(0.0), angle(0.0),
+            x(0.0), y(0.0) {}
+};
+
 // Utilities
 struct ChunkHeader
 {

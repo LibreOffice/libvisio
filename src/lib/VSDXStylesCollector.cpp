@@ -131,6 +131,11 @@ void libvisio::VSDXStylesCollector::collectXFormData(unsigned /* id */, unsigned
     m_groupXForms[m_currentShapeId] = xform;
 }
 
+void libvisio::VSDXStylesCollector::collectTxtXForm(unsigned /* id */, unsigned level, const TxtXForm &txtxform)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned shapeId)
 {
   _handleLevelChange(level);
