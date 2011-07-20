@@ -235,10 +235,21 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
   m_lineColour = getColourString(c);
   m_styleProps.insert("svg:stroke-color", m_lineColour);
   if (c.a)
-    m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0));
+    m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
   else
-    m_styleProps.insert("svg:stroke-opacity", 1.0);
-  m_styleProps.insert("svg:stroke-linecap", (int)lineCap);
+    m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
+  switch (lineCap)
+  {
+    case 0:
+      m_styleProps.insert("svg:stroke-linecap", "round");
+      break;
+    case 2:
+      m_styleProps.insert("svg:stroke-linecap", "square");
+      break;
+    default:
+      m_styleProps.insert("svg:stroke-linecap", "butt");
+      break;
+  }
 
   const char* patterns[] = {
     /*  0 */  "none",
@@ -308,9 +319,9 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     if (m_fillPattern == 26)
-	  m_styleProps.insert("draw:angle", 90);
-	else
-	  m_styleProps.insert("draw:angle", 0);  
+      m_styleProps.insert("draw:angle", 90);
+    else
+      m_styleProps.insert("draw:angle", 0);  
   }
   else if (m_fillPattern >= 25 && m_fillPattern <= 34)
   {
@@ -488,8 +499,8 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
 
     m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
     m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
-	double x = 0.0; double y = 0.0;
-	transformPoint(x,y);
+    double x = 0.0; double y = 0.0;
+    transformPoint(x,y);
     m_currentForeignProps.insert("svg:x", m_scale*x);
     // Y axis starts at the bottom not top
     m_currentForeignProps.insert("svg:y", m_scale*(y - m_xform.height));
@@ -717,8 +728,8 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
   if (iter != m_NURBSData.end())
   {
     NURBSData data = iter->second;
-	data.knots.push_back(knot); 
-	data.knots.push_back(data.lastKnot);
+    data.knots.push_back(knot); 
+    data.knots.push_back(data.lastKnot);
     data.knots.insert(data.knots.begin(), knotPrev);
     data.weights.push_back(weight);
     data.weights.insert(data.weights.begin(), weightPrev);
@@ -988,8 +999,8 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
     }
     m_originalX = 0.0; m_originalY = 0.0;
     m_x = 0; m_y = 0;
-	m_NURBSData.clear();
-	m_polylineData.clear();
+    m_NURBSData.clear();
+    m_polylineData.clear();
   }
 
   m_currentLevel = level;
