@@ -82,6 +82,7 @@ void libvisio::VSDSVGGenerator::endGraphics()
 
 void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector& gradient)
 {
+  m_style.clear();
   m_style = propList;
 
   m_gradient = gradient;
@@ -455,11 +456,10 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
     m_outputSink << "stroke-dasharray: " << m_style["svg:stroke-dasharray"]->getStr().cstr() <<"; ";
 
   if (m_style["svg:stroke-linecap"])
-  {
      m_outputSink << "stroke-linecap: " << m_style["svg:stroke-linecap"]->getStr().cstr() << "; ";
-	 if (m_style["svg:stroke-linecap"]->getStr() == "round")
-	   m_outputSink << "stroke-linejoin: round; ";
-  }
+
+  if (m_style["svg:stroke-linejoin"])
+     m_outputSink << "stroke-linejoin: " << m_style["svg:stroke-linejoin"]->getStr().cstr() << "; ";
   
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "none")
     m_outputSink << "fill: none; ";

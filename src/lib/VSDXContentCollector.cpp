@@ -238,10 +238,12 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
     m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
   else
     m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
+  m_styleProps.remove("svg:stroke-linejoin");
   switch (lineCap)
   {
     case 0:
       m_styleProps.insert("svg:stroke-linecap", "round");
+	  m_styleProps.insert("svg:stroke-linejoin", "round");
       break;
     case 2:
       m_styleProps.insert("svg:stroke-linecap", "square");
@@ -299,7 +301,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     if (m_fillFGTransparency > 0)
       m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:opacity",1.0, WPX_PERCENT);
+      m_styleProps.remove("draw:opacity");
   }
   else if (m_fillPattern == 26 || m_fillPattern == 29)
   {
@@ -307,15 +309,15 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:style", "axial");
     m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
-    m_styleProps.insert("draw:opacity",1.0);
+    m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0));
+      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:start-intensity", 1);
+      m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0));
+      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:end-intensity", 1);
+      m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     if (m_fillPattern == 26)
@@ -329,15 +331,15 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:style", "linear");
     m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
-    m_styleProps.insert("draw:opacity",1.0);
+    m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0));
+      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:start-intensity", 1);
+      m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0));
+      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:end-intensity", 1);
+      m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     switch(m_fillPattern)
@@ -376,15 +378,15 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
     m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
-    m_styleProps.insert("draw:opacity",1.0);
+    m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0));
+      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:start-intensity", 1);
+      m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0));
+      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:end-intensity", 1);
+      m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:angle", 0);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
   }
@@ -394,15 +396,15 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:style", "radial");
     m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
-    m_styleProps.insert("draw:opacity",1.0);
+    m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0));
+      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:start-intensity", 1);
+      m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0));
+      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:end-intensity", 1);
+      m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     switch(m_fillPattern)
