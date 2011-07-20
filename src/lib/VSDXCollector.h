@@ -35,7 +35,7 @@ public:
   virtual void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) = 0;
   virtual void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData) = 0;
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
-  virtual void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern) = 0;
+  virtual void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap) = 0;
   virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency) = 0;
   virtual void collectGeomList(unsigned id, unsigned level) = 0;
   virtual void collectGeometry(unsigned id, unsigned level, unsigned geomFlags) = 0;

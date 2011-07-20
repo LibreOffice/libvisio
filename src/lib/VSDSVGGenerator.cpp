@@ -454,6 +454,14 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
   if (m_style["svg:stroke-dasharray"])
     m_outputSink << "stroke-dasharray: " << m_style["svg:stroke-dasharray"]->getStr().cstr() <<"; ";
 
+  if (m_style["svg:stroke-linecap"]->getInt() == 0)
+     m_outputSink << "stroke-linecap: round; stroke-linejoin: round; ";
+  else
+   if (m_style["svg:stroke-linecap"]->getInt() == 2)
+     m_outputSink << "stroke-linecap: square; ";
+  else
+     m_outputSink << "stroke-linecap: butt; ";
+  
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "none")
     m_outputSink << "fill: none; ";
   else

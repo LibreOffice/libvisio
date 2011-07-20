@@ -54,7 +54,7 @@ void libvisio::VSDXStylesCollector::collectEllipse(unsigned /* id */, unsigned l
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned /* linePattern */)
+void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned /* linePattern */, unsigned /* lineCap */)
 {
   _handleLevelChange(level);
 }

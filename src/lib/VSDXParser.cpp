@@ -472,8 +472,10 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
   c.b = readU8(input);
   c.a = readU8(input);
   unsigned linePattern = readU8(input);
+  input->seek(12, WPX_SEEK_CUR);
+  unsigned lineCap = readU8(input);
 
-  m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern);
+  m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
 }
 
 void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)

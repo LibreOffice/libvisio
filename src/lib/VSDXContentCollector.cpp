@@ -227,7 +227,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
 
 }
 
-void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern)
+void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
 {
   _handleLevelChange(level);
   m_linePattern = linePattern;
@@ -237,7 +237,9 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
   if (c.a)
     m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0));
   else
-    m_styleProps.insert("svg:stroke-opacity", 1.0);   
+    m_styleProps.insert("svg:stroke-opacity", 1.0);
+  m_styleProps.insert("svg:stroke-linecap", (int)lineCap);
+
   const char* patterns[] = {
     /*  0 */  "none",
     /*  1 */  "solid",
