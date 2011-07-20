@@ -284,9 +284,9 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_fillType = "solid";
     m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0));
+      m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:opacity",1.0);
+      m_styleProps.insert("draw:opacity",1.0, WPX_PERCENT);
   }
   else if (m_fillPattern == 26 || m_fillPattern == 29)
   {
