@@ -122,11 +122,11 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 		{
 		  m_outputSink << "    <svg:stop offset=\"0%\"";
           m_outputSink << " stop-color=\"" << propList["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["draw:end-intensity"] ? propList["draw:end-intensity"]->getStr().cstr() : "100%") << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << (propList["draw:end-intensity"] ? propList["draw:end-intensity"]->getDouble() : 1) << "\" />" << std::endl;
 
 		  m_outputSink << "    <svg:stop offset=\"100%\"";
           m_outputSink << " stop-color=\"" << propList["draw:start-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["draw:start-intensity"] ? propList["draw:start-intensity"]->getStr().cstr() : "100%") << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << (propList["draw:start-intensity"] ? propList["draw:start-intensity"]->getDouble() : 1) << "\" />" << std::endl;
         }
         m_outputSink << "  </svg:radialGradient>\n";
         m_outputSink << "</svg:defs>\n";
@@ -140,11 +140,11 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 		{
 		  m_outputSink << "    <svg:stop offset=\"0%\"";
           m_outputSink << " stop-color=\"" << propList["draw:start-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["draw:start-intensity"] ? propList["draw:start-intensity"]->getStr().cstr() : "100%") << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << (propList["draw:start-intensity"] ? propList["draw:start-intensity"]->getDouble() : 1) << "\" />" << std::endl;
 
 		  m_outputSink << "    <svg:stop offset=\"100%\"";
           m_outputSink << " stop-color=\"" << propList["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["draw:end-intensity"] ? propList["draw:end-intensity"]->getStr().cstr() : "100%") << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << (propList["draw:end-intensity"] ? propList["draw:end-intensity"]->getDouble() : 1) << "\" />" << std::endl;
         }
         m_outputSink << "  </svg:linearGradient>\n";
 
@@ -170,15 +170,15 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 		{
 		  m_outputSink << "    <svg:stop offset=\"0%\"";
           m_outputSink << " stop-color=\"" << propList["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["draw:end-intensity"] ? propList["draw:end-intensity"]->getStr().cstr() : "100%") << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << (propList["draw:end-intensity"] ? propList["draw:end-intensity"]->getDouble() : 1) << "\" />" << std::endl;
 
 		  m_outputSink << "    <svg:stop offset=\"50%\"";
           m_outputSink << " stop-color=\"" << propList["draw:start-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["draw:start-intensity"] ? propList["draw:start-intensity"]->getStr().cstr() : "100%") << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << (propList["draw:start-intensity"] ? propList["draw:start-intensity"]->getDouble() : 1) << "\" />" << std::endl;
 
 		  m_outputSink << "    <svg:stop offset=\"100%\"";
           m_outputSink << " stop-color=\"" << propList["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["draw:end-intensity"] ? propList["draw:end-intensity"]->getStr().cstr() : "100%") << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << (propList["draw:end-intensity"] ? propList["draw:end-intensity"]->getDouble() : 1) << "\" />" << std::endl;
         }
         m_outputSink << "  </svg:linearGradient>\n";
 
@@ -207,7 +207,7 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
           m_outputSink << "    <svg:stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
 
           m_outputSink << " stop-color=\"" << m_gradient[c]["svg:stop-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getStr().cstr() << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getDouble() << "\" />" << std::endl;
 
         }
         m_outputSink << "  </svg:radialGradient>\n";
@@ -222,7 +222,7 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
           m_outputSink << "    <svg:stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
 
           m_outputSink << " stop-color=\"" << m_gradient[c]["svg:stop-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getStr().cstr() << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << m_gradient[c]["svg:stop-opacity"]->getDouble() << "\" />" << std::endl;
 
         }
         m_outputSink << "  </svg:linearGradient>\n";
