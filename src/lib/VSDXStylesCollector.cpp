@@ -64,6 +64,11 @@ void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned /* id */, unsi
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned /* colourIndexFG */, unsigned /* colourIndexBG */, unsigned /* fillPattern */, unsigned /* fillFGTransparency */, unsigned /* fillBGTransparency */, unsigned /* shadowPattern */, Colour /* shfgc */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
