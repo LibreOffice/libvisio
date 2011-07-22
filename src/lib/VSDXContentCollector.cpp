@@ -1047,7 +1047,7 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
   textProps.insert("style:font-name", fontFace);
   if (bold) textProps.insert("fo:font-weight", "bold");
   if (italic) textProps.insert("fo:font-style", "italic");
-  textProps.insert("fo:font-size", fontSize);
+  textProps.insert("fo:font-size", fontSize*72.0, WPX_POINT);
 
   VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
   m_shapeOutput->addStartTextSpan(textProps);
