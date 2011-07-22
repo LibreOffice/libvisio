@@ -445,9 +445,9 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:shadow-offset-x",shadowOffsetX);
     m_styleProps.insert("draw:shadow-offset-y",shadowOffsetY);
     m_styleProps.insert("draw:shadow-color",getColourString(shfgc));
-    m_styleProps.insert("draw:shadow-color-r",(double)(shfgc.r/255.));
-    m_styleProps.insert("draw:shadow-color-g",(double)(shfgc.g/255.));
-    m_styleProps.insert("draw:shadow-color-b",(double)(shfgc.b/255.));
+    m_styleProps.insert("libwpg:shadow-color-r",(double)(shfgc.r/255.));
+    m_styleProps.insert("libwpg:shadow-color-g",(double)(shfgc.g/255.));
+    m_styleProps.insert("libwpg:shadow-color-b",(double)(shfgc.b/255.));
     m_styleProps.insert("draw:shadow-opacity",(double)(1 - shfgc.a/255.));
   }
   m_styleProps.insert("draw:fill", m_fillType);

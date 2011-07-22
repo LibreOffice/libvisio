@@ -94,9 +94,9 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
     m_outputSink << "dx=\"" << doubleToString(72*propList["draw:shadow-offset-x"]->getDouble()) << "\" ";
     m_outputSink << "dy=\"" << doubleToString(-72*propList["draw:shadow-offset-y"]->getDouble()) << "\"/>";
     m_outputSink << "<svg:feColorMatrix in=\"offset\" result=\"offset-color\" type=\"matrix\" values=\"";
-    m_outputSink << "0 0 0 0 " << doubleToString(propList["draw:shadow-color-r"]->getDouble());
-    m_outputSink << " 0 0 0 0 " << doubleToString(propList["draw:shadow-color-g"]->getDouble());
-    m_outputSink << " 0 0 0 0 " << doubleToString(propList["draw:shadow-color-b"]->getDouble());
+    m_outputSink << "0 0 0 0 " << doubleToString(propList["libwpg:shadow-color-r"]->getDouble());
+    m_outputSink << " 0 0 0 0 " << doubleToString(propList["libwpg:shadow-color-g"]->getDouble());
+    m_outputSink << " 0 0 0 0 " << doubleToString(propList["libwpg:shadow-color-b"]->getDouble());
     if(m_style["draw:opacity"] && m_style["draw:opacity"]->getDouble() < 1)
       m_outputSink << " 0 0 0 "   << doubleToString(propList["draw:shadow-opacity"]->getDouble()/propList["draw:opacity"]->getDouble()) << " 0\"/>";
     else
