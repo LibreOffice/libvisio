@@ -753,8 +753,8 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
     while ((flag != 0x81 || (paramType == 0x8a && repetitions > 0)) && bytesRead < length)
     {
       inputPos = input->tell();
-      double knot = 0;
-      double weight = 0;
+      double knot_ = 0;
+      double weight_ = 0;
       double controlX = 0;
       double controlY = 0;
 
@@ -762,8 +762,8 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
       {
         controlX = readDouble(input);
         controlY = readDouble(input);
-        knot = readDouble(input);
-        weight = readDouble(input);
+        knot_ = readDouble(input);
+        weight_ = readDouble(input);
       }
       else // Parameters have types
       {
@@ -781,19 +781,19 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 
         valueType = readU8(input);
         if (valueType == 0x20)
-          knot = readDouble(input);
+          knot_ = readDouble(input);
         else if (valueType == 0x62)
-          knot = readU16(input);
+          knot_ = readU16(input);
 
         valueType = readU8(input);
         if (valueType == 0x20)
-          weight = readDouble(input);
+          weight_ = readDouble(input);
         else if (valueType == 0x62)
-          weight = readU16(input);
+          weight_ = readU16(input);
       }
       controlPoints.push_back(std::pair<double, double>(controlX, controlY));
-      knotVector.push_back(knot);
-      weights.push_back(weight);
+      knotVector.push_back(knot_);
+      weights.push_back(weight_);
 
       if (paramType != 0x8a) flag = readU8(input);
       else repetitions--;
