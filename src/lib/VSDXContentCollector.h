@@ -77,7 +77,8 @@ public:
   void collectColours(const std::vector<Colour> &colours);
 
   void collectCharList(unsigned id, unsigned level);
-  void collectText(unsigned id, unsigned level, const WPXString &text);
+  void collectText(unsigned id, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format);
+  void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace);
 
   void startPage();
   void endPage();
@@ -100,6 +101,7 @@ private:
   const ::WPXString getColourString(const Colour& c) const;
 
   void _handleLevelChange(unsigned level);
+  void _appendUTF16LE(WPXString &text, unsigned short character);
 
   bool m_isPageStarted;
   double m_pageWidth;
@@ -146,6 +148,9 @@ private:
 
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
+  std::vector<uint8_t> m_textStream;
+  TextFormat m_textFormat;
+  bool m_outputTextStart;
 };
 
 } // namespace libvisio

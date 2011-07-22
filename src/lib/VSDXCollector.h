@@ -22,6 +22,7 @@
 #define VSDXCOLLECTOR_H
 
 #include <vector>
+#include <stdint.h>
 #include "VSDXParser.h"
 
 namespace libvisio {
@@ -62,7 +63,8 @@ public:
   virtual void collectColours(const std::vector<Colour> &colours) = 0;
 
   virtual void collectCharList(unsigned id, unsigned level) = 0;
-  virtual void collectText(unsigned id, unsigned level, const WPXString &text) = 0;
+  virtual void collectText(unsigned id, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format) = 0;
+  virtual void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace) = 0;
 
   // Temporary hack
   virtual void startPage() = 0;

@@ -78,6 +78,18 @@ struct PolylineData
   std::vector<std::pair<double, double> > points;
 };
 
+struct CharFormat
+{
+  unsigned charCount;
+  double fontSize;
+  bool bold;
+  bool italic;
+  bool underline;
+  WPXString fontFace;
+};
+
+enum TextFormat { VSD_TEXT_ANSI, VSD_TEXT_UTF16 };
+
 } // namespace libvisio
 
 #endif /* VSDXTYPES_H */

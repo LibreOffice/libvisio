@@ -94,14 +94,36 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
 void libvisio::VSD11Parser::readText(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR);
-  WPXString text;
-  text.clear();
+  std::vector<uint8_t> textStream;
 
   // Read up to end of chunk in byte pairs (except from last 2 bytes)
-  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength-2; bytesRead+=2)
-    _appendUTF16LE(text, readU16(input));
+  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength-2; bytesRead++)
+    textStream.push_back(readU8(input));
 
-  m_charList->addText(m_header.id, m_header.level, text);
+  m_collector->collectText(m_header.id, m_header.level, textStream, libvisio::VSD_TEXT_UTF16);
+}
+
+void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)
+{
+  WPXString fontFace = "Arial";
+  unsigned charCount = readU32(input);
+
+  input->seek(7, WPX_SEEK_CUR);
+
+  unsigned short fontMod = readU8(input);
+  bool bold = false; bool italic = false; bool underline = false;
+  if (fontMod & 1) bold = true;
+  if (fontMod & 2) italic = true;
+  if (fontMod & 4) underline = true;
+
+  input->seek(6, WPX_SEEK_CUR);
+  double fontSize = readDouble(input);
+
+  input->seek(43, WPX_SEEK_CUR);
+  unsigned langId = readU32(input);
+
+  m_charList->addCharIX(m_header.id, m_header.level, charCount, langId, fontSize, bold, italic, underline, fontFace);
+
 }
 
 void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)

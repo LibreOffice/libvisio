@@ -219,96 +219,6 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
   m_currentLevel = level;
 }
 
-#define SURROGATE_VALUE(h,l) (((h) - 0xd800) * 0x400 + (l) - 0xdc00 + 0x10000)
-
-void libvisio::VSDXParser::_appendUTF16LE(WPXString &text, const unsigned short character)
-{
-  uint16_t high_surrogate = 0;
-  bool fail = false;
-  uint32_t ucs4Character = 0;
-  while (true)
-  {
-    if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
-    {
-      if (high_surrogate)
-      {
-        ucs4Character = SURROGATE_VALUE(high_surrogate, character);
-        high_surrogate = 0;
-        break;
-      }
-      else
-      {
-        fail = true;
-        break;
-      }
-    }
-    else
-    {
-      if (high_surrogate)
-      {
-        fail = true;
-        break;
-      }
-      if (character >= 0xd800 && character < 0xdc00) /* high surrogate */
-      {
-        high_surrogate = character;
-      }
-      else
-      {
-        ucs4Character = character;
-        break;
-      }
-    }
-  }
-  if (fail)
-    throw GenericException();
-
-  uint8_t first;
-  int len;
-  if (ucs4Character < 0x80)
-  {
-    first = 0;
-    len = 1;
-  }
-  else if (ucs4Character < 0x800)
-  {
-    first = 0xc0;
-    len = 2;
-  }
-  else if (ucs4Character < 0x10000)
-  {
-    first = 0xe0;
-    len = 3;
-  }
-  else if (ucs4Character < 0x200000)
-  {
-    first = 0xf0;
-    len = 4;
-  }
-  else if (ucs4Character < 0x4000000)
-  {
-    first = 0xf8;
-    len = 5;
-  }
-  else
-  {
-    first = 0xfc;
-    len = 6;
-  }
-
-  uint8_t outbuf[6] = { 0, 0, 0, 0, 0, 0};
-  int i;
-  for (i = len - 1; i > 0; --i)
-  {
-    outbuf[i] = (ucs4Character & 0x3f) | 0x80;
-    ucs4Character >>= 6;
-  }
-  outbuf[0] = ucs4Character | first;
-
-  for (i = 0; i < len; i++)
-    text.append(outbuf[i]);
-}
-
 void libvisio::VSDXParser::handlePage(WPXInputStream *input)
 {
   try
@@ -389,11 +299,14 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       case VSD_PAGE_PROPS:
         readPageProps(input);
         break;
-//      case VSD_CHAR_LIST:
-//        readCharList(input);
-//        break;
+      case VSD_CHAR_LIST:
+        readCharList(input);
+        break;
       case VSD_TEXT:
         readText(input);
+        break;
+      case VSD_CHAR_IX:
+        readCharIX(input);
         break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);

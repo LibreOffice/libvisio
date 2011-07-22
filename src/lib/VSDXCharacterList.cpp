@@ -30,23 +30,30 @@ public:
   virtual void handle(VSDXCollector *collector) = 0;
 };
 
-class VSDXText : public VSDXCharacterListElement
+class VSDXCharIX : public VSDXCharacterListElement
 {
 public:
-  VSDXText(unsigned id , unsigned level, const WPXString &text) :
-    m_id(id), m_level(level), m_text(text) {}
-  ~VSDXText() {}
+  VSDXCharIX(unsigned id , unsigned level, unsigned charCount, unsigned langId,
+           double fontSize, bool bold, bool italic, bool underline,
+           WPXString fontFace) :
+    m_id(id), m_level(level), m_charCount(charCount), m_langId(langId),
+    m_fontSize(fontSize), m_bold(bold), m_italic(italic), 
+    m_underline(underline), m_fontFace(fontFace) {}
+  ~VSDXCharIX() {} 
   void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;
-  const WPXString m_text;
+  unsigned m_charCount, m_langId;
+  double m_fontSize;
+  bool m_bold, m_italic, m_underline;
+  WPXString m_fontFace; 
 };
 } // namespace libvisio
 
 
-void libvisio::VSDXText::handle(VSDXCollector *collector)
+void libvisio::VSDXCharIX::handle(VSDXCollector *collector)
 {
-  collector->collectText(m_id, m_level, m_text);
+  collector->collectCharFormat(m_id, m_level, m_charCount, m_langId, m_fontSize, m_bold, m_italic, m_underline, m_fontFace);
 }
 
 libvisio::VSDXCharacterList::VSDXCharacterList()
@@ -58,9 +65,9 @@ libvisio::VSDXCharacterList::~VSDXCharacterList()
   clear();
 }
 
-void libvisio::VSDXCharacterList::addText(unsigned id, unsigned level, const WPXString &text)
+void libvisio::VSDXCharacterList::addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace)
 {
-  m_elements[id] = new VSDXText(id, level, text);
+  m_elements[id] = new VSDXCharIX(id, level, charCount, langId, fontSize, bold, italic, underline, fontFace);
 }
 
 void libvisio::VSDXCharacterList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

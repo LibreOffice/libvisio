@@ -51,7 +51,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupXFormsSequence(groupXFormsSequence),
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true)
+    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false)
 {
 }
 
@@ -987,23 +987,75 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
     m_colours.push_back(colours[i]);
 }
 
-void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const WPXString &text)
+void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format)
 {
   _handleLevelChange(level);
-  VSD_DEBUG_MSG(("Text: %s\n", text.c_str()));
-  double angle = 0.0;
-  transformAngle(angle);
 
-  WPXPropertyList textCoords;
-  textCoords.insert("svg:x", m_scale * m_x);
-  textCoords.insert("svg:y", m_scale * m_y);
-  textCoords.insert("svg:cx", m_scale * m_x);
-  textCoords.insert("svg:cy", m_scale * m_y);
-  textCoords.insert("libwpg:rotate", -angle*180/M_PI);
+  m_textStream = textStream;
+  m_textFormat = format;
+  m_outputTextStart = true;
+}
 
-  m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
+void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned /*langId*/, double fontSize, bool bold, bool italic, bool /*underline*/, WPXString fontFace)
+{
+  _handleLevelChange(level);
+
+  if (m_textStream.size() == 0) return;
+  WPXString text;
+  text.clear();
+  if (m_outputTextStart)
+  {  
+    double angle = 0.0;
+    transformAngle(angle);
+
+    WPXPropertyList textCoords;
+    textCoords.insert("svg:x", m_scale * m_x);
+    textCoords.insert("svg:y", m_scale * m_y);
+    textCoords.insert("svg:cx", m_scale * m_x);
+    textCoords.insert("svg:cy", m_scale * m_y);
+    textCoords.insert("libwpg:rotate", -angle*180/M_PI);
+
+    m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
+    m_outputTextStart = false;
+  }
+
+  if (m_textFormat == VSD_TEXT_ANSI)
+  {
+    unsigned max = charCount <= m_textStream.size() ? charCount : m_textStream.size();
+    max = (charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
+    for (unsigned i = 0; i < max; i++)
+      text.append((char) m_textStream[i]);
+
+    if (charCount > 0)
+      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
+  }
+  else if (m_textFormat == VSD_TEXT_UTF16)
+  {
+    unsigned max = charCount <= (m_textStream.size()/2) ? charCount : (m_textStream.size()/2);
+    VSD_DEBUG_MSG(("Charcount: %d, max: %d, stream size: %d\n", charCount, max, m_textStream.size()));
+    max = (charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
+    VSD_DEBUG_MSG(("Charcount: %d, max: %d, stream size: %d\n", charCount, max, m_textStream.size()));
+    for (unsigned i = 0; i < (max * 2)-1; i+=2)
+    {
+      unsigned short c = m_textStream[i] | (m_textStream[i+1] << 8);
+      _appendUTF16LE(text, c);
+    }
+    if (charCount > 0)
+      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
+  }
+  WPXPropertyList textProps;
+  textProps.insert("style:font-name", fontFace);
+  if (bold) textProps.insert("fo:font-weight", "bold");
+  if (italic) textProps.insert("fo:font-style", "italic");
+  textProps.insert("fo:font-size", fontSize);
+
+  VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
+  m_shapeOutput->addStartTextSpan(textProps);
   m_shapeOutput->addInsertText(text);
-  m_shapeOutput->addEndTextObject();
+  m_shapeOutput->addEndTextSpan();
+
+  if (m_textStream.size() == 0)
+    m_shapeOutput->addEndTextObject();
 }
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
@@ -1058,4 +1110,94 @@ void libvisio::VSDXContentCollector::endPage()
     m_painter->endGraphics();
     m_isPageStarted = false;
   }
+}
+
+#define SURROGATE_VALUE(h,l) (((h) - 0xd800) * 0x400 + (l) - 0xdc00 + 0x10000)
+
+void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, const unsigned short character)
+{
+  uint16_t high_surrogate = 0;
+  bool fail = false;
+  uint32_t ucs4Character = 0;
+  while (true)
+  {
+    if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
+    {
+      if (high_surrogate)
+      {
+        ucs4Character = SURROGATE_VALUE(high_surrogate, character);
+        high_surrogate = 0;
+        break;
+      }
+      else
+      {
+        fail = true;
+        break;
+      }
+    }
+    else
+    {
+      if (high_surrogate)
+      {
+        fail = true;
+        break;
+      }
+      if (character >= 0xd800 && character < 0xdc00) /* high surrogate */
+      {
+        high_surrogate = character;
+      }
+      else
+      {
+        ucs4Character = character;
+        break;
+      }
+    }
+  }
+  if (fail)
+    throw GenericException();
+
+  uint8_t first;
+  int len;
+  if (ucs4Character < 0x80)
+  {
+    first = 0;
+    len = 1;
+  }
+  else if (ucs4Character < 0x800)
+  {
+    first = 0xc0;
+    len = 2;
+  }
+  else if (ucs4Character < 0x10000)
+  {
+    first = 0xe0;
+    len = 3;
+  }
+  else if (ucs4Character < 0x200000)
+  {
+    first = 0xf0;
+    len = 4;
+  }
+  else if (ucs4Character < 0x4000000)
+  {
+    first = 0xf8;
+    len = 5;
+  }
+  else
+  {
+    first = 0xfc;
+    len = 6;
+  }
+
+  uint8_t outbuf[6] = { 0, 0, 0, 0, 0, 0};
+  int i;
+  for (i = len - 1; i > 0; --i)
+  {
+    outbuf[i] = (ucs4Character & 0x3f) | 0x80;
+    ucs4Character >>= 6;
+  }
+  outbuf[0] = ucs4Character | first;
+
+  for (i = 0; i < len; i++)
+    text.append(outbuf[i]);
 }

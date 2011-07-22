@@ -68,8 +68,8 @@ public:
   void collectColours(const std::vector<Colour> &colours);
 
   void collectCharList(unsigned id, unsigned level);
-  void collectText(unsigned id, unsigned level, const WPXString &text);
-
+  void collectText(unsigned id, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format);
+  void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace);
   // Temporary hack
   void startPage();
   void endPage();

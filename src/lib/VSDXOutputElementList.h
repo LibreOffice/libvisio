@@ -44,7 +44,9 @@ public:
   void addStartLayer(const WPXPropertyList &propList);
   void addEndLayer();
   void addStartTextObject(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
+  void addStartTextSpan(const WPXPropertyList &propList);
   void addInsertText(const WPXString &text);
+  void addEndTextSpan();
   void addEndTextObject();
   bool empty() const  { return !m_elements.size(); }
   void clear();

@@ -73,12 +73,21 @@ bool libvisio::VSD6Parser::getChunkHeader(WPXInputStream *input)
 void libvisio::VSD6Parser::readText(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR);
-  WPXString text;
+  std::vector<uint8_t> textStream;
 
   for (unsigned bytesRead = 8; bytesRead < m_header.dataLength-1; bytesRead++)
-    text.append(readU8(input));
+    textStream.push_back(readU8(input));
 
-  m_charList->addText(m_header.id, m_header.level, text);
+  m_collector->collectText(m_header.id, m_header.level, textStream, VSD_TEXT_ANSI);
+}
+
+void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
+{
+  WPXString fontFace = "Arial";
+  unsigned charCount = readU32(input);
+
+  m_charList->addCharIX(m_header.id, m_header.level, charCount, 0, 0.1667, false, false, false, fontFace);
+
 }
 
 void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)

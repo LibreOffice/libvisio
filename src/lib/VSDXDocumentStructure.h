@@ -111,6 +111,4 @@
 #define VSD_SHAPE_DATA 0xd1
 
 
-
-
 #endif /* VSDXDOCUMENTSTRUCTURE_H */
