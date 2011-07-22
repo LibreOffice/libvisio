@@ -312,13 +312,13 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     if (m_fillPattern == 26)
@@ -334,13 +334,13 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     switch(m_fillPattern)
@@ -381,13 +381,13 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:angle", 0);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
   }
@@ -399,13 +399,13 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("draw:start-intensity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:start-intensity", 1, WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:end-intensity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
-      m_styleProps.insert("draw:end-intensity", 1, WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
 
     switch(m_fillPattern)
