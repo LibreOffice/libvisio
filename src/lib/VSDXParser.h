@@ -51,7 +51,7 @@ protected:
   void readForeignData(WPXInputStream *input);
   void readEllipse(WPXInputStream *input);
   void readLine(WPXInputStream *input);
-  void readFillAndShadow(WPXInputStream *input);
+  virtual void readFillAndShadow(WPXInputStream *input) = 0;
   void readGeomList(WPXInputStream *input);
   void readGeometry(WPXInputStream *input);
   void readMoveTo(WPXInputStream *input);

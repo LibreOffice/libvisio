@@ -44,7 +44,7 @@ static std::string doubleToString(const double value)
 }
 
 
-libvisio::VSDSVGGenerator::VSDSVGGenerator(std::ostream & output_sink): m_gradient(), m_style(), m_gradientIndex(1), m_isFirstPage(true), m_outputSink(output_sink)
+libvisio::VSDSVGGenerator::VSDSVGGenerator(std::ostream & output_sink): m_gradient(), m_style(), m_gradientIndex(1), m_shadowIndex(1), m_isFirstPage(true), m_outputSink(output_sink)
 {
 }
 
@@ -86,6 +86,23 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
   m_style = propList;
 
   m_gradient = gradient;
+  if(propList["draw:shadow"] && propList["draw:shadow"]->getStr() == "visible")
+  {
+    m_outputSink << "<svg:defs>\n";
+    m_outputSink << "<svg:filter filterUnits=\"userSpaceOnUse\" id=\"shadow" << m_shadowIndex++ << "\">";
+    m_outputSink << "<svg:feOffset in=\"SourceGraphic\" result=\"offset\" ";
+    m_outputSink << "dx=\"" << doubleToString(72*propList["draw:shadow-offset-x"]->getDouble()) << "\" ";
+    m_outputSink << "dy=\"" << doubleToString(-72*propList["draw:shadow-offset-y"]->getDouble()) << "\"/>";
+    m_outputSink << "<svg:feColorMatrix in=\"offset\" result=\"offset-color\" type=\"matrix\" values=\"";
+    m_outputSink << "0 0 0 0 " << doubleToString(propList["draw:shadow-color-r"]->getDouble());
+    m_outputSink << " 0 0 0 0 " << doubleToString(propList["draw:shadow-color-g"]->getDouble());
+    m_outputSink << " 0 0 0 0 " << doubleToString(propList["draw:shadow-color-b"]->getDouble());
+    if(m_style["draw:opacity"] && m_style["draw:opacity"]->getDouble() < 1)
+      m_outputSink << " 0 0 0 "   << doubleToString(propList["draw:shadow-opacity"]->getDouble()/propList["draw:opacity"]->getDouble()) << " 0\"/>";
+    else
+      m_outputSink << " 0 0 0 "   << doubleToString(propList["draw:shadow-opacity"]->getDouble()) << " 0\"/>";
+    m_outputSink << "<svg:feMerge><svg:feMergeNode in=\"offset-color\" /><svg:feMergeNode in=\"SourceGraphic\" /></svg:feMerge></svg:filter></svg:defs>";
+  }
 
   if(propList["draw:fill"] && propList["draw:fill"]->getStr() == "gradient")
   {
@@ -469,6 +486,9 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
 
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "gradient")
     m_outputSink << "fill: url(#grad" << m_gradientIndex-1 << "); ";
+
+  if(m_style["draw:shadow"] && m_style["draw:shadow"]->getStr() == "visible")
+    m_outputSink << "filter:url(#shadow" << m_shadowIndex-1 << "); ";
 
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "solid")
     if (m_style["draw:fill-color"])

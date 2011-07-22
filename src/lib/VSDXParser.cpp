@@ -478,20 +478,6 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
   m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
 }
 
-void libvisio::VSDXParser::readFillAndShadow(WPXInputStream *input)
-{
-  unsigned int colourIndexFG = readU8(input);
-  input->seek(3, WPX_SEEK_CUR);
-  unsigned int fillFGTransparency = readU8(input);
-  unsigned int colourIndexBG = readU8(input);
-  input->seek(3, WPX_SEEK_CUR);
-  unsigned int fillBGTransparency = readU8(input);
-  unsigned fillPattern = readU8(input);
-
-  m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency);
-}
-
-
 void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
 {
   uint32_t subHeaderLength = readU32(input);

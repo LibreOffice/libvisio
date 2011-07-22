@@ -39,6 +39,7 @@ public:
 private:
   bool getChunkHeader(WPXInputStream *input);
   void readText(WPXInputStream *input);
+  void readFillAndShadow(WPXInputStream *input);
 
   VSD6Parser();
   VSD6Parser(const VSDXParser&);

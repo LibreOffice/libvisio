@@ -286,7 +286,7 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
   // patt ID is 0xfe, link to stencil name is in 'Line' blocks
 }
 
-void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency)
+void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   _handleLevelChange(level);
   m_fillPattern = fillPattern;
@@ -437,6 +437,18 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
   {
     m_fillType = "solid";
     m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
+  }
+
+  if (shadowPattern != 0)
+  {
+    m_styleProps.insert("draw:shadow","visible"); // for ODG
+    m_styleProps.insert("draw:shadow-offset-x",shadowOffsetX);
+    m_styleProps.insert("draw:shadow-offset-y",shadowOffsetY);
+    m_styleProps.insert("draw:shadow-color",getColourString(shfgc));
+    m_styleProps.insert("draw:shadow-color-r",(double)(shfgc.r/255.));
+    m_styleProps.insert("draw:shadow-color-g",(double)(shfgc.g/255.));
+    m_styleProps.insert("draw:shadow-color-b",(double)(shfgc.b/255.));
+    m_styleProps.insert("draw:shadow-opacity",(double)(1 - shfgc.a/255.));
   }
   m_styleProps.insert("draw:fill", m_fillType);
 }
