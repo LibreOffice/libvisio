@@ -35,6 +35,7 @@ SLOFILES= \
 	$(SLO)$/VSD6Parser.obj \
 	$(SLO)$/VSDInternalStream.obj \
 	$(SLO)$/VSDSVGGenerator.obj \
+	$(SLO)$/VSDXCharacterList.obj \
 	$(SLO)$/VSDXCollector.obj \
 	$(SLO)$/VSDXContentCollector.obj \
 	$(SLO)$/VSDXGeometryList.obj \
