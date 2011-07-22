@@ -1040,8 +1040,8 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
       unsigned short c = m_textStream[i] | (m_textStream[i+1] << 8);
       _appendUTF16LE(text, c);
     }
-    if (charCount > 0)
-      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
+    
+    m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
   }
   WPXPropertyList textProps;
   textProps.insert("style:font-name", fontFace);
