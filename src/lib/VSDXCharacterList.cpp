@@ -35,7 +35,7 @@ class VSDXText : public VSDXCharacterListElement
 public:
   VSDXText(unsigned id , unsigned level, const WPXString &text) :
     m_id(id), m_level(level), m_text(text) {}
-  ~VSDXText() {} 
+  ~VSDXText() {}
   void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;

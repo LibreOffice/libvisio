@@ -679,7 +679,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   unsigned length = 0;
   unsigned long inputPos = input->tell();
   unsigned long bytesRead = 0;
-  while (cellRef != 6 && !input->atEOS() && 
+  while (cellRef != 6 && !input->atEOS() &&
          m_header.dataLength - chunkBytesRead > 4)
   {
     length = readU32(input);
@@ -787,13 +787,13 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
     }
     knotVector.push_back(knot);
     knotVector.push_back(lastKnot);
-    weights.push_back(weight);  
+    weights.push_back(weight);
     m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, xType,
                            yType, degree, controlPoints, knotVector, weights);
   }
   else // No formula found, use line
   {
-    m_geomList->addLineTo(m_header.id, m_header.level, x,  y);    
+    m_geomList->addLineTo(m_header.id, m_header.level, x,  y);
   }
 }
 
@@ -886,7 +886,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   }
   else
   {
-    m_geomList->addLineTo(m_header.id, m_header.level, x, y);    
+    m_geomList->addLineTo(m_header.id, m_header.level, x, y);
   }
 }
 
@@ -916,7 +916,7 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
   }
 
   // NURBS data
-  else if (dataType == 0x82) 
+  else if (dataType == 0x82)
   {
     double lastKnot = readDouble(input);
 
@@ -924,13 +924,13 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
     unsigned xType = readU8(input);
     unsigned yType = readU8(input);
     unsigned pointCount = readU32(input);
-    
+
     std::vector<double> knotVector;
     std::vector<std::pair<double, double> > controlPoints;
     std::vector<double> weights;
 
     for (unsigned i = 0; i < pointCount; i++)
-    {      
+    {
       double controlX = readDouble(input);
       double controlY = readDouble(input);
       double knot = readDouble(input);

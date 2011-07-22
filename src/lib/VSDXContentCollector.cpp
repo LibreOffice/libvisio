@@ -40,7 +40,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   ) :
     m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
     m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
-    m_txtxform(), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]), 
+    m_txtxform(), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]),
     m_currentForeignData(), m_currentForeignProps(),
     m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
     m_lineColour("black"), m_fillType("none"), m_linePattern(1),
@@ -198,7 +198,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   transformPoint(xleft, yleft);
   transformPoint(xtop, ytop);
   transformAngle(angle);
-  
+
   double rx = sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy));
   double ry = sqrt((xtop - cx)*(xtop - cx) + (ytop - cy)*(ytop - cy));
 
@@ -324,7 +324,7 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     if (m_fillPattern == 26)
       m_styleProps.insert("draw:angle", 90);
     else
-      m_styleProps.insert("draw:angle", 0);  
+      m_styleProps.insert("draw:angle", 0);
   }
   else if (m_fillPattern >= 25 && m_fillPattern <= 34)
   {
@@ -661,7 +661,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
 void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2, unsigned xType, unsigned yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
-  
+
   if (!knotVector.size() || !controlPoints.size() || !weights.size())
   // Here, maybe we should just draw line to (x2,y2)
     return;
@@ -687,7 +687,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
   // Generate NURBS using VSD_NUM_POLYLINES_PER_NURBS polylines
   WPXPropertyList NURBS;
   double step = (knotVector.back() - knotVector[0]) / VSD_NUM_POLYLINES_PER_NURBS;
- 
+
   for (unsigned i = 0; i < VSD_NUM_POLYLINES_PER_NURBS; i++)
   {
     NURBS.clear();
@@ -733,7 +733,7 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degre
   if (knotVector.size() > knot+degree+1 && knotVector[knot+degree+1] - knotVector[knot+1] > 0)
     basis += (knotVector[knot+degree+1]-point)/(knotVector[knot+degree+1]-knotVector[knot+1]) * _NURBSBasis(knot+1, degree-1, point, knotVector);
 
-  return basis;  
+  return basis;
 }
 
 /* NURBS with incomplete data */
@@ -743,7 +743,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
   if (iter != m_NURBSData.end())
   {
     NURBSData data = iter->second;
-    data.knots.push_back(knot); 
+    data.knots.push_back(knot);
     data.knots.push_back(data.lastKnot);
     data.knots.insert(data.knots.begin(), knotPrev);
     data.weights.push_back(weight);
@@ -753,7 +753,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
   }
   else
     _handleLevelChange(level);
-  
+
 }
 
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points)
@@ -987,7 +987,7 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   VSD_DEBUG_MSG(("Text: %s\n", text.c_str()));
   double angle = 0.0;
   transformAngle(angle);
-  
+
   WPXPropertyList textCoords;
   textCoords.insert("svg:x", m_scale * m_x);
   textCoords.insert("svg:y", m_scale * m_y);

@@ -68,7 +68,7 @@ struct NURBSData
   unsigned yType;
   std::vector<double> knots;
   std::vector<double> weights;
-  std::vector<std::pair<double, double> > points;  
+  std::vector<std::pair<double, double> > points;
 };
 
 struct PolylineData

@@ -477,7 +477,7 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
 
   if (m_style["svg:stroke-linejoin"])
      m_outputSink << "stroke-linejoin: " << m_style["svg:stroke-linejoin"]->getStr().cstr() << "; ";
-  
+
   if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "none")
     m_outputSink << "fill: none; ";
   else

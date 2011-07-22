@@ -100,6 +100,6 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
   unsigned shadowPattern = readU8(input);
   double shadowOffsetX = 0.125;  // FIXME! Default Page value, need to parse blocks for a real one
   double shadowOffsetY = -0.125; // FIXME! Default Page value, need to parse blocks for a real one
-  
+
   m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
 }

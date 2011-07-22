@@ -83,7 +83,7 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
   }
 
   // Some chunks never have a trailer
-  if (m_header.chunkType == 0x1f || m_header.chunkType == 0xc9 || 
+  if (m_header.chunkType == 0x1f || m_header.chunkType == 0xc9 ||
       m_header.chunkType == 0x2d || m_header.chunkType == 0xd1)
   {
     m_header.trailer = 0;
@@ -126,6 +126,6 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
   double shadowOffsetX = readDouble(input);
   input->seek(1, WPX_SEEK_CUR); // Value format byte
   double shadowOffsetY = readDouble(input);
-  
+
   m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
 }
