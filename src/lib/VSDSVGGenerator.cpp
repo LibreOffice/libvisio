@@ -434,9 +434,9 @@ void libvisio::VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
   if (propList["fo:font-weight"])
     m_outputSink << "font-weight=\"" << propList["fo:font-weight"]->getStr().cstr() << "\" ";
   if (propList["fo:font-variant"])
-    m_outputSink << "font-variant=\"" << propList["fo:font-weight"]->getStr().cstr() << "\" ";
+    m_outputSink << "font-variant=\"" << propList["fo:font-variant"]->getStr().cstr() << "\" ";
   if (propList["fo:font-size"])
-    m_outputSink << "font-size=\"" << propList["fo:font-size"]->getStr().cstr() << "\" ";
+    m_outputSink << "font-size=\"" << doubleToString(propList["fo:font-size"]->getDouble()) << "\" ";
   if (propList["fo:color"])
     m_outputSink << "fill=\"" << propList["fo:color"]->getStr().cstr() << "\" ";
   m_outputSink << ">\n";
