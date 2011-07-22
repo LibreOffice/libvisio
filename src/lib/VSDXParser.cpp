@@ -632,10 +632,14 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
   double pageWidth = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   double pageHeight = readDouble(input);
-  input->seek(19, WPX_SEEK_CUR);
+  input->seek(1, WPX_SEEK_CUR);
+  double shadowOffsetX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double shadowOffsetY = -readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
   /* m_scale = */ readDouble(input);
 
-  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight);
+  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VSDXParser::readShape(WPXInputStream * /* input */)

@@ -44,6 +44,7 @@ public:
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
+  void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc);
   void collectGeomList(unsigned id, unsigned level);
   void collectGeometry(unsigned id, unsigned level, unsigned geomFlags);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
@@ -60,7 +61,7 @@ public:
   void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
   void collectShapeList(unsigned id, unsigned level);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
-  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight);
+  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY);
   void collectShape(unsigned id, unsigned level);
   void collectUnhandledChunk(unsigned id, unsigned level);
 

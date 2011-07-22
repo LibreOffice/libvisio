@@ -92,7 +92,7 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
     m_outputSink << "<svg:filter filterUnits=\"userSpaceOnUse\" id=\"shadow" << m_shadowIndex++ << "\">";
     m_outputSink << "<svg:feOffset in=\"SourceGraphic\" result=\"offset\" ";
     m_outputSink << "dx=\"" << doubleToString(72*propList["draw:shadow-offset-x"]->getDouble()) << "\" ";
-    m_outputSink << "dy=\"" << doubleToString(-72*propList["draw:shadow-offset-y"]->getDouble()) << "\"/>";
+    m_outputSink << "dy=\"" << doubleToString(72*propList["draw:shadow-offset-y"]->getDouble()) << "\"/>";
     m_outputSink << "<svg:feColorMatrix in=\"offset\" result=\"offset-color\" type=\"matrix\" values=\"";
     m_outputSink << "0 0 0 0 " << doubleToString(propList["libwpg:shadow-color-r"]->getDouble());
     m_outputSink << " 0 0 0 0 " << doubleToString(propList["libwpg:shadow-color-g"]->getDouble());

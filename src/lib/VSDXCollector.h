@@ -37,6 +37,7 @@ public:
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
   virtual void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap) = 0;
   virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
+  virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc) = 0;
   virtual void collectGeomList(unsigned id, unsigned level) = 0;
   virtual void collectGeometry(unsigned id, unsigned level, unsigned geomFlags) = 0;
   virtual void collectMoveTo(unsigned id, unsigned level, double x, double y) = 0;
@@ -53,7 +54,7 @@ public:
   virtual void collectShapeId(unsigned id, unsigned level, unsigned shapeId) = 0;
   virtual void collectShapeList(unsigned id, unsigned level) = 0;
   virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat) = 0;
-  virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight) = 0;
+  virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY) = 0;
   virtual void collectShape(unsigned id, unsigned level) = 0;
 
   virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;

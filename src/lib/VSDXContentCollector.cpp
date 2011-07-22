@@ -39,6 +39,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   std::vector<std::list<unsigned> > &documentPageShapeOrders
   ) :
     m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
+    m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
     m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
     m_txtxform(), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]),
     m_currentForeignData(), m_currentForeignProps(),
@@ -242,15 +243,15 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
   {
     case 0:
       m_styleProps.insert("svg:stroke-linecap", "round");
-	  m_styleProps.insert("svg:stroke-linejoin", "round");
+      m_styleProps.insert("svg:stroke-linejoin", "round");
       break;
     case 2:
       m_styleProps.insert("svg:stroke-linecap", "square");
-	  m_styleProps.insert("svg:stroke-linejoin", "miter");
+      m_styleProps.insert("svg:stroke-linejoin", "miter");
       break;
     default:
       m_styleProps.insert("svg:stroke-linecap", "butt");
-	  m_styleProps.insert("svg:stroke-linejoin", "miter");
+      m_styleProps.insert("svg:stroke-linejoin", "miter");
       break;
   }
 
@@ -453,7 +454,10 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
   m_styleProps.insert("draw:fill", m_fillType);
 }
 
-
+void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc)
+{
+  collectFillAndShadow(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
+}
 void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData &binaryData)
 {
   _handleLevelChange(level);
@@ -916,11 +920,13 @@ void libvisio::VSDXContentCollector::collectForeignDataType(unsigned /* id */, u
   m_foreignFormat = foreignFormat;
 }
 
-void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight)
+void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY)
 {
   _handleLevelChange(level);
   m_pageWidth = pageWidth;
   m_pageHeight = pageHeight;
+  m_shadowOffsetX = shadowOffsetX;
+  m_shadowOffsetY = shadowOffsetY;
   WPXPropertyList pageProps;
   pageProps.insert("svg:width", m_scale*m_pageWidth);
   pageProps.insert("svg:height", m_scale*m_pageHeight);
