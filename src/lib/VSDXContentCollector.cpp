@@ -238,7 +238,6 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
     m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
   else
     m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
-  m_styleProps.remove("svg:stroke-linejoin");
   switch (lineCap)
   {
     case 0:
@@ -247,9 +246,11 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
       break;
     case 2:
       m_styleProps.insert("svg:stroke-linecap", "square");
+	  m_styleProps.insert("svg:stroke-linejoin", "miter");
       break;
     default:
       m_styleProps.insert("svg:stroke-linecap", "butt");
+	  m_styleProps.insert("svg:stroke-linejoin", "miter");
       break;
   }
 
