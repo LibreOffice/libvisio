@@ -148,7 +148,7 @@ long VSDInternalStream::tell()
 
 bool VSDInternalStream::atEOS()
 {
-  if ((long)m_offset == (long)m_buffer.size())
+  if ((long)m_offset >= (long)m_buffer.size())
     return true;
 
   return false;

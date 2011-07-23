@@ -765,6 +765,8 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
          m_header.dataLength - chunkBytesRead > 4)
   {
     length = readU32(input);
+    if (!length)
+      break;
     input->seek(1, WPX_SEEK_CUR);
     cellRef = readU8(input);
     if (cellRef < 2)
