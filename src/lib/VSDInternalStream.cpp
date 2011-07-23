@@ -20,6 +20,16 @@
 #include "VSDInternalStream.h"
 
 
+VSDInternalStream::VSDInternalStream(std::vector<unsigned char> buffer, unsigned long size) :
+  WPXInputStream(),
+  m_offset(0),
+  m_buffer()
+{
+  for (unsigned long i=0; i<size; i++)
+    m_buffer.push_back(buffer[i]);
+}
+
+
 VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, bool compressed) :
   WPXInputStream(),
   m_offset(0),

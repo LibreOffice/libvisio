@@ -101,7 +101,7 @@ private:
   const ::WPXString getColourString(const Colour& c) const;
 
   void _handleLevelChange(unsigned level);
-  void _appendUTF16LE(WPXString &text, unsigned short character);
+  void _appendUTF16LE(WPXString &text, WPXInputStream *input);
 
   bool m_isPageStarted;
   double m_pageWidth;

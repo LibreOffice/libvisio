@@ -20,6 +20,7 @@
 
 #include "VSDXContentCollector.h"
 #include "VSDXParser.h"
+#include "VSDInternalStream.h"
 
 #define DUMP_BITMAP 0
 
@@ -997,11 +998,8 @@ void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const st
   }
   else if (format == VSD_TEXT_UTF16)
   {
-    for (unsigned i = 0; i < textStream.size() -1; i+=2)
-    {
-      unsigned short c = textStream[i] | (textStream[i+1] << 8);
-      _appendUTF16LE(fontname, c);
-    }
+    VSDInternalStream tmpStream(textStream, textStream.size());
+    _appendUTF16LE(fontname, &tmpStream);
   }
 
   m_fonts[fontID] = fontname;
@@ -1042,7 +1040,7 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
 
   if (m_textFormat == VSD_TEXT_ANSI)
   {
-    unsigned max = charCount <= m_textStream.size() ? charCount : m_textStream.size();
+    unsigned long max = charCount <= m_textStream.size() ? charCount : m_textStream.size();
     max = (charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
     for (unsigned i = 0; i < max; i++)
       text.append((char) m_textStream[i]);
@@ -1051,15 +1049,12 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
   }
   else if (m_textFormat == VSD_TEXT_UTF16)
   {
-    unsigned max = charCount <= (m_textStream.size()/2) ? charCount : (m_textStream.size()/2);
-    VSD_DEBUG_MSG(("Charcount: %d, max: %d, stream size: %d\n", charCount, max, m_textStream.size()));
+    unsigned long max = charCount <= (m_textStream.size()/2) ? charCount : (m_textStream.size()/2);
+    VSD_DEBUG_MSG(("Charcount: %d, max: %ld, stream size: %d\n", charCount, max, m_textStream.size()));
     max = (charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
-    VSD_DEBUG_MSG(("Charcount: %d, max: %d, stream size: %d\n", charCount, max, m_textStream.size()));
-    for (unsigned i = 0; i < (max * 2)-1; i+=2)
-    {
-      unsigned short c = m_textStream[i] | (m_textStream[i+1] << 8);
-      _appendUTF16LE(text, c);
-    }
+    VSD_DEBUG_MSG(("Charcount: %d, max: %ld, stream size: %d\n", charCount, max, m_textStream.size()));
+    VSDInternalStream tmpStream(m_textStream, max*2);
+    _appendUTF16LE(text, &tmpStream);
     
     m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
   }
@@ -1144,90 +1139,97 @@ void libvisio::VSDXContentCollector::endPage()
 
 #define SURROGATE_VALUE(h,l) (((h) - 0xd800) * 0x400 + (l) - 0xdc00 + 0x10000)
 
-void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, const unsigned short character)
+void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStream *input)
 {
-  uint16_t high_surrogate = 0;
-  bool fail = false;
-  uint32_t ucs4Character = 0;
-  while (true)
+  while (!input->atEOS())
   {
-    if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
+    uint16_t high_surrogate = 0;
+    bool fail = false;
+    uint32_t ucs4Character;
+    while (true)
     {
-      if (high_surrogate)
-      {
-        ucs4Character = SURROGATE_VALUE(high_surrogate, character);
-        high_surrogate = 0;
-        break;
-      }
-      else
+      if (input->atEOS())
       {
         fail = true;
         break;
       }
+      uint16_t character = readU16(input);
+      if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
+      {
+        if (high_surrogate)
+        {
+          ucs4Character = SURROGATE_VALUE(high_surrogate, character);
+          high_surrogate = 0;
+          break;
+        }
+        else
+        {
+          fail = true;
+          break;
+        }
+      }
+      else
+      {
+        if (high_surrogate)
+        {
+          fail = true;
+          break;
+        }
+        if (character >= 0xd800 && character < 0xdc00) /* high surrogate */
+          high_surrogate = character;
+        else
+        {
+          ucs4Character = character;
+          break;
+        }
+      }
+    }
+    if (fail)
+      throw GenericException();
+
+    uint8_t first;
+    int len;
+    if (ucs4Character < 0x80)
+    {
+      first = 0;
+      len = 1;
+    }
+    else if (ucs4Character < 0x800)
+    {
+      first = 0xc0;
+      len = 2;
+    }
+    else if (ucs4Character < 0x10000)
+    {
+      first = 0xe0;
+      len = 3;
+    }
+    else if (ucs4Character < 0x200000)
+    {
+      first = 0xf0;
+      len = 4;
+    }
+    else if (ucs4Character < 0x4000000)
+    {
+      first = 0xf8;
+      len = 5;
     }
     else
     {
-      if (high_surrogate)
-      {
-        fail = true;
-        break;
-      }
-      if (character >= 0xd800 && character < 0xdc00) /* high surrogate */
-      {
-        high_surrogate = character;
-      }
-      else
-      {
-        ucs4Character = character;
-        break;
-      }
+      first = 0xfc;
+      len = 6;
     }
-  }
-  if (fail)
-    throw GenericException();
 
-  uint8_t first;
-  int len;
-  if (ucs4Character < 0x80)
-  {
-    first = 0;
-    len = 1;
-  }
-  else if (ucs4Character < 0x800)
-  {
-    first = 0xc0;
-    len = 2;
-  }
-  else if (ucs4Character < 0x10000)
-  {
-    first = 0xe0;
-    len = 3;
-  }
-  else if (ucs4Character < 0x200000)
-  {
-    first = 0xf0;
-    len = 4;
-  }
-  else if (ucs4Character < 0x4000000)
-  {
-    first = 0xf8;
-    len = 5;
-  }
-  else
-  {
-    first = 0xfc;
-    len = 6;
-  }
+    uint8_t outbuf[6] = { 0, 0, 0, 0, 0, 0 };
+    int i;
+    for (i = len - 1; i > 0; --i)
+    {
+      outbuf[i] = (ucs4Character & 0x3f) | 0x80;
+      ucs4Character >>= 6;
+    }
+    outbuf[0] = ucs4Character | first;
 
-  uint8_t outbuf[6] = { 0, 0, 0, 0, 0, 0};
-  int i;
-  for (i = len - 1; i > 0; --i)
-  {
-    outbuf[i] = (ucs4Character & 0x3f) | 0x80;
-    ucs4Character >>= 6;
+    for (i = 0; i < len; i++)
+      text.append(outbuf[i]);
   }
-  outbuf[0] = ucs4Character | first;
-
-  for (i = 0; i < len; i++)
-    text.append(outbuf[i]);
 }

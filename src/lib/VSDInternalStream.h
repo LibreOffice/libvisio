@@ -28,6 +28,7 @@ class VSDInternalStream : public WPXInputStream
 {
 public:
   VSDInternalStream(WPXInputStream *input, unsigned long size, bool compressed);
+  VSDInternalStream(std::vector<unsigned char> buffer, unsigned long size);
   virtual ~VSDInternalStream() {}
 
   bool isOLEStream() { return false; }
