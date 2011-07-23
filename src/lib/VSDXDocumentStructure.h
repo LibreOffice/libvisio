@@ -27,6 +27,8 @@
 
 #define VSD_PAGE 0x15
 #define VSD_COLORS 0x16
+#define VSD_FONT_LIST 0x18
+#define VSD_FONT_IX 0x19
 
 #define VSD_OLE_DATA 0x1f
 
@@ -40,10 +42,7 @@
 #define VSD_STYLE_SHEET 0x4a
 
 #define VSD_SHAPE_LIST 0x65
-#define VSD_FONT_IX 0x69
-
 #define VSD_CHAR_LIST 0x69
-
 #define VSD_GEOM_LIST 0x6c
 
 #define VSD_SHAPE_ID 0x83
@@ -109,6 +108,7 @@
 #define VSD_PRINT_PROPS 0xc8
 
 #define VSD_SHAPE_DATA 0xd1
-
+#define VSD_FONTFACE 0xd7
+#define VSD_FONTFACES 0xd8
 
 #endif /* VSDXDOCUMENTSTRUCTURE_H */

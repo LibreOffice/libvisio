@@ -66,6 +66,7 @@ public:
   void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectColours(const std::vector<Colour> &colours);
+  void collectFont(unsigned short fontID, const std::vector<uint8_t> &textStream, TextFormat format);
 
   void collectCharList(unsigned id, unsigned level);
   void collectText(unsigned id, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format);

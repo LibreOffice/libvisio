@@ -156,3 +156,4 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
 
   m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
 }
+

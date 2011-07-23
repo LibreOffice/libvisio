@@ -61,7 +61,7 @@ public:
   virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;
 
   virtual void collectColours(const std::vector<Colour> &colours) = 0;
-
+  virtual void collectFont(unsigned short fontID, const std::vector<uint8_t> &textStream, TextFormat format) = 0;
   virtual void collectCharList(unsigned id, unsigned level) = 0;
   virtual void collectText(unsigned id, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format) = 0;
   virtual void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace) = 0;

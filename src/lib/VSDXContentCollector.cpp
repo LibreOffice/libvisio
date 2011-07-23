@@ -987,6 +987,27 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
     m_colours.push_back(colours[i]);
 }
 
+void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const std::vector<uint8_t> &textStream, TextFormat format)
+{
+  WPXString fontname;
+  if (format == VSD_TEXT_ANSI)
+  {
+    for (unsigned i = 0; i < textStream.size(); i++)
+      fontname.append((char) textStream[i]);
+  }
+  else if (format == VSD_TEXT_UTF16)
+  {
+    for (unsigned i = 0; i < textStream.size() -1; i+=2)
+    {
+      unsigned short c = textStream[i] | (textStream[i+1] << 8);
+      _appendUTF16LE(fontname, c);
+    }
+  }
+
+  m_fonts[fontID] = fontname;
+}
+
+
 void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format)
 {
   _handleLevelChange(level);
@@ -996,7 +1017,7 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   m_outputTextStart = true;
 }
 
-void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short /* fontID */, Colour fontColour, unsigned /*langId*/, double fontSize, bool bold, bool italic, bool /*underline*/, WPXString fontFace)
+void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned /*langId*/, double fontSize, bool bold, bool italic, bool /*underline*/, WPXString fontFace)
 {
   _handleLevelChange(level);
 
@@ -1043,7 +1064,11 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
     m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
   }
   WPXPropertyList textProps;
-  textProps.insert("style:font-name", fontFace);
+  if (m_fonts[fontID] == "")
+    textProps.insert("style:font-name", fontFace);
+  else
+    textProps.insert("style:font-name", m_fonts[fontID]);
+
   if (bold) textProps.insert("fo:font-weight", "bold");
   if (italic) textProps.insert("fo:font-style", "italic");
   textProps.insert("fo:font-size", fontSize*72.0, WPX_POINT);

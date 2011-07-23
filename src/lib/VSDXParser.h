@@ -68,6 +68,8 @@ protected:
   void readPageProps(WPXInputStream *input);
   void readShape(WPXInputStream *input);
   void readColours(WPXInputStream *input);
+  void readFont(WPXInputStream *input, unsigned int id);
+  void readFontIX(WPXInputStream *input);
   void readCharList(WPXInputStream *input);
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
