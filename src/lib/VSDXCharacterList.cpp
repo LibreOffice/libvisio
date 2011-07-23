@@ -33,17 +33,20 @@ public:
 class VSDXCharIX : public VSDXCharacterListElement
 {
 public:
-  VSDXCharIX(unsigned id , unsigned level, unsigned charCount, unsigned langId,
+  VSDXCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
            double fontSize, bool bold, bool italic, bool underline,
            WPXString fontFace) :
-    m_id(id), m_level(level), m_charCount(charCount), m_langId(langId),
+    m_id(id), m_level(level), m_charCount(charCount), m_fontID(fontID), m_fontColour(fontColour), m_langId(langId),
     m_fontSize(fontSize), m_bold(bold), m_italic(italic), 
     m_underline(underline), m_fontFace(fontFace) {}
   ~VSDXCharIX() {} 
   void handle(VSDXCollector *collector);
 private:
   unsigned m_id, m_level;
-  unsigned m_charCount, m_langId;
+  unsigned m_charCount;
+  unsigned short m_fontID;
+  Colour m_fontColour;
+  unsigned m_langId;
   double m_fontSize;
   bool m_bold, m_italic, m_underline;
   WPXString m_fontFace; 
@@ -53,7 +56,7 @@ private:
 
 void libvisio::VSDXCharIX::handle(VSDXCollector *collector)
 {
-  collector->collectCharFormat(m_id, m_level, m_charCount, m_langId, m_fontSize, m_bold, m_italic, m_underline, m_fontFace);
+  collector->collectCharFormat(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_langId, m_fontSize, m_bold, m_italic, m_underline, m_fontFace);
 }
 
 libvisio::VSDXCharacterList::VSDXCharacterList()
@@ -65,9 +68,9 @@ libvisio::VSDXCharacterList::~VSDXCharacterList()
   clear();
 }
 
-void libvisio::VSDXCharacterList::addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace)
+void libvisio::VSDXCharacterList::addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace)
 {
-  m_elements[id] = new VSDXCharIX(id, level, charCount, langId, fontSize, bold, italic, underline, fontFace);
+  m_elements[id] = new VSDXCharIX(id, level, charCount, fontID, fontColour, langId, fontSize, bold, italic, underline, fontFace);
 }
 
 void libvisio::VSDXCharacterList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

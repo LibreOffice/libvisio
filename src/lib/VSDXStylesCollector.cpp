@@ -185,7 +185,7 @@ void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level,
  _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/, WPXString /*fontFace*/)
+void libvisio::VSDXStylesCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /* fontID */, Colour /* fontColour */, unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/, WPXString /*fontFace*/)
 {
   _handleLevelChange(level);
 }

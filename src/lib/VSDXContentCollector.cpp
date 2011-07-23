@@ -996,7 +996,7 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   m_outputTextStart = true;
 }
 
-void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned /*langId*/, double fontSize, bool bold, bool italic, bool /*underline*/, WPXString fontFace)
+void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short /* fontID */, Colour fontColour, unsigned /*langId*/, double fontSize, bool bold, bool italic, bool /*underline*/, WPXString fontFace)
 {
   _handleLevelChange(level);
 
@@ -1026,8 +1026,7 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
     for (unsigned i = 0; i < max; i++)
       text.append((char) m_textStream[i]);
 
-    if (charCount > 0)
-      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
+    m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
   }
   else if (m_textFormat == VSD_TEXT_UTF16)
   {
@@ -1048,6 +1047,12 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
   if (bold) textProps.insert("fo:font-weight", "bold");
   if (italic) textProps.insert("fo:font-style", "italic");
   textProps.insert("fo:font-size", fontSize*72.0, WPX_POINT);
+  textProps.insert("fo:color",getColourString(fontColour));
+  double opacity = 1.0;
+  if (fontColour.a)
+    opacity -= fontColour.a/255.0;
+  textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
+  textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
 
   VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
   m_shapeOutput->addStartTextSpan(textProps);

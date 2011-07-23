@@ -85,8 +85,27 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
 {
   WPXString fontFace = "Arial";
   unsigned charCount = readU32(input);
+  unsigned short fontID = readU16(input);
+  input->seek(1, WPX_SEEK_CUR);  // Color ID
+  Colour fontColour;            // Font Colour
+  fontColour.r = readU8(input);
+  fontColour.g = readU8(input);
+  fontColour.b = readU8(input);
+  fontColour.a = readU8(input);
 
-  m_charList->addCharIX(m_header.id, m_header.level, charCount, 0, 0.1667, false, false, false, fontFace);
+  unsigned short fontMod = readU8(input);
+  bool bold = false; bool italic = false; bool underline = false;
+  if (fontMod & 1) bold = true;
+  if (fontMod & 2) italic = true;
+  if (fontMod & 4) underline = true;
+
+  input->seek(6, WPX_SEEK_CUR);
+  double fontSize = readDouble(input);
+
+  input->seek(43, WPX_SEEK_CUR);
+  unsigned langId = readU32(input);
+
+  m_charList->addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize, bold, italic, underline, fontFace);
 
 }
 
