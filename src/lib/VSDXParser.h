@@ -102,6 +102,14 @@ private:
 
 };
 
+struct Pointer
+{
+  unsigned Type;
+  unsigned Offset;
+  unsigned Length;
+  unsigned short Format;
+};
+
 } // namespace libvisio
 
 #endif // __VSDXPARSER_H__

@@ -100,11 +100,13 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 {
   const unsigned int SHIFT = 4;
 
-  unsigned int ptrType;
-  unsigned int ptrOffset;
-  unsigned int ptrLength;
-  unsigned int ptrFormat;
-
+//  unsigned int ptrType;
+// unsigned int ptrOffset;
+//  unsigned int ptrLength;
+//  unsigned int ptrFormat;
+  std::vector<libvisio::Pointer> PtrList;
+  Pointer ptr;
+  
   // Parse out pointers to other streams from trailer
   input->seek(SHIFT, WPX_SEEK_SET);
   unsigned offset = readU32(input);
@@ -113,17 +115,26 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
   input->seek(SHIFT, WPX_SEEK_CUR);
   for (unsigned int i = 0; i < pointerCount; i++)
   {
-    ptrType = readU32(input);
+    ptr.Type = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
-    ptrOffset = readU32(input);
-    ptrLength = readU32(input);
-    ptrFormat = readU16(input);
+    ptr.Offset = readU32(input);
+    ptr.Length = readU32(input);
+    ptr.Format = readU16(input);
+    
+    if (ptr.Type == VSD_FONTFACES)
+      PtrList.insert(PtrList.begin(),ptr);
+//      PtrList.push_back(ptr);
+    else if (ptr.Type != 0)
+      PtrList.push_back(ptr);
+  }
+  for (unsigned int i = 0; i < PtrList.size(); i++)
+  {
+    ptr = PtrList[i];
+    bool compressed = ((ptr.Format & 2) == 2);
+    m_input->seek(ptr.Offset, WPX_SEEK_SET);
+    VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
 
-    bool compressed = ((ptrFormat & 2) == 2);
-    m_input->seek(ptrOffset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptrLength, compressed);
-
-    switch (ptrType)
+    switch (ptr.Type)
     {
     case VSD_PAGE:           // shouldn't happen
     case VSD_FONT_LIST:      // ver6 stream contains chunk 0x18 (FontList) and chunks 0x19 (Font)
