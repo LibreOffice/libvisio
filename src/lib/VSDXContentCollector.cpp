@@ -988,7 +988,7 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
     m_colours.push_back(colours[i]);
 }
 
-void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const std::vector<uint8_t> &textStream, TextFormat format)
+void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const std::vector<unsigned char> &textStream, TextFormat format)
 {
   WPXString fontname;
   if (format == VSD_TEXT_ANSI)
@@ -1006,7 +1006,7 @@ void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const st
 }
 
 
-void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format)
+void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format)
 {
   _handleLevelChange(level);
 
@@ -1187,7 +1187,7 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
     if (fail)
       throw GenericException();
 
-    uint8_t first;
+    unsigned char first;
     int len;
     if (ucs4Character < 0x80)
     {
@@ -1220,7 +1220,7 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
       len = 6;
     }
 
-    uint8_t outbuf[6] = { 0, 0, 0, 0, 0, 0 };
+    unsigned char outbuf[6] = { 0, 0, 0, 0, 0, 0 };
     int i;
     for (i = len - 1; i > 0; --i)
     {

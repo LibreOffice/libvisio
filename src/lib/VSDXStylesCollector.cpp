@@ -180,11 +180,11 @@ void libvisio::VSDXStylesCollector::collectColours(const std::vector<Colour> & /
 {
 }
 
-void libvisio::VSDXStylesCollector::collectFont(unsigned short /* fontID */, const std::vector<uint8_t> & /* textStream */, TextFormat /* format */)
+void libvisio::VSDXStylesCollector::collectFont(unsigned short /* fontID */, const std::vector<unsigned char> & /* textStream */, TextFormat /* format */)
 {
 }
 
-void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<uint8_t> & /*textStream*/, TextFormat /*format*/)
+void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<unsigned char> & /*textStream*/, TextFormat /*format*/)
 {
  _handleLevelChange(level);
 }

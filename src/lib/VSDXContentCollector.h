@@ -75,9 +75,9 @@ public:
   void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectColours(const std::vector<Colour> &colours);
-  void collectFont(unsigned short fontID, const std::vector<uint8_t> &textStream, TextFormat format);
+  void collectFont(unsigned short fontID, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectCharList(unsigned id, unsigned level);
-  void collectText(unsigned id, unsigned level, const std::vector<uint8_t> &textStream, TextFormat format);
+  void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace);
 
   void startPage();
@@ -149,7 +149,7 @@ private:
 
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
-  std::vector<uint8_t> m_textStream;
+  std::vector<unsigned char> m_textStream;
   TextFormat m_textFormat;
   bool m_outputTextStart;
 };
