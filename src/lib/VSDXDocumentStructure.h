@@ -29,7 +29,8 @@
 #define VSD_COLORS 0x16
 #define VSD_FONT_LIST 0x18
 #define VSD_FONT_IX 0x19
-
+#define VSD_STYLES 0x1a
+#define VSD_STENCILS 0x1d
 #define VSD_OLE_DATA 0x1f
 
 #define VSD_PAGES 0x27

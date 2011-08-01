@@ -147,6 +147,9 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
     case VSD_COLORS:
       readColours(&tmpInput);
       break;
+    case VSD_STYLES:
+      handleStyles(&tmpInput);
+      break;
     default:
       break;
     }
@@ -201,6 +204,35 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input)
   }
 }
 
+void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
+{
+ try
+  {
+    long endPos = 0;
+
+    while (!input->atEOS())
+    {
+      getChunkHeader(input);
+      endPos = m_header.dataLength+m_header.trailer+input->tell();
+
+      _handleLevelChange(m_header.level);
+      VSD_DEBUG_MSG(("Styles: parsing chunk type %x\n", m_header.chunkType));
+      switch (m_header.chunkType)
+      {
+      default:
+        m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+      }
+
+      input->seek(endPos, WPX_SEEK_SET);
+    }
+    _handleLevelChange(0);
+  }
+  catch (EndOfStreamException)
+  {
+    _handleLevelChange(0);
+  }
+}
+
 void libvisio::VSDXParser::_handleLevelChange(unsigned level)
 {
   if (level == m_currentLevel)
@@ -239,7 +271,6 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
 {
   try
   {
-
     long endPos = 0;
 
     m_collector->startPage();

@@ -80,6 +80,7 @@ protected:
   // Stream handlers
   void handlePages(WPXInputStream *input);
   void handlePage(WPXInputStream *input);
+  void handleStyles(WPXInputStream *input);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);
