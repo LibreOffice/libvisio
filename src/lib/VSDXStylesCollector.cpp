@@ -27,12 +27,12 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
   std::vector<std::list<unsigned> > &documentPageShapeOrders
 ) :
-  m_currentLevel(0), m_isShapeStarted(false),
+  m_currentLevel(0), m_isShapeStarted(false), 
   m_currentShapeId(0), m_groupXForms(), m_groupMemberships(),
   m_groupXFormsSequence(groupXFormsSequence),
   m_groupMembershipsSequence(groupMembershipsSequence), m_pageShapeOrder(),
   m_documentPageShapeOrders(documentPageShapeOrders),
-  m_shapeList()
+  m_shapeList(), m_currentStyleSheet(0), m_styles(), m_isStyleStarted(false)
 {
   m_groupXFormsSequence.clear();
   m_groupMembershipsSequence.clear();
@@ -194,6 +194,28 @@ void libvisio::VSDXStylesCollector::collectCharFormat(unsigned /*id*/ , unsigned
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned level, unsigned lineStyleParent, unsigned fillStyleParent, unsigned textStyleParent)
+{
+  m_lineStyle = VSDXLineStyle();
+  m_fillStyle = VSDXFillStyle();
+  m_textStyle = VSDXTextStyle();
+  if (m_styles.getLineStyle(id).properties["svg:draw"])
+    VSD_DEBUG_MSG(("Found it..\n"));
+  else
+    VSD_DEBUG_MSG(("Not there...\n"));
+  m_currentStyleSheet = id;
+  m_styles.addLineStyle(m_currentStyleSheet, &m_lineStyle, lineStyleParent);
+  m_styles.addFillStyle(m_currentStyleSheet, &m_fillStyle, fillStyleParent);
+  m_styles.addTextStyle(m_currentStyleSheet, &m_textStyle, textStyleParent);
+  m_lineStyle.properties.insert("svg:draw", "line");
+  if (m_styles.getLineStyle(id).properties["svg:draw"])
+    VSD_DEBUG_MSG(("Found it..\n"));
+  else
+    VSD_DEBUG_MSG(("Not there...\n"));
+  //  VSD_DEBUG_MSG(("%s\n", m_styles.getLineStyle(id).properties["svg:draw"]->getStr().cstr()));
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::startPage()
 {
   m_groupXForms.clear();
@@ -232,7 +254,10 @@ void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
   if (level < 3)
     _flushShapeList();
   if (level < 2)
+  {
     m_isShapeStarted = false;
+    m_isStyleStarted = false;
+  }
 
   m_currentLevel = level;
 }

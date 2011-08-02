@@ -74,6 +74,8 @@ protected:
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
 
+  void readStyleSheet(WPXInputStream *input);
+
   // parser of one pass
   bool parseDocument(WPXInputStream *input);
 

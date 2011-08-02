@@ -65,6 +65,9 @@ public:
   virtual void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format) = 0;
   virtual void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace) = 0;
 
+  // Style collectors
+  virtual void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;
+
   // Temporary hack
   virtual void startPage() = 0;
   virtual void endPage() = 0;

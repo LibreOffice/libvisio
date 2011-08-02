@@ -26,6 +26,8 @@
 #include <list>
 #include "VSDXCollector.h"
 #include "VSDXParser.h"
+#include "libvisio_utils.h"
+#include "VSDXStyles.h"
 
 namespace libvisio {
 
@@ -71,6 +73,10 @@ public:
   void collectCharList(unsigned id, unsigned level);
   void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace);
+
+  // Style collectors
+  void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
+
   // Temporary hack
   void startPage();
   void endPage();
@@ -95,6 +101,14 @@ private:
   std::vector<std::list<unsigned> > &m_documentPageShapeOrders;
   std::map<unsigned, std::list<unsigned> > m_groupShapeOrder;
   std::list<unsigned> m_shapeList;
+
+  //std::map<unsigned, StyleSheet> m_styleSheets;
+  unsigned m_currentStyleSheet;
+  VSDXStyles m_styles;
+  VSDXLineStyle m_lineStyle;
+  VSDXFillStyle m_fillStyle;
+  VSDXTextStyle m_textStyle;
+  bool m_isStyleStarted;
 };
 
 }

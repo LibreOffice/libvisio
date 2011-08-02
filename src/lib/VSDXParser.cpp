@@ -219,6 +219,9 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
       VSD_DEBUG_MSG(("Styles: parsing chunk type %x\n", m_header.chunkType));
       switch (m_header.chunkType)
       {
+      case VSD_STYLE_SHEET:
+        readStyleSheet(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -969,4 +972,18 @@ void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
     textStream.push_back(curchar);
   }
   m_collector->collectFont((unsigned short) m_header.id, textStream, libvisio::VSD_TEXT_ANSI);
+}
+
+/* StyleSheet readers */
+
+void libvisio::VSDXParser::readStyleSheet(WPXInputStream *input)
+{
+  input->seek(0x22, WPX_SEEK_CUR);
+  unsigned lineStyle = readU32(input);
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned fillStyle = readU32(input);
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned textStyle = readU32(input);
+
+  m_collector->collectStyleSheet(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
 }

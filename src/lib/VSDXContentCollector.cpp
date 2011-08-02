@@ -1083,6 +1083,11 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
     m_shapeOutput->addEndTextObject();
 }
 
+void libvisio::VSDXContentCollector::collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)

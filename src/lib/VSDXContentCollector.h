@@ -80,6 +80,9 @@ public:
   void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace);
 
+  // Style collectors
+  void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
+
   void startPage();
   void endPage();
 

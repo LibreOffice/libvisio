@@ -21,6 +21,7 @@
 #define __VSDXSTYLES_H__
 
 #include <map>
+#include <libwpg/libwpg.h>
 
 namespace libvisio {
 
@@ -29,6 +30,7 @@ class VSDXLineStyle
   public:
     VSDXLineStyle() {};
     ~VSDXLineStyle() {};
+    WPXPropertyList properties;
 };
 
 class VSDXFillStyle
@@ -36,6 +38,7 @@ class VSDXFillStyle
   public:
     VSDXFillStyle() {};
     ~VSDXFillStyle() {};
+    WPXPropertyList properties;
 };
 
 class VSDXTextStyle
@@ -43,6 +46,7 @@ class VSDXTextStyle
   public:
     VSDXTextStyle() {};
     ~VSDXTextStyle() {};
+    WPXPropertyList properties;
 };
 
 class VSDXStyles
