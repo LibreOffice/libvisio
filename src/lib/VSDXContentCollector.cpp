@@ -932,7 +932,7 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
   m_isPageStarted = true;
 }
 
-void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned /*lineStyle*/, unsigned /*fillStyle*/, unsigned /*textStyle*/)
+void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned lineStyleId, unsigned /*fillStyleId*/, unsigned /*textStyleId*/)
 {
   _handleLevelChange(level);
 
@@ -947,8 +947,16 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_noFill = false;
   m_noShow = false;
 
+  // Read from external style sheet
+  VSDXLineStyle lineStyle = m_styles.getLineStyle(lineStyleId);
+  if (lineStyle.properties["svg:stroke-color"])
+    m_lineColour = lineStyle.properties["svg:stroke-color"]->getStr();
+  else
+    m_lineColour = "black";
+  m_styleProps.insert("svg:stroke-color", m_lineColour);
+
+
   // Save line colour and pattern, fill type and pattern
-  m_lineColour = "black";
   m_fillType = "none";
   m_linePattern = 1; // same as "solid"
   m_fillPattern = 1; // same as "solid"
@@ -958,7 +966,6 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   // Reset style
   m_styleProps.clear();
   m_styleProps.insert("svg:stroke-width", m_scale*0.0138889);
-  m_styleProps.insert("svg:stroke-color", m_lineColour);
   m_styleProps.insert("draw:fill", m_fillType);
   m_styleProps.insert("svg:stroke-dasharray", "solid");
 
