@@ -57,13 +57,6 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
 {
 }
 
-const ::WPXString libvisio::VSDXContentCollector::getColourString(const struct Colour &c) const
-{
-  ::WPXString sColour;
-  sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
-  return sColour;
-}
-
 void libvisio::VSDXContentCollector::_flushCurrentPath()
 {
   WPXPropertyListVector path;
@@ -1085,6 +1078,11 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
 {
   _handleLevelChange(level);
 }

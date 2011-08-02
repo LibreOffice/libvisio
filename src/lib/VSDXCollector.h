@@ -67,16 +67,18 @@ public:
 
   // Style collectors
   virtual void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;
+  virtual void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap) = 0;
 
   // Temporary hack
   virtual void startPage() = 0;
   virtual void endPage() = 0;
 
-
+protected:
+  const ::WPXString getColourString(const Colour& c) const;
 
 private:
-    VSDXCollector(const VSDXCollector&);
-    VSDXCollector& operator=(const VSDXCollector&);
+  VSDXCollector(const VSDXCollector&);
+  VSDXCollector& operator=(const VSDXCollector&);
 };
 
 } // namespace libvisio

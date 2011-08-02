@@ -209,6 +209,66 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
   m_isStyleStarted = true;
 }
 
+void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
+{
+  _handleLevelChange(level);
+
+  if (m_lineStyle == 0) m_lineStyle = new VSDXLineStyle();
+
+  m_lineStyle->properties.insert("svg:stroke-width", strokeWidth);
+  m_lineStyle->properties.insert("svg:stroke-color", getColourString(c));
+  if (c.a)
+    m_lineStyle->properties.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
+  else
+    m_lineStyle->properties.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
+  switch (lineCap)
+  {
+    case 0:
+      m_lineStyle->properties.insert("svg:stroke-linecap", "round");
+      m_lineStyle->properties.insert("svg:stroke-linejoin", "round");
+      break;
+    case 2:
+      m_lineStyle->properties.insert("svg:stroke-linecap", "square");
+      m_lineStyle->properties.insert("svg:stroke-linejoin", "miter");
+      break;
+    default:
+      m_lineStyle->properties.insert("svg:stroke-linecap", "butt");
+      m_lineStyle->properties.insert("svg:stroke-linejoin", "miter");
+      break;
+  }
+
+  const char* patterns[] = {
+    /*  0 */  "none",
+    /*  1 */  "solid",
+    /*  2 */  "6, 3",
+    /*  3 */  "1, 3",
+    /*  4 */  "6, 3, 1, 3",
+    /*  5 */  "6, 3, 1, 3, 1, 3",
+    /*  6 */  "6, 3, 6, 3, 1, 3",
+    /*  7 */  "14, 2, 6, 2",
+    /*  8 */  "14, 2, 6, 2, 6, 2",
+    /*  9 */  "3, 1",
+    /* 10 */  "1, 1",
+    /* 11 */  "3, 1, 1, 1",
+    /* 12 */  "3, 1, 1, 1, 1, 1",
+    /* 13 */  "3, 1, 3, 1, 1, 1",
+    /* 14 */  "7, 1, 3, 1",
+    /* 15 */  "7, 1, 3, 1, 3, 1",
+    /* 16 */  "11, 5",
+    /* 17 */  "1, 5",
+    /* 18 */  "11, 5, 1, 5",
+    /* 19 */  "11, 5, 1, 5, 1, 5",
+    /* 20 */  "11, 5, 11, 5, 1, 5",
+    /* 21 */  "27, 5, 11, 5",
+    /* 22 */  "27, 5, 11, 5, 11, 5",
+    /* 23 */  "2, 1"
+  };
+  if (linePattern > 0 && linePattern < sizeof(patterns)/sizeof(patterns[0]))
+    m_lineStyle->properties.insert("svg:stroke-dasharray", patterns[linePattern]);
+  // FIXME: later it will require special treatment for custom line patterns
+  // patt ID is 0xfe, link to stencil name is in 'Line' blocks
+}
+
 void libvisio::VSDXStylesCollector::startPage()
 {
   m_groupXForms.clear();

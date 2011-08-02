@@ -76,6 +76,7 @@ public:
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
+  void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
 
   // Temporary hack
   void startPage();

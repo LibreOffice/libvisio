@@ -84,6 +84,7 @@ public:
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
+  void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
 
   void startPage();
   void endPage();
@@ -102,8 +103,6 @@ private:
   void _flushCurrentPath();
   void _flushCurrentForeignData();
   void _flushCurrentPage();
-
-  const ::WPXString getColourString(const Colour& c) const;
 
   void _handleLevelChange(unsigned level);
   void _appendUTF16LE(WPXString &text, WPXInputStream *input);

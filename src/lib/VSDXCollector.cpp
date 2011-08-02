@@ -23,3 +23,10 @@
 libvisio::VSDXCollector::VSDXCollector()
 {
 }
+
+const ::WPXString libvisio::VSDXCollector::getColourString(const struct Colour &c) const
+{
+  ::WPXString sColour;
+  sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
+  return sColour;
+}
