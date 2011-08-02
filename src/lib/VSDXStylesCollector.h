@@ -64,7 +64,7 @@ public:
   void collectShapeList(unsigned id, unsigned level);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY);
-  void collectShape(unsigned id, unsigned level);
+  void collectShape(unsigned id, unsigned level, unsigned lineStyle, unsigned fillStyle, unsigned textStyle);
   void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectColours(const std::vector<Colour> &colours);
@@ -80,6 +80,8 @@ public:
   // Temporary hack
   void startPage();
   void endPage();
+
+  VSDXStyles getStyleSheets() { return m_styles; }
 
 
 private:

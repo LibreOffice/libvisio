@@ -37,7 +37,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   libwpg::WPGPaintInterface *painter,
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
-  std::vector<std::list<unsigned> > &documentPageShapeOrders
+  std::vector<std::list<unsigned> > &documentPageShapeOrders,
+  VSDXStyles &styles
   ) :
     m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
     m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
@@ -52,7 +53,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupXFormsSequence(groupXFormsSequence),
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false)
+    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false), m_styles(styles)
 {
 }
 
@@ -938,7 +939,7 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
   m_isPageStarted = true;
 }
 
-void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level)
+void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned /*lineStyle*/, unsigned /*fillStyle*/, unsigned /*textStyle*/)
 {
   _handleLevelChange(level);
 

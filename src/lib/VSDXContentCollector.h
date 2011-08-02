@@ -33,6 +33,7 @@
 #include "VSDXCollector.h"
 #include "VSDXParser.h"
 #include "VSDXOutputElementList.h"
+#include "VSDXStyles.h"
 
 namespace libvisio {
 
@@ -43,7 +44,8 @@ public:
     libwpg::WPGPaintInterface *painter,
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
     std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
-    std::vector<std::list<unsigned> > &documentPageShapeOrders
+    std::vector<std::list<unsigned> > &documentPageShapeOrders,
+    VSDXStyles &styles
   );
   virtual ~VSDXContentCollector() {};
 
@@ -70,7 +72,7 @@ public:
   void collectShapeList(unsigned id, unsigned level);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY);
-  void collectShape(unsigned id, unsigned level);
+  void collectShape(unsigned id, unsigned level, unsigned lineStyle, unsigned fillStyle, unsigned textStyle);
 
   void collectUnhandledChunk(unsigned id, unsigned level);
 
@@ -155,6 +157,8 @@ private:
   std::vector<unsigned char> m_textStream;
   TextFormat m_textFormat;
   bool m_outputTextStart;
+
+  VSDXStyles m_styles;
 };
 
 } // namespace libvisio

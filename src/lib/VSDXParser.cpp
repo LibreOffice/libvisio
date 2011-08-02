@@ -84,7 +84,9 @@ bool libvisio::VSDXParser::parse()
     return false;
   }
 
-  VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
+  VSDXStyles styles = stylesCollector.getStyleSheets();
+
+  VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles);
   m_collector = &contentCollector;
   if (!parseDocument(trailerStream))
   {
@@ -609,9 +611,15 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
   m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY);
 }
 
-void libvisio::VSDXParser::readShape(WPXInputStream * /* input */)
+void libvisio::VSDXParser::readShape(WPXInputStream * input)
 {
-  m_collector->collectShape(m_header.id, m_header.level);
+  input->seek(0x22, WPX_SEEK_CUR);
+  unsigned lineStyle = readU32(input);
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned fillStyle = readU32(input);
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned textStyle = readU32(input);
+  m_collector->collectShape(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
 }
 
 void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
