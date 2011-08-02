@@ -614,11 +614,11 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
 void libvisio::VSDXParser::readShape(WPXInputStream * input)
 {
   input->seek(0x22, WPX_SEEK_CUR);
+  unsigned textStyle = readU32(input);
+  input->seek(4, WPX_SEEK_CUR);
   unsigned lineStyle = readU32(input);
   input->seek(4, WPX_SEEK_CUR);
   unsigned fillStyle = readU32(input);
-  input->seek(4, WPX_SEEK_CUR);
-  unsigned textStyle = readU32(input);
   m_collector->collectShape(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
 }
 
