@@ -48,6 +48,7 @@ public:
   void handle(VSDXCollector *collector);
   void clear();
   bool empty() const { return (!m_elements.size()); }
+  VSDXGeometryListElement * getElement(unsigned index);
 private:
   std::map<unsigned, VSDXGeometryListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;

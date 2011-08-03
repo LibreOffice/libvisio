@@ -28,6 +28,7 @@ public:
   VSDXGeometryListElement() {}
   virtual ~VSDXGeometryListElement() {}
   virtual void handle(VSDXCollector *collector) = 0;
+  virtual VSDXGeometryListElement *clone() = 0;
 };
 
 class VSDXGeometry : public VSDXGeometryListElement
@@ -37,6 +38,7 @@ public:
     m_id(id), m_level(level), m_geomFlags(geomFlags) {}
   ~VSDXGeometry() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id;
   unsigned m_level;
@@ -50,6 +52,7 @@ public:
     m_id(id), m_level(level), m_x(x), m_y(y) {}
   ~VSDXMoveTo() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_x, m_y;
@@ -62,6 +65,7 @@ public:
     m_id(id), m_level(level), m_x(x), m_y(y) {}
   ~VSDXLineTo() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_x, m_y;
@@ -74,6 +78,7 @@ public:
     m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_bow(bow) {}
   ~VSDXArcTo() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_x2, m_y2, m_bow;
@@ -86,6 +91,7 @@ public:
     m_id(id), m_level(level), m_cx(cx), m_cy(cy), m_xleft(xleft), m_yleft(yleft), m_xtop(xtop), m_ytop(ytop) {}
   ~VSDXEllipse() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop;
@@ -98,6 +104,7 @@ public:
     m_id(id), m_level(level), m_x3(x3), m_y3(y3), m_x2(x2), m_y2(y2), m_angle(angle), m_ecc(ecc) {}
   ~VSDXEllipticalArcTo() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
@@ -110,6 +117,7 @@ public:
     m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_xType(xType), m_yType(yType), m_degree(degree), m_controlPoints(controlPoints), m_knotVector(knotVector), m_weights(weights) {}
   ~VSDXNURBSTo1() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_x2, m_y2;
@@ -126,6 +134,7 @@ public:
     m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev), m_dataID(dataID) {}
   ~VSDXNURBSTo2() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_x2, m_y2;
@@ -141,6 +150,7 @@ public:
     m_id(id), m_level(level), m_x(x), m_y(y), m_xType(xType), m_yType(yType), m_points(points) {}
   ~VSDXPolylineTo1() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_x, m_y;
@@ -155,6 +165,7 @@ public:
     m_id(id), m_level(level), m_x(x), m_y(y), m_dataID(dataID) {}
   ~VSDXPolylineTo2() {}
   void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
 private:
   unsigned m_id, m_level;
   double m_x, m_y;
@@ -168,50 +179,110 @@ void libvisio::VSDXGeometry::handle(VSDXCollector *collector)
   collector->collectGeometry(m_id, m_level, m_geomFlags);
 }
 
+libvisio::VSDXGeometryListElement *libvisio::VSDXGeometry::clone()
+{
+  return new VSDXGeometry(m_id, m_level, m_geomFlags);
+}
+
+
 void libvisio::VSDXMoveTo::handle(VSDXCollector *collector)
 {
   collector->collectMoveTo(m_id, m_level, m_x, m_y);
 }
+
+libvisio::VSDXGeometryListElement *libvisio::VSDXMoveTo::clone()
+{
+  return new VSDXMoveTo(m_id, m_level, m_x, m_y);
+}
+
 
 void libvisio::VSDXLineTo::handle(VSDXCollector *collector)
 {
   collector->collectLineTo(m_id, m_level, m_x, m_y);
 }
 
+libvisio::VSDXGeometryListElement *libvisio::VSDXLineTo::clone()
+{
+  return new VSDXLineTo(m_id, m_level, m_x, m_y);
+}
+
+
 void libvisio::VSDXArcTo::handle(VSDXCollector *collector)
 {
   collector->collectArcTo(m_id, m_level, m_x2, m_y2, m_bow);
 }
+
+libvisio::VSDXGeometryListElement *libvisio::VSDXArcTo::clone()
+{
+  return new VSDXArcTo(m_id, m_level, m_x2, m_y2, m_bow);
+}
+
 
 void libvisio::VSDXEllipse::handle(VSDXCollector *collector)
 {
   collector->collectEllipse(m_id, m_level, m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop);
 }
 
+libvisio::VSDXGeometryListElement *libvisio::VSDXEllipse::clone()
+{
+  return new VSDXEllipse(m_id, m_level, m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop);
+}
+
+
 void libvisio::VSDXEllipticalArcTo::handle(VSDXCollector *collector)
 {
   collector->collectEllipticalArcTo(m_id, m_level, m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc);
 }
+
+libvisio::VSDXGeometryListElement *libvisio::VSDXEllipticalArcTo::clone()
+{
+  return new VSDXEllipticalArcTo(m_id, m_level, m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc);
+}
+
 
 void libvisio::VSDXNURBSTo1::handle(VSDXCollector *collector)
 {
   collector->collectNURBSTo(m_id, m_level, m_x2, m_y2, m_xType, m_yType, m_degree, m_controlPoints, m_knotVector, m_weights);
 }
 
+libvisio::VSDXGeometryListElement *libvisio::VSDXNURBSTo1::clone()
+{
+  return new VSDXNURBSTo1(m_id, m_level, m_x2, m_y2, m_xType, m_yType, m_degree, m_controlPoints, m_knotVector, m_weights);
+}
+
+
 void libvisio::VSDXNURBSTo2::handle(VSDXCollector *collector)
 {
   collector->collectNURBSTo(m_id, m_level, m_x2, m_y2, m_knot, m_knotPrev, m_weight, m_weightPrev, m_dataID);
 }
+
+libvisio::VSDXGeometryListElement *libvisio::VSDXNURBSTo2::clone()
+{
+  return new VSDXNURBSTo2(m_id, m_level, m_x2, m_y2, m_knot, m_knotPrev, m_weight, m_weightPrev, m_dataID);
+}
+
 
 void libvisio::VSDXPolylineTo1::handle(VSDXCollector *collector)
 {
   collector->collectPolylineTo(m_id, m_level, m_x, m_y, m_xType, m_yType, m_points);
 }
 
+libvisio::VSDXGeometryListElement *libvisio::VSDXPolylineTo1::clone()
+{
+  return new VSDXPolylineTo1(m_id, m_level, m_x, m_y, m_xType, m_yType, m_points);
+}
+
+
 void libvisio::VSDXPolylineTo2::handle(VSDXCollector *collector)
 {
   collector->collectPolylineTo(m_id, m_level, m_x, m_y, m_dataID);
 }
+
+libvisio::VSDXGeometryListElement *libvisio::VSDXPolylineTo2::clone()
+{
+  return new VSDXPolylineTo2(m_id, m_level, m_x, m_y, m_dataID);
+}
+
 
 libvisio::VSDXGeometryList::VSDXGeometryList()
 {
@@ -306,4 +377,13 @@ void libvisio::VSDXGeometryList::clear()
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();
+}
+
+libvisio::VSDXGeometryListElement * libvisio::VSDXGeometryList::getElement(unsigned index)
+{
+  std::map<unsigned, VSDXGeometryListElement *>::iterator iter = m_elements.find(index);
+  if (iter != m_elements.end())
+    return iter->second;
+  else
+    return 0;
 }

@@ -28,6 +28,7 @@ public:
   VSDXCharacterListElement() {}
   virtual ~VSDXCharacterListElement() {}
   virtual void handle(VSDXCollector *collector) = 0;
+  virtual VSDXCharacterListElement *clone() = 0;
 };
 
 class VSDXCharIX : public VSDXCharacterListElement
@@ -41,6 +42,7 @@ public:
     m_underline(underline), m_fontFace(fontFace) {}
   ~VSDXCharIX() {} 
   void handle(VSDXCollector *collector);
+  VSDXCharacterListElement *clone();
 private:
   unsigned m_id, m_level;
   unsigned m_charCount;
@@ -58,6 +60,12 @@ void libvisio::VSDXCharIX::handle(VSDXCollector *collector)
 {
   collector->collectCharFormat(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_langId, m_fontSize, m_bold, m_italic, m_underline, m_fontFace);
 }
+
+libvisio::VSDXCharacterListElement *libvisio::VSDXCharIX::clone()
+{
+  return new VSDXCharIX(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_langId, m_fontSize, m_bold, m_italic, m_underline, m_fontFace);
+}
+
 
 libvisio::VSDXCharacterList::VSDXCharacterList()
 {
@@ -107,4 +115,13 @@ void libvisio::VSDXCharacterList::clear()
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();
+}
+
+libvisio::VSDXCharacterListElement *libvisio::VSDXCharacterList::getElement(unsigned index)
+{
+  std::map<unsigned, VSDXCharacterListElement *>::iterator iter = m_elements.find(index);
+  if (iter != m_elements.end())
+    return iter->second;
+  else
+    return 0;
 }
