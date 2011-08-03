@@ -43,6 +43,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXOutputElementList.cpp \
 	VSDXParser.cpp \
 	VSDXShapeList.cpp \
+	VSDXStyles.cpp \
 	VSDXStylesCollector.cpp \
 	libvisio_utils.h \
 	VSD11Parser.h \
@@ -57,6 +58,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXOutputElementList.h \
 	VSDXParser.h \
 	VSDXShapeList.h \
+	VSDXStyles.h \
 	VSDXStylesCollector.h \
 	VSDXTypes.h
 
