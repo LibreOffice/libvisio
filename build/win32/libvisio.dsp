@@ -139,6 +139,10 @@ SOURCE=..\..\src\lib\VSDXShapeList.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXStyles.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDXStylesCollector.cpp
 # End Source File
 # End Group
@@ -204,6 +208,10 @@ SOURCE=..\..\src\lib\VSDXParser.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXShapeList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXStyles.h
 # End Source File
 # Begin Source File
 
