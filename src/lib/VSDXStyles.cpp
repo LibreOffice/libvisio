@@ -55,15 +55,15 @@ const libvisio::VSDXLineStyle libvisio::VSDXStyles::getLineStyle(unsigned lineSt
   unsigned tmpIndex = lineStyleIndex;
   while (true)
   {
+    std::map<unsigned, VSDXLineStyle>::const_iterator iterStyle = m_lineStyles.find(tmpIndex);
+	if (iterStyle != m_lineStyles.end())
+	  return iterStyle->second;
     std::map<unsigned, unsigned>::const_iterator iter = m_lineStyleMasters.find(tmpIndex);
     if (iter != m_lineStyleMasters.end() && iter->second != NOMASTER)
       tmpIndex = iter->second;
     else
       break;
   }
-  std::map<unsigned, VSDXLineStyle>::const_iterator iterStyle = m_lineStyles.find(tmpIndex);
-  if (iterStyle != m_lineStyles.end())
-    return iterStyle->second;
 
   return libvisio::VSDXLineStyle();
 }
@@ -73,15 +73,15 @@ const libvisio::VSDXFillStyle libvisio::VSDXStyles::getFillStyle(unsigned fillSt
   unsigned tmpIndex = fillStyleIndex;
   while (true)
   {
+    std::map<unsigned, VSDXFillStyle>::const_iterator iterStyle = m_fillStyles.find(tmpIndex);
+	if (iterStyle != m_fillStyles.end())
+	  return iterStyle->second;
     std::map<unsigned, unsigned>::const_iterator iter = m_fillStyleMasters.find(tmpIndex);
     if (iter != m_fillStyleMasters.end() && iter->second != NOMASTER)
       tmpIndex = iter->second;
     else
       break;
   }
-  std::map<unsigned, VSDXFillStyle>::const_iterator iterStyle = m_fillStyles.find(tmpIndex);
-  if (iterStyle != m_fillStyles.end())
-    return iterStyle->second;
 
   return libvisio::VSDXFillStyle();
 }
@@ -91,15 +91,15 @@ const libvisio::VSDXTextStyle libvisio::VSDXStyles::getTextStyle(unsigned textSt
   unsigned tmpIndex = textStyleIndex;
   while (true)
   {
+    std::map<unsigned, VSDXTextStyle>::const_iterator iterStyle = m_textStyles.find(tmpIndex);
+	if (iterStyle != m_textStyles.end())
+	  return iterStyle->second;
     std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(tmpIndex);
     if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
       tmpIndex = iter->second;
     else
       break;
   }
-  std::map<unsigned, VSDXTextStyle>::const_iterator iterStyle = m_textStyles.find(tmpIndex);
-  if (iterStyle != m_textStyles.end())
-    return iterStyle->second;
 
   return libvisio::VSDXTextStyle();
 }
