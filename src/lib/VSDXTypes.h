@@ -54,6 +54,9 @@ struct ChunkHeader
 
 struct Colour
 {
+  Colour(unsigned red, unsigned green, unsigned blue, unsigned alpha)
+  : r(red), g(green), b(blue), a(alpha) {}
+  Colour() : r(0), g(0), b(0), a(0xff) {}
   unsigned int r;
   unsigned int g;
   unsigned int b;

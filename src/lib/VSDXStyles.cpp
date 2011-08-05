@@ -21,6 +21,22 @@
 
 #define NOMASTER 0xffffffff
 
+libvisio::VSDXLineStyle::VSDXLineStyle()
+  : width(0), colour(), pattern(0), cap(0)
+{}
+
+libvisio::VSDXFillStyle::VSDXFillStyle()
+  : fgColourId(1), fgColour(0xff, 0xff, 0xff, 0xff), bgColourId(0),
+    bgColour(), pattern(0), shadowFgColourId(0), shadowFgColour(),
+    shadowBgColourId(1), shadowBGColour(0xff, 0xff, 0xff, 0xff),
+    shadowPattern(0), shadowType(0), shadowOffsetX(0), shadowOffsetY(0),
+    shadowAngle(0), shadowScale(1)
+{}
+
+libvisio::VSDXTextStyle::VSDXTextStyle()
+  : charFormats()
+{
+}
 libvisio::VSDXStyles::VSDXStyles()
 {
 }

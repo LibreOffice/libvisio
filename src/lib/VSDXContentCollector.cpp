@@ -949,10 +949,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
 
   // Read from external style sheet
   VSDXLineStyle lineStyle = m_styles.getLineStyle(lineStyleId);
-  if (lineStyle.properties["svg:stroke-color"])
-    m_lineColour = lineStyle.properties["svg:stroke-color"]->getStr();
-  else
-    m_lineColour = "black";
+  m_lineColour = getColourString(lineStyle.colour);
   m_styleProps.insert("svg:stroke-color", m_lineColour);
 
 

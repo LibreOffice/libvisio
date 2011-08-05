@@ -21,32 +21,46 @@
 #define __VSDXSTYLES_H__
 
 #include <map>
+#include <vector>
 #include <libwpg/libwpg.h>
+#include "VSDXTypes.h"
 
 namespace libvisio {
 
-class VSDXLineStyle
+struct VSDXLineStyle
 {
-  public:
-    VSDXLineStyle() {};
-    ~VSDXLineStyle() {};
-    WPXPropertyList properties;
+  VSDXLineStyle();
+  double width;
+  Colour colour;
+  unsigned short pattern;
+  unsigned short cap;
 };
 
-class VSDXFillStyle
+struct VSDXFillStyle
 {
-  public:
-    VSDXFillStyle() {};
-    ~VSDXFillStyle() {};
-    WPXPropertyList properties;
+  VSDXFillStyle();
+  unsigned short fgColourId;
+  Colour fgColour;
+  unsigned short bgColourId;
+  Colour bgColour;
+  unsigned short pattern;
+
+  unsigned short shadowFgColourId;
+  Colour shadowFgColour;
+  unsigned short shadowBgColourId;
+  Colour shadowBGColour;
+  unsigned short shadowPattern;
+  unsigned short shadowType;
+  double shadowOffsetX;
+  double shadowOffsetY;
+  double shadowAngle;
+  double shadowScale;
 };
 
-class VSDXTextStyle
+struct VSDXTextStyle
 {
-  public:
-    VSDXTextStyle() {};
-    ~VSDXTextStyle() {};
-    WPXPropertyList properties;
+  VSDXTextStyle();
+  std::vector<CharFormat> charFormats;
 };
 
 class VSDXStyles
