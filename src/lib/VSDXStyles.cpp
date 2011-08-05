@@ -29,24 +29,36 @@ libvisio::VSDXStyles::~VSDXStyles()
 {
 }
 
-void libvisio::VSDXStyles::addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle, unsigned lineStyleMaster)
+void libvisio::VSDXStyles::addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle)
 {
   if (lineStyle)
     m_lineStyles[lineStyleIndex] = *lineStyle;
-  m_lineStyleMasters[lineStyleIndex] = lineStyleMaster;
 }
 
-void libvisio::VSDXStyles::addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle, unsigned fillStyleMaster)
+void libvisio::VSDXStyles::addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle)
 {
   if (fillStyle)
     m_fillStyles[fillStyleIndex] = *fillStyle;
-  m_fillStyleMasters[fillStyleIndex] = fillStyleMaster;
 }
 
-void libvisio::VSDXStyles::addTextStyle(unsigned textStyleIndex, VSDXTextStyle *textStyle, unsigned textStyleMaster)
+void libvisio::VSDXStyles::addTextStyle(unsigned textStyleIndex, VSDXTextStyle *textStyle)
 {
   if (textStyle)
     m_textStyles[textStyleIndex] = *textStyle;
+}
+	
+void libvisio::VSDXStyles::addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster)
+{
+  m_lineStyleMasters[lineStyleIndex] = lineStyleMaster;
+}
+
+void libvisio::VSDXStyles::addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster)
+{
+  m_fillStyleMasters[fillStyleIndex] = fillStyleMaster;
+}
+
+void libvisio::VSDXStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster)
+{
   m_textStyleMasters[textStyleIndex] = textStyleMaster;
 }
 	
