@@ -102,12 +102,14 @@ private:
   std::map<unsigned, std::list<unsigned> > m_groupShapeOrder;
   std::list<unsigned> m_shapeList;
 
-  //std::map<unsigned, StyleSheet> m_styleSheets;
   unsigned m_currentStyleSheet;
   VSDXStyles m_styles;
-  VSDXLineStyle m_lineStyle;
-  VSDXFillStyle m_fillStyle;
-  VSDXTextStyle m_textStyle;
+  VSDXLineStyle * m_lineStyle;
+  VSDXFillStyle * m_fillStyle;
+  VSDXTextStyle * m_textStyle;
+  unsigned m_lineStyleMaster;
+  unsigned m_fillStyleMaster;
+  unsigned m_textStyleMaster;
   bool m_isStyleStarted;
 };
 

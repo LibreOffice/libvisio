@@ -199,10 +199,14 @@ void libvisio::VSDXStylesCollector::collectCharFormat(unsigned /*id*/ , unsigned
 void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned level, unsigned lineStyleParent, unsigned fillStyleParent, unsigned textStyleParent)
 {
   _handleLevelChange(level);
+  m_lineStyle = 0;
+  m_fillStyle = 0;
+  m_textStyle = 0;
   m_currentStyleSheet = id;
   m_styles.addLineStyleMaster(m_currentStyleSheet, lineStyleParent);
   m_styles.addFillStyleMaster(m_currentStyleSheet, fillStyleParent);
   m_styles.addTextStyleMaster(m_currentStyleSheet, textStyleParent);
+  m_isStyleStarted = true;
 }
 
 void libvisio::VSDXStylesCollector::startPage()
@@ -245,7 +249,17 @@ void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
   if (level < 2)
   {
     m_isShapeStarted = false;
-    m_isStyleStarted = false;
+    if (m_isStyleStarted)
+    {
+      m_isStyleStarted = false;
+      m_styles.addLineStyle(m_currentStyleSheet, m_lineStyle);
+      m_styles.addFillStyle(m_currentStyleSheet, m_fillStyle);
+      m_styles.addTextStyle(m_currentStyleSheet, m_textStyle);
+
+      if (m_lineStyle) delete m_lineStyle;
+      if (m_fillStyle) delete m_fillStyle;
+      if (m_textStyle) delete m_textStyle;
+    }
   }
 
   m_currentLevel = level;
