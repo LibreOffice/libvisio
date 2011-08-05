@@ -107,6 +107,8 @@ private:
   void _handleLevelChange(unsigned level);
   void _appendUTF16LE(WPXString &text, WPXInputStream *input);
 
+  void lineStyleFromStyleSheet(unsigned styleId);
+
   bool m_isPageStarted;
   double m_pageWidth;
   double m_pageHeight;

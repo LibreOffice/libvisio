@@ -947,24 +947,18 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_noFill = false;
   m_noShow = false;
 
-  // Read from external style sheet
-  VSDXLineStyle lineStyle = m_styles.getLineStyle(lineStyleId);
-  m_lineColour = getColourString(lineStyle.colour);
-  m_styleProps.insert("svg:stroke-color", m_lineColour);
-
-
   // Save line colour and pattern, fill type and pattern
   m_fillType = "none";
-  m_linePattern = 1; // same as "solid"
   m_fillPattern = 1; // same as "solid"
   m_fillFGTransparency = 0;
   m_fillBGTransparency = 0;
 
   // Reset style
   m_styleProps.clear();
-  m_styleProps.insert("svg:stroke-width", m_scale*0.0138889);
   m_styleProps.insert("draw:fill", m_fillType);
   m_styleProps.insert("svg:stroke-dasharray", "solid");
+
+  lineStyleFromStyleSheet(lineStyleId);
 
   m_currentShapeId = id;
   m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
@@ -1089,6 +1083,68 @@ void libvisio::VSDXContentCollector::collectStyleSheet(unsigned id, unsigned lev
 void libvisio::VSDXContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
 {
   _handleLevelChange(level);
+}
+
+void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(unsigned styleId)
+{
+  VSDXLineStyle lineStyle = m_styles.getLineStyle(styleId);
+  m_lineColour = getColourString(lineStyle.colour);
+  m_linePattern = lineStyle.pattern;
+
+  m_styleProps.insert("svg:stroke-width", m_scale*lineStyle.width);
+  m_styleProps.insert("svg:stroke-color", m_lineColour);
+  if (lineStyle.colour.a)
+    m_styleProps.insert("svg:stroke-opacity", (1 - lineStyle.colour.a/255.0), WPX_PERCENT);
+  else
+    m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
+
+  if (m_linePattern > 0)
+  {  
+    const char* patterns[] = {
+      /*  0 */  "none",
+      /*  1 */  "solid",
+      /*  2 */  "6, 3",
+      /*  3 */  "1, 3",
+      /*  4 */  "6, 3, 1, 3",
+      /*  5 */  "6, 3, 1, 3, 1, 3",
+      /*  6 */  "6, 3, 6, 3, 1, 3",
+      /*  7 */  "14, 2, 6, 2",
+      /*  8 */  "14, 2, 6, 2, 6, 2",
+      /*  9 */  "3, 1",
+      /* 10 */  "1, 1",
+      /* 11 */  "3, 1, 1, 1",
+      /* 12 */  "3, 1, 1, 1, 1, 1",
+      /* 13 */  "3, 1, 3, 1, 1, 1",
+      /* 14 */  "7, 1, 3, 1",
+      /* 15 */  "7, 1, 3, 1, 3, 1",
+      /* 16 */  "11, 5",
+      /* 17 */  "1, 5",
+      /* 18 */  "11, 5, 1, 5",
+      /* 19 */  "11, 5, 1, 5, 1, 5",
+      /* 20 */  "11, 5, 11, 5, 1, 5",
+      /* 21 */  "27, 5, 11, 5",
+      /* 22 */  "27, 5, 11, 5, 11, 5",
+      /* 23 */  "2, 1"
+    };
+    if (m_linePattern > 0 && m_linePattern < sizeof(patterns)/sizeof(patterns[0]))
+      m_styleProps.insert("svg:stroke-dasharray", patterns[m_linePattern]);
+  }
+
+  switch (lineStyle.cap)
+  {
+    case 0:
+      m_styleProps.insert("svg:stroke-linecap", "round");
+      m_styleProps.insert("svg:stroke-linejoin", "round");
+      break;
+    case 2:
+      m_styleProps.insert("svg:stroke-linecap", "square");
+      m_styleProps.insert("svg:stroke-linejoin", "miter");
+      break;
+    default:
+      m_styleProps.insert("svg:stroke-linecap", "butt");
+      m_styleProps.insert("svg:stroke-linejoin", "miter");
+      break;
+  }
 }
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
