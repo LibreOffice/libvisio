@@ -34,7 +34,6 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   m_documentPageShapeOrders(documentPageShapeOrders),
   m_shapeList(), m_currentStyleSheet(0), m_styles(),
   m_lineStyle(), m_fillStyle(), m_textStyle(), 
-  m_lineStyleMaster(0), m_fillStyleMaster(0), m_textStyleMaster(0),
   m_isStyleStarted(false)
 {
   m_groupXFormsSequence.clear();
@@ -204,7 +203,6 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
   m_styles.addLineStyleMaster(m_currentStyleSheet, lineStyleParent);
   m_styles.addFillStyleMaster(m_currentStyleSheet, fillStyleParent);
   m_styles.addTextStyleMaster(m_currentStyleSheet, textStyleParent);
-  m_lineStyle.properties.insert("svg:draw", "line");
 }
 
 void libvisio::VSDXStylesCollector::startPage()
