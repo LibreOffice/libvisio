@@ -21,18 +21,29 @@
 #define __VSDXSTENCILS_H__
 
 #include <map>
-#include <vector>
-#include <libwpg/libwpg.h>
-#include "VSDXTypes.h"
+#include "VSDXStyles.h"
 
 namespace libvisio {
+
+class VSDXStencil
+{
+  public:
+    VSDXStencil();
+    VSDXStencil(const VSDXStencil &stencil);
+    ~VSDXStencil();
+    VSDXStencil &operator=(const VSDXStencil &stencil);
+  private:
+};
 
 class VSDXStencils
 {
   public:
     VSDXStencils();
     ~VSDXStencils();
+    void addStencil(unsigned idx, const VSDXStencil &stencil);
+    const VSDXStencil *getStencil(unsigned idx) const;
   private:
+    std::map<unsigned, VSDXStencil> m_stencils;
 };
 
 

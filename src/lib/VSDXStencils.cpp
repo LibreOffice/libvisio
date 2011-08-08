@@ -19,10 +19,44 @@
 
 #include "VSDXStencils.h"
 
+libvisio::VSDXStencil::VSDXStencil()
+{
+}
+
+libvisio::VSDXStencil::VSDXStencil(const libvisio::VSDXStencil &stencil)
+{
+}
+
+libvisio::VSDXStencil::~VSDXStencil()
+{
+}
+
+libvisio::VSDXStencil &libvisio::VSDXStencil::operator=(const libvisio::VSDXStencil &stencil)
+{
+  return *this;
+}
+
+
+
+
 libvisio::VSDXStencils::VSDXStencils()
 {
 }
 
 libvisio::VSDXStencils::~VSDXStencils()
 {
+}
+
+void libvisio::VSDXStencils::addStencil(unsigned idx, const libvisio::VSDXStencil &stencil)
+{
+  m_stencils[idx] = stencil;
+}
+
+const libvisio::VSDXStencil *libvisio::VSDXStencils::getStencil(unsigned idx) const
+{
+  std::map<unsigned, VSDXStencil>::const_iterator iter = m_stencils.find(idx);
+  if (iter != m_stencils.end())
+    return &(iter->second);
+  else
+    return 0;
 }
