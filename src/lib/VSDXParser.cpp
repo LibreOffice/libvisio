@@ -227,6 +227,9 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
       case VSD_LINE:
         readLineStyle(input);
         break;
+      case VSD_FILL_AND_SHADOW:
+        readFillStyle(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -617,11 +620,12 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
 void libvisio::VSDXParser::readShape(WPXInputStream * input)
 {
   input->seek(0x22, WPX_SEEK_CUR);
-  unsigned textStyle = readU32(input);
+  unsigned fillStyle = readU32(input);
   input->seek(4, WPX_SEEK_CUR);
   unsigned lineStyle = readU32(input);
   input->seek(4, WPX_SEEK_CUR);
-  unsigned fillStyle = readU32(input);
+  unsigned textStyle = readU32(input);
+
   m_collector->collectShape(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
 }
 

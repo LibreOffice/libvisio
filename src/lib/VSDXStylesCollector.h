@@ -77,6 +77,8 @@ public:
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
   void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
+  void collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
+  void collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc);
 
   // Temporary hack
   void startPage();
@@ -94,6 +96,9 @@ private:
 
   unsigned m_currentLevel;
   bool m_isShapeStarted;
+
+  double m_shadowOffsetX;
+  double m_shadowOffsetY;
 
   unsigned m_currentShapeId;
   std::map<unsigned, XForm> m_groupXForms;

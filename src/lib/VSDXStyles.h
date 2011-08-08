@@ -40,21 +40,18 @@ struct VSDXFillStyle
 {
   VSDXFillStyle();
   unsigned short fgColourId;
-  Colour fgColour;
+  //  Colour fgColour;
   unsigned short bgColourId;
-  Colour bgColour;
+  //  Colour bgColour;
   unsigned short pattern;
 
-  unsigned short shadowFgColourId;
+  unsigned fgTransparency;
+  unsigned bgTransparency;
+
   Colour shadowFgColour;
-  unsigned short shadowBgColourId;
-  Colour shadowBGColour;
   unsigned short shadowPattern;
-  unsigned short shadowType;
   double shadowOffsetX;
   double shadowOffsetY;
-  double shadowAngle;
-  double shadowScale;
 };
 
 struct VSDXTextStyle

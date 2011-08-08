@@ -85,6 +85,8 @@ public:
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
   void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
+  void collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
+  void collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc);
 
   void startPage();
   void endPage();
@@ -108,6 +110,7 @@ private:
   void _appendUTF16LE(WPXString &text, WPXInputStream *input);
 
   void lineStyleFromStyleSheet(unsigned styleId);
+  void fillStyleFromStyleSheet(unsigned styleId);
 
   bool m_isPageStarted;
   double m_pageWidth;

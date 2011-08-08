@@ -76,6 +76,7 @@ protected:
 
   void readStyleSheet(WPXInputStream *input);
   void readLineStyle(WPXInputStream *input);
+  virtual void readFillStyle(WPXInputStream *input) = 0;
 
   // parser of one pass
   bool parseDocument(WPXInputStream *input);

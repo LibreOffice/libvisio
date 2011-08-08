@@ -26,11 +26,8 @@ libvisio::VSDXLineStyle::VSDXLineStyle()
 {}
 
 libvisio::VSDXFillStyle::VSDXFillStyle()
-  : fgColourId(1), fgColour(0xff, 0xff, 0xff, 0xff), bgColourId(0),
-    bgColour(), pattern(0), shadowFgColourId(0), shadowFgColour(),
-    shadowBgColourId(1), shadowBGColour(0xff, 0xff, 0xff, 0xff),
-    shadowPattern(0), shadowType(0), shadowOffsetX(0), shadowOffsetY(0),
-    shadowAngle(0), shadowScale(1)
+  : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0),
+    shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0)
 {}
 
 libvisio::VSDXTextStyle::VSDXTextStyle()

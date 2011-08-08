@@ -27,7 +27,8 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
   std::vector<std::list<unsigned> > &documentPageShapeOrders
 ) :
-  m_currentLevel(0), m_isShapeStarted(false), 
+  m_currentLevel(0), m_isShapeStarted(false),
+  m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_currentShapeId(0), m_groupXForms(), m_groupMemberships(),
   m_groupXFormsSequence(groupXFormsSequence),
   m_groupMembershipsSequence(groupMembershipsSequence), m_pageShapeOrder(),
@@ -211,14 +212,37 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
 
 void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
 {
-  _handleLevelChange(level);
-
   if (m_lineStyle == 0) m_lineStyle = new VSDXLineStyle();
 
   m_lineStyle->width = strokeWidth;
   m_lineStyle->colour = c;
   m_lineStyle->pattern = linePattern;
   m_lineStyle->cap = lineCap;
+
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+{
+  if (m_fillStyle == 0) m_fillStyle = new VSDXFillStyle();
+
+  m_fillStyle->fgColourId = colourIndexFG;
+  m_fillStyle->bgColourId = colourIndexBG;
+  m_fillStyle->pattern = fillPattern;
+  m_fillStyle->fgTransparency = fillFGTransparency;
+  m_fillStyle->bgTransparency = fillBGTransparency;
+
+  m_fillStyle->shadowPattern = shadowPattern;
+  m_fillStyle->shadowFgColour = shfgc;
+  m_fillStyle->shadowOffsetX = shadowOffsetX;
+  m_fillStyle->shadowOffsetY = shadowOffsetY;
+
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc)
+{
+  collectFillStyle(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
 void libvisio::VSDXStylesCollector::startPage()
