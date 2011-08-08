@@ -33,7 +33,10 @@ class VSDXGeometryList
 {
 public:
   VSDXGeometryList();
+  VSDXGeometryList(const VSDXGeometryList &geomList);
   ~VSDXGeometryList();
+  VSDXGeometryList &operator=(const VSDXGeometryList &geomList);
+
   void addGeometry(unsigned id, unsigned level, unsigned geomFlags);
   void addMoveTo(unsigned id, unsigned level, double x, double y);
   void addLineTo(unsigned id, unsigned level, double x, double y);

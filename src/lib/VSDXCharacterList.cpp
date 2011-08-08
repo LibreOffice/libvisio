@@ -71,6 +71,22 @@ libvisio::VSDXCharacterList::VSDXCharacterList()
 {
 }
 
+libvisio::VSDXCharacterList::VSDXCharacterList(const libvisio::VSDXCharacterList &charList)
+{
+  std::map<unsigned, VSDXCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
+  for (; iter != charList.m_elements.end(); iter++)
+      m_elements[iter->first] = iter->second->clone();
+}
+
+libvisio::VSDXCharacterList &libvisio::VSDXCharacterList::operator=(const libvisio::VSDXCharacterList &charList)
+{
+  clear();
+  std::map<unsigned, VSDXCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
+  for (; iter != charList.m_elements.end(); iter++)
+      m_elements[iter->first] = iter->second->clone();
+  return *this;
+}
+
 libvisio::VSDXCharacterList::~VSDXCharacterList()
 {
   clear();

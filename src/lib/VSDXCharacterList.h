@@ -33,7 +33,9 @@ class VSDXCharacterList
 {
 public:
   VSDXCharacterList();
+  VSDXCharacterList(const VSDXCharacterList &charList);
   ~VSDXCharacterList();
+  VSDXCharacterList &operator=(const VSDXCharacterList &charList);
   void addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDXCollector *collector);
