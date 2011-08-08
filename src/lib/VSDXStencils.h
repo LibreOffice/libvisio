@@ -25,6 +25,16 @@
 
 namespace libvisio {
 
+class VSDXStencilShape
+{
+  public:
+    VSDXStencilShape();
+    VSDXStencilShape(const VSDXStencilShape &shape);
+	~VSDXStencilShape();
+	VSDXStencilShape &operator=(const VSDXStencilShape &shape);
+  private:
+};
+
 class VSDXStencil
 {
   public:

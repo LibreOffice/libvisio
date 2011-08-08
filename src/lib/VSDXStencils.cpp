@@ -19,6 +19,26 @@
 
 #include "VSDXStencils.h"
 
+libvisio::VSDXStencilShape::VSDXStencilShape()
+{
+}
+
+libvisio::VSDXStencilShape::VSDXStencilShape(const libvisio::VSDXStencilShape &shape)
+{
+}
+
+libvisio::VSDXStencilShape::~VSDXStencilShape()
+{
+}
+
+libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio::VSDXStencilShape &shape)
+{
+  return *this;
+}
+
+
+
+
 libvisio::VSDXStencil::VSDXStencil()
 {
 }
