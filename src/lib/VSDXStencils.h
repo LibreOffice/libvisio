@@ -21,7 +21,9 @@
 #define __VSDXSTENCILS_H__
 
 #include <map>
+#include <vector>
 #include "VSDXStyles.h"
+#include "VSDXGeometryList.h"
 
 namespace libvisio {
 
@@ -32,7 +34,13 @@ class VSDXStencilShape
     VSDXStencilShape(const VSDXStencilShape &shape);
 	~VSDXStencilShape();
 	VSDXStencilShape &operator=(const VSDXStencilShape &shape);
-  private:
+
+  VSDXGeometryList geometry;
+  unsigned lineStyleID, fillStyleID;
+  VSDXLineStyle lineStyle;
+  VSDXFillStyle fillStyle;
+  WPXString text;
+  std::vector<CharFormat> charFormats;
 };
 
 class VSDXStencil
@@ -42,7 +50,8 @@ class VSDXStencil
     VSDXStencil(const VSDXStencil &stencil);
     ~VSDXStencil();
     VSDXStencil &operator=(const VSDXStencil &stencil);
-  private:
+    void addStencilShape(const VSDXStencilShape &shape);
+    std::vector<VSDXStencilShape> shapes;
 };
 
 class VSDXStencils

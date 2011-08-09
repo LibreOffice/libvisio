@@ -18,12 +18,15 @@
  */
 
 #include "VSDXStencils.h"
+#include "libvisio_utils.h"
 
 libvisio::VSDXStencilShape::VSDXStencilShape()
+  : geometry(), lineStyleID(0xffffffff), fillStyleID(0xffffffff), lineStyle(), fillStyle(), text()
 {
 }
 
 libvisio::VSDXStencilShape::VSDXStencilShape(const libvisio::VSDXStencilShape &shape)
+  : geometry(shape.geometry), lineStyleID(shape.lineStyleID), fillStyleID(shape.fillStyleID), lineStyle(shape.lineStyle), fillStyle(shape.fillStyle), text(shape.text)
 {
 }
 
@@ -37,13 +40,12 @@ libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio
 }
 
 
-
-
 libvisio::VSDXStencil::VSDXStencil()
 {
 }
 
 libvisio::VSDXStencil::VSDXStencil(const libvisio::VSDXStencil &stencil)
+  : shapes(stencil.shapes)
 {
 }
 
@@ -56,6 +58,10 @@ libvisio::VSDXStencil &libvisio::VSDXStencil::operator=(const libvisio::VSDXSten
   return *this;
 }
 
+void libvisio::VSDXStencil::addStencilShape(const VSDXStencilShape &shape)
+{
+  shapes.push_back(shape);
+}
 
 
 
