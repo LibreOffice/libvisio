@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 pkgconfdir = $(libdir)/pkgconfig
 
 pkgconf_DATA = libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.pc
