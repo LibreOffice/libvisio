@@ -32,6 +32,7 @@
 #include "VSDXGeometryList.h"
 #include "VSDXCharacterList.h"
 #include "VSDXShapeList.h"
+#include "VSDXStencils.h"
 
 namespace libvisio
 {
@@ -78,6 +79,8 @@ protected:
   void readLineStyle(WPXInputStream *input);
   virtual void readFillStyle(WPXInputStream *input) = 0;
 
+  void readStencilShape(WPXInputStream *input);
+
   // parser of one pass
   bool parseDocument(WPXInputStream *input);
 
@@ -107,6 +110,11 @@ private:
   VSDXParser();
   VSDXParser(const VSDXParser&);
   VSDXParser &operator=(const VSDXParser&);
+
+  VSDXStencils m_stencils;
+  VSDXStencil * m_currentStencil;
+  VSDXStencilShape m_stencilShape;
+  bool m_isStencilStarted;
 
 };
 

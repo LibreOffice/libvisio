@@ -52,6 +52,7 @@ public:
   void clear();
   bool empty() const { return (!m_elements.size()); }
   VSDXGeometryListElement * getElement(unsigned index);
+  const unsigned count() const { return m_elements.size(); }
 private:
   std::map<unsigned, VSDXGeometryListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;
