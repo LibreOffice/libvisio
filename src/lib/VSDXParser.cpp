@@ -152,6 +152,9 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
     case VSD_STYLES:
       handleStyles(&tmpInput);
       break;
+    case VSD_STENCILS:
+      handleStencils(&tmpInput);
+      break;
     default:
       break;
     }
@@ -183,7 +186,6 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input)
     bool compressed = ((ptrFormat & 2) == 2);
     m_input->seek(ptrOffset, WPX_SEEK_SET);
     WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
-
     switch (ptrType)
     {
     case VSD_PAGE:
@@ -218,7 +220,6 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
       endPos = m_header.dataLength+m_header.trailer+input->tell();
 
       _handleLevelChange(m_header.level);
-      VSD_DEBUG_MSG(("Styles: parsing chunk type %x\n", m_header.chunkType));
       switch (m_header.chunkType)
       {
       case VSD_STYLE_SHEET:
@@ -230,6 +231,112 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
       case VSD_FILL_AND_SHADOW:
         readFillStyle(input);
         break;
+      default:
+        m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+      }
+
+      input->seek(endPos, WPX_SEEK_SET);
+    }
+    _handleLevelChange(0);
+  }
+  catch (EndOfStreamException)
+  {
+    _handleLevelChange(0);
+  }
+}
+
+void libvisio::VSDXParser::handleStencils(WPXInputStream *input)
+{
+  unsigned int ptrType;
+  unsigned int ptrOffset;
+  unsigned int ptrLength;
+  unsigned int ptrFormat;
+
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned int offset = readU32(input);
+  input->seek(offset+4, WPX_SEEK_SET);
+  unsigned int pointerCount = readU32(input);
+  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
+
+  for (unsigned int i = 0; i < pointerCount; i++)
+  {
+    ptrType = readU32(input);
+    input->seek(4, WPX_SEEK_CUR); // Skip dword
+    ptrOffset = readU32(input);
+    ptrLength = readU32(input);
+    ptrFormat = readU16(input);
+
+    bool compressed = ((ptrFormat & 2) == 2);
+    m_input->seek(ptrOffset, WPX_SEEK_SET);
+    WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
+
+    switch (ptrType)
+    {
+    case VSD_STENCIL_PAGE:
+      handleStencilPage(tmpInput);
+      break;
+    default:
+      break;
+    }
+
+    delete tmpInput;
+  }
+}
+
+void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input)
+{
+  unsigned int ptrType;
+  unsigned int ptrOffset;
+  unsigned int ptrLength;
+  unsigned int ptrFormat;
+
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned int offset = readU32(input);
+  input->seek(offset+4, WPX_SEEK_SET);
+  unsigned int pointerCount = readU32(input);
+  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
+
+  for (unsigned int i = 0; i < pointerCount; i++)
+  {
+    ptrType = readU32(input);
+    input->seek(4, WPX_SEEK_CUR); // Skip dword
+    ptrOffset = readU32(input);
+    ptrLength = readU32(input);
+    ptrFormat = readU16(input);
+
+    bool compressed = ((ptrFormat & 2) == 2);
+    m_input->seek(ptrOffset, WPX_SEEK_SET);
+    WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
+
+    switch (ptrType)
+    {
+    case VSD_SHAPE_GROUP:
+    case VSD_SHAPE_SHAPE:
+      handleStencilShape(tmpInput);
+      break;
+    default:
+      break;
+    }
+
+    delete tmpInput;
+  }
+}
+
+void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
+{
+  try
+  {
+    long endPos = 0;
+
+    while (!input->atEOS())
+    {
+      getChunkHeader(input);
+      endPos = m_header.dataLength+m_header.trailer+input->tell();
+
+      _handleLevelChange(m_header.level);
+      VSD_DEBUG_MSG(("Stencil: parsing chunk type %x\n", m_header.chunkType));
+      switch (m_header.chunkType)
+      {
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }

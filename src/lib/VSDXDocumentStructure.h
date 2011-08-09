@@ -31,6 +31,7 @@
 #define VSD_FONT_IX 0x19
 #define VSD_STYLES 0x1a
 #define VSD_STENCILS 0x1d
+#define VSD_STENCIL_PAGE 0x1e
 #define VSD_OLE_DATA 0x1f
 
 #define VSD_PAGES 0x27

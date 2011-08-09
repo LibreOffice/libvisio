@@ -85,6 +85,9 @@ protected:
   void handlePages(WPXInputStream *input);
   void handlePage(WPXInputStream *input);
   void handleStyles(WPXInputStream *input);
+  void handleStencils(WPXInputStream *input);
+  void handleStencilPage(WPXInputStream *input);
+  void handleStencilShape(WPXInputStream *input);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);

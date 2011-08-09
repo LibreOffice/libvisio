@@ -53,7 +53,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupXFormsSequence(groupXFormsSequence),
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false), m_styles(styles)
+    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false), m_styles(styles), m_isTextUnstyled(false)
 {
 }
 

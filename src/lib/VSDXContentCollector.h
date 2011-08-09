@@ -163,6 +163,7 @@ private:
   bool m_outputTextStart;
 
   VSDXStyles m_styles;
+  bool m_isTextUnstyled;
 };
 
 } // namespace libvisio
