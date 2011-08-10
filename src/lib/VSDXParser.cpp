@@ -276,7 +276,7 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input)
     case VSD_STENCIL_PAGE:
       m_currentStencil = new VSDXStencil();
       handleStencilPage(tmpInput);
-      VSD_DEBUG_MSG(("Adding current stencil with %d shapes\n", m_currentStencil->shapes.size()));
+      VSD_DEBUG_MSG(("Adding current stencil with %lu shapes\n", (unsigned long)(m_currentStencil->shapes.size())));
       m_stencils.addStencil(i, *m_currentStencil);
       break;
     default:

@@ -971,7 +971,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     {
       VSD_DEBUG_MSG(("Got stencil shape, handling %d geometries\n", stencilShape->geometry.count()));
       stencilShape->geometry.handle(this);
-      VSD_DEBUG_MSG(("Geom list now has %d geometries\n", m_currentGeometry.size()));
+      VSD_DEBUG_MSG(("Geom list now has %lu geometries\n", (unsigned long)m_currentGeometry.size()));
       _flushCurrentPath();
     }
   }
@@ -1058,9 +1058,9 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
   else if (m_textFormat == VSD_TEXT_UTF16)
   {
     unsigned long max = charCount <= (m_textStream.size()/2) ? charCount : (m_textStream.size()/2);
-    VSD_DEBUG_MSG(("Charcount: %d, max: %ld, stream size: %d\n", charCount, max, m_textStream.size()));
+    VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", charCount, max, (unsigned long)m_textStream.size()));
     max = (charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
-    VSD_DEBUG_MSG(("Charcount: %d, max: %ld, stream size: %d\n", charCount, max, m_textStream.size()));
+    VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", charCount, max, (unsigned long)m_textStream.size()));
     VSDInternalStream tmpStream(m_textStream, max*2);
     _appendUTF16LE(text, &tmpStream);
     
