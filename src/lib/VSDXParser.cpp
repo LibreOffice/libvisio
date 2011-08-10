@@ -784,7 +784,11 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
 
 void libvisio::VSDXParser::readShape(WPXInputStream * input)
 {
-  input->seek(0x22, WPX_SEEK_CUR);
+  input->seek(0x12, WPX_SEEK_CUR);
+  unsigned masterPage = readU32(input);
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned masterShape = readU32(input);
+  input->seek(0x4, WPX_SEEK_CUR);
   unsigned fillStyle = readU32(input);
   input->seek(4, WPX_SEEK_CUR);
   unsigned lineStyle = readU32(input);
@@ -797,7 +801,7 @@ void libvisio::VSDXParser::readShape(WPXInputStream * input)
     m_stencilShape.fillStyleID = fillStyle;
   }
   else
-    m_collector->collectShape(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
+    m_collector->collectShape(m_header.id, m_header.level, masterPage, masterShape, lineStyle, fillStyle, textStyle);
 }
 
 void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)

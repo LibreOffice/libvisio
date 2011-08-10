@@ -933,7 +933,7 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
   m_isPageStarted = true;
 }
 
-void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned lineStyleId, unsigned fillStyleId, unsigned /*textStyleId*/)
+void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned /*masterPage*/, unsigned /*masterShape*/, unsigned lineStyleId, unsigned fillStyleId, unsigned /*textStyleId*/)
 {
   _handleLevelChange(level);
 
