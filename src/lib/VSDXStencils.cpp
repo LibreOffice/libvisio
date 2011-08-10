@@ -25,42 +25,51 @@ libvisio::VSDXStencilShape::VSDXStencilShape()
 {
 }
 
-libvisio::VSDXStencilShape::VSDXStencilShape(const libvisio::VSDXStencilShape &shape)
+/*libvisio::VSDXStencilShape::VSDXStencilShape(const libvisio::VSDXStencilShape &shape)
   : geometry(shape.geometry), lineStyleID(shape.lineStyleID), fillStyleID(shape.fillStyleID), lineStyle(shape.lineStyle), fillStyle(shape.fillStyle), text(shape.text)
 {
-}
+}*/
 
 libvisio::VSDXStencilShape::~VSDXStencilShape()
 {
 }
 
-libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio::VSDXStencilShape &shape)
+/*libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio::VSDXStencilShape &shape)
 {
   return *this;
-}
+  }*/
 
 
 libvisio::VSDXStencil::VSDXStencil()
 {
 }
 
-libvisio::VSDXStencil::VSDXStencil(const libvisio::VSDXStencil &stencil)
+/*libvisio::VSDXStencil::VSDXStencil(const libvisio::VSDXStencil &stencil)
   : shapes(stencil.shapes)
 {
-}
+}*/
 
 libvisio::VSDXStencil::~VSDXStencil()
 {
 }
 
-libvisio::VSDXStencil &libvisio::VSDXStencil::operator=(const libvisio::VSDXStencil &stencil)
+/*libvisio::VSDXStencil &libvisio::VSDXStencil::operator=(const libvisio::VSDXStencil &stencil)
 {
   return *this;
+  }*/
+
+void libvisio::VSDXStencil::addStencilShape(unsigned id, const VSDXStencilShape &shape)
+{
+  shapes[id] = shape;
 }
 
-void libvisio::VSDXStencil::addStencilShape(const VSDXStencilShape &shape)
+const libvisio::VSDXStencilShape *libvisio::VSDXStencil::getStencilShape(unsigned id) const
 {
-  shapes.push_back(shape);
+  std::map<unsigned, VSDXStencilShape>::const_iterator iter = shapes.find(id);
+  if (iter != shapes.end())
+    return &(iter->second);
+  else
+    return 0;  
 }
 
 

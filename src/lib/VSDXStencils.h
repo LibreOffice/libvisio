@@ -31,9 +31,9 @@ class VSDXStencilShape
 {
   public:
     VSDXStencilShape();
-    VSDXStencilShape(const VSDXStencilShape &shape);
+    //VSDXStencilShape(const VSDXStencilShape &shape);
 	~VSDXStencilShape();
-	VSDXStencilShape &operator=(const VSDXStencilShape &shape);
+	//VSDXStencilShape &operator=(const VSDXStencilShape &shape);
 
   VSDXGeometryList geometry;
   unsigned lineStyleID, fillStyleID;
@@ -47,11 +47,12 @@ class VSDXStencil
 {
   public:
     VSDXStencil();
-    VSDXStencil(const VSDXStencil &stencil);
+    //VSDXStencil(const VSDXStencil &stencil);
     ~VSDXStencil();
-    VSDXStencil &operator=(const VSDXStencil &stencil);
-    void addStencilShape(const VSDXStencilShape &shape);
-    std::vector<VSDXStencilShape> shapes;
+    //VSDXStencil &operator=(const VSDXStencil &stencil);
+    void addStencilShape(unsigned id, const VSDXStencilShape &shape);
+    const VSDXStencilShape *getStencilShape(unsigned id) const;
+    std::map<unsigned, VSDXStencilShape> shapes;
 };
 
 class VSDXStencils

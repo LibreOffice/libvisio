@@ -19,6 +19,7 @@
 
 #include "VSDXCollector.h"
 #include "VSDXGeometryList.h"
+#include "libvisio_utils.h"
 
 namespace libvisio {
 
@@ -366,11 +367,11 @@ void libvisio::VSDXGeometryList::setElementsOrder(const std::vector<unsigned> &e
     m_elementsOrder.push_back(elementsOrder[i]);
 }
 
-void libvisio::VSDXGeometryList::handle(VSDXCollector *collector)
+void libvisio::VSDXGeometryList::handle(VSDXCollector *collector) const
 {
   if (empty())
     return;
-  std::map<unsigned, VSDXGeometryListElement *>::iterator iter;
+  std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter;
   if (m_elementsOrder.size())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)

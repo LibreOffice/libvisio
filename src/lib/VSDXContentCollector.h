@@ -45,7 +45,7 @@ public:
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
     std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
     std::vector<std::list<unsigned> > &documentPageShapeOrders,
-    VSDXStyles &styles
+    VSDXStyles &styles, VSDXStencils &stencils
   );
   virtual ~VSDXContentCollector() {};
 
@@ -164,6 +164,8 @@ private:
 
   VSDXStyles m_styles;
   bool m_isTextUnstyled;
+
+  VSDXStencils m_stencils;
 };
 
 } // namespace libvisio

@@ -38,7 +38,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
   std::vector<std::list<unsigned> > &documentPageShapeOrders,
-  VSDXStyles &styles
+  VSDXStyles &styles, VSDXStencils &stencils
   ) :
     m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
     m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
@@ -53,7 +53,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupXFormsSequence(groupXFormsSequence),
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false), m_styles(styles), m_isTextUnstyled(false)
+    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false), m_styles(styles), m_isTextUnstyled(false), m_stencils(stencils)
 {
 }
 
@@ -933,7 +933,7 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
   m_isPageStarted = true;
 }
 
-void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned /*masterPage*/, unsigned /*masterShape*/, unsigned lineStyleId, unsigned fillStyleId, unsigned /*textStyleId*/)
+void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned /*textStyleId*/)
 {
   _handleLevelChange(level);
 
@@ -961,6 +961,20 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
 
   lineStyleFromStyleSheet(lineStyleId);
   fillStyleFromStyleSheet(fillStyleId);
+
+  // Get stencil shape
+  const VSDXStencil * stencil = m_stencils.getStencil(masterPage);
+  if (stencil != 0)
+  {
+    const VSDXStencilShape * stencilShape = stencil->getStencilShape(masterShape);
+    if (stencilShape != 0)
+    {
+      VSD_DEBUG_MSG(("Got stencil shape, handling %d geometries\n", stencilShape->geometry.count()));
+      stencilShape->geometry.handle(this);
+      VSD_DEBUG_MSG(("Geom list now has %d geometries\n", m_currentGeometry.size()));
+      _flushCurrentPath();
+    }
+  }
 
   m_currentShapeId = id;
   m_pageOutput[m_currentShapeId] = VSDXOutputElementList();

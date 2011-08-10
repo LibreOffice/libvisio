@@ -48,7 +48,7 @@ public:
   void addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
-  void handle(VSDXCollector *collector);
+  void handle(VSDXCollector *collector) const;
   void clear();
   bool empty() const { return (!m_elements.size()); }
   VSDXGeometryListElement * getElement(unsigned index);

@@ -86,7 +86,7 @@ bool libvisio::VSDXParser::parse()
 
   VSDXStyles styles = stylesCollector.getStyleSheets();
 
-  VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles);
+  VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
   m_collector = &contentCollector;
   if (!parseDocument(trailerStream))
   {
@@ -320,7 +320,7 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input)
       m_stencilShape = VSDXStencilShape();
       handleStencilShape(tmpInput);
       VSD_DEBUG_MSG(("Adding stencil shape to stencil with %d geometries\n", m_stencilShape.geometry.count()));
-      m_currentStencil->addStencilShape(m_stencilShape);
+      m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
     default:
       break;
