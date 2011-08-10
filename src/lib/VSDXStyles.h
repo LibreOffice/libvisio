@@ -30,6 +30,8 @@ namespace libvisio {
 struct VSDXLineStyle
 {
   VSDXLineStyle();
+  VSDXLineStyle(double w, Colour col, unsigned short p, unsigned c)
+  : width(w), colour(col), pattern(p), cap(c) {}
   double width;
   Colour colour;
   unsigned short pattern;
@@ -39,6 +41,8 @@ struct VSDXLineStyle
 struct VSDXFillStyle
 {
   VSDXFillStyle();
+  VSDXFillStyle(unsigned short fgcId, unsigned short bgcId, unsigned short p, unsigned fga, unsigned bga, Colour sfgc, unsigned short shp, double shX, double shY)
+  : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
   unsigned short fgColourId;
   //  Colour fgColour;
   unsigned short bgColourId;

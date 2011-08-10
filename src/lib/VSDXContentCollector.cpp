@@ -959,9 +959,6 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_styleProps.insert("draw:fill", m_fillType);
   m_styleProps.insert("svg:stroke-dasharray", "solid");
 
-  lineStyleFromStyleSheet(lineStyleId);
-  fillStyleFromStyleSheet(fillStyleId);
-
   m_currentShapeId = id;
   m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
   m_shapeOutput = &m_pageOutput[m_currentShapeId];
@@ -975,11 +972,22 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     const VSDXStencilShape * stencilShape = stencil->getStencilShape(masterShape);
     if (stencilShape != 0)
     {
-      VSD_DEBUG_MSG(("Got stencil shape, handling %d geometries\n", stencilShape->geometry.count()));
       stencilShape->geometry.handle(this);
-      VSD_DEBUG_MSG(("Geom list now has %lu geometries\n", (unsigned long)m_currentGeometry.size()));
+
+      if (stencilShape->lineStyle != 0)
+        lineStyleFromStyleSheet(*(stencilShape->lineStyle));
+      else if (stencilShape->lineStyleID != 0xffffffff)
+        lineStyleFromStyleSheet(stencilShape->lineStyleID);
+
+      if (stencilShape->fillStyle != 0)
+        fillStyleFromStyleSheet(*(stencilShape->fillStyle));
+      else if (stencilShape->fillStyleID != 0xffffffff)
+        fillStyleFromStyleSheet(stencilShape->fillStyleID);
     }
   }
+
+  if (lineStyleId != 0xffffffff) lineStyleFromStyleSheet(lineStyleId);
+  if (fillStyleId != 0xffffffff) fillStyleFromStyleSheet(fillStyleId);
 }
 
 void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
@@ -1112,7 +1120,11 @@ void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned 
 
 void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(unsigned styleId)
 {
-  VSDXLineStyle lineStyle = m_styles.getLineStyle(styleId);
+  lineStyleFromStyleSheet(m_styles.getLineStyle(styleId));
+}
+
+void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle &lineStyle)
+{
   m_lineColour = getColourString(lineStyle.colour);
   m_linePattern = lineStyle.pattern;
 
@@ -1174,7 +1186,11 @@ void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(unsigned styleId)
 
 void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
 {
-  VSDXFillStyle fillStyle = m_styles.getFillStyle(styleId);
+  fillStyleFromStyleSheet(m_styles.getFillStyle(styleId));
+}
+
+void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle &fillStyle)
+{
   m_fillPattern = fillStyle.pattern;
   m_fillFGTransparency = fillStyle.fgTransparency;
   m_fillBGTransparency = fillStyle.bgTransparency;

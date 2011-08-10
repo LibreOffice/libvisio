@@ -370,6 +370,15 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
       case VSD_ELLIPTICAL_ARC_TO:
         readEllipticalArcTo(input);
         break;
+      case VSD_LINE:
+        readLine(input);
+        break;
+      case VSD_FILL_AND_SHADOW:
+        readFillAndShadow(input);
+        break;
+      case VSD_PAGE_PROPS:
+        readPageProps(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -577,9 +586,9 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
   double ytop = readDouble(input);
 
   if (m_isStencilStarted)
-m_stencilShape.geometry.addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
-else
-m_geomList->addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
+    m_stencilShape.geometry.addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
+  else
+    m_geomList->addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
 }
 
 void libvisio::VSDXParser::readLine(WPXInputStream *input)
@@ -596,7 +605,13 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
   input->seek(12, WPX_SEEK_CUR);
   unsigned lineCap = readU8(input);
 
-  m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
+  if (m_isStencilStarted)
+  {
+    VSD_DEBUG_MSG(("Found stencil line style, adding\n"));
+    if (m_stencilShape.lineStyle == 0) m_stencilShape.lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, lineCap);
+  }
+  else
+    m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
 }
 
 void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
@@ -779,7 +794,13 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   /* m_scale = */ readDouble(input);
 
-  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY);
+  if (m_isStencilStarted)
+  {
+    m_currentStencil->shadowOffsetX = shadowOffsetX;
+    m_currentStencil->shadowOffsetY = shadowOffsetY;
+  }
+  else
+    m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VSDXParser::readShape(WPXInputStream * input)

@@ -37,8 +37,8 @@ class VSDXStencilShape
 
   VSDXGeometryList geometry;
   unsigned lineStyleID, fillStyleID;
-  VSDXLineStyle lineStyle;
-  VSDXFillStyle fillStyle;
+  VSDXLineStyle * lineStyle;
+  VSDXFillStyle * fillStyle;
   WPXString text;
   std::vector<CharFormat> charFormats;
 };
@@ -53,6 +53,8 @@ class VSDXStencil
     void addStencilShape(unsigned id, const VSDXStencilShape &shape);
     const VSDXStencilShape *getStencilShape(unsigned id) const;
     std::map<unsigned, VSDXStencilShape> shapes;
+    double shadowOffsetX;
+    double shadowOffsetY;
 };
 
 class VSDXStencils

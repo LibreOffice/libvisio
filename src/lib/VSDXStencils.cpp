@@ -21,7 +21,7 @@
 #include "libvisio_utils.h"
 
 libvisio::VSDXStencilShape::VSDXStencilShape()
-  : geometry(), lineStyleID(0xffffffff), fillStyleID(0xffffffff), lineStyle(), fillStyle(), text()
+  : geometry(), lineStyleID(0xffffffff), fillStyleID(0xffffffff), lineStyle(0), fillStyle(0), text()
 {
 }
 

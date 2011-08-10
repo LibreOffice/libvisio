@@ -106,15 +106,15 @@ protected:
   VSDXShapeList m_shapeList;
   unsigned m_currentLevel;
 
-private:
-  VSDXParser();
-  VSDXParser(const VSDXParser&);
-  VSDXParser &operator=(const VSDXParser&);
-
   VSDXStencils m_stencils;
   VSDXStencil * m_currentStencil;
   VSDXStencilShape m_stencilShape;
   bool m_isStencilStarted;
+
+private:
+  VSDXParser();
+  VSDXParser(const VSDXParser&);
+  VSDXParser &operator=(const VSDXParser&);
 
 };
 

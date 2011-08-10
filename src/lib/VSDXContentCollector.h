@@ -111,6 +111,8 @@ private:
 
   void lineStyleFromStyleSheet(unsigned styleId);
   void fillStyleFromStyleSheet(unsigned styleId);
+  void lineStyleFromStyleSheet(const VSDXLineStyle &style);
+  void fillStyleFromStyleSheet(const VSDXFillStyle &style);
 
   bool m_isPageStarted;
   double m_pageWidth;

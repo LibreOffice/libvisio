@@ -127,7 +127,12 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
   input->seek(5, WPX_SEEK_CUR);  // Shadow Background Colour skipped
   unsigned shadowPattern = readU8(input);
 
-  m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
+  if (m_isStencilStarted)
+  {
+    if (m_stencilShape.fillStyle == 0) m_stencilShape.fillStyle = new VSDXFillStyle(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, m_currentStencil->shadowOffsetX, m_currentStencil->shadowOffsetY);
+  }
+  else
+    m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
 }
 
 void libvisio::VSD6Parser::readFillStyle(WPXInputStream *input)
