@@ -56,9 +56,9 @@ AS_IF([test "x$enable_static_tools" = "xyes"], [
 AM_CONDITIONAL(STATIC_TOOLS, [test "x$enable_static_tools" = "xyes"])
 
 AC_ARG_ENABLE([werror],
-	[AS_HELP_STRING([--enable-werror], [Treat all warnings as errors, usefull for development])]
+	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, usefull for development])]
 )
-AS_IF([test x"$enable_werror" = "xyes"], [
+AS_IF([test x"$enable_werror" != "xno"], [
 	CFLAGS="$CFLAGS -Werror"
 	CXXFLAGS="$CXXFLAGS -Werror"
 ])
@@ -96,7 +96,7 @@ case "$host" in
 	;;
 esac
 AC_MSG_RESULT([$native_win32])
-AM_CONDITIONAL(OS_WIN32, test "x$native_win32" = "xyes")
+AM_CONDITIONAL(OS_WIN32, [test "x$native_win32" = "xyes"])
 AC_SUBST(LIBVISIO_WIN32_RESOURCE)
 AC_SUBST(VSD2RAW_WIN32_RESOURCE)
 AC_SUBST(VSD2XHTML_WIN32_RESOURCE)
