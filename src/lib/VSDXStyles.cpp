@@ -22,7 +22,7 @@
 #define NOMASTER 0xffffffff
 
 libvisio::VSDXLineStyle::VSDXLineStyle()
-  : width(0), colour(), pattern(0), cap(0)
+  : width(0.01), colour(), pattern(0), cap(0)
 {}
 
 libvisio::VSDXFillStyle::VSDXFillStyle()
