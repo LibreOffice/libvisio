@@ -962,6 +962,12 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   lineStyleFromStyleSheet(lineStyleId);
   fillStyleFromStyleSheet(fillStyleId);
 
+  m_currentShapeId = id;
+  m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
+  m_shapeOutput = &m_pageOutput[m_currentShapeId];
+  m_isShapeStarted = true;
+  m_isFirstGeometry = true;
+
   // Get stencil shape
   const VSDXStencil * stencil = m_stencils.getStencil(masterPage);
   if (stencil != 0)
@@ -975,12 +981,6 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       _flushCurrentPath();
     }
   }
-
-  m_currentShapeId = id;
-  m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
-  m_shapeOutput = &m_pageOutput[m_currentShapeId];
-  m_isShapeStarted = true;
-  m_isFirstGeometry = true;
 }
 
 void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
