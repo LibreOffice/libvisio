@@ -567,7 +567,7 @@ void libvisio::VSDXContentCollector::collectCharList(unsigned /* id */, unsigned
 void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned geomFlags)
 {
   _handleLevelChange(level);
-  m_x = 0.0; m_x = 0.0;
+  m_x = 0.0; m_y = 0.0;
   m_originalX = 0.0; m_originalY = 0.0;
   bool noFill = ((geomFlags & 1) == 1);
   bool noLine = ((geomFlags & 2) == 2);
@@ -974,7 +974,11 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     const VSDXStencilShape * stencilShape = stencil->getStencilShape(masterShape);
     if (stencilShape != 0)
     {
-      stencilShape->geometry.handle(this);
+      for (unsigned i = 0; i < stencilShape->geometries.size(); i++)
+      {
+        m_x = 0.0; m_y = 0.0;
+        stencilShape->geometries[i].handle(this);
+      }
 
       if (stencilShape->lineStyle != 0)
         lineStyleFromStyleSheet(*(stencilShape->lineStyle));

@@ -319,7 +319,7 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input)
     case VSD_SHAPE_SHAPE:
       m_stencilShape = VSDXStencilShape();
       handleStencilShape(tmpInput);
-      VSD_DEBUG_MSG(("Adding stencil shape to stencil with %d geometries\n", m_stencilShape.geometry.count()));
+      VSD_DEBUG_MSG(("Adding stencil shape to stencil with %d geometries\n", m_stencilShape.geometries.back().count()));
       m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
     default:
@@ -350,6 +350,7 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
         readShape(input);
         break;
       case VSD_GEOM_LIST:
+        m_stencilShape.geometries.push_back(VSDXGeometryList());
         readGeomList(input);
         break;
       case VSD_GEOMETRY:
@@ -553,7 +554,7 @@ void libvisio::VSDXParser::readEllipticalArcTo(WPXInputStream *input)
   double ecc = readDouble(input); // Eccentricity
 
   if (m_isStencilStarted)
-m_stencilShape.geometry.addEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
+m_stencilShape.geometries.back().addEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
 else
 m_geomList->addEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
 }
@@ -586,7 +587,7 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
   double ytop = readDouble(input);
 
   if (m_isStencilStarted)
-    m_stencilShape.geometry.addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
+    m_stencilShape.geometries.back().addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
   else
     m_geomList->addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
 }
@@ -626,7 +627,7 @@ void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
-    m_stencilShape.geometry.setElementsOrder(geometryOrder);
+    m_stencilShape.geometries.back().setElementsOrder(geometryOrder);
   }
   else
   {
@@ -656,7 +657,7 @@ void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
   unsigned geomFlags = readU8(input);
 
   if (m_isStencilStarted)
-    m_stencilShape.geometry.addGeometry(m_header.id, m_header.level, geomFlags);
+    m_stencilShape.geometries.back().addGeometry(m_header.id, m_header.level, geomFlags);
   else
     m_geomList->addGeometry(m_header.id, m_header.level, geomFlags);
 }
@@ -669,7 +670,7 @@ void libvisio::VSDXParser::readMoveTo(WPXInputStream *input)
   double y = readDouble(input);
 
   if (m_isStencilStarted)
-    m_stencilShape.geometry.addMoveTo(m_header.id, m_header.level, x, y);
+    m_stencilShape.geometries.back().addMoveTo(m_header.id, m_header.level, x, y);
   else
     m_geomList->addMoveTo(m_header.id, m_header.level, x, y);
 }
@@ -682,7 +683,7 @@ void libvisio::VSDXParser::readLineTo(WPXInputStream *input)
   double y = readDouble(input);
 
   if (m_isStencilStarted)
-    m_stencilShape.geometry.addLineTo(m_header.id, m_header.level, x, y);
+    m_stencilShape.geometries.back().addLineTo(m_header.id, m_header.level, x, y);
   else
     m_geomList->addLineTo(m_header.id, m_header.level, x, y);
 }
@@ -697,7 +698,7 @@ void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
   double bow = readDouble(input);
 
   if (m_isStencilStarted)
-    m_stencilShape.geometry.addArcTo(m_header.id, m_header.level, x2, y2, bow);
+    m_stencilShape.geometries.back().addArcTo(m_header.id, m_header.level, x2, y2, bow);
   else
     m_geomList->addArcTo(m_header.id, m_header.level, x2, y2, bow);
 }

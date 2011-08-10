@@ -35,7 +35,7 @@ class VSDXStencilShape
 	~VSDXStencilShape();
 	//VSDXStencilShape &operator=(const VSDXStencilShape &shape);
 
-  VSDXGeometryList geometry;
+  std::vector<VSDXGeometryList> geometries;
   unsigned lineStyleID, fillStyleID;
   VSDXLineStyle * lineStyle;
   VSDXFillStyle * fillStyle;
