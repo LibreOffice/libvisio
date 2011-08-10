@@ -139,10 +139,10 @@ AC_ARG_ENABLE([debug],
 AS_IF([test "x$enable_debug" = "xyes"], [
 	DEBUG_CXXFLAGS="-DDEBUG -g"
 ], [
-	DEBUG_CXXFLAGS="-DNDEBUG" 
+	DEBUG_CXXFLAGS="-DNDEBUG"
 ])
 
-# Courtesy of Glib: Ensure MSVC-compatible struct packing convention 
+# Courtesy of Glib: Ensure MSVC-compatible struct packing convention
 # is used when compiling for Win32 with gcc.
 # What flag to depends on gcc version: gcc3 uses "-mms-bitfields", while
 # gcc2 uses "-fnative-struct".
