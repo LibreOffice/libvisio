@@ -554,6 +554,8 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
 
 void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
+  // Allow stencil geometry to be overridden by shape's local geometry
+  if (m_currentGeometry.size() > 0) m_currentGeometry.clear();
   _handleLevelChange(level);
 }
 
