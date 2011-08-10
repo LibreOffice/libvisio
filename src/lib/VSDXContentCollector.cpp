@@ -978,7 +978,6 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       VSD_DEBUG_MSG(("Got stencil shape, handling %d geometries\n", stencilShape->geometry.count()));
       stencilShape->geometry.handle(this);
       VSD_DEBUG_MSG(("Geom list now has %lu geometries\n", (unsigned long)m_currentGeometry.size()));
-      _flushCurrentPath();
     }
   }
 }
