@@ -24,6 +24,7 @@
 #include <vector>
 #include "VSDXStyles.h"
 #include "VSDXGeometryList.h"
+#include "VSDXTypes.h"
 
 namespace libvisio {
 
@@ -41,6 +42,8 @@ class VSDXStencilShape
   VSDXFillStyle * fillStyle;
   WPXString text;
   std::vector<CharFormat> charFormats;
+  std::map<unsigned, NURBSData> nurbsData;
+  std::map<unsigned, PolylineData> polylineData;
 };
 
 class VSDXStencil

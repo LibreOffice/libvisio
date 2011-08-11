@@ -1127,7 +1127,16 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
       points.push_back(std::pair<double, double>(x, y));
     }
 
-    m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, points);
+    if (m_isStencilStarted)
+    {
+      PolylineData data;
+      data.xType = xType;
+      data.yType = yType;
+      data.points = points;
+      m_stencilShape.polylineData[m_header.id] = data;
+    }
+    else
+      m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, points);
   }
 
   // NURBS data
@@ -1155,7 +1164,20 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
       weights.push_back(weight);
       controlPoints.push_back(std::pair<double, double>(controlX, controlY));
     }
-    m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, degree, lastKnot, controlPoints, knotVector, weights);
+    if (m_isStencilStarted)
+    {
+      NURBSData data;
+      data.lastKnot = lastKnot;
+      data.degree = degree;
+      data.xType = xType;
+      data.yType = yType;
+      data.knots = knotVector;
+      data.weights = weights;
+      data.points = controlPoints;
+      m_stencilShape.nurbsData[m_header.id] = data;
+    }
+    else
+      m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, degree, lastKnot, controlPoints, knotVector, weights);
   }
 }
 
