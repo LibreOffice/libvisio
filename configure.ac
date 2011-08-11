@@ -155,25 +155,14 @@ AS_IF([test "x$native_win32" = "xyes"], [
 		], [
 			our_gcc="$ac_cv_prog_CC"
 		])
-		case `$our_gcc --version | sed -e 's,\..*,.,' -e q` in
-		2.)
-			AS_IF([$our_gcc -v --help 2>/dev/null | grep fnative-struct >/dev/null], [
-				msnative_struct='-fnative-struct'
-			])
-		;;
-		*)
-			AS_IF([$our_gcc -v --help 2>/dev/null | grep ms-bitfields >/dev/null], [
-				msnative_struct='-mms-bitfields'
-			])
-		;;
-		esac
-		AS_IF([test -z "$msnative_struct"], [
-			AC_MSG_RESULT([no way])
-			AC_MSG_WARN([produced libraries might be incompatible with MSVC-compiled code])
-		], [
+		AS_IF([$our_gcc -v --help 2>/dev/null | grep ms-bitfields >/dev/null], [
+			msnative_struct="-mms-bitfields"
 			CFLAGS="$CFLAGS $msnative_struct"
 			CXXFLAGS="$CXXFLAGS $msnative_struct"
 			AC_MSG_RESULT([${msnative_struct}])
+		], [
+			AC_MSG_RESULT([no way])
+			AC_MSG_WARN([produced libraries might be incompatible with MSVC-compiled code])
 		])
 	])
 	CFLAGS="$CFLAGS -Wall -pedantic"
