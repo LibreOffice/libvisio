@@ -1,2 +1,1 @@
-SUBDIRS = \
-    doxygen
+SUBDIRS = doxygen

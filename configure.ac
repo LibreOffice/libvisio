@@ -1,7 +1,7 @@
 AC_INIT(src/lib/VisioDocument.cpp)
 AC_PREREQ([2.65])
 
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER([config.h])
 
 VSD_MAJOR_VERSION=0
 VSD_MINOR_VERSION=0
@@ -108,7 +108,7 @@ AC_ARG_WITH(dummy_bitmaps,
 AM_CONDITIONAL([OUTPUT_DUMMY_BITMAPS], [test "x$with_dummy_bitmaps" = "xyes"])
 
 AC_ARG_WITH(docs,
-	[AS_HELP_STRING([--without-docs], [Do not build documentation])],
+	[AS_HELP_STRING([--without-docs], [Do not build documentation])]
 )
 AS_IF([test "x$native_win32" = "xyes"], [with_docs=false])
 AS_IF([test "x$with_docs" != "xno"], [
@@ -144,8 +144,6 @@ AS_IF([test "x$enable_debug" = "xyes"], [
 
 # Courtesy of Glib: Ensure MSVC-compatible struct packing convention
 # is used when compiling for Win32 with gcc.
-# What flag to depends on gcc version: gcc3 uses "-mms-bitfields", while
-# gcc2 uses "-fnative-struct".
 AS_IF([test "x$native_win32" = "xyes"], [
 	AC_CHECK_TOOL(WINDRES, windres)
 	AS_IF([x"$GCC" = xyes], [
