@@ -974,29 +974,29 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     const VSDXStencilShape * stencilShape = stencil->getStencilShape(masterShape);
     if (stencilShape != 0)
     {
-      m_NURBSData = stencilShape->nurbsData;
-      m_polylineData = stencilShape->polylineData;
-      if (stencilShape->foreign != 0)
+      m_NURBSData = stencilShape->m_nurbsData;
+      m_polylineData = stencilShape->m_polylineData;
+      if (stencilShape->m_foreign != 0)
       {
-        VSD_DEBUG_MSG(("Stencil foreign object with type %d \n", stencilShape->foreign->type));
-        collectForeignDataType(stencilShape->foreign->typeId, stencilShape->foreign->typeLevel, stencilShape->foreign->type, stencilShape->foreign->format);
-        collectForeignData(stencilShape->foreign->dataId, stencilShape->foreign->dataLevel, stencilShape->foreign->data);
+        VSD_DEBUG_MSG(("Stencil foreign object with type %d \n", stencilShape->m_foreign->type));
+        collectForeignDataType(stencilShape->m_foreign->typeId, stencilShape->m_foreign->typeLevel, stencilShape->m_foreign->type, stencilShape->m_foreign->format);
+        collectForeignData(stencilShape->m_foreign->dataId, stencilShape->m_foreign->dataLevel, stencilShape->m_foreign->data);
       }
-      for (unsigned i = 0; i < stencilShape->geometries.size(); i++)
+      for (unsigned i = 0; i < stencilShape->m_geometries.size(); i++)
       {
         m_x = 0.0; m_y = 0.0;
-        stencilShape->geometries[i].handle(this);
+        stencilShape->m_geometries[i].handle(this);
       }
 
-      if (stencilShape->lineStyle != 0)
-        lineStyleFromStyleSheet(*(stencilShape->lineStyle));
-      else if (stencilShape->lineStyleID != 0xffffffff)
-        lineStyleFromStyleSheet(stencilShape->lineStyleID);
+      if (stencilShape->m_lineStyle != 0)
+        lineStyleFromStyleSheet(*(stencilShape->m_lineStyle));
+      else if (stencilShape->m_lineStyleID != 0xffffffff)
+        lineStyleFromStyleSheet(stencilShape->m_lineStyleID);
 
-      if (stencilShape->fillStyle != 0)
-        fillStyleFromStyleSheet(*(stencilShape->fillStyle));
-      else if (stencilShape->fillStyleID != 0xffffffff)
-        fillStyleFromStyleSheet(stencilShape->fillStyleID);
+      if (stencilShape->m_fillStyle != 0)
+        fillStyleFromStyleSheet(*(stencilShape->m_fillStyle));
+      else if (stencilShape->m_fillStyleID != 0xffffffff)
+        fillStyleFromStyleSheet(stencilShape->m_fillStyleID);
     }
   }
 

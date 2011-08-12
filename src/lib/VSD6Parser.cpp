@@ -133,7 +133,7 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
-    if (m_stencilShape.fillStyle == 0) m_stencilShape.fillStyle = new VSDXFillStyle(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, m_currentStencil->shadowOffsetX, m_currentStencil->shadowOffsetY);
+    if (m_stencilShape.m_fillStyle == 0) m_stencilShape.m_fillStyle = new VSDXFillStyle(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, m_currentStencil->m_shadowOffsetX, m_currentStencil->m_shadowOffsetY);
   }
   else
     m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);

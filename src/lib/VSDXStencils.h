@@ -32,33 +32,33 @@ class VSDXStencilShape
 {
   public:
     VSDXStencilShape();
-    //VSDXStencilShape(const VSDXStencilShape &shape);
+    // VSDXStencilShape(const VSDXStencilShape &shape);
 	~VSDXStencilShape();
-	//VSDXStencilShape &operator=(const VSDXStencilShape &shape);
+	// VSDXStencilShape &operator=(const VSDXStencilShape &shape);
 
-  std::vector<VSDXGeometryList> geometries;
-  ForeignData * foreign;
-  unsigned lineStyleID, fillStyleID;
-  VSDXLineStyle * lineStyle;
-  VSDXFillStyle * fillStyle;
-  WPXString text;
-  std::vector<CharFormat> charFormats;
-  std::map<unsigned, NURBSData> nurbsData;
-  std::map<unsigned, PolylineData> polylineData;
+  std::vector<VSDXGeometryList> m_geometries;
+  ForeignData * m_foreign;
+  unsigned m_lineStyleID, m_fillStyleID;
+  VSDXLineStyle * m_lineStyle;
+  VSDXFillStyle * m_fillStyle;
+  WPXString m_text;
+  std::vector<CharFormat> m_charFormats;
+  std::map<unsigned, NURBSData> m_nurbsData;
+  std::map<unsigned, PolylineData> m_polylineData;
 };
 
 class VSDXStencil
 {
   public:
     VSDXStencil();
-    //VSDXStencil(const VSDXStencil &stencil);
+    // VSDXStencil(const VSDXStencil &stencil);
     ~VSDXStencil();
-    //VSDXStencil &operator=(const VSDXStencil &stencil);
+    // VSDXStencil &operator=(const VSDXStencil &stencil);
     void addStencilShape(unsigned id, const VSDXStencilShape &shape);
     const VSDXStencilShape *getStencilShape(unsigned id) const;
-    std::map<unsigned, VSDXStencilShape> shapes;
-    double shadowOffsetX;
-    double shadowOffsetY;
+    std::map<unsigned, VSDXStencilShape> m_shapes;
+    double m_shadowOffsetX;
+    double m_shadowOffsetY;
 };
 
 class VSDXStencils
