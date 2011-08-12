@@ -33,8 +33,8 @@ libvisio::VSDXStencilShape::VSDXStencilShape()
 
 libvisio::VSDXStencilShape::~VSDXStencilShape()
 {
-  if (m_foreign)
-    delete m_foreign;
+/*  if (m_foreign)
+    delete m_foreign; */
 }
 
 /* libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio::VSDXStencilShape &shape)
