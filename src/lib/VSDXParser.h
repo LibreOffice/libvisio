@@ -90,6 +90,7 @@ protected:
   void handleStyles(WPXInputStream *input);
   void handleStencils(WPXInputStream *input);
   void handleStencilPage(WPXInputStream *input);
+  void handleStencilForeign(WPXInputStream *input);
   void handleStencilShape(WPXInputStream *input);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;

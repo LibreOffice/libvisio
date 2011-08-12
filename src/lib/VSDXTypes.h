@@ -91,6 +91,17 @@ struct CharFormat
   WPXString fontFace;
 };
 
+struct ForeignData
+{
+  unsigned typeId;
+  unsigned dataId;
+  unsigned typeLevel;
+  unsigned dataLevel;
+  unsigned type;
+  unsigned format;
+  WPXBinaryData data;
+};
+
 enum TextFormat { VSD_TEXT_ANSI, VSD_TEXT_UTF16 };
 
 } // namespace libvisio

@@ -976,6 +976,12 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     {
       m_NURBSData = stencilShape->nurbsData;
       m_polylineData = stencilShape->polylineData;
+      if (stencilShape->foreign != 0)
+      {
+        VSD_DEBUG_MSG(("Stencil foreign object with type %d \n", stencilShape->foreign->type));
+        collectForeignDataType(stencilShape->foreign->typeId, stencilShape->foreign->typeLevel, stencilShape->foreign->type, stencilShape->foreign->format);
+        collectForeignData(stencilShape->foreign->dataId, stencilShape->foreign->dataLevel, stencilShape->foreign->data);
+      }
       for (unsigned i = 0; i < stencilShape->geometries.size(); i++)
       {
         m_x = 0.0; m_y = 0.0;

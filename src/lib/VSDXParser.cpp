@@ -313,19 +313,85 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input)
     m_input->seek(ptrOffset, WPX_SEEK_SET);
     WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
 
-
     switch (ptrType)
     {
+    case VSD_SHAPE_FOREIGN:
+      m_stencilShape = VSDXStencilShape();
+      handleStencilForeign(tmpInput);
+      m_currentStencil->addStencilShape(i, m_stencilShape);
+      break;
     case VSD_SHAPE_SHAPE:
       m_stencilShape = VSDXStencilShape();
       handleStencilShape(tmpInput);
-      VSD_DEBUG_MSG(("Adding stencil shape to stencil with %d geometries\n", m_stencilShape.geometries.back().count()));
       m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
     default:
       break;
     }
 
+    delete tmpInput;
+  }
+}
+
+void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input)
+{
+  unsigned int ptrType;
+  unsigned int ptrOffset;
+  unsigned int ptrLength;
+  unsigned int ptrFormat;
+
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned int offset = readU32(input);
+  input->seek(offset+4, WPX_SEEK_SET);
+  unsigned int pointerCount = readU32(input);
+  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
+
+  for (unsigned int i = 0; i < pointerCount; i++)
+  {
+    ptrType = readU32(input);
+    input->seek(4, WPX_SEEK_CUR); // Skip dword
+    ptrOffset = readU32(input);
+    ptrLength = readU32(input);
+    ptrFormat = readU16(input);
+
+    bool compressed = ((ptrFormat & 2) == 2);
+    m_input->seek(ptrOffset, WPX_SEEK_SET);
+    WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
+
+    VSD_DEBUG_MSG(("Stencil foreign stream %x\n", ptrType));
+
+    if (ptrType == VSD_PROP_LIST)
+    {
+      offset = readU32(tmpInput);
+      tmpInput->seek(offset, WPX_SEEK_SET);
+      unsigned pointerCount2 = readU32(tmpInput);
+      tmpInput->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
+
+      for (unsigned int j = 0; j < pointerCount2; j++)
+      {
+        ptrType = readU32(tmpInput);
+        tmpInput->seek(4, WPX_SEEK_CUR); // Skip dword
+        ptrOffset = readU32(tmpInput);
+        ptrLength = readU32(tmpInput);
+        ptrFormat = readU16(tmpInput);
+
+        compressed = ((ptrFormat & 2) == 2);
+        m_input->seek(ptrOffset, WPX_SEEK_SET);
+        WPXInputStream *tmpInput2 = new VSDInternalStream(m_input, ptrLength, compressed);
+        if (ptrType == VSD_FOREIGN_DATA_TYPE)
+        {
+          tmpInput2->seek(0x4, WPX_SEEK_CUR);
+          readForeignDataType(tmpInput2);
+        }
+
+        delete tmpInput2;
+      }
+    }
+    else if (ptrType == VSD_FOREIGN_DATA)
+    {
+      tmpInput->seek(0x4, WPX_SEEK_CUR);
+      readForeignData(tmpInput);
+    }
 
     delete tmpInput;
   }
@@ -382,6 +448,12 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
         break;
       case VSD_SHAPE_DATA:
         readShapeData(input);
+        break;
+      case VSD_FOREIGN_DATA_TYPE:
+        readForeignDataType(input);
+        break;
+      case VSD_FOREIGN_DATA:
+        readForeignData(input);
         break;
       case VSD_FILL_AND_SHADOW:
         readFillAndShadow(input);
@@ -577,7 +649,15 @@ void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
     return;
   WPXBinaryData binaryData(buffer, tmpBytesRead);
 
-  m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
+  if (m_isStencilStarted)
+  {
+    VSD_DEBUG_MSG(("Adding foreign data to stencil\n"));
+    m_stencilShape.foreign->dataId = m_header.id;
+    m_stencilShape.foreign->dataLevel = m_header.level;
+    m_stencilShape.foreign->data = binaryData;
+  }
+  else
+    m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
 }
 
 void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
@@ -787,7 +867,17 @@ void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
 
   VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
 
-  m_collector->collectForeignDataType(m_header.id, m_header.level, foreignType, foreignFormat);
+  if (m_isStencilStarted)
+  {
+    VSD_DEBUG_MSG(("Adding foreign data type stencil info %d\n", foreignType));
+    if (m_stencilShape.foreign == 0) m_stencilShape.foreign = new ForeignData();
+    m_stencilShape.foreign->typeId = m_header.id;
+    m_stencilShape.foreign->typeLevel = m_header.level;
+    m_stencilShape.foreign->type = foreignType;
+    m_stencilShape.foreign->format = foreignFormat;
+  }
+  else
+    m_collector->collectForeignDataType(m_header.id, m_header.level, foreignType, foreignFormat);
 }
 
 void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
