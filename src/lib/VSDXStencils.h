@@ -32,9 +32,9 @@ class VSDXStencilShape
 {
   public:
     VSDXStencilShape();
-    // VSDXStencilShape(const VSDXStencilShape &shape);
+    VSDXStencilShape(const VSDXStencilShape &shape);
 	~VSDXStencilShape();
-	// VSDXStencilShape &operator=(const VSDXStencilShape &shape);
+	VSDXStencilShape &operator=(const VSDXStencilShape &shape);
 
   std::vector<VSDXGeometryList> m_geometries;
   ForeignData * m_foreign;
@@ -51,9 +51,9 @@ class VSDXStencil
 {
   public:
     VSDXStencil();
-    // VSDXStencil(const VSDXStencil &stencil);
+    VSDXStencil(const VSDXStencil &stencil);
     ~VSDXStencil();
-    // VSDXStencil &operator=(const VSDXStencil &stencil);
+    VSDXStencil &operator=(const VSDXStencil &stencil);
     void addStencilShape(unsigned id, const VSDXStencilShape &shape);
     const VSDXStencilShape *getStencilShape(unsigned id) const;
     std::map<unsigned, VSDXStencilShape> m_shapes;
