@@ -365,7 +365,8 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
 
     if (ptrType == VSD_PROP_LIST)
     {
-      if (compressed) shift = 4;
+      shift = compressed ? 4 : 0;
+      VSD_DEBUG_MSG(("Stencil foreign prop list shift: %d\n", shift));
       tmpInput->seek(shift, WPX_SEEK_CUR);
       offset = readU32(tmpInput);
       tmpInput->seek(offset+shift, WPX_SEEK_SET);
