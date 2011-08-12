@@ -135,7 +135,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
     bool compressed = ((ptr.Format & 2) == 2);
     m_input->seek(ptr.Offset, WPX_SEEK_SET);
     VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
-
+    unsigned shift = compressed ? 4 : 0;
     switch (ptr.Type)
     {
     case VSD_PAGE:           // shouldn't happen
@@ -144,7 +144,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
       break;
     case VSD_PAGES:
     case VSD_FONTFACES:      // ver11 stream contains streams 0xd7 (FontFace)
-      handlePages(&tmpInput);
+      handlePages(&tmpInput, shift);
       break;
     case VSD_COLORS:
       readColours(&tmpInput);
@@ -153,7 +153,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
       handleStyles(&tmpInput);
       break;
     case VSD_STENCILS:
-      handleStencils(&tmpInput);
+      handleStencils(&tmpInput, shift);
       break;
     default:
       break;
@@ -163,15 +163,16 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
   return true;
 }
 
-void libvisio::VSDXParser::handlePages(WPXInputStream *input)
+void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
 {
   unsigned int ptrType;
   unsigned int ptrOffset;
   unsigned int ptrLength;
   unsigned int ptrFormat;
 
+  input->seek(shift, WPX_SEEK_CUR);
   unsigned int offset = readU32(input);
-  input->seek(offset, WPX_SEEK_SET);
+  input->seek(offset+shift, WPX_SEEK_SET);
   unsigned int pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
@@ -192,7 +193,7 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input)
       handlePage(tmpInput);
       break;
     case VSD_PAGES:             // shouldn't happen
-      handlePages(tmpInput);
+      handlePages(tmpInput, shift);
       break;
     case VSD_COLORS:            // shouldn't happen
       readColours(tmpInput);
@@ -245,7 +246,7 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::handleStencils(WPXInputStream *input)
+void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
 {
   if (m_stencils.count() > 0) return;
   m_isStencilStarted = true;
@@ -254,9 +255,9 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input)
   unsigned int ptrLength;
   unsigned int ptrFormat;
 
-  input->seek(4, WPX_SEEK_CUR);
+  input->seek(shift, WPX_SEEK_CUR);
   unsigned int offset = readU32(input);
-  input->seek(offset+4, WPX_SEEK_SET);
+  input->seek(offset+shift, WPX_SEEK_SET);
   unsigned int pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
   for (unsigned int i = 0; i < pointerCount; i++)
@@ -270,12 +271,12 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input)
     bool compressed = ((ptrFormat & 2) == 2);
     m_input->seek(ptrOffset, WPX_SEEK_SET);
     WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
-
+    shift = compressed ? 4 : 0;
     switch (ptrType)
     {
     case VSD_STENCIL_PAGE:
       m_currentStencil = new VSDXStencil();
-      handleStencilPage(tmpInput);
+      handleStencilPage(tmpInput, shift);
       VSD_DEBUG_MSG(("Adding current stencil with %lu shapes\n", (unsigned long)(m_currentStencil->m_shapes.size())));
       m_stencils.addStencil(i, *m_currentStencil);
       break;
@@ -288,16 +289,16 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input)
   m_isStencilStarted = false;
 }
 
-void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input)
+void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shift)
 {
   unsigned int ptrType;
   unsigned int ptrOffset;
   unsigned int ptrLength;
   unsigned int ptrFormat;
 
-  input->seek(4, WPX_SEEK_CUR);
+  input->seek(shift, WPX_SEEK_CUR);
   unsigned int offset = readU32(input);
-  input->seek(offset+4, WPX_SEEK_SET);
+  input->seek(offset+shift, WPX_SEEK_SET);
   unsigned int pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
@@ -313,11 +314,13 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input)
     m_input->seek(ptrOffset, WPX_SEEK_SET);
     WPXInputStream *tmpInput = new VSDInternalStream(m_input, ptrLength, compressed);
 
+    shift = compressed ? 4 : 0;
+
     switch (ptrType)
     {
     case VSD_SHAPE_FOREIGN:
       m_stencilShape = VSDXStencilShape();
-      handleStencilForeign(tmpInput);
+      handleStencilForeign(tmpInput, shift);
       m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
     case VSD_SHAPE_SHAPE:
@@ -333,16 +336,16 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input)
+void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned shift)
 {
   unsigned int ptrType;
   unsigned int ptrOffset;
   unsigned int ptrLength;
   unsigned int ptrFormat;
 
-  input->seek(4, WPX_SEEK_CUR);
+  input->seek(shift, WPX_SEEK_CUR);
   unsigned int offset = readU32(input);
-  input->seek(offset+4, WPX_SEEK_SET);
+  input->seek(offset+shift, WPX_SEEK_SET);
   unsigned int pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
@@ -362,8 +365,10 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input)
 
     if (ptrType == VSD_PROP_LIST)
     {
+      if (compressed) shift = 4;
+      tmpInput->seek(shift, WPX_SEEK_CUR);
       offset = readU32(tmpInput);
-      tmpInput->seek(offset, WPX_SEEK_SET);
+      tmpInput->seek(offset+shift, WPX_SEEK_SET);
       unsigned pointerCount2 = readU32(tmpInput);
       tmpInput->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 

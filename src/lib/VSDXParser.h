@@ -85,12 +85,12 @@ protected:
   bool parseDocument(WPXInputStream *input);
 
   // Stream handlers
-  void handlePages(WPXInputStream *input);
+  void handlePages(WPXInputStream *input, unsigned shift);
   void handlePage(WPXInputStream *input);
   void handleStyles(WPXInputStream *input);
-  void handleStencils(WPXInputStream *input);
-  void handleStencilPage(WPXInputStream *input);
-  void handleStencilForeign(WPXInputStream *input);
+  void handleStencils(WPXInputStream *input, unsigned shift);
+  void handleStencilPage(WPXInputStream *input, unsigned shift);
+  void handleStencilForeign(WPXInputStream *input, unsigned shift);
   void handleStencilShape(WPXInputStream *input);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
