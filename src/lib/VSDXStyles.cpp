@@ -31,7 +31,7 @@ libvisio::VSDXFillStyle::VSDXFillStyle()
 {}
 
 libvisio::VSDXTextStyle::VSDXTextStyle()
-  : charFormats()
+  : format()
 {
 }
 libvisio::VSDXStyles::VSDXStyles()

@@ -61,7 +61,8 @@ struct VSDXFillStyle
 struct VSDXTextStyle
 {
   VSDXTextStyle();
-  std::vector<CharFormat> charFormats;
+  VSDXTextStyle(CharFormat &f) : format(f) {} 
+  CharFormat format;
 };
 
 class VSDXStyles
