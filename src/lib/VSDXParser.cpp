@@ -1225,6 +1225,7 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
 
     if (m_isStencilStarted)
     {
+      VSD_DEBUG_MSG(("Adding polyline data to stencil shape\n"));
       PolylineData data;
       data.xType = xType;
       data.yType = yType;

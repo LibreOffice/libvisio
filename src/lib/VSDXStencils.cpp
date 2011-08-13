@@ -26,7 +26,7 @@ libvisio::VSDXStencilShape::VSDXStencilShape()
 }
 
 libvisio::VSDXStencilShape::VSDXStencilShape(const libvisio::VSDXStencilShape &shape)
-  : m_geometries(shape.m_geometries), m_foreign(0), m_lineStyleID(shape.m_lineStyleID), m_fillStyleID(shape.m_fillStyleID), m_lineStyle(shape.m_lineStyle), m_fillStyle(shape.m_fillStyle), m_text(shape.m_text)
+  : m_geometries(shape.m_geometries), m_foreign(0), m_lineStyleID(shape.m_lineStyleID), m_fillStyleID(shape.m_fillStyleID), m_lineStyle(shape.m_lineStyle), m_fillStyle(shape.m_fillStyle), m_text(shape.m_text), m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData)
 {
   if (shape.m_foreign)
   {
@@ -56,6 +56,8 @@ libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio
   m_lineStyle = shape.m_lineStyle;
   m_fillStyle = shape.m_fillStyle;
   m_text = shape.m_text;
+  m_nurbsData = shape.m_nurbsData;
+  m_polylineData = shape.m_polylineData;
   return *this;
 }
 
