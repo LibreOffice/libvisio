@@ -226,6 +226,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
 void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
 {
   _handleLevelChange(level);
+  m_hasLocalLineStyle = true;
   m_linePattern = linePattern;
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
   m_lineColour = getColourString(c);
@@ -285,6 +286,7 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
 void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   _handleLevelChange(level);
+  m_hasLocalFillStyle = true;
   m_fillPattern = fillPattern;
   m_fillFGTransparency = fillFGTransparency;
   m_fillBGTransparency = fillBGTransparency;
@@ -761,7 +763,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points)
 {
   _handleLevelChange(level);
-
+  VSD_DEBUG_MSG(("Collecting polyline with xform %f x %f\n", m_xform.width, m_xform.height));
   WPXPropertyList polyline;
   for (unsigned i = 0; i< points.size(); i++)
   {
@@ -790,6 +792,7 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
 /* Polyline with incomplete data */
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
+  VSD_DEBUG_MSG(("Collecting polyline with external data\n"));
   std::map<unsigned, PolylineData>::iterator iter = m_polylineData.find(dataID);
   if (iter != m_polylineData.end())
   {
@@ -968,42 +971,25 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_isFirstGeometry = true;
 
   // Get stencil shape
-  const VSDXStencil * stencil = m_stencils.getStencil(masterPage);
-  if (stencil != 0)
+  m_stencilShape = 0;
+  if (masterPage != 0xffffffff && masterShape != 0xffffffff)
   {
-    const VSDXStencilShape * stencilShape = stencil->getStencilShape(masterShape);
-    if (stencilShape != 0)
-    {
-      m_NURBSData = stencilShape->m_nurbsData;
-      m_polylineData = stencilShape->m_polylineData;
-
-      VSD_DEBUG_MSG(("Stencil polyline shape data: %d, NURBS data: %d\n", m_polylineData.size(), m_NURBSData.size()));
-      if (stencilShape->m_foreign != 0)
-      {
-        VSD_DEBUG_MSG(("Stencil foreign object with type %d \n", stencilShape->m_foreign->type));
-        collectForeignDataType(stencilShape->m_foreign->typeId, stencilShape->m_foreign->typeLevel, stencilShape->m_foreign->type, stencilShape->m_foreign->format);
-        collectForeignData(stencilShape->m_foreign->dataId, stencilShape->m_foreign->dataLevel, stencilShape->m_foreign->data);
-      }
-      for (unsigned i = 0; i < stencilShape->m_geometries.size(); i++)
-      {
-        m_x = 0.0; m_y = 0.0;
-        stencilShape->m_geometries[i].handle(this);
-      }
-
-      if (stencilShape->m_lineStyle != 0)
-        lineStyleFromStyleSheet(*(stencilShape->m_lineStyle));
-      else if (stencilShape->m_lineStyleID != 0xffffffff)
-        lineStyleFromStyleSheet(stencilShape->m_lineStyleID);
-
-      if (stencilShape->m_fillStyle != 0)
-        fillStyleFromStyleSheet(*(stencilShape->m_fillStyle));
-      else if (stencilShape->m_fillStyleID != 0xffffffff)
-        fillStyleFromStyleSheet(stencilShape->m_fillStyleID);
-    }
+    const VSDXStencil * stencil = m_stencils.getStencil(masterPage);
+    if (stencil != 0) m_stencilShape = stencil->getStencilShape(masterShape);
   }
-
-  if (lineStyleId != 0xffffffff) lineStyleFromStyleSheet(lineStyleId);
-  if (fillStyleId != 0xffffffff) fillStyleFromStyleSheet(fillStyleId);
+  
+  m_hasLocalLineStyle = false;
+  m_hasLocalFillStyle = false;
+  if (lineStyleId != 0xffffffff)
+  {
+    lineStyleFromStyleSheet(lineStyleId);
+    m_hasLocalLineStyle = true;
+  }
+  if (fillStyleId != 0xffffffff)
+  {
+    fillStyleFromStyleSheet(fillStyleId);
+    m_hasLocalFillStyle = true;
+  }
 }
 
 void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
@@ -1379,6 +1365,41 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
   {
     if (m_isShapeStarted)
     {
+      if (m_stencilShape != 0)
+      {
+        m_NURBSData = m_stencilShape->m_nurbsData;
+        m_polylineData = m_stencilShape->m_polylineData;
+
+        VSD_DEBUG_MSG(("Stencil polyline shape data: %d, NURBS data: %d\n", m_polylineData.size(), m_NURBSData.size()));
+        if (m_stencilShape->m_foreign != 0)
+        {
+          VSD_DEBUG_MSG(("Stencil foreign object with type %d \n", m_stencilShape->m_foreign->type));
+          collectForeignDataType(m_stencilShape->m_foreign->typeId, m_stencilShape->m_foreign->typeLevel, m_stencilShape->m_foreign->type, m_stencilShape->m_foreign->format);
+          collectForeignData(m_stencilShape->m_foreign->dataId, m_stencilShape->m_foreign->dataLevel, m_stencilShape->m_foreign->data);
+        }
+        for (unsigned i = 0; i < m_stencilShape->m_geometries.size(); i++)
+        {
+          m_x = 0.0; m_y = 0.0;
+          m_stencilShape->m_geometries[i].handle(this);
+        }
+
+        if (!m_hasLocalLineStyle)
+        {
+          if (m_stencilShape->m_lineStyle != 0)
+            lineStyleFromStyleSheet(*(m_stencilShape->m_lineStyle));
+          else if (m_stencilShape->m_lineStyleID != 0xffffffff)
+            lineStyleFromStyleSheet(m_stencilShape->m_lineStyleID);
+        }
+
+        if (!m_hasLocalFillStyle)
+        {
+          if (m_stencilShape->m_fillStyle != 0)
+            fillStyleFromStyleSheet(*(m_stencilShape->m_fillStyle));
+          else if (m_stencilShape->m_fillStyleID != 0xffffffff)
+            fillStyleFromStyleSheet(m_stencilShape->m_fillStyleID);
+        }
+      }
+
       _flushCurrentPath();
       _flushCurrentForeignData();
       m_isShapeStarted = false;

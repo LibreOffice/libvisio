@@ -166,8 +166,10 @@ private:
 
   VSDXStyles m_styles;
   bool m_isTextUnstyled;
+  bool m_hasLocalLineStyle, m_hasLocalFillStyle;
 
   VSDXStencils m_stencils;
+  const VSDXStencilShape * m_stencilShape;
 };
 
 } // namespace libvisio
