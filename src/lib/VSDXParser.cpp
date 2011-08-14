@@ -395,8 +395,23 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
     }
     else if (ptrType == VSD_FOREIGN_DATA)
     {
-      tmpInput->seek(0x4, WPX_SEEK_CUR);
-      readForeignData(tmpInput);
+      unsigned foreignLength = ptrLength - 4;
+      if (compressed)
+        foreignLength = readU32(tmpInput);
+      else
+        tmpInput->seek(0x4, WPX_SEEK_CUR);
+        
+      unsigned long tmpBytesRead = 0;
+      const unsigned char *buffer = tmpInput->read(foreignLength, tmpBytesRead);
+      VSD_DEBUG_MSG(("ForeignLength: %d, Actual Read: %ld\n", foreignLength, tmpBytesRead));
+      if (foreignLength == tmpBytesRead)
+      {
+        WPXBinaryData binaryData(buffer, tmpBytesRead);
+        VSD_DEBUG_MSG(("Adding foreign data to stencil\n"));
+        m_stencilShape.m_foreign->dataId = m_header.id;
+        m_stencilShape.m_foreign->dataLevel = m_header.level;
+        m_stencilShape.m_foreign->data = binaryData;
+      }
     }
 
     delete tmpInput;
@@ -655,15 +670,7 @@ void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
     return;
   WPXBinaryData binaryData(buffer, tmpBytesRead);
 
-  if (m_isStencilStarted)
-  {
-    VSD_DEBUG_MSG(("Adding foreign data to stencil\n"));
-    m_stencilShape.m_foreign->dataId = m_header.id;
-    m_stencilShape.m_foreign->dataLevel = m_header.level;
-    m_stencilShape.m_foreign->data = binaryData;
-  }
-  else
-    m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
+  m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
 }
 
 void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
