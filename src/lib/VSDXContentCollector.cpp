@@ -556,8 +556,6 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
 
 void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
-  // Allow stencil geometry to be overridden by shape's local geometry
-  if (m_currentGeometry.size() > 0) m_currentGeometry.clear();
   _handleLevelChange(level);
 }
 
@@ -574,8 +572,26 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   bool noFill = ((geomFlags & 1) == 1);
   bool noLine = ((geomFlags & 2) == 2);
   bool noShow = ((geomFlags & 4) == 4);
+  
   if ((m_noFill != noFill) || (m_noLine != noLine) || (m_noShow != noShow) || m_isFirstGeometry)
+  {
+    if (!m_hasLocalLineStyle && m_stencilShape)
+    {
+      if (m_stencilShape->m_lineStyle != 0 && !m_noLine)
+        lineStyleFromStyleSheet(*(m_stencilShape->m_lineStyle));
+      else if (m_stencilShape->m_lineStyleID != 0xffffffff)
+        lineStyleFromStyleSheet(m_stencilShape->m_lineStyleID);
+    }
+
+    if (!m_hasLocalFillStyle && m_stencilShape && !m_noFill)
+    {
+      if (m_stencilShape->m_fillStyle != 0)
+        fillStyleFromStyleSheet(*(m_stencilShape->m_fillStyle));
+      else if (m_stencilShape->m_fillStyleID != 0xffffffff)
+        fillStyleFromStyleSheet(m_stencilShape->m_fillStyleID);
+    }
     _flushCurrentPath();
+  }
   m_isFirstGeometry = false;
   m_noFill = noFill;
   m_noLine = noLine;
@@ -1377,14 +1393,8 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
           collectForeignDataType(m_stencilShape->m_foreign->typeId, m_stencilShape->m_foreign->typeLevel, m_stencilShape->m_foreign->type, m_stencilShape->m_foreign->format);
           collectForeignData(m_stencilShape->m_foreign->dataId, m_stencilShape->m_foreign->dataLevel, m_stencilShape->m_foreign->data);
         }
-        for (unsigned i = 0; i < m_stencilShape->m_geometries.size(); i++)
-        {
-          m_x = 0.0; m_y = 0.0;
-          m_stencilShape->m_geometries[i].handle(this);
-        }
-        m_isStencilStarted = false;
 
-        if (!m_hasLocalLineStyle)
+        if (!m_hasLocalLineStyle && !m_noLine)
         {
           if (m_stencilShape->m_lineStyle != 0)
             lineStyleFromStyleSheet(*(m_stencilShape->m_lineStyle));
@@ -1392,13 +1402,27 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
             lineStyleFromStyleSheet(m_stencilShape->m_lineStyleID);
         }
 
-        if (!m_hasLocalFillStyle)
+        if (!m_hasLocalFillStyle && !m_noFill)
         {
           if (m_stencilShape->m_fillStyle != 0)
             fillStyleFromStyleSheet(*(m_stencilShape->m_fillStyle));
           else if (m_stencilShape->m_fillStyleID != 0xffffffff)
             fillStyleFromStyleSheet(m_stencilShape->m_fillStyleID);
         }
+
+        if (m_currentGeometry.size() == 0)
+        {
+          for (unsigned i = 0; i < m_stencilShape->m_geometries.size(); i++)
+          {
+            m_x = 0.0; m_y = 0.0;
+            m_stencilShape->m_geometries[i].handle(this);
+          }
+        }
+        else
+        {
+          VSD_DEBUG_MSG(("Already geometry, not using stencil geometry\n"));
+        }
+        m_isStencilStarted = false;
       }
 
       _flushCurrentPath();
