@@ -1365,12 +1365,12 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
   {
     if (m_isShapeStarted)
     {
+      m_isShapeStarted = false;
       if (m_stencilShape != 0)
       {
         m_NURBSData = m_stencilShape->m_nurbsData;
         m_polylineData = m_stencilShape->m_polylineData;
 
-        VSD_DEBUG_MSG(("Stencil polyline shape data: %d, NURBS data: %d\n", m_polylineData.size(), m_NURBSData.size()));
         if (m_stencilShape->m_foreign != 0)
         {
           VSD_DEBUG_MSG(("Stencil foreign object with type %d \n", m_stencilShape->m_foreign->type));
@@ -1402,7 +1402,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 
       _flushCurrentPath();
       _flushCurrentForeignData();
-      m_isShapeStarted = false;
     }
     m_originalX = 0.0; m_originalY = 0.0;
     m_x = 0; m_y = 0;
