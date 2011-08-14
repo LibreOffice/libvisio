@@ -1027,7 +1027,12 @@ void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const st
   if (format == VSD_TEXT_ANSI)
   {
     for (unsigned i = 0; i < textStream.size(); i++)
-      fontname.append((char) textStream[i]);
+    {
+      if (textStream[i] <= 0x20)
+        _appendUCS4(fontname, (unsigned int) 0x20);
+      else
+        _appendUCS4(fontname, (unsigned int) textStream[i]);
+    }
   }
   else if (format == VSD_TEXT_UTF16)
   {
@@ -1076,7 +1081,12 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
     unsigned long max = charCount <= m_textStream.size() ? charCount : m_textStream.size();
     max = (charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
     for (unsigned i = 0; i < max; i++)
-      text.append((char) m_textStream[i]);
+    {
+      if (m_textStream[i] <= 0x20)
+        _appendUCS4(text, (unsigned int) 0x20);
+      else
+        _appendUCS4(text, (unsigned int) m_textStream[i]);
+    }
 
     m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
   }
@@ -1521,49 +1531,55 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
     if (fail)
       throw GenericException();
 
-    unsigned char first;
-    int len;
-    if (ucs4Character < 0x80)
-    {
-      first = 0;
-      len = 1;
-    }
-    else if (ucs4Character < 0x800)
-    {
-      first = 0xc0;
-      len = 2;
-    }
-    else if (ucs4Character < 0x10000)
-    {
-      first = 0xe0;
-      len = 3;
-    }
-    else if (ucs4Character < 0x200000)
-    {
-      first = 0xf0;
-      len = 4;
-    }
-    else if (ucs4Character < 0x4000000)
-    {
-      first = 0xf8;
-      len = 5;
-    }
-    else
-    {
-      first = 0xfc;
-      len = 6;
-    }
-
-    unsigned char outbuf[6] = { 0, 0, 0, 0, 0, 0 };
-    int i;
-    for (i = len - 1; i > 0; --i)
-    {
-      outbuf[i] = (ucs4Character & 0x3f) | 0x80;
-      ucs4Character >>= 6;
-    }
-    outbuf[0] = ucs4Character | first;
-
-    for (i = 0; i < len; i++)
-      text.append(outbuf[i]);
+    _appendUCS4(text, ucs4Character);
   }
 }
+
+void libvisio::VSDXContentCollector::_appendUCS4(WPXString &text, unsigned int ucs4Character)
+{
+  unsigned char first;
+  int len;
+  if (ucs4Character < 0x80)
+  {
+    first = 0;
+    len = 1;
+  }
+  else if (ucs4Character < 0x800)
+  {
+    first = 0xc0;
+    len = 2;
+  }
+  else if (ucs4Character < 0x10000)
+  {
+    first = 0xe0;
+    len = 3;
+  }
+  else if (ucs4Character < 0x200000)
+  {
+    first = 0xf0;
+    len = 4;
+  }
+  else if (ucs4Character < 0x4000000)
+  {
+    first = 0xf8;
+    len = 5;
+  }
+  else
+  {
+    first = 0xfc;
+    len = 6;
+  }
+
+  unsigned char outbuf[6] = { 0, 0, 0, 0, 0, 0 };
+  int i;
+  for (i = len - 1; i > 0; --i)
+  {
+    outbuf[i] = (ucs4Character & 0x3f) | 0x80;
+    ucs4Character >>= 6;
+  }
+  outbuf[0] = ucs4Character | first;
+
+  for (i = 0; i < len; i++)
+    text.append(outbuf[i]);
+}
+
