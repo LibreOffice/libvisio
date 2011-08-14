@@ -53,7 +53,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupXFormsSequence(groupXFormsSequence),
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false), m_styles(styles), m_isTextUnstyled(false), m_stencils(stencils)
+    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false), m_styles(styles), m_isTextUnstyled(false), m_stencils(stencils), m_isStencilStarted(false)
 {
 }
 
@@ -1365,9 +1365,9 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
   {
     if (m_isShapeStarted)
     {
-      m_isShapeStarted = false;
-      if (m_stencilShape != 0)
+      if (m_stencilShape != 0 && !m_isStencilStarted)
       {
+        m_isStencilStarted = true;
         m_NURBSData = m_stencilShape->m_nurbsData;
         m_polylineData = m_stencilShape->m_polylineData;
 
@@ -1382,6 +1382,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
           m_x = 0.0; m_y = 0.0;
           m_stencilShape->m_geometries[i].handle(this);
         }
+        m_isStencilStarted = false;
 
         if (!m_hasLocalLineStyle)
         {
@@ -1402,6 +1403,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 
       _flushCurrentPath();
       _flushCurrentForeignData();
+      m_isShapeStarted = false;
     }
     m_originalX = 0.0; m_originalY = 0.0;
     m_x = 0; m_y = 0;
