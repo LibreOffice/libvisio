@@ -33,18 +33,18 @@ class VSDXStencilShape
   public:
     VSDXStencilShape();
     VSDXStencilShape(const VSDXStencilShape &shape);
-	~VSDXStencilShape();
-	VSDXStencilShape &operator=(const VSDXStencilShape &shape);
+    ~VSDXStencilShape();
+    VSDXStencilShape &operator=(const VSDXStencilShape &shape);
 
-  std::vector<VSDXGeometryList> m_geometries;
-  ForeignData * m_foreign;
-  unsigned m_lineStyleID, m_fillStyleID;
-  VSDXLineStyle * m_lineStyle;
-  VSDXFillStyle * m_fillStyle;
-  WPXString m_text;
-  std::vector<CharFormat> m_charFormats;
-  std::map<unsigned, NURBSData> m_nurbsData;
-  std::map<unsigned, PolylineData> m_polylineData;
+    std::vector<VSDXGeometryList> m_geometries;
+    ForeignData * m_foreign;
+    unsigned m_lineStyleID, m_fillStyleID;
+    VSDXLineStyle * m_lineStyle;
+    VSDXFillStyle * m_fillStyle;
+    WPXString m_text;
+    std::vector<CharFormat> m_charFormats;
+    std::map<unsigned, NURBSData> m_nurbsData;
+    std::map<unsigned, PolylineData> m_polylineData;
 };
 
 class VSDXStencil
