@@ -518,6 +518,7 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
     m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
     double x = 0.0; double y = 0.0;
     transformPoint(x,y);
+
     m_currentForeignProps.insert("svg:x", m_scale*x);
     // Y axis starts at the bottom not top
     m_currentForeignProps.insert("svg:y", m_scale*(y - m_xform.height));
@@ -1399,8 +1400,11 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 
         if (m_stencilShape->m_foreign != 0)
         {
-          VSD_DEBUG_MSG(("Stencil foreign object with type %d \n", m_stencilShape->m_foreign->type));
           collectForeignDataType(m_stencilShape->m_foreign->typeId, m_stencilShape->m_foreign->typeLevel, m_stencilShape->m_foreign->type, m_stencilShape->m_foreign->format);
+          
+          // Messy - this is set to false in _handleLevelChange() called
+          // by collectForeignDataType() so make sure it's true
+          m_isShapeStarted = true;
           collectForeignData(m_stencilShape->m_foreign->dataId, m_stencilShape->m_foreign->dataLevel, m_stencilShape->m_foreign->data);
         }
 
@@ -1427,10 +1431,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
             m_x = 0.0; m_y = 0.0;
             m_stencilShape->m_geometries[i].handle(this);
           }
-        }
-        else
-        {
-          VSD_DEBUG_MSG(("Already geometry, not using stencil geometry\n"));
         }
         m_isStencilStarted = false;
       }

@@ -320,6 +320,7 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
     {
     case VSD_SHAPE_FOREIGN:
       m_stencilShape = VSDXStencilShape();
+      m_stencilShape.m_foreign = new ForeignData();
       handleStencilForeign(tmpInput, shift);
       m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
@@ -883,7 +884,6 @@ void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
   if (m_isStencilStarted)
   {
     VSD_DEBUG_MSG(("Adding foreign data type stencil info %d\n", foreignType));
-    if (m_stencilShape.m_foreign == 0) m_stencilShape.m_foreign = new ForeignData();
     m_stencilShape.m_foreign->typeId = m_header.id;
     m_stencilShape.m_foreign->typeLevel = m_header.level;
     m_stencilShape.m_foreign->type = foreignType;
