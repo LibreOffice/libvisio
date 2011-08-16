@@ -32,7 +32,8 @@
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()), m_geomListVector(),
-    m_charList(new VSDXCharacterList()), m_charListVector(), m_shapeList(), m_currentLevel(0), m_isStencilStarted(false)
+    m_charList(new VSDXCharacterList()), m_charListVector(), m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
+    m_stencilShape(), m_isStencilStarted(false)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
@@ -47,6 +48,8 @@ libvisio::VSDXParser::~VSDXParser()
     m_charList->clear();
     delete m_charList;
   }
+  if (m_currentStencil)
+    delete m_currentStencil;
 }
 
 /** Parses Visio input stream content, making callbacks to functions provided
@@ -280,6 +283,7 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
       VSD_DEBUG_MSG(("Adding current stencil with %lu shapes\n", (unsigned long)(m_currentStencil->m_shapes.size())));
       m_stencils.addStencil(i, *m_currentStencil);
       delete m_currentStencil;
+      m_currentStencil = 0;
       break;
     default:
       break;

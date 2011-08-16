@@ -83,7 +83,7 @@ struct PolylineData
 
 struct CharFormat
 {
-  CharFormat();
+  CharFormat() {}
   CharFormat(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, WPXString f) : charCount(cc), faceID(id), colour(c), langID(lang), size(s), bold(b), italic(i), underline(u), face(f) {}
   unsigned charCount;
   unsigned short faceID;
