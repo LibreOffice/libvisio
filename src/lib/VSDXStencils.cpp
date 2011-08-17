@@ -44,10 +44,16 @@ libvisio::VSDXStencilShape::~VSDXStencilShape()
 libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio::VSDXStencilShape &shape)
 {
   m_geometries = shape.m_geometries;
+  if (m_foreign)
+    delete m_foreign;
   m_foreign = shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0;
   m_lineStyleID = shape.m_lineStyleID;
   m_fillStyleID = shape.m_fillStyleID;
+  if (m_lineStyle)
+    delete m_lineStyle;
   m_lineStyle = shape.m_lineStyle ? new VSDXLineStyle(*(shape.m_lineStyle)) : 0;
+  if (m_fillStyle)
+    delete m_fillStyle;
   m_fillStyle = shape.m_fillStyle ? new VSDXFillStyle(*(shape.m_fillStyle)) : 0;
   m_text = shape.m_text;
   m_nurbsData = shape.m_nurbsData;
