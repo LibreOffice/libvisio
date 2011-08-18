@@ -19,7 +19,7 @@ m4_define([libvisio_version],[libvisio_version_major.libvisio_version_minor.libv
 AC_INIT([libvisio],[libvisio_version])
 AC_CONFIG_MACRO_DIR([m4])
 AM_CONFIG_HEADER([config.h])
-AM_INIT_AUTOMAKE([1.11 foreign dist-xz])
+AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2])
 m4_define([AM_SILENT_RULES])
 AC_LANG([C++])
 

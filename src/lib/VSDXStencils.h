@@ -68,7 +68,7 @@ class VSDXStencils
     ~VSDXStencils();
     void addStencil(unsigned idx, const VSDXStencil &stencil);
     const VSDXStencil *getStencil(unsigned idx) const;
-    const unsigned count() const { return m_stencils.size(); }
+    unsigned count() const { return m_stencils.size(); }
   private:
     std::map<unsigned, VSDXStencil> m_stencils;
 };
