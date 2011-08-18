@@ -273,7 +273,6 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
         VSDXStencil tmpStencil;
         m_currentStencil = &tmpStencil;
         handleStencilPage(&tmpInput, shift2);
-        VSD_DEBUG_MSG(("Adding current stencil with %lu shapes\n", (unsigned long)(m_currentStencil->m_shapes.size())));
         m_stencils.addStencil(i, *m_currentStencil);
         m_currentStencil = 0;
       }
@@ -361,7 +360,6 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
     if (ptrType == VSD_PROP_LIST)
     {
       shift = compressed ? 4 : 0;
-      VSD_DEBUG_MSG(("Stencil foreign prop list shift: %d\n", shift));
       tmpInput.seek(shift, WPX_SEEK_CUR);
       offset = readU32(&tmpInput);
       tmpInput.seek(offset+shift, WPX_SEEK_SET);
@@ -396,11 +394,9 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
         
       unsigned long tmpBytesRead = 0;
       const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
-      VSD_DEBUG_MSG(("ForeignLength: %d, Actual Read: %ld\n", foreignLength, tmpBytesRead));
       if (foreignLength == tmpBytesRead)
       {
         WPXBinaryData binaryData(buffer, tmpBytesRead);
-        VSD_DEBUG_MSG(("Adding foreign data to stencil\n"));
         m_stencilShape.m_foreign->dataId = m_header.id;
         m_stencilShape.m_foreign->dataLevel = m_header.level;
         m_stencilShape.m_foreign->data = binaryData;
@@ -701,7 +697,6 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
-    VSD_DEBUG_MSG(("Found stencil line style, adding\n"));
     if (m_stencilShape.m_lineStyle == 0) m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, lineCap);
   }
   else
@@ -869,11 +864,8 @@ void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
   input->seek(0xb, WPX_SEEK_CUR);
   unsigned foreignFormat = readU32(input);
 
-  VSD_DEBUG_MSG(("Found foreign data, type %d format %d\n", foreignType, foreignFormat));
-
   if (m_isStencilStarted)
   {
-    VSD_DEBUG_MSG(("Adding foreign data type stencil info %d\n", foreignType));
     m_stencilShape.m_foreign->typeId = m_header.id;
     m_stencilShape.m_foreign->typeLevel = m_header.level;
     m_stencilShape.m_foreign->type = foreignType;
@@ -1222,7 +1214,6 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
 
     if (m_isStencilStarted)
     {
-      VSD_DEBUG_MSG(("Adding polyline data to stencil shape\n"));
       PolylineData data;
       data.xType = xType;
       data.yType = yType;

@@ -661,7 +661,6 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
     WPXPropertyList arc;
     double chord = sqrt(pow((y2 - m_y),2) + pow((x2 - m_x),2));
     double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
-    VSD_DEBUG_MSG(("ArcTo with bow %f radius %f and chord %f\n", bow, radius, chord));
     int largeArc = fabs(bow) > radius ? 1 : 0;
     int sweep = bow < 0 ? 1 : 0;
     m_x = x2; m_y = y2;
@@ -780,7 +779,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned xType, unsigned yType, std::vector<std::pair<double, double> > &points)
 {
   _handleLevelChange(level);
-  VSD_DEBUG_MSG(("Collecting polyline with xform %f x %f\n", m_xform.width, m_xform.height));
+
   WPXPropertyList polyline;
   for (unsigned i = 0; i< points.size(); i++)
   {
@@ -809,7 +808,6 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
 /* Polyline with incomplete data */
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
-  VSD_DEBUG_MSG(("Collecting polyline with external data\n"));
   std::map<unsigned, PolylineData>::iterator iter = m_polylineData.find(dataID);
   if (iter != m_polylineData.end())
   {

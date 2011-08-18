@@ -294,6 +294,7 @@ libvisio::VSDXGeometryList::VSDXGeometryList(const VSDXGeometryList &geomList)
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = geomList.m_elements.begin();
   for (; iter != geomList.m_elements.end(); iter++)
       m_elements[iter->first] = iter->second->clone();
+  m_elementsOrder = geomList.getElementsOrder();
 }
 
 libvisio::VSDXGeometryList &libvisio::VSDXGeometryList::operator=(const VSDXGeometryList &geomList)
@@ -302,6 +303,7 @@ libvisio::VSDXGeometryList &libvisio::VSDXGeometryList::operator=(const VSDXGeom
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = geomList.m_elements.begin();
   for (; iter != geomList.m_elements.end(); iter++)
       m_elements[iter->first] = iter->second->clone();
+  m_elementsOrder = geomList.getElementsOrder();
   return *this;
 }
 
