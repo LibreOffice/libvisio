@@ -320,6 +320,7 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
       m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
     case VSD_SHAPE_SHAPE:
+    case VSD_SHAPE_GROUP:
       m_stencilShape = VSDXStencilShape();
       handleStencilShape(&tmpInput);
       m_currentStencil->addStencilShape(i, m_stencilShape);
@@ -421,6 +422,7 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
       switch (m_header.chunkType)
       {
       case VSD_SHAPE_SHAPE:
+      case VSD_SHAPE_GROUP:
         readShape(input);
         break;
       case VSD_GEOM_LIST:
