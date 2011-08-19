@@ -51,12 +51,35 @@ public:
   void handle(VSDXCollector *collector) const;
   void clear();
   bool empty() const { return (!m_elements.size()); }
-  VSDXGeometryListElement * getElement(unsigned index);
+  VSDXGeometryListElement * getElement(unsigned index) const;
   std::vector<unsigned> getElementsOrder() const { return m_elementsOrder; }
   unsigned count() const { return m_elements.size(); }
 private:
   std::map<unsigned, VSDXGeometryListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;
+};
+
+class VSDXGeometryListElement
+{
+public:
+  VSDXGeometryListElement() {}
+  virtual ~VSDXGeometryListElement() {}
+  virtual void handle(VSDXCollector *collector) = 0;
+  virtual VSDXGeometryListElement *clone() = 0;
+};
+
+class VSDXPolylineTo2 : public VSDXGeometryListElement
+{
+public:
+  VSDXPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
+    m_dataID(dataID), m_id(id), m_level(level), m_x(x), m_y(y) {}
+  ~VSDXPolylineTo2() {}
+  void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
+  unsigned m_dataID;
+private:
+  unsigned m_id, m_level;
+  double m_x, m_y;
 };
 
 } // namespace libvisio

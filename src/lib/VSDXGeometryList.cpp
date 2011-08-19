@@ -23,14 +23,6 @@
 
 namespace libvisio {
 
-class VSDXGeometryListElement
-{
-public:
-  VSDXGeometryListElement() {}
-  virtual ~VSDXGeometryListElement() {}
-  virtual void handle(VSDXCollector *collector) = 0;
-  virtual VSDXGeometryListElement *clone() = 0;
-};
 
 class VSDXGeometry : public VSDXGeometryListElement
 {
@@ -157,20 +149,6 @@ private:
   double m_x, m_y;
   unsigned m_xType, m_yType;
   std::vector<std::pair<double, double> > m_points;
-};
-
-class VSDXPolylineTo2 : public VSDXGeometryListElement
-{
-public:
-  VSDXPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
-    m_id(id), m_level(level), m_x(x), m_y(y), m_dataID(dataID) {}
-  ~VSDXPolylineTo2() {}
-  void handle(VSDXCollector *collector);
-  VSDXGeometryListElement *clone();
-private:
-  unsigned m_id, m_level;
-  double m_x, m_y;
-  unsigned m_dataID;
 };
 } // namespace libvisio
 
@@ -398,9 +376,9 @@ void libvisio::VSDXGeometryList::clear()
   m_elementsOrder.clear();
 }
 
-libvisio::VSDXGeometryListElement * libvisio::VSDXGeometryList::getElement(unsigned index)
+libvisio::VSDXGeometryListElement * libvisio::VSDXGeometryList::getElement(unsigned index) const
 {
-  std::map<unsigned, VSDXGeometryListElement *>::iterator iter = m_elements.find(index);
+  std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = m_elements.find(index);
   if (iter != m_elements.end())
     return iter->second;
   else

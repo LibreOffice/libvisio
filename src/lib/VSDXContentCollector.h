@@ -172,6 +172,8 @@ private:
   VSDXStencils m_stencils;
   const VSDXStencilShape * m_stencilShape;
   bool m_isStencilStarted;
+
+  unsigned m_currentGeometryCount;
 };
 
 } // namespace libvisio

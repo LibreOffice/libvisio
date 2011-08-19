@@ -557,6 +557,7 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
 
 void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
+  m_currentGeometryCount++;
   _handleLevelChange(level);
 }
 
@@ -808,14 +809,32 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
 /* Polyline with incomplete data */
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
-  std::map<unsigned, PolylineData>::iterator iter = m_polylineData.find(dataID);
+  std::map<unsigned, PolylineData>::const_iterator iter;
+  if (dataID == 0xFFFFFFFE) // Use stencil polyline data
+  {
+    if (!m_stencilShape || m_stencilShape->m_geometries.size() < m_currentGeometryCount)
+    {
+      _handleLevelChange(level);
+      return;
+    }
+
+    // Get stencil geometry so as to find stencil polyline data ID
+    VSDXGeometryListElement * element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
+    dataID = dynamic_cast<VSDXPolylineTo2*>(element)->m_dataID;
+    iter = m_stencilShape->m_polylineData.find(dataID);
+  }
+  else // No stencils involved, directly get dataID
+  {
+    iter = m_polylineData.find(dataID);
+  }
+
   if (iter != m_polylineData.end())
   {
     PolylineData data = iter->second;
     collectPolylineTo(id, level, x, y, data.xType, data.yType, data.points);
   }
   else
-    _handleLevelChange(level);
+      _handleLevelChange(level);
 }
 
 /* NURBS shape data */
@@ -1005,6 +1024,8 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     fillStyleFromStyleSheet(fillStyleId);
     m_hasLocalFillStyle = true;
   }
+
+  m_currentGeometryCount = 0;
 }
 
 void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
