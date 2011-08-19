@@ -1330,8 +1330,8 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
     m_styleProps.insert("draw:style", "rectangular");
     m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
     m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[fillStyle.fgColourId]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[fillStyle.bgColourId]));
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[fillStyle.bgColourId]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[fillStyle.fgColourId]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
