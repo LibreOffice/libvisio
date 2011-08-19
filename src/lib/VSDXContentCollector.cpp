@@ -231,6 +231,9 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
   _handleLevelChange(level);
   m_hasLocalLineStyle = true;
   m_linePattern = linePattern;
+
+  if (m_linePattern == 0) return; // No need to add style
+
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
   m_lineColour = getColourString(c);
   m_styleProps.insert("svg:stroke-color", m_lineColour);
@@ -1179,6 +1182,7 @@ void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle
   m_lineColour = getColourString(lineStyle.colour);
   m_linePattern = lineStyle.pattern;
 
+  if (m_linePattern == 0) return;
   m_styleProps.insert("svg:stroke-width", m_scale*lineStyle.width);
   m_styleProps.insert("svg:stroke-color", m_lineColour);
   if (lineStyle.colour.a)
@@ -1217,6 +1221,8 @@ void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle
     if (m_linePattern > 0 && m_linePattern < sizeof(patterns)/sizeof(patterns[0]))
       m_styleProps.insert("svg:stroke-dasharray", patterns[m_linePattern]);
   }
+  else if (m_linePattern == 0)
+    m_styleProps.insert("svg:stroke-width", 0.0);
 
   switch (lineStyle.cap)
   {
