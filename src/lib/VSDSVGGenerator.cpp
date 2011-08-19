@@ -71,8 +71,6 @@ void libvisio::VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
   if (propList["svg:height"])
     m_outputSink << "height=\"" << doubleToString(72*(propList["svg:height"]->getDouble())) << "\"";
   m_outputSink << " >\n";
-
-  m_gradientIndex = 1;
 }
 
 void libvisio::VSDSVGGenerator::endGraphics()
