@@ -82,6 +82,23 @@ private:
   double m_x, m_y;
 };
 
+class VSDXNURBSTo2 : public VSDXGeometryListElement
+{
+public:
+  VSDXNURBSTo2(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) :
+    m_dataID(dataID), m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev) {}
+  ~VSDXNURBSTo2() {}
+  void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
+  unsigned m_dataID;
+private:
+  unsigned m_id, m_level;
+  double m_x2, m_y2;
+  double m_knot, m_knotPrev;
+  double m_weight, m_weightPrev;
+
+};
+
 } // namespace libvisio
 
 #endif // __VSDXGEOMETRYLIST_H__
