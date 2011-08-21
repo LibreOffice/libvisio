@@ -111,6 +111,77 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
   m_currentGeometry.clear();
 }
 
+void libvisio::VSDXContentCollector::_flushText()
+{
+  if (m_textStream.size() == 0) return;
+  WPXString text;
+  double angle = 0.0;
+  transformAngle(angle);
+
+  WPXPropertyList textCoords;
+  textCoords.insert("svg:x", m_scale * m_x);
+  textCoords.insert("svg:y", m_scale * m_y);
+  textCoords.insert("svg:cx", m_scale * m_x);
+  textCoords.insert("svg:cy", m_scale * m_y);
+  textCoords.insert("libwpg:rotate", -angle*180/M_PI);
+
+  m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
+
+  for (unsigned i = 0; i < m_charFormats.size(); i++)
+  {
+    text.clear();
+
+    if (m_textFormat == VSD_TEXT_ANSI)
+    {
+      unsigned long max = m_charFormats[i].charCount <= m_textStream.size() ? m_charFormats[i].charCount : m_textStream.size();
+      max = (m_charFormats[i].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
+      for (unsigned i = 0; i < max; i++)
+      {
+        if (m_textStream[i] <= 0x20)
+          _appendUCS4(text, (unsigned int) 0x20);
+        else
+          _appendUCS4(text, (unsigned int) m_textStream[i]);
+      }
+
+      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
+    }
+    else if (m_textFormat == VSD_TEXT_UTF16)
+    {
+      unsigned long max = m_charFormats[i].charCount <= (m_textStream.size()/2) ? m_charFormats[i].charCount : (m_textStream.size()/2);
+      VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
+      max = (m_charFormats[i].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
+      VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
+      VSDInternalStream tmpStream(m_textStream, max*2);
+      _appendUTF16LE(text, &tmpStream);
+    
+      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
+    }
+    WPXPropertyList textProps;
+    if (m_fonts[m_charFormats[i].faceID] == "")
+      textProps.insert("style:font-name", m_charFormats[i].face);
+    else
+      textProps.insert("style:font-name", m_fonts[m_charFormats[i].faceID]);
+
+    if (m_charFormats[i].bold) textProps.insert("fo:font-weight", "bold");
+    if (m_charFormats[i].italic) textProps.insert("fo:font-style", "italic");
+    textProps.insert("fo:font-size", m_charFormats[i].size*72.0, WPX_POINT);
+    textProps.insert("fo:color",getColourString(m_charFormats[i].colour));
+    double opacity = 1.0;
+    if (m_charFormats[i].colour.a)
+      opacity -= m_charFormats[i].colour.a/255.0;
+    textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
+    textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
+
+    VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
+    m_shapeOutput->addStartTextSpan(textProps);
+    m_shapeOutput->addInsertText(text);
+    m_shapeOutput->addEndTextSpan();
+
+    if (m_textStream.size() == 0)
+      m_shapeOutput->addEndTextObject();
+  }
+}
+
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
@@ -1067,6 +1138,8 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     fillStyleFromStyleSheet(fillStyleId);
     m_hasLocalFillStyle = true;
   }
+  m_textStream.clear();
+  m_charFormats.clear();
 
   m_currentGeometryCount = 0;
 }
@@ -1116,77 +1189,11 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   m_outputTextStart = true;
 }
 
-void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned /*langId*/, double fontSize, bool bold, bool italic, bool /*underline*/, WPXString fontFace)
+void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace)
 {
   _handleLevelChange(level);
-
-  if (m_textStream.size() == 0) return;
-  WPXString text;
-  text.clear();
-  if (m_outputTextStart)
-  {  
-    double angle = 0.0;
-    transformAngle(angle);
-
-    WPXPropertyList textCoords;
-    textCoords.insert("svg:x", m_scale * m_x);
-    textCoords.insert("svg:y", m_scale * m_y);
-    textCoords.insert("svg:cx", m_scale * m_x);
-    textCoords.insert("svg:cy", m_scale * m_y);
-    textCoords.insert("libwpg:rotate", -angle*180/M_PI);
-
-    m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
-    m_outputTextStart = false;
-  }
-
-  if (m_textFormat == VSD_TEXT_ANSI)
-  {
-    unsigned long max = charCount <= m_textStream.size() ? charCount : m_textStream.size();
-    max = (charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
-    for (unsigned i = 0; i < max; i++)
-    {
-      if (m_textStream[i] <= 0x20)
-        _appendUCS4(text, (unsigned int) 0x20);
-      else
-        _appendUCS4(text, (unsigned int) m_textStream[i]);
-    }
-
-    m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
-  }
-  else if (m_textFormat == VSD_TEXT_UTF16)
-  {
-    unsigned long max = charCount <= (m_textStream.size()/2) ? charCount : (m_textStream.size()/2);
-    VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", charCount, max, (unsigned long)m_textStream.size()));
-    max = (charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
-    VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", charCount, max, (unsigned long)m_textStream.size()));
-    VSDInternalStream tmpStream(m_textStream, max*2);
-    _appendUTF16LE(text, &tmpStream);
-    
-    m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
-  }
-  WPXPropertyList textProps;
-  if (m_fonts[fontID] == "")
-    textProps.insert("style:font-name", fontFace);
-  else
-    textProps.insert("style:font-name", m_fonts[fontID]);
-
-  if (bold) textProps.insert("fo:font-weight", "bold");
-  if (italic) textProps.insert("fo:font-style", "italic");
-  textProps.insert("fo:font-size", fontSize*72.0, WPX_POINT);
-  textProps.insert("fo:color",getColourString(fontColour));
-  double opacity = 1.0;
-  if (fontColour.a)
-    opacity -= fontColour.a/255.0;
-  textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
-  textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
-
-  VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
-  m_shapeOutput->addStartTextSpan(textProps);
-  m_shapeOutput->addInsertText(text);
-  m_shapeOutput->addEndTextSpan();
-
-  if (m_textStream.size() == 0)
-    m_shapeOutput->addEndTextObject();
+  CharFormat format(charCount, fontID, fontColour, langId, fontSize, bold, italic, underline, fontFace);
+  m_charFormats.push_back(format);
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
@@ -1498,6 +1505,11 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
           }
         }
         m_isStencilStarted = false;
+      }
+
+      if (m_charFormats.size() > 0)
+      {
+        _flushText();
       }
 
       _flushCurrentPath();
