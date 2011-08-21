@@ -563,7 +563,6 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
 
 void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned level)
 {
-  m_currentGeometryCount++;
   _handleLevelChange(level);
 }
 
@@ -616,6 +615,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
     m_styleProps.insert("svg:fill-rule", "evenodd");
   }
   VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
+  m_currentGeometryCount++;
 }
 
 void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned level, double x, double y)
@@ -780,21 +780,20 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     VSDXGeometryListElement * element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
     dataID = dynamic_cast<VSDXNURBSTo2*>(element)->m_dataID;
     iter = m_stencilShape->m_nurbsData.find(dataID);
-    data = iter->second;
   }
   else // No stencils involved, directly get dataID and fill in missing parts
   {
     iter = m_NURBSData.find(dataID);
+  }
+
+  if (iter != m_NURBSData.end())
+  {
     data = iter->second;
     data.knots.push_back(knot);
     data.knots.push_back(data.lastKnot);
     data.knots.insert(data.knots.begin(), knotPrev);
     data.weights.push_back(weight);
     data.weights.insert(data.weights.begin(), weightPrev);
-  }
-
-  if (iter != m_NURBSData.end())
-  {
     collectNURBSTo(id, level, x2, y2, data.xType, data.yType, data.degree, data.points, data.knots, data.weights);
   }
   else
