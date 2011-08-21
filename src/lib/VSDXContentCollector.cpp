@@ -670,6 +670,26 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
     double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
     int largeArc = fabs(bow) > radius ? 1 : 0;
     int sweep = bow < 0 ? 1 : 0;
+
+    // If any parent group is flipped, invert sweep
+    unsigned shapeId = m_currentShapeId;
+    while (true)
+    {
+      std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
+      if (iterX != m_groupXForms.end())
+      {
+        XForm xform = iterX->second;
+        if (xform.flipX) sweep = sweep == 0 ? 1 : 0;
+        if (xform.flipY) sweep = sweep == 0 ? 1 : 0;
+      }
+      else
+        break;
+      std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
+      if (iter != m_groupMemberships.end())
+        shapeId = iter->second;
+      else
+        break;
+    }
     m_x = x2; m_y = y2;
     arc.insert("svg:rx", m_scale*radius);
     arc.insert("svg:ry", m_scale*radius);
