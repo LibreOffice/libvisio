@@ -767,6 +767,7 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degre
 void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
 {
   std::map<unsigned, NURBSData>::const_iterator iter;
+  NURBSData data;
   if (dataID == 0xFFFFFFFE) // Use stencil NURBS data
   {
     if (!m_stencilShape || m_stencilShape->m_geometries.size() < m_currentGeometryCount)
@@ -779,21 +780,21 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     VSDXGeometryListElement * element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
     dataID = dynamic_cast<VSDXNURBSTo2*>(element)->m_dataID;
     iter = m_stencilShape->m_nurbsData.find(dataID);
+    data = iter->second;
   }
-  else // No stencils involved, directly get dataID
+  else // No stencils involved, directly get dataID and fill in missing parts
   {
     iter = m_NURBSData.find(dataID);
-  }
-
-  if (iter != m_NURBSData.end())
-  {
-    NURBSData data = iter->second;
+    data = iter->second;
     data.knots.push_back(knot);
     data.knots.push_back(data.lastKnot);
     data.knots.insert(data.knots.begin(), knotPrev);
     data.weights.push_back(weight);
     data.weights.insert(data.weights.begin(), weightPrev);
+  }
 
+  if (iter != m_NURBSData.end())
+  {
     collectNURBSTo(id, level, x2, y2, data.xType, data.yType, data.degree, data.points, data.knots, data.weights);
   }
   else
