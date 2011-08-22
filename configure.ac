@@ -1,7 +1,7 @@
 # Process this file with autoconf to create configure.
 
 # ----------------------------------------------------------------------------
-# Copyright (C) 2011 TomÃ¡Å¡ 'scarabeus' ChvÃ¡tal <tomas.chvatal@gmail.com>
+# Copyright (C) 2011 Tomas 'scarabeus' Chvatal <tomas.chvatal@gmail.com>
 # ----------------------------------------------------------------------------
 AC_PREREQ([2.65])
 
