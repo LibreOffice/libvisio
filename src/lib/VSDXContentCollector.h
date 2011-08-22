@@ -87,6 +87,7 @@ public:
   void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
   void collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
   void collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc);
+  void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace);
 
   void startPage();
   void endPage();
@@ -103,6 +104,7 @@ private:
   double _NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector);
 
   void _flushCurrentPath();
+  void _flushText();
   void _flushCurrentForeignData();
   void _flushCurrentPage();
 
@@ -163,10 +165,10 @@ private:
   std::map<unsigned, PolylineData> m_polylineData;
   std::vector<unsigned char> m_textStream;
   TextFormat m_textFormat;
-  bool m_outputTextStart;
+  std::vector<CharFormat> m_charFormats;
+  CharFormat m_defaultCharFormat;
 
   VSDXStyles m_styles;
-  bool m_isTextUnstyled;
   bool m_hasLocalLineStyle, m_hasLocalFillStyle;
 
   VSDXStencils m_stencils;

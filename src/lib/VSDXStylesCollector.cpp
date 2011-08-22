@@ -240,6 +240,13 @@ void libvisio::VSDXStylesCollector::collectFillStyle(unsigned /*id*/, unsigned l
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langID, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace)
+{
+  if (m_textStyle == 0) m_textStyle = new VSDXTextStyle();
+  CharFormat f(charCount, fontID, fontColour, langID, fontSize, bold, italic, underline, fontFace);
+  m_textStyle->format = f;
+}
+
 void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc)
 {
   collectFillStyle(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);

@@ -70,6 +70,7 @@ public:
   virtual void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap) = 0;
   virtual void collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
   virtual void collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc) = 0;
+  virtual void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace) = 0;
 
   // Temporary hack
   virtual void startPage() = 0;

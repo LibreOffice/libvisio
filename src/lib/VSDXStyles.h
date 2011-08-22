@@ -89,6 +89,7 @@ class VSDXStyles
 	const VSDXLineStyle getLineStyle(unsigned lineStyleIndex) const;
 	const VSDXFillStyle getFillStyle(unsigned fillStyleIndex) const;
 	const VSDXTextStyle getTextStyle(unsigned textStyleIndex) const;
+
   private:
     std::map<unsigned, VSDXLineStyle> m_lineStyles;
     std::map<unsigned, VSDXFillStyle> m_fillStyles;

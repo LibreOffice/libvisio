@@ -54,9 +54,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
-    m_textFormat(VSD_TEXT_ANSI), m_outputTextStart(false), m_styles(styles),
-    m_isTextUnstyled(false), m_stencils(stencils), m_isStencilStarted(false),
-    m_currentGeometryCount(0)
+    m_textFormat(VSD_TEXT_ANSI), m_styles(styles),
+    m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0)
 {
 }
 
@@ -126,7 +125,8 @@ void libvisio::VSDXContentCollector::_flushText()
   textCoords.insert("libwpg:rotate", -angle*180/M_PI);
 
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
-
+  if (m_charFormats.size() == 0)
+    m_charFormats.push_back(m_defaultCharFormat);
   for (unsigned i = 0; i < m_charFormats.size(); i++)
   {
     text.clear();
@@ -1086,7 +1086,7 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
   m_isPageStarted = true;
 }
 
-void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned /*textStyleId*/)
+void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
 {
   _handleLevelChange(level);
 
@@ -1140,6 +1140,10 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   }
   m_textStream.clear();
   m_charFormats.clear();
+  if (textStyleId != 0xffffffff)
+  {
+    m_defaultCharFormat = m_styles.getTextStyle(textStyleId).format;
+  }
 
   m_currentGeometryCount = 0;
 }
@@ -1186,7 +1190,6 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
 
   m_textStream = textStream;
   m_textFormat = format;
-  m_outputTextStart = true;
 }
 
 void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace)
@@ -1212,6 +1215,11 @@ void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned 
 }
 
 void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned /*colourIndexFG*/, unsigned /*colourIndexBG*/, unsigned /*fillPattern*/, unsigned /*fillFGTransparency*/, unsigned /*fillBGTransparency*/, unsigned /*shadowPattern*/, Colour /*shfgc*/)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/, WPXString /*fontFace*/)
 {
   _handleLevelChange(level);
 }
@@ -1507,14 +1515,14 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
         m_isStencilStarted = false;
       }
 
-      if (m_charFormats.size() > 0)
-      {
-        _flushText();
-      }
+      
 
       _flushCurrentPath();
       _flushCurrentForeignData();
+      if (m_textStream.size() > 0)
+        _flushText();
       m_isShapeStarted = false;
+
     }
     m_originalX = 0.0; m_originalY = 0.0;
     m_x = 0; m_y = 0;

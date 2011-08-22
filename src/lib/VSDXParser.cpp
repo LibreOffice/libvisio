@@ -226,6 +226,9 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
       case VSD_FILL_AND_SHADOW:
         readFillStyle(input);
         break;
+      case VSD_CHAR_IX:
+        readCharIXStyle(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -944,7 +947,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
     if (m_isStencilStarted)
       m_stencilShape.m_geometries.back().addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
     else
-    m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
+      m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
     return;
   }
 
@@ -1356,16 +1359,4 @@ void libvisio::VSDXParser::readLineStyle(WPXInputStream *input)
   m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
 }
 
-/*void libvisio::VSDXParser::readStencilShape(WPXInputStream *input)
-{
-  input->seek(0x22, WPX_SEEK_CUR);
-  unsigned fillStyle = readU32(input);
-  input->seek(4, WPX_SEEK_CUR);
-  unsigned lineStyle = readU32(input);
-  input->seek(4, WPX_SEEK_CUR);
-  unsigned textStyle = readU32(input);
 
-  m_stencilShape.m_lineStyle = lineStyle;
-  m_stencilShape.m_fillStyle = fillStyle;
-  m_stencilShape.m_textStyle = textStyle;
-  }*/

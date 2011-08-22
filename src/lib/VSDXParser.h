@@ -78,6 +78,7 @@ protected:
   void readStyleSheet(WPXInputStream *input);
   void readLineStyle(WPXInputStream *input);
   virtual void readFillStyle(WPXInputStream *input) = 0;
+  virtual void readCharIXStyle(WPXInputStream *input) = 0;
 
   void readStencilShape(WPXInputStream *input);
 
