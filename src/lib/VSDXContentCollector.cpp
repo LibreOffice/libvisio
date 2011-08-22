@@ -177,9 +177,8 @@ void libvisio::VSDXContentCollector::_flushText()
     m_shapeOutput->addInsertText(text);
     m_shapeOutput->addEndTextSpan();
 
-    if (m_textStream.size() == 0)
-      m_shapeOutput->addEndTextObject();
   }
+  m_shapeOutput->addEndTextObject();
 }
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
