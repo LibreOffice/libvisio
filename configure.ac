@@ -20,7 +20,7 @@ AC_INIT([libvisio],[libvisio_version])
 AC_CONFIG_MACRO_DIR([m4])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2])
-m4_define([AM_SILENT_RULES])
+AM_SILENT_RULES([yes])
 AC_LANG([C++])
 
 # ===========================
@@ -172,8 +172,8 @@ AM_CONDITIONAL(STATIC_TOOLS, [test "x$enable_static_tools" = "xyes"])
 AC_ARG_WITH(dummy_bitmaps,
 	[AS_HELP_STRING([--with-dummy-bitmaps],
 		[Output dummy bitmaps of 1x1 pixels instead of the real bitmaps (speeds up the validation test)])],
-	[enable_dummy_bitmaps="$enableval"],
-	[enable_dummy_bitmaps=no]
+	[with_dummy_bitmaps="$withval"],
+	[with_dummy_bitmaps=no]
 )
 AM_CONDITIONAL([OUTPUT_DUMMY_BITMAPS], [test "x$with_dummy_bitmaps" = "xyes"])
 
@@ -182,7 +182,7 @@ AM_CONDITIONAL([OUTPUT_DUMMY_BITMAPS], [test "x$with_dummy_bitmaps" = "xyes"])
 # =============
 AC_ARG_WITH(docs,
 	[AS_HELP_STRING([--without-docs], [Do not build documentation])],
-	[with_docs="$enableval"],
+	[with_docs="$withval"],
 	[AS_IF([test "x$native_win32" = "xyes"], [with_docs=no], [with_docs=yes])]
 )
 AS_IF([test "x$with_docs" != "xno"], [
@@ -226,7 +226,7 @@ AC_MSG_NOTICE([
 Build configuration:
 	debug:           ${enable_debug}
 	docs:            ${build_docs}
-	dummy-bitmaps:   ${enable_dummy_bitmaps}
+	dummy-bitmaps:   ${with_dummy_bitmaps}
 	static-tools:    ${enable_static_tools}
 	werror:          ${enable_werror}
 ==============================================================================
