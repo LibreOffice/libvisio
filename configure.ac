@@ -190,10 +190,10 @@ AS_IF([test "x$with_docs" != "xno"], [
 	AS_IF([test -z "$DOXYGEN"], [
 		AC_MSG_WARN([*** Could not find doxygen in your PATH.])
 		AC_MSG_WARN([*** The documentation will not be built.])
-		build_docs=false
-	], [build_docs=true])
-], [build_docs=false])
-AM_CONDITIONAL([WITH_LIBVISIO_DOCS], [test "x$build_docs" != "xfalse"])
+		build_docs=no
+	], [build_docs=yes])
+], [build_docs=no])
+AM_CONDITIONAL([WITH_LIBVISIO_DOCS], [test "x$build_docs" != "xno"])
 
 # =====================
 # Prepare all .in files
