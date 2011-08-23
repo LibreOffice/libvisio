@@ -41,6 +41,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXContentCollector.cpp \
 	VSDXGeometryList.cpp \
 	VSDXOutputElementList.cpp \
+	VSDXPages.cpp \
 	VSDXParser.cpp \
 	VSDXShapeList.cpp \
 	VSDXStencils.cpp \
@@ -57,6 +58,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXDocumentStructure.h \
 	VSDXGeometryList.h \
 	VSDXOutputElementList.h \
+	VSDXPages.h \
 	VSDXParser.h \
 	VSDXShapeList.h \
 	VSDXStencils.h \
