@@ -53,8 +53,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupXFormsSequence(groupXFormsSequence),
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
-    m_textFormat(VSD_TEXT_ANSI), m_styles(styles),
+    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textStream(),
+    m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_defaultCharFormat(), m_styles(styles),
     m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0)
 {
 }
@@ -1518,7 +1518,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 
       _flushCurrentPath();
       _flushCurrentForeignData();
-      if (m_textStream.size() > 0)
+      if (m_textStream.size())
         _flushText();
       m_isShapeStarted = false;
 
