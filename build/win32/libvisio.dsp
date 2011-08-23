@@ -131,6 +131,10 @@ SOURCE=..\..\src\lib\VSDXOutputElementList.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXPages.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDXParser.cpp
 # End Source File
 # Begin Source File
@@ -204,6 +208,10 @@ SOURCE=..\..\src\lib\VSDXGeometryList.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXOutputElementList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXPages.h
 # End Source File
 # Begin Source File
 
