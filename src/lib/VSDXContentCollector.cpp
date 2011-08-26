@@ -773,7 +773,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
   }
 }
 
-#define VSD_NUM_POLYLINES_PER_NURBS 1000
+#define VSD_NUM_POLYLINES_PER_NURBS 200
 
 void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2, unsigned xType, unsigned yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
