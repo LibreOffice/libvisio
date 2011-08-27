@@ -56,7 +56,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textStream(),
     m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_defaultCharFormat(), m_styles(styles),
     m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0),
-    m_backgroundPageID(0xffffffff), m_currentPageID(0)
+    m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages()
 {
 }
 
@@ -202,7 +202,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
     {
       iter = m_pageOutput.find(*iterList);
       if (iter != m_pageOutput.end())
-        iter->second.draw(m_painter);
+        m_currentPage.append(iter->second);
     }
   }
   m_pageOutput.clear();
@@ -1076,21 +1076,16 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
   m_pageHeight = pageHeight;
   m_shadowOffsetX = shadowOffsetX;
   m_shadowOffsetY = shadowOffsetY;
-  WPXPropertyList pageProps;
-  pageProps.insert("svg:width", m_scale*m_pageWidth);
-  pageProps.insert("svg:height", m_scale*m_pageHeight);
 
-  if (m_isPageStarted)
-    m_painter->endGraphics();
-  m_painter->startGraphics(pageProps);
-  m_isPageStarted = true;
+  m_currentPage.m_pageWidth = m_scale*m_pageWidth;
+  m_currentPage.m_pageHeight = m_scale*m_pageHeight;
 }
 
 void libvisio::VSDXContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID, unsigned currentPageID)
 {
   _handleLevelChange(level);
-  m_backgroundPageID = backgroundPageID;
-  m_currentPageID = currentPageID;
+  m_currentPage.m_backgroundPageID = backgroundPageID;
+  m_currentPage.m_currentPageID = currentPageID;
 }
 
 void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
@@ -1558,19 +1553,24 @@ void libvisio::VSDXContentCollector::startPage()
     m_groupMemberships = m_groupMembershipsSequence[m_currentPageNumber-1];
   if (m_documentPageShapeOrders.size() >= m_currentPageNumber)
     m_pageShapeOrder = m_documentPageShapeOrders[m_currentPageNumber-1];
+  m_currentPage = libvisio::VSDXPage();
+  m_isPageStarted = true;
 }
 
 void libvisio::VSDXContentCollector::endPage()
 {
-  // End page if one is started
   if (m_isPageStarted)
   {
     _handleLevelChange(0);
     _flushCurrentPage();
-
-    m_painter->endGraphics();
+    m_pages.addPage(m_currentPage);
     m_isPageStarted = false;
   }
+}
+
+void libvisio::VSDXContentCollector::endPages()
+{
+  m_pages.draw(m_painter);
 }
 
 #define SURROGATE_VALUE(h,l) (((h) - 0xd800) * 0x400 + (l) - 0xdc00 + 0x10000)

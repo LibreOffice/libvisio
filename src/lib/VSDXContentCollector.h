@@ -34,6 +34,7 @@
 #include "VSDXParser.h"
 #include "VSDXOutputElementList.h"
 #include "VSDXStyles.h"
+#include "VSDXPages.h"
 
 namespace libvisio {
 
@@ -92,6 +93,7 @@ public:
 
   void startPage();
   void endPage();
+  void endPages();
 
 
 private:
@@ -180,6 +182,8 @@ private:
   
   unsigned m_backgroundPageID;
   unsigned m_currentPageID;
+  VSDXPage m_currentPage;
+  VSDXPages m_pages;
 };
 
 } // namespace libvisio

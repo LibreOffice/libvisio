@@ -85,6 +85,7 @@ public:
   // Temporary hack
   void startPage();
   void endPage();
+  void endPages() {}
 
   VSDXStyles getStyleSheets() { return m_styles; }
 

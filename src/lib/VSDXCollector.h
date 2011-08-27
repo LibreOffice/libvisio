@@ -76,6 +76,7 @@ public:
   // Temporary hack
   virtual void startPage() = 0;
   virtual void endPage() = 0;
+  virtual void endPages() = 0;
 
 protected:
   const ::WPXString getColourString(const Colour& c) const;

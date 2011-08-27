@@ -203,6 +203,7 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
       break;
     }
   }
+  m_collector->endPages();
 }
 
 void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
