@@ -20,11 +20,7 @@
 #ifndef __VSDXPAGES_H__
 #define __VSDXPAGES_H__
 
-#include <map>
-#include <vector>
-#include "VSDXStyles.h"
-#include "VSDXGeometryList.h"
-#include "VSDXTypes.h"
+#include "VSDXOutputElementList.h"
 
 namespace libvisio {
 
@@ -32,9 +28,19 @@ class VSDXPage
 {
   public:
     VSDXPage();
-    VSDXPage(const VSDXPage &stencil);
+    VSDXPage(double pageWidth, double pageHeight, unsigned currentPageID, unsigned backgroundPageID, const VSDXOutputElementList &pageElements);
+    VSDXPage(const VSDXPage &page);
     ~VSDXPage();
-    VSDXPage &operator=(const VSDXPage &stencil);
+    VSDXPage &operator=(const VSDXPage &page);
+    void draw(libwpg::WPGPaintInterface *painter) const;
+    double getPageWidth() const { return m_pageWidth; }
+    double getPageHeight() const { return m_pageHeight; }
+    unsigned getCurrentPageID() const { return m_currentPageID; }
+    unsigned getBackgroundPageID() const { return m_backgroundPageID; }
+  private:
+    double m_pageWidth, m_pageHeight;
+    unsigned m_currentPageID, m_backgroundPageID;
+    VSDXOutputElementList m_pageElements;
 };
 
 class VSDXPages
@@ -42,6 +48,11 @@ class VSDXPages
   public:
     VSDXPages();
     ~VSDXPages();
+    void addPage(const VSDXPage &page);
+    void draw(libwpg::WPGPaintInterface *painter);
+  private:
+    void _drawWithBackground(libwpg::WPGPaintInterface *painter, const VSDXPage &page);
+    std::map<unsigned, VSDXPage> m_pages;
 };
 
 

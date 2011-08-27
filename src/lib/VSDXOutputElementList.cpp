@@ -301,9 +301,9 @@ libvisio::VSDXOutputElementList::~VSDXOutputElementList()
   m_elements.clear();
 }
 
-void libvisio::VSDXOutputElementList::draw(libwpg::WPGPaintInterface *painter)
+void libvisio::VSDXOutputElementList::draw(libwpg::WPGPaintInterface *painter) const
 {
-  for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::vector<VSDXOutputElement *>::const_iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
     (*iter)->draw(painter);
 }
 
