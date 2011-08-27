@@ -73,7 +73,7 @@ libvisio::VSDXPages::VSDXPages()
 
 void libvisio::VSDXPages::addPage(const libvisio::VSDXPage &page)
 {
-  m_pages[page.getCurrentPageID()] = page;
+  m_pages[page.m_currentPageID] = page;
 }
 
 void libvisio::VSDXPages::draw(libwpg::WPGPaintInterface *painter)
@@ -84,8 +84,8 @@ void libvisio::VSDXPages::draw(libwpg::WPGPaintInterface *painter)
   for (std::map<unsigned, libvisio::VSDXPage>::iterator iter = m_pages.begin(); iter != m_pages.end(); iter++)
   {
     WPXPropertyList pageProps;
-    pageProps.insert("svg:width", iter->second.getPageWidth());
-    pageProps.insert("svg:height", iter->second.getPageHeight());
+    pageProps.insert("svg:width", iter->second.m_pageWidth);
+    pageProps.insert("svg:height", iter->second.m_pageHeight);
     painter->startGraphics(pageProps);
     _drawWithBackground(painter, iter->second);
     painter->endGraphics();
@@ -97,9 +97,9 @@ void libvisio::VSDXPages::_drawWithBackground(libwpg::WPGPaintInterface *painter
   if (!painter)
     return;
 
-  if (page.getBackgroundPageID() != 0xffffffff)
+  if (page.m_backgroundPageID != 0xffffffff)
   {
-     std::map<unsigned, libvisio::VSDXPage>::iterator iter = m_pages.find(page.getBackgroundPageID());
+     std::map<unsigned, libvisio::VSDXPage>::iterator iter = m_pages.find(page.m_backgroundPageID);
      if (iter != m_pages.end())
        _drawWithBackground(painter, iter->second);
   }

@@ -34,11 +34,6 @@ class VSDXPage
     VSDXPage &operator=(const VSDXPage &page);
     void append(const VSDXOutputElementList &outputElements);
     void draw(libwpg::WPGPaintInterface *painter) const;
-    double getPageWidth() const { return m_pageWidth; }
-    double getPageHeight() const { return m_pageHeight; }
-    unsigned getCurrentPageID() const { return m_currentPageID; }
-    unsigned getBackgroundPageID() const { return m_backgroundPageID; }
-  private:
     double m_pageWidth, m_pageHeight;
     unsigned m_currentPageID, m_backgroundPageID;
     VSDXOutputElementList m_pageElements;
