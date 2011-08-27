@@ -292,7 +292,11 @@ libvisio::VSDXOutputElementList & libvisio::VSDXOutputElementList::operator=(con
   return *this;   
 }
 
-
+void libvisio::VSDXOutputElementList::append(const libvisio::VSDXOutputElementList &elementList)
+{
+  for (std::vector<VSDXOutputElement *>::const_iterator cstiter = elementList.m_elements.begin(); cstiter != elementList.m_elements.end(); cstiter++)
+    m_elements.push_back((*cstiter)->clone());
+}
 
 libvisio::VSDXOutputElementList::~VSDXOutputElementList()
 {

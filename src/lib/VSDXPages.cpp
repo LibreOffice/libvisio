@@ -55,6 +55,11 @@ libvisio::VSDXPage &libvisio::VSDXPage::operator=(const libvisio::VSDXPage &page
   return *this;
 }
 
+void libvisio::VSDXPage::append(const libvisio::VSDXOutputElementList &outputElements)
+{
+    m_pageElements.append(outputElements);
+}
+
 void libvisio::VSDXPage::draw(libwpg::WPGPaintInterface *painter) const
 {
   if (painter)

@@ -38,6 +38,7 @@ public:
   VSDXOutputElementList(const VSDXOutputElementList &elementList);
   VSDXOutputElementList &operator=(const VSDXOutputElementList &elementList);
   virtual ~VSDXOutputElementList();
+  void append(const VSDXOutputElementList &elementList);
   void draw(libwpg::WPGPaintInterface *painter) const;
   void addStyle(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
   void addEllipse(const WPXPropertyList &propList);
