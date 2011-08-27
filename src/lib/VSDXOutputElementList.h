@@ -34,7 +34,9 @@ class VSDXOutputElement;
 class VSDXOutputElementList
 {
 public:
-  VSDXOutputElementList() : m_elements() {}
+  VSDXOutputElementList();
+  VSDXOutputElementList(const VSDXOutputElementList &elementList);
+  VSDXOutputElementList &operator=(const VSDXOutputElementList &elementList);
   virtual ~VSDXOutputElementList();
   void draw(libwpg::WPGPaintInterface *painter);
   void addStyle(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
