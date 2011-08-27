@@ -55,7 +55,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textStream(),
     m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_defaultCharFormat(), m_styles(styles),
-    m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0)
+    m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0),
+    m_backgroundPageID(0xffffffff), m_currentPageID(0)
 {
 }
 
@@ -1083,6 +1084,13 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
     m_painter->endGraphics();
   m_painter->startGraphics(pageProps);
   m_isPageStarted = true;
+}
+
+void libvisio::VSDXContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID, unsigned currentPageID)
+{
+  _handleLevelChange(level);
+  m_backgroundPageID = backgroundPageID;
+  m_currentPageID = currentPageID;
 }
 
 void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)

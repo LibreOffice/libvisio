@@ -72,6 +72,7 @@ protected:
   void readFont(WPXInputStream *input, unsigned int id);
   void readFontIX(WPXInputStream *input);
   void readCharList(WPXInputStream *input);
+  void readPage(WPXInputStream *input);
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
 
@@ -112,6 +113,7 @@ protected:
   VSDXStencil * m_currentStencil;
   VSDXStencilShape m_stencilShape;
   bool m_isStencilStarted;
+  unsigned m_currentPageID;
 
 private:
   VSDXParser();

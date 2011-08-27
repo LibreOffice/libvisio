@@ -72,6 +72,7 @@ public:
   void collectShapeList(unsigned id, unsigned level);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY);
+  void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, unsigned currentPageID);
   void collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle);
 
   void collectUnhandledChunk(unsigned id, unsigned level);
@@ -176,6 +177,9 @@ private:
   bool m_isStencilStarted;
 
   unsigned m_currentGeometryCount;
+  
+  unsigned m_backgroundPageID;
+  unsigned m_currentPageID;
 };
 
 } // namespace libvisio

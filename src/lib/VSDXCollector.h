@@ -55,6 +55,7 @@ public:
   virtual void collectShapeList(unsigned id, unsigned level) = 0;
   virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat) = 0;
   virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY) = 0;
+  virtual void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, unsigned currentPageID) = 0;
   virtual void collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) = 0;
 
   virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;

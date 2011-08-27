@@ -33,7 +33,7 @@
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()), m_geomListVector(),
     m_charList(new VSDXCharacterList()), m_charListVector(), m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
-    m_stencilShape(), m_isStencilStarted(false)
+    m_stencilShape(), m_isStencilStarted(false), m_currentPageID(0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
@@ -183,9 +183,11 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
     bool compressed = ((ptrFormat & 2) == 2);
     m_input->seek(ptrOffset, WPX_SEEK_SET);
     VSDInternalStream tmpInput(m_input, ptrLength, compressed);
+    m_currentPageID = 0;
     switch (ptrType)
     {
     case VSD_PAGE:
+      m_currentPageID = i;
       handlePage(&tmpInput);
       break;
     case VSD_PAGES:             // shouldn't happen
@@ -614,6 +616,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       case VSD_FONT_IX: // ver 6 only
         readFontIX(input);
         break;
+      case VSD_PAGE:
+        readPage(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -743,6 +748,13 @@ void libvisio::VSDXParser::readCharList(WPXInputStream *input)
   m_charList->setElementsOrder(characterOrder);
   // We want the collectors to still get the level information
   m_collector->collectCharList(m_header.id, m_header.level);
+}
+
+void libvisio::VSDXParser::readPage(WPXInputStream *input)
+{
+  input->seek(8, WPX_SEEK_CUR); //sub header length and children list length
+  uint32_t backgroundPageID = readU32(input);
+  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_currentPageID);
 }
 
 void libvisio::VSDXParser::readGeometry(WPXInputStream *input)

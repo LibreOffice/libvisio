@@ -167,6 +167,11 @@ void libvisio::VSDXStylesCollector::collectPageProps(unsigned /* id */, unsigned
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectPage(unsigned /* id */, unsigned level, unsigned /* backgroundPageID */, unsigned /* currentPageID */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectShape(unsigned id, unsigned level, unsigned /*masterPage*/, unsigned /*masterShape*/, unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
 {
   _handleLevelChange(level);
