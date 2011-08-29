@@ -212,6 +212,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
 {
   _handleLevelChange(level);
 
+  m_originalX = x3; m_originalY = y3;
   transformPoint(x2, y2);
   transformPoint(x3, y3);
   transformAngle(angle);
@@ -230,10 +231,23 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
                (2*((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n)));
 
   VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
+
+  m_x = x3; m_y = y3;
+
+  if ((x0 != x0) || (y0 != y0)) // one of them is NotANumber
+  // most probably all of the points lie on the same line, so use lineTo instead
+  {
+    WPXPropertyList end;
+    end.insert("svg:x", m_scale*m_x);
+    end.insert("svg:y", m_scale*m_y);
+    end.insert("libwpg:path-action", "L");
+    m_currentGeometry.push_back(end);
+	return;
+  }
+
+
   double rx = sqrt(pow(x1-x0, 2) + pow(y1-y0, 2));
   double ry = rx / ecc;
-  m_x = x3; m_y = y3;
-  m_originalX = m_x; m_originalY = m_y;
   WPXPropertyList arc;
   int largeArc = 0;
   int sweep = 1;
