@@ -136,12 +136,12 @@ void libvisio::VSDXContentCollector::_flushText()
     {
       unsigned long max = m_charFormats[i].charCount <= m_textStream.size() ? m_charFormats[i].charCount : m_textStream.size();
       max = (m_charFormats[i].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
-      for (unsigned i = 0; i < max; i++)
+      for (unsigned j = 0; j < max; j++)
       {
-        if (m_textStream[i] <= 0x20)
+        if (m_textStream[j] <= 0x20)
           _appendUCS4(text, (unsigned int) 0x20);
         else
-          _appendUCS4(text, (unsigned int) m_textStream[i]);
+          _appendUCS4(text, (unsigned int) m_textStream[j]);
       }
 
       m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
