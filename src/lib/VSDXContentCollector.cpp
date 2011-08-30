@@ -208,6 +208,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
   m_pageOutput.clear();
 }
 
+#define LIBVISIO_EPSILON 1E-10
 void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
   _handleLevelChange(level);
@@ -223,18 +224,10 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
   double y2n = ecc*(y2*cos(angle) -x2*sin(angle));
   double x3n = x3*cos(angle) + y3*sin(angle);
   double y3n = ecc*(y3*cos(angle) - x3*sin(angle));
-  double x0 = ((x1-x2n)*(x1+x2n)*(y2n-y3n) - (x2n-x3n)*(x2n+x3n)*(y1-y2n) +
-               (y1-y2n)*(y2n-y3n)*(y1-y3n)) /
-               (2*((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n)));
-  double y0 = ((x1-x2n)*(x2n-x3n)*(x1-x3n) + (x2n-x3n)*(y1-y2n)*(y1+y2n) -
-               (x1-x2n)*(y2n-y3n)*(y2n+y3n)) /
-               (2*((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n)));
-
-  VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
-
+  
   m_x = x3; m_y = y3;
 
-  if ((x0 != x0) || (y0 != y0)) // one of them is NotANumber
+  if (fabs(((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n))) <= LIBVISIO_EPSILON || fabs(((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n))) <= LIBVISIO_EPSILON)
   // most probably all of the points lie on the same line, so use lineTo instead
   {
     WPXPropertyList end;
@@ -244,7 +237,15 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
     m_currentGeometry.push_back(end);
 	return;
   }
+  
+  double x0 = ((x1-x2n)*(x1+x2n)*(y2n-y3n) - (x2n-x3n)*(x2n+x3n)*(y1-y2n) +
+               (y1-y2n)*(y2n-y3n)*(y1-y3n)) /
+               (2*((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n)));
+  double y0 = ((x1-x2n)*(x2n-x3n)*(x1-x3n) + (x2n-x3n)*(y1-y2n)*(y1+y2n) -
+               (x1-x2n)*(y2n-y3n)*(y2n+y3n)) /
+               (2*((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n)));
 
+  VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
 
   double rx = sqrt(pow(x1-x0, 2) + pow(y1-y0, 2));
   double ry = rx / ecc;
