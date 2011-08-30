@@ -123,7 +123,7 @@ void libvisio::VSDXContentCollector::_flushText()
   textCoords.insert("svg:y", m_scale * m_y);
   textCoords.insert("svg:cx", m_scale * m_x);
   textCoords.insert("svg:cy", m_scale * m_y);
-  textCoords.insert("libwpg:rotate", -angle*180/M_PI);
+  textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
   if (m_charFormats.size() == 0)
@@ -265,7 +265,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
 
   arc.insert("svg:rx", m_scale*rx);
   arc.insert("svg:ry", m_scale*ry);
-  arc.insert("libwpg:rotate", angle * 180 / M_PI);
+  arc.insert("libwpg:rotate", angle * 180 / M_PI, WPX_GENERIC);
   arc.insert("libwpg:large-arc", largeArc);
   arc.insert("libwpg:sweep", sweep);
   arc.insert("svg:x", m_scale*m_x);
@@ -303,7 +303,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   ellipse.insert("svg:y",m_scale*ytop);
   ellipse.insert("libwpg:large-arc", largeArc?1:0);
   ellipse.insert("libwpg:path-action", "A");
-  ellipse.insert("libwpg:rotate", angle * 180/M_PI);
+  ellipse.insert("libwpg:rotate", angle * 180/M_PI, WPX_GENERIC);
   m_currentGeometry.push_back(ellipse);
   ellipse.insert("svg:x",m_scale*xleft);
   ellipse.insert("svg:y",m_scale*yleft);
@@ -779,7 +779,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
     m_x = x2; m_y = y2;
     arc.insert("svg:rx", m_scale*radius);
     arc.insert("svg:ry", m_scale*radius);
-    arc.insert("libwpg:rotate", angle*180/M_PI);
+    arc.insert("libwpg:rotate", angle*180/M_PI, WPX_GENERIC);
     arc.insert("libwpg:large-arc", largeArc);
     arc.insert("libwpg:sweep", sweep);
     arc.insert("svg:x", m_scale*m_x);
