@@ -1,0 +1,15 @@
+CREDITS
+
+Current maintainers and authors of libvisio
+---------------------------------------------
+Fridrich Strba <fridrich.strba@bluewin.ch>
+Eilidh McAdam <tibbylickle@gmail.com>
+
+Contributors
+------------
+Valek Filippov <dent.artur@gmail.com>	Excellent reverse engineering and various contributions
+Tomas 'scarabeus' Chvatal <tomas.chvatal@gmail.com>		Build system rewrite
+
+Thanks
+------
+Google for financing the writing of libvisio in the frame of Google Summer of Code 2011 program 
