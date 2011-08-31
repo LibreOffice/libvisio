@@ -8,7 +8,9 @@ SUBDIRS = src build docs
 
 EXTRA_DIST = \
 	AUTHORS \
-	COPYING \
+	COPYING.GPL \
+	COPYING.LGPL \
+	COPYING.MPL \
 	NEWS \
 	README \
 	autogen.sh \
