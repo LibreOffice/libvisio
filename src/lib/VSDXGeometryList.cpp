@@ -372,6 +372,9 @@ void libvisio::VSDXGeometryList::clear()
 
 libvisio::VSDXGeometryListElement * libvisio::VSDXGeometryList::getElement(unsigned index) const
 {
+  if (m_elementsOrder.size() > index)
+    index = m_elementsOrder[index];    
+    
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = m_elements.find(index);
   if (iter != m_elements.end())
     return iter->second;
