@@ -893,7 +893,13 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
 
     // Get stencil geometry so as to find stencil NURBS data ID
     VSDXGeometryListElement * element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
-    dataID = dynamic_cast<VSDXNURBSTo2*>(element)->m_dataID;
+    VSDXNURBSTo2* tmpElement = dynamic_cast<VSDXNURBSTo2*>(element);
+    if (!tmpElement)
+    {
+      _handleLevelChange(level);
+      return;
+    }
+    dataID = tmpElement->m_dataID;
     iter = m_stencilShape->m_nurbsData.find(dataID);
   }
   else // No stencils involved, directly get dataID and fill in missing parts
@@ -903,7 +909,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
 
   if (iter != m_NURBSData.end())
   {
-    data = iter->second;
+    data = iter->second;;
     data.knots.push_back(knot);
     data.knots.push_back(data.lastKnot);
     data.knots.insert(data.knots.begin(), knotPrev);
