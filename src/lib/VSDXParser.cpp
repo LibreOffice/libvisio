@@ -487,6 +487,12 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
       case VSD_PAGE_PROPS:
         readPageProps(input);
         break;
+      case VSD_SPLINE_START:
+        readSplineStart(input);
+        break;
+      case VSD_SPLINE_KNOT:
+        readSplineKnot(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -629,6 +635,12 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
         break;
       case VSD_PAGE:
         readPage(input);
+        break;
+      case VSD_SPLINE_START:
+        readSplineStart(input);
+        break;
+      case VSD_SPLINE_KNOT:
+        readSplineKnot(input);
         break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
@@ -1293,6 +1305,38 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
       m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, degree, lastKnot, controlPoints, knotVector, weights);
   }
 }
+
+void libvisio::VSDXParser::readSplineStart(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  double x = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double y = readDouble(input);
+  double secondKnot = readDouble(input);
+  double firstKnot = readDouble(input);
+  double lastKnot = readDouble(input);
+  unsigned degree = readU8(input);
+
+  if (m_isStencilStarted)
+    m_stencilShape.m_geometries.back().addSplineStart(m_header.id, m_header.level, x, y, secondKnot, firstKnot, lastKnot, degree);
+  else
+    m_geomList->addSplineStart(m_header.id, m_header.level, x, y, secondKnot, firstKnot, lastKnot, degree);
+}
+
+void libvisio::VSDXParser::readSplineKnot(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  double x = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double y = readDouble(input);
+  double knot = readDouble(input);
+
+  if (m_isStencilStarted)
+    m_stencilShape.m_geometries.back().addSplineKnot(m_header.id, m_header.level, x, y, knot);
+  else
+    m_geomList->addSplineKnot(m_header.id, m_header.level, x, y, knot);
+}
+
 
 void libvisio::VSDXParser::readColours(WPXInputStream *input)
 {

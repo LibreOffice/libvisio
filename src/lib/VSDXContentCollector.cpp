@@ -1216,6 +1216,18 @@ void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const st
 }
 
 
+void libvisio::VSDXContentCollector::collectSplineStart(unsigned /* id */, unsigned level, double /* x */, double /* y */, double /* secondKnot */, double /* firstKnot */, double /* lastKnot */, unsigned /* degree */)
+{
+  _handleLevelChange(level);
+}
+
+
+void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsigned level, double /* x */, double /* y */, double /* knot */)
+{
+  _handleLevelChange(level);
+}
+
+
 void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format)
 {
   _handleLevelChange(level);

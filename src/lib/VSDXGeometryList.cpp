@@ -144,6 +144,35 @@ private:
   unsigned m_xType, m_yType;
   std::vector<std::pair<double, double> > m_points;
 };
+
+class VSDXSplineStart : public VSDXGeometryListElement
+{
+public:
+  VSDXSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree) :
+    m_id(id), m_level(level), m_x(x), m_y(y), m_secondKnot(secondKnot), m_firstKnot(firstKnot), m_lastKnot(lastKnot), m_degree(degree) {}
+  ~VSDXSplineStart() {}
+  void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
+private:
+  unsigned m_id, m_level;
+  double m_x, m_y;
+  double m_secondKnot, m_firstKnot, m_lastKnot;
+  unsigned m_degree;
+};
+
+class VSDXSplineKnot : public VSDXGeometryListElement
+{
+public:
+  VSDXSplineKnot(unsigned id, unsigned level, double x, double y, double knot) :
+    m_id(id), m_level(level), m_x(x), m_y(y), m_knot(knot) {}
+  ~VSDXSplineKnot() {}
+  void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
+private:
+  unsigned m_id, m_level;
+  double m_x, m_y;
+  double m_knot;
+};
 } // namespace libvisio
 
 
@@ -257,6 +286,28 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXPolylineTo2::clone()
 }
 
 
+void libvisio::VSDXSplineStart::handle(VSDXCollector *collector)
+{
+  collector->collectSplineStart(m_id, m_level, m_x, m_y, m_secondKnot, m_firstKnot, m_lastKnot, m_degree);
+}
+
+libvisio::VSDXGeometryListElement *libvisio::VSDXSplineStart::clone()
+{
+  return new VSDXSplineStart(m_id, m_level, m_x, m_y, m_secondKnot, m_firstKnot, m_lastKnot, m_degree);
+}
+
+
+void libvisio::VSDXSplineKnot::handle(VSDXCollector *collector)
+{
+  collector->collectSplineKnot(m_id, m_level, m_x, m_y, m_knot);
+}
+
+libvisio::VSDXGeometryListElement *libvisio::VSDXSplineKnot::clone()
+{
+  return new VSDXSplineKnot(m_id, m_level, m_x, m_y, m_knot);
+}
+
+
 libvisio::VSDXGeometryList::VSDXGeometryList()
 {
 }
@@ -332,6 +383,16 @@ void libvisio::VSDXGeometryList::addEllipse(unsigned id, unsigned level, double 
 void libvisio::VSDXGeometryList::addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
   m_elements[id] = new VSDXEllipticalArcTo(id, level, x3, y3, x2, y2, angle, ecc);
+}
+
+void libvisio::VSDXGeometryList::addSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree)
+{
+  m_elements[id] = new VSDXSplineStart(id, level, x, y, secondKnot, firstKnot, lastKnot, degree);
+}
+
+void libvisio::VSDXGeometryList::addSplineKnot(unsigned id, unsigned level, double x, double y, double knot)
+{
+  m_elements[id] = new VSDXSplineKnot(id, level, x, y, knot);
 }
 
 void libvisio::VSDXGeometryList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

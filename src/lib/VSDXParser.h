@@ -89,6 +89,9 @@ protected:
   void readLineStyle(WPXInputStream *input);
   virtual void readFillStyle(WPXInputStream *input) = 0;
   virtual void readCharIXStyle(WPXInputStream *input) = 0;
+  
+  void readSplineStart(WPXInputStream *input);
+  void readSplineKnot(WPXInputStream *input);
 
   void readStencilShape(WPXInputStream *input);
 
