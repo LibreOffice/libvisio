@@ -178,6 +178,7 @@ private:
 
 void libvisio::VSDXGeometry::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectGeometry(m_id, m_level, m_geomFlags);
 }
 
@@ -189,6 +190,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXGeometry::clone()
 
 void libvisio::VSDXMoveTo::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectMoveTo(m_id, m_level, m_x, m_y);
 }
 
@@ -200,6 +202,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXMoveTo::clone()
 
 void libvisio::VSDXLineTo::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectLineTo(m_id, m_level, m_x, m_y);
 }
 
@@ -211,6 +214,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXLineTo::clone()
 
 void libvisio::VSDXArcTo::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectArcTo(m_id, m_level, m_x2, m_y2, m_bow);
 }
 
@@ -222,6 +226,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXArcTo::clone()
 
 void libvisio::VSDXEllipse::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectEllipse(m_id, m_level, m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop);
 }
 
@@ -233,6 +238,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXEllipse::clone()
 
 void libvisio::VSDXEllipticalArcTo::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectEllipticalArcTo(m_id, m_level, m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc);
 }
 
@@ -244,6 +250,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXEllipticalArcTo::clone()
 
 void libvisio::VSDXNURBSTo1::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectNURBSTo(m_id, m_level, m_x2, m_y2, m_xType, m_yType, m_degree, m_controlPoints, m_knotVector, m_weights);
 }
 
@@ -255,6 +262,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXNURBSTo1::clone()
 
 void libvisio::VSDXNURBSTo2::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectNURBSTo(m_id, m_level, m_x2, m_y2, m_knot, m_knotPrev, m_weight, m_weightPrev, m_dataID);
 }
 
@@ -266,6 +274,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXNURBSTo2::clone()
 
 void libvisio::VSDXPolylineTo1::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectPolylineTo(m_id, m_level, m_x, m_y, m_xType, m_yType, m_points);
 }
 
@@ -277,6 +286,7 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXPolylineTo1::clone()
 
 void libvisio::VSDXPolylineTo2::handle(VSDXCollector *collector)
 {
+  collector->collectSplineEnd();
   collector->collectPolylineTo(m_id, m_level, m_x, m_y, m_dataID);
 }
 

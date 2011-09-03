@@ -141,6 +141,10 @@ void libvisio::VSDXStylesCollector::collectSplineKnot(unsigned /* id */, unsigne
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectSplineEnd()
+{
+}
+
 void libvisio::VSDXStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned /* xType */, unsigned /* yType */, unsigned /* degree */, double /*lastKnot*/, std::vector<std::pair<double, double> > /* controlPoints */, std::vector<double> /* knotVector */, std::vector<double> /* weights */)
 {
   _handleLevelChange(level);

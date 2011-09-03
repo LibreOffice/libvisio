@@ -68,6 +68,7 @@ public:
   virtual void collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) = 0;
   virtual void collectSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree) = 0;
   virtual void collectSplineKnot(unsigned id, unsigned level, double x, double y, double knot) = 0;
+  virtual void collectSplineEnd() = 0;
 
   virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;
 
