@@ -431,6 +431,7 @@ void libvisio::VSDXGeometryList::handle(VSDXCollector *collector) const
     for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
       iter->second->handle(collector);
   }
+  collector->collectSplineEnd();
 }
 
 void libvisio::VSDXGeometryList::clear()

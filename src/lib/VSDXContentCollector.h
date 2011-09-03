@@ -196,6 +196,13 @@ private:
   unsigned m_currentPageID;
   VSDXPage m_currentPage;
   VSDXPages m_pages;
+  
+  std::vector<std::pair<double, double> > m_splineControlPoints;
+  std::vector<double> m_splineKnotVector;
+  double m_splineX, m_splineY;
+  double m_splineLastKnot;
+  unsigned m_splineDegree;
+  unsigned m_splineLevel;
 };
 
 } // namespace libvisio

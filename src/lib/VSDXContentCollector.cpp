@@ -65,7 +65,9 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textStream(),
     m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_defaultCharFormat(), m_styles(styles),
     m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0),
-    m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages()
+    m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
+    m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
+    m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0)
 {
 }
 
@@ -1216,20 +1218,40 @@ void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const st
 }
 
 
-void libvisio::VSDXContentCollector::collectSplineStart(unsigned /* id */, unsigned level, double /* x */, double /* y */, double /* secondKnot */, double /* firstKnot */, double /* lastKnot */, unsigned /* degree */)
+void libvisio::VSDXContentCollector::collectSplineStart(unsigned /* id */, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree)
 {
-  _handleLevelChange(level);
+  m_splineLevel = level;
+  m_splineKnotVector.push_back(firstKnot);
+  m_splineKnotVector.push_back(secondKnot);
+  m_splineLastKnot = lastKnot;
+  m_splineX = x; m_splineY = y;
+  m_splineDegree = degree;
 }
 
 
-void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsigned level, double /* x */, double /* y */, double /* knot */)
+void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsigned level, double x, double y, double knot)
 {
-  _handleLevelChange(level);
+  m_splineKnotVector.push_back(knot);
+  m_splineControlPoints.push_back(std::pair<double,double>(m_splineX,m_splineY));
+  m_splineX = x; m_splineY = y;
 }
 
 
 void libvisio::VSDXContentCollector::collectSplineEnd()
 {
+  if (!m_splineKnotVector.size() || !m_splineControlPoints.size())
+  {
+    m_splineKnotVector.clear();
+    m_splineControlPoints.clear();
+    return;
+  }  
+  m_splineKnotVector.push_back(m_splineLastKnot);
+  std::vector<double> weights;
+  for (unsigned i=0; i < m_splineControlPoints.size()+2; i++)
+    weights.push_back(1.0);
+  collectNURBSTo(0, m_splineLevel, m_splineX, m_splineY, 1, 1, m_splineDegree, m_splineControlPoints, m_splineKnotVector, weights);
+  m_splineKnotVector.clear();
+  m_splineControlPoints.clear();
 }
 
 
