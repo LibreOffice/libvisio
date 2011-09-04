@@ -126,6 +126,18 @@ private:
 };
 
 
+class VSDXStartTextLineOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXStartTextLineOutputElement(const WPXPropertyList &propList);
+  virtual ~VSDXStartTextLineOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+  virtual VSDXOutputElement *clone() { return new VSDXStartTextLineOutputElement(m_propList); }
+private:
+  WPXPropertyList m_propList;
+};
+
+
 class VSDXStartTextSpanOutputElement : public VSDXOutputElement
 {
 public:
@@ -157,6 +169,16 @@ public:
   virtual ~VSDXEndTextSpanOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
   virtual VSDXOutputElement *clone() { return new VSDXEndTextSpanOutputElement(); }
+};
+
+
+class VSDXEndTextLineOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXEndTextLineOutputElement();
+  virtual ~VSDXEndTextLineOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+  virtual VSDXOutputElement *clone() { return new VSDXEndTextLineOutputElement(); }
 };
 
 
@@ -249,6 +271,16 @@ void libvisio::VSDXStartTextSpanOutputElement::draw(libwpg::WPGPaintInterface *p
 }
 
 
+libvisio::VSDXStartTextLineOutputElement::VSDXStartTextLineOutputElement(const WPXPropertyList &propList) :
+  m_propList(propList) {}
+
+void libvisio::VSDXStartTextLineOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->startTextLine(m_propList);
+}
+
+
 libvisio::VSDXInsertTextOutputElement::VSDXInsertTextOutputElement(const WPXString &text) :
   m_text(text) {}
 
@@ -264,6 +296,15 @@ void libvisio::VSDXEndTextSpanOutputElement::draw(libwpg::WPGPaintInterface *pai
 {
   if (painter)
     painter->endTextSpan();
+}
+
+
+libvisio::VSDXEndTextLineOutputElement::VSDXEndTextLineOutputElement() {}
+
+void libvisio::VSDXEndTextLineOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->endTextLine();
 }
 
 
@@ -356,6 +397,11 @@ void libvisio::VSDXOutputElementList::addStartTextObject(const WPXPropertyList &
   m_elements.push_back(new VSDXStartTextObjectOutputElement(propList, propListVec));
 }
 
+void libvisio::VSDXOutputElementList::addStartTextLine(const WPXPropertyList &propList)
+{
+  m_elements.push_back(new VSDXStartTextLineOutputElement(propList));
+}
+
 void libvisio::VSDXOutputElementList::addStartTextSpan(const WPXPropertyList &propList)
 {
   m_elements.push_back(new VSDXStartTextSpanOutputElement(propList));
@@ -369,6 +415,11 @@ void libvisio::VSDXOutputElementList::addInsertText(const WPXString &text)
 void libvisio::VSDXOutputElementList::addEndTextSpan()
 {
   m_elements.push_back(new VSDXEndTextSpanOutputElement());
+}
+
+void libvisio::VSDXOutputElementList::addEndTextLine()
+{
+  m_elements.push_back(new VSDXEndTextLineOutputElement());
 }
 
 void libvisio::VSDXOutputElementList::addEndTextObject()

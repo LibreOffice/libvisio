@@ -128,12 +128,16 @@ void libvisio::VSDXContentCollector::_flushText()
   WPXString text;
   double angle = 0.0;
   transformAngle(angle);
+  
+  double x = m_txtxform.x; double y = m_txtxform.y + m_txtxform.height;
+  
+  transformPoint(x,y);
 
   WPXPropertyList textCoords;
-  textCoords.insert("svg:x", m_scale * m_x);
-  textCoords.insert("svg:y", m_scale * m_y);
-  textCoords.insert("svg:cx", m_scale * m_x);
-  textCoords.insert("svg:cy", m_scale * m_y);
+  textCoords.insert("svg:x", m_scale * x);
+  textCoords.insert("svg:y", m_scale * y);
+  textCoords.insert("svg:height", m_scale * (m_txtxform.height != 0.0 ? m_txtxform.height : m_xform.height));
+  textCoords.insert("svg:width", m_scale * (m_xform.width - m_txtxform.x));
   textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
@@ -185,9 +189,11 @@ void libvisio::VSDXContentCollector::_flushText()
     textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
 
     VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
+    m_shapeOutput->addStartTextLine(WPXPropertyList());
     m_shapeOutput->addStartTextSpan(textProps);
     m_shapeOutput->addInsertText(text);
     m_shapeOutput->addEndTextSpan();
+    m_shapeOutput->addEndTextLine();
 
   }
   m_shapeOutput->addEndTextObject();
@@ -1019,6 +1025,8 @@ void libvisio::VSDXContentCollector::collectTxtXForm(unsigned /* id */, unsigned
 {
   _handleLevelChange(level);
   m_txtxform = txtxform;
+  m_txtxform.x = m_txtxform.pinX - m_txtxform.pinLocX;
+  m_txtxform.y = m_txtxform.pinY - m_txtxform.pinLocY;
 }
 
 void libvisio::VSDXContentCollector::transformPoint(double &x, double &y)
@@ -1597,6 +1605,8 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
     }
     m_originalX = 0.0; m_originalY = 0.0;
     m_x = 0; m_y = 0;
+    m_txtxform = XForm();
+    m_xform = XForm();
     m_NURBSData.clear();
     m_polylineData.clear();
   }
@@ -1614,6 +1624,8 @@ void libvisio::VSDXContentCollector::startPage()
     m_isShapeStarted = false;
   }
   m_originalX = 0.0; m_originalY = 0.0;
+  m_txtxform = XForm();
+  m_xform = XForm();
   m_x = 0; m_y = 0;
   m_currentPageNumber++;
   if (m_groupXFormsSequence.size() >= m_currentPageNumber)
