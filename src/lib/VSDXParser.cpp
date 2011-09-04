@@ -135,9 +135,9 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
     else if (ptr.Type != 0)
       PtrList.push_back(ptr);
   }
-  for (unsigned int i = 0; i < PtrList.size(); i++)
+  for (unsigned int j = 0; j < PtrList.size(); j++)
   {
-    ptr = PtrList[i];
+    ptr = PtrList[j];
     bool compressed = ((ptr.Format & 2) == 2);
     m_input->seek(ptr.Offset, WPX_SEEK_SET);
     VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
@@ -530,11 +530,11 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       delete *iter;
     }
     m_geomListVector.clear();
-    for (std::vector<VSDXCharacterList *>::iterator iter = m_charListVector.begin(); iter != m_charListVector.end(); iter++)
+    for (std::vector<VSDXCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); iter++)
     {
-      (*iter)->handle(m_collector);
-      (*iter)->clear();
-      delete *iter;
+      (*iter2)->handle(m_collector);
+      (*iter2)->clear();
+      delete *iter2;
     }
     m_charListVector.clear();
   }
