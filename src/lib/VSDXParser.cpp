@@ -530,7 +530,7 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       delete *iter;
     }
     m_geomListVector.clear();
-    for (std::vector<VSDXCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); iter++)
+    for (std::vector<VSDXCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); iter2++)
     {
       (*iter2)->handle(m_collector);
       (*iter2)->clear();
