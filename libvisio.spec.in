@@ -20,12 +20,12 @@ libvisio is a library for parsing the visio file format structure
 
 %package tools
 Requires: libvisio
-Summary: Tools to convert WPG images into other formats
+Tools to convert Visio documents into other formats.
 Group: Applications/Publishing
 
 %description tools
 Tools to convert Visio documents into other formats.
-Currently supported: raw svg
+Currently supported: raw xhtml (with embedded svg pages)
 
 %package devel
 Requires: %{name} >= %{version}
