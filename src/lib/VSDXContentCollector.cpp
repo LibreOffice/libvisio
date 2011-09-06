@@ -181,6 +181,12 @@ void libvisio::VSDXContentCollector::_flushText()
     if (m_charFormats[i].bold) textProps.insert("fo:font-weight", "bold");
     if (m_charFormats[i].italic) textProps.insert("fo:font-style", "italic");
     if (m_charFormats[i].underline) textProps.insert("style:text-underline-type", "single");
+    if (m_charFormats[i].doubleunderline) textProps.insert("style:text-underline-type", "double");
+    if (m_charFormats[i].strikeout) textProps.insert("style:text-line-through-type", "single");
+    if (m_charFormats[i].doublestrikeout) textProps.insert("style:text-line-through-type", "double");
+    if (m_charFormats[i].allcaps) textProps.insert("fo:text-transform", "uppercase");
+    if (m_charFormats[i].initcaps) textProps.insert("fo:text-transform", "capitalize");
+    if (m_charFormats[i].smallcaps) textProps.insert("fo:font-variant", "small-caps");
     textProps.insert("fo:font-size", m_charFormats[i].size*72.0, WPX_POINT);
     textProps.insert("fo:color",getColourString(m_charFormats[i].colour));
     double opacity = 1.0;
