@@ -57,7 +57,7 @@ public:
     std::vector<std::list<unsigned> > &documentPageShapeOrders,
     VSDXStyles &styles, VSDXStencils &stencils
   );
-  virtual ~VSDXContentCollector() {};
+  virtual ~VSDXContentCollector() { if (m_txtxform) delete(m_txtxform); };
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
@@ -147,7 +147,7 @@ private:
   double m_originalX;
   double m_originalY;
   XForm m_xform;
-  XForm m_txtxform;
+  XForm *m_txtxform;
   std::vector<WPXPropertyList> m_currentGeometry;
   std::map<unsigned, XForm> &m_groupXForms;
   WPXBinaryData m_currentForeignData;

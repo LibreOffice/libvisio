@@ -52,7 +52,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
     m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
     m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
-    m_txtxform(), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]),
+    m_txtxform(0), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]),
     m_currentForeignData(), m_currentForeignProps(),
     m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
     m_lineColour("black"), m_fillType("none"), m_linePattern(1),
@@ -129,15 +129,16 @@ void libvisio::VSDXContentCollector::_flushText()
   double angle = 0.0;
   transformAngle(angle);
   
-  double x = m_txtxform.x; double y = m_txtxform.y + m_txtxform.height;
+  double x = m_txtxform ? m_txtxform->x : 0.0;
+  double y = m_txtxform ? m_txtxform->y : 0.0;
   
   transformPoint(x,y);
 
   WPXPropertyList textCoords;
   textCoords.insert("svg:x", m_scale * x);
-  textCoords.insert("svg:y", m_scale * y);
-  textCoords.insert("svg:height", m_scale * (m_txtxform.height != 0.0 ? m_txtxform.height : m_xform.height));
-  textCoords.insert("svg:width", m_scale * (m_xform.width - m_txtxform.x));
+  textCoords.insert("svg:y", m_scale * y - (m_txtxform ? m_txtxform->height : m_xform.height));
+  textCoords.insert("svg:height", m_scale * (m_txtxform ? m_txtxform->height : m_xform.height));
+  textCoords.insert("svg:width", m_scale * (m_xform.width - (m_txtxform ? m_txtxform->x : 0.0)));
   textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
@@ -1033,9 +1034,11 @@ void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigne
 void libvisio::VSDXContentCollector::collectTxtXForm(unsigned /* id */, unsigned level, const XForm &txtxform)
 {
   _handleLevelChange(level);
-  m_txtxform = txtxform;
-  m_txtxform.x = m_txtxform.pinX - m_txtxform.pinLocX;
-  m_txtxform.y = m_txtxform.pinY - m_txtxform.pinLocY;
+  if (m_txtxform)
+    delete(m_txtxform);
+  m_txtxform = new XForm(txtxform);
+  m_txtxform->x = m_txtxform->pinX - m_txtxform->pinLocX;
+  m_txtxform->y = m_txtxform->pinY - m_txtxform->pinLocY;
 }
 
 void libvisio::VSDXContentCollector::transformPoint(double &x, double &y)
@@ -1621,7 +1624,9 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
     }
     m_originalX = 0.0; m_originalY = 0.0;
     m_x = 0; m_y = 0;
-    m_txtxform = XForm();
+    if (m_txtxform)
+      delete(m_txtxform);
+    m_txtxform = 0;
     m_xform = XForm();
     m_NURBSData.clear();
     m_polylineData.clear();
@@ -1640,7 +1645,9 @@ void libvisio::VSDXContentCollector::startPage()
     m_isShapeStarted = false;
   }
   m_originalX = 0.0; m_originalY = 0.0;
-  m_txtxform = XForm();
+  if (m_txtxform)
+    delete(m_txtxform);
+  m_txtxform = 0;
   m_xform = XForm();
   m_x = 0; m_y = 0;
   m_currentPageNumber++;
