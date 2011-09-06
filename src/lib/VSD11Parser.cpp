@@ -139,7 +139,7 @@ void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)
   if (fontMod & 1) superscript = true;
   if (fontMod & 2) subscript = true;
 
-  input->seek(6, WPX_SEEK_CUR);
+  input->seek(4, WPX_SEEK_CUR);
   double fontSize = readDouble(input);
   
   fontMod = readU8(input);
@@ -241,7 +241,7 @@ void libvisio::VSD11Parser::readCharIXStyle(WPXInputStream *input)
   if (fontMod & 1) superscript = true;
   if (fontMod & 2) subscript = true;
 
-  input->seek(6, WPX_SEEK_CUR);
+  input->seek(4, WPX_SEEK_CUR);
   double fontSize = readDouble(input);
   
   fontMod = readU8(input);

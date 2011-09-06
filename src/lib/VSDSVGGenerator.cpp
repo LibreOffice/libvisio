@@ -447,6 +447,8 @@ void libvisio::VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
     m_outputSink << "font-size=\"" << doubleToString(propList["fo:font-size"]->getDouble()) << "\" ";
   if (propList["fo:color"])
     m_outputSink << "fill=\"" << propList["fo:color"]->getStr().cstr() << "\" ";
+  if (propList["fo:text-transform"])
+    m_outputSink << "text-transform=\"" << propList["fo:text-transform"]->getStr().cstr() << "\" ";
   if (propList["svg:fill-opacity"])
     m_outputSink << "fill-opacity=\"" << doubleToString(propList["svg:fill-opacity"]->getDouble()) << "\" ";
   if (propList["svg:stroke-opacity"])

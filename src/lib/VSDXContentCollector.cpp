@@ -187,6 +187,8 @@ void libvisio::VSDXContentCollector::_flushText()
     if (m_charFormats[i].allcaps) textProps.insert("fo:text-transform", "uppercase");
     if (m_charFormats[i].initcaps) textProps.insert("fo:text-transform", "capitalize");
     if (m_charFormats[i].smallcaps) textProps.insert("fo:font-variant", "small-caps");
+    if (m_charFormats[i].superscript) textProps.insert("style:text-position", "super");
+    if (m_charFormats[i].subscript) textProps.insert("style:text-position", "sub");
     textProps.insert("fo:font-size", m_charFormats[i].size*72.0, WPX_POINT);
     textProps.insert("fo:color",getColourString(m_charFormats[i].colour));
     double opacity = 1.0;
@@ -259,7 +261,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
     end.insert("svg:y", m_scale*m_y);
     end.insert("libwpg:path-action", "L");
     m_currentGeometry.push_back(end);
-	return;
+    return;
   }
   
   double x0 = ((x1-x2n)*(x1+x2n)*(y2n-y3n) - (x2n-x3n)*(x2n+x3n)*(y1-y2n) +
