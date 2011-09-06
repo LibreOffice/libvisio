@@ -1272,10 +1272,15 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   m_textFormat = format;
 }
 
-void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic, bool underline, WPXString fontFace)
+void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID,
+                                                       Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic,
+                                                       bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+                                                       bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace)
 {
   _handleLevelChange(level);
-  CharFormat format(charCount, fontID, fontColour, langId, fontSize, bold, italic, underline, fontFace);
+  CharFormat format(charCount, fontID, fontColour, langId, fontSize, bold, italic,
+                    underline, doubleunderline, strikeout, doublestrikeout,
+                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   m_charFormats.push_back(format);
 }
 
@@ -1299,7 +1304,9 @@ void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/, WPXString /*fontFace*/)
+void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, unsigned /*langId*/, double /*fontSize*/,
+                                                        bool /*bold*/, bool /*italic*/, bool /*underline*/, bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */,
+                                                        bool /* allcaps */, bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, WPXString /*fontFace*/)
 {
   _handleLevelChange(level);
 }

@@ -92,8 +92,42 @@ struct PolylineData
 
 struct CharFormat
 {
-  CharFormat() : charCount(0), faceID(0), colour(), langID(0), size(12.0/72.0), bold(false), italic(false), underline(false), face("Times New Roman") {}
-  CharFormat(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, WPXString f) : charCount(cc), faceID(id), colour(c), langID(lang), size(s), bold(b), italic(i), underline(u), face(f) {}
+  CharFormat() :
+    charCount(0),
+    faceID(0),
+    colour(),
+    langID(0),
+    size(12.0/72.0),
+    bold(false),
+    italic(false),
+    underline(false),
+    doubleunderline(false),
+    strikeout(false),
+    doublestrikeout(false),
+    allcaps(false),
+    initcaps(false),
+    smallcaps(false),
+    superscript(false),
+    subscript(false),
+    face("Times New Roman") {}
+  CharFormat(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, WPXString f) :
+    charCount(cc),
+    faceID(id),
+    colour(c),
+    langID(lang),
+    size(s),
+    bold(b),
+    italic(i),
+    underline(u),
+    doubleunderline(du),
+    strikeout(so),
+    doublestrikeout(dso),
+    allcaps(ac),
+    initcaps(ic),
+    smallcaps(sc),
+    superscript(super),
+    subscript(sub),
+    face(f) {}
   unsigned charCount;
   unsigned short faceID;
   Colour colour;
@@ -102,6 +136,14 @@ struct CharFormat
   bool bold;
   bool italic;
   bool underline;
+  bool doubleunderline;
+  bool strikeout;
+  bool doublestrikeout;
+  bool allcaps;
+  bool initcaps;
+  bool smallcaps;
+  bool superscript;
+  bool subscript;
   WPXString face;
 };
 

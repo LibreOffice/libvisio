@@ -106,20 +106,35 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
   fontColour.b = readU8(input);
   fontColour.a = readU8(input);
 
-  unsigned short fontMod = readU8(input);
-  bool bold = false; bool italic = false; bool underline = false;
+  bool bold(false); bool italic(false); bool underline(false); bool doubleunderline(false);
+  bool strikeout(false); bool doublestrikeout(false); bool allcaps(false); bool initcaps(false); bool smallcaps(false);
+  bool superscript(false); bool subscript(false);
+  unsigned char fontMod = readU8(input);
   if (fontMod & 1) bold = true;
   if (fontMod & 2) italic = true;
   if (fontMod & 4) underline = true;
+  if (fontMod & 8) smallcaps = true;
+  fontMod = readU8(input);
+  if (fontMod & 1) allcaps = true;
+  if (fontMod & 2) initcaps = true;
+  fontMod = readU8(input);
+  if (fontMod & 1) superscript = true;
+  if (fontMod & 2) subscript = true;
 
   input->seek(6, WPX_SEEK_CUR);
   double fontSize = readDouble(input);
+  
+  fontMod = readU8(input);
+  if (fontMod & 1) doubleunderline = true;
+  if (fontMod & 4) strikeout = true;
+  if (fontMod & 0x20) doublestrikeout = true;
 
-  input->seek(43, WPX_SEEK_CUR);
+  input->seek(42, WPX_SEEK_CUR);
   unsigned langId = readU32(input);
 
-  m_charList->addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize, bold, italic, underline, fontFace);
-
+  m_charList->addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize,
+                        bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                        allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
 void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
@@ -181,18 +196,33 @@ void libvisio::VSD6Parser::readCharIXStyle(WPXInputStream *input)
   fontColour.b = readU8(input);
   fontColour.a = readU8(input);
 
-  unsigned short fontMod = readU8(input);
-  bool bold = false; bool italic = false; bool underline = false;
+  bool bold(false); bool italic(false); bool underline(false); bool doubleunderline(false);
+  bool strikeout(false); bool doublestrikeout(false); bool allcaps(false); bool initcaps(false); bool smallcaps(false);
+  bool superscript(false); bool subscript(false);
+  unsigned char fontMod = readU8(input);
   if (fontMod & 1) bold = true;
   if (fontMod & 2) italic = true;
   if (fontMod & 4) underline = true;
+  if (fontMod & 8) smallcaps = true;
+  fontMod = readU8(input);
+  if (fontMod & 1) allcaps = true;
+  if (fontMod & 2) initcaps = true;
+  fontMod = readU8(input);
+  if (fontMod & 1) superscript = true;
+  if (fontMod & 2) subscript = true;
 
   input->seek(6, WPX_SEEK_CUR);
   double fontSize = readDouble(input);
+  
+  fontMod = readU8(input);
+  if (fontMod & 1) doubleunderline = true;
+  if (fontMod & 4) strikeout = true;
+  if (fontMod & 0x20) doublestrikeout = true;
 
-  input->seek(43, WPX_SEEK_CUR);
+  input->seek(42, WPX_SEEK_CUR);
   unsigned langId = readU32(input);
 
-  m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize, bold, italic, underline, fontFace);
-
+  m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize,
+                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                  allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
