@@ -855,7 +855,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
 
     for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
     {
-      double basis = _NURBSBasis(p, degree, i * step, knotVector);
+      double basis = _NURBSBasis(p, degree, knotVector[0] + i * step, knotVector);
       nextX += basis * controlPoints[p].first * weights[p];
       nextY += basis * controlPoints[p].second * weights[p];
       denominator += weights[p] * basis;
