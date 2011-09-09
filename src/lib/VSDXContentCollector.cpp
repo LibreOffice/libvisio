@@ -927,7 +927,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
 
   if (iter != m_NURBSData.end())
   {
-    data = iter->second;;
+    data = iter->second;
     data.knots.push_back(knot);
     data.knots.push_back(data.lastKnot);
     data.knots.insert(data.knots.begin(), knotPrev);
