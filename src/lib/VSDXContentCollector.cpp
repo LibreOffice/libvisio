@@ -211,6 +211,15 @@ void libvisio::VSDXContentCollector::_flushText()
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
+  m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
+  m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
+  double x = 0.0; double y = 0.0;
+  transformPoint(x,y);
+
+  m_currentForeignProps.insert("svg:x", m_scale*x);
+  // Y axis starts at the bottom not top
+  m_currentForeignProps.insert("svg:y", m_scale*(y - m_xform.height));
+
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
   {
     m_shapeOutput->addStyle(m_styleProps, WPXPropertyListVector());
@@ -578,8 +587,14 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned 
 void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData &binaryData)
 {
   _handleLevelChange(level);
+  _handleForeignData(binaryData);
+}
+
+void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &binaryData)
+{
   if (m_foreignType == 1 || m_foreignType == 4) // Image
   {
+    m_currentForeignData.clear();
     // If bmp data found, reconstruct header
     if (m_foreignType == 1 && m_foreignFormat == 0)
     {
@@ -632,15 +647,6 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
       }
     }
 #endif
-
-    m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
-    m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
-    double x = 0.0; double y = 0.0;
-    transformPoint(x,y);
-
-    m_currentForeignProps.insert("svg:x", m_scale*x);
-    // Y axis starts at the bottom not top
-    m_currentForeignProps.insert("svg:y", m_scale*(y - m_xform.height));
 
     if (m_foreignType == 1)
     {
@@ -1178,6 +1184,15 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   {
     const VSDXStencil * stencil = m_stencils.getStencil(masterPage);
     if (stencil != 0) m_stencilShape = stencil->getStencilShape(masterShape);
+    // Set the foreign types and foreign data if the stencil has foreign
+	// If the shape itself overrides them, they will be overwritten in the
+	// collectForeignDataType and collectForeignData calls
+	if (m_stencilShape && m_stencilShape->m_foreign)
+	{
+	  m_foreignType = m_stencilShape->m_foreign->type;
+	  m_foreignFormat = m_stencilShape->m_foreign->format;
+	  _handleForeignData(m_stencilShape->m_foreign->data);
+    }
   }
   
   m_hasLocalLineStyle = false;
@@ -1575,16 +1590,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
         m_isStencilStarted = true;
         m_NURBSData = m_stencilShape->m_nurbsData;
         m_polylineData = m_stencilShape->m_polylineData;
-
-        if (m_stencilShape->m_foreign != 0)
-        {
-          collectForeignDataType(m_stencilShape->m_foreign->typeId, m_stencilShape->m_foreign->typeLevel, m_stencilShape->m_foreign->type, m_stencilShape->m_foreign->format);
-          
-          // Messy - this is set to false in _handleLevelChange() called
-          // by collectForeignDataType() so make sure it's true
-          m_isShapeStarted = true;
-          collectForeignData(m_stencilShape->m_foreign->dataId, m_stencilShape->m_foreign->dataLevel, m_stencilShape->m_foreign->data);
-        }
 
         if (!m_hasLocalLineStyle && !m_noLine)
         {
