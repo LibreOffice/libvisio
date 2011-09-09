@@ -1264,7 +1264,7 @@ void libvisio::VSDXContentCollector::collectSplineStart(unsigned /* id */, unsig
 }
 
 
-void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsigned level, double x, double y, double knot)
+void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsigned /* level */, double x, double y, double knot)
 {
   m_splineKnotVector.push_back(knot);
   m_splineControlPoints.push_back(std::pair<double,double>(m_splineX,m_splineY));
