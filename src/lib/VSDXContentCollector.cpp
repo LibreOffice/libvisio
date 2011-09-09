@@ -148,7 +148,18 @@ void libvisio::VSDXContentCollector::_flushText()
   {
     text.clear();
 
-    if (m_textFormat == VSD_TEXT_ANSI)
+    if (m_textFormat == VSD_TEXT_UTF16)
+    {
+      unsigned long max = m_charFormats[i].charCount <= (m_textStream.size()/2) ? m_charFormats[i].charCount : (m_textStream.size()/2);
+      VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
+      max = (m_charFormats[i].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
+      VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
+      VSDInternalStream tmpStream(m_textStream, max*2);
+      _appendUTF16LE(text, &tmpStream);
+    
+      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
+    }
+    else
     {
       unsigned long max = m_charFormats[i].charCount <= m_textStream.size() ? m_charFormats[i].charCount : m_textStream.size();
       max = (m_charFormats[i].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
@@ -161,17 +172,6 @@ void libvisio::VSDXContentCollector::_flushText()
       }
 
       m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
-    }
-    else if (m_textFormat == VSD_TEXT_UTF16)
-    {
-      unsigned long max = m_charFormats[i].charCount <= (m_textStream.size()/2) ? m_charFormats[i].charCount : (m_textStream.size()/2);
-      VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
-      max = (m_charFormats[i].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
-      VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
-      VSDInternalStream tmpStream(m_textStream, max*2);
-      _appendUTF16LE(text, &tmpStream);
-    
-      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
     }
     WPXPropertyList textProps;
     if (m_fonts[m_charFormats[i].faceID] == "")
