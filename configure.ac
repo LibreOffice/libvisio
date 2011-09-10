@@ -104,7 +104,7 @@ AS_IF([test x"$enable_werror" != "xno"], [
 # is used when compiling for Win32 with gcc.
 AS_IF([test "x$native_win32" = "xyes"], [
 	AC_CHECK_TOOL(WINDRES, windres)
-	AS_IF([x"$GCC" = xyes], [
+	AS_IF([test x"$GCC" = xyes], [
 		AC_MSG_CHECKING([how to get MSVC-compatible struct packing])
 		AS_IF([test -z "$ac_cv_prog_CC"], [
 			our_gcc="$CC"
