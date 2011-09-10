@@ -6,18 +6,6 @@ no_undefined =
 version_info = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 endif
 
-if OS_WIN32
-install-libtool-import-lib:
-	$(INSTALL) @VSD_OBJDIR@/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.dll.a $(DESTDIR)$(libdir)
-
-uninstall-libtool-import-lib:
-	-rm $(DESTDIR)$(libdir)/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.dll.a
-
-else
-install-libtool-import-lib:
-uninstall-libtool-import-lib:
-endif
-
 lib_LTLIBRARIES = libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_includedir = $(includedir)/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@/libvisio
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_include_HEADERS = \
@@ -74,10 +62,6 @@ if OS_WIN32
 
 endif
 
-
-install-data-local: install-libtool-import-lib
-
-uninstall-local: uninstall-libtool-import-lib
 
 EXTRA_DIST = \
 	libvisio.rc.in \
