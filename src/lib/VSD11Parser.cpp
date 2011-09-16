@@ -157,13 +157,13 @@ void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)
 
 void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
 {
-  unsigned int colourIndexFG = readU8(input);
+  unsigned char colourIndexFG = readU8(input);
   input->seek(3, WPX_SEEK_CUR);
   unsigned int fillFGTransparency = readU8(input);
-  unsigned int colourIndexBG = readU8(input);
+  unsigned char colourIndexBG = readU8(input);
   input->seek(3, WPX_SEEK_CUR);
   unsigned int fillBGTransparency = readU8(input);
-  unsigned fillPattern = readU8(input);
+  unsigned char fillPattern = readU8(input);
   input->seek(1, WPX_SEEK_CUR);
   Colour shfgc;            // Shadow Foreground Colour
   shfgc.r = readU8(input);
@@ -171,7 +171,7 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
   shfgc.b = readU8(input);
   shfgc.a = readU8(input);
   input->seek(5, WPX_SEEK_CUR); // Shadow Background Colour skipped
-  unsigned shadowPattern = readU8(input);
+  unsigned char shadowPattern = readU8(input);
 // only version 11 after that point
   input->seek(2, WPX_SEEK_CUR); // Shadow Type and Value format byte
   double shadowOffsetX = readDouble(input);
@@ -190,13 +190,13 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
 
 void libvisio::VSD11Parser::readFillStyle(WPXInputStream *input)
 {
-  unsigned int colourIndexFG = readU8(input);
+  unsigned char colourIndexFG = readU8(input);
   input->seek(3, WPX_SEEK_CUR);
   unsigned int fillFGTransparency = readU8(input);
-  unsigned int colourIndexBG = readU8(input);
+  unsigned char colourIndexBG = readU8(input);
   input->seek(3, WPX_SEEK_CUR);
   unsigned int fillBGTransparency = readU8(input);
-  unsigned fillPattern = readU8(input);
+  unsigned char fillPattern = readU8(input);
   input->seek(1, WPX_SEEK_CUR);
   Colour shfgc;            // Shadow Foreground Colour
   shfgc.r = readU8(input);
@@ -204,7 +204,7 @@ void libvisio::VSD11Parser::readFillStyle(WPXInputStream *input)
   shfgc.b = readU8(input);
   shfgc.a = readU8(input);
   input->seek(5, WPX_SEEK_CUR); // Shadow Background Colour skipped
-  unsigned shadowPattern = readU8(input);
+  unsigned char shadowPattern = readU8(input);
 // only version 11 after that point
   input->seek(2, WPX_SEEK_CUR); // Shadow Type and Value format byte
   double shadowOffsetX = readDouble(input);

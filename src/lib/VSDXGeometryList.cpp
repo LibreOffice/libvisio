@@ -125,7 +125,7 @@ private:
   unsigned m_id, m_level;
   double m_x2, m_y2;
   unsigned m_xType, m_yType;
-  double m_degree;
+  unsigned m_degree;
   std::vector<std::pair<double, double> > m_controlPoints;
   std::vector<double> m_knotVector, m_weights;
 };

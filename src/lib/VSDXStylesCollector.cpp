@@ -240,7 +240,7 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
   m_isStyleStarted = true;
 }
 
-void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
+void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char lineCap)
 {
   if (m_lineStyle == 0) m_lineStyle = new VSDXLineStyle();
 
@@ -252,7 +252,7 @@ void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+void libvisio::VSDXStylesCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned char shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   if (m_fillStyle == 0) m_fillStyle = new VSDXFillStyle();
 
@@ -281,7 +281,7 @@ void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigne
   m_textStyle->format = f;
 }
 
-void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc)
+void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned char shadowPattern, Colour shfgc)
 {
   collectFillStyle(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }

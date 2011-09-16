@@ -724,9 +724,9 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
   c.g = readU8(input);
   c.b = readU8(input);
   c.a = readU8(input);
-  unsigned linePattern = readU8(input);
+  unsigned char linePattern = readU8(input);
   input->seek(12, WPX_SEEK_CUR);
-  unsigned lineCap = readU8(input);
+  unsigned char lineCap = readU8(input);
 
   if (m_isStencilStarted)
   {
@@ -973,7 +973,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 
   // Detect whether to use Shape Data block
   input->seek(1, WPX_SEEK_CUR);
-  unsigned useData = readU8(input);
+  unsigned char useData = readU8(input);
   if (useData == 0x8a)
   {
     input->seek(3, WPX_SEEK_CUR);
@@ -1022,8 +1022,8 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   {
     // Indicates whether it's a "simple" NURBS block with a static format
     // or a complex block where parameters each have a type
-    unsigned paramType = readU8(input);
-    unsigned short valueType = 0;
+    unsigned char paramType = readU8(input);
+    unsigned char valueType = 0;
 
     double lastKnot = 0;
     unsigned repetitions = 0;
@@ -1055,7 +1055,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
 
     // Read sequences of (x, y, knot, weight) until finished
     bytesRead = input->tell() - inputPos;
-    unsigned flag = 0;
+    unsigned char flag = 0;
     if (paramType != 0x8a) flag = readU8(input);
     while ((flag != 0x81 || (paramType == 0x8a && repetitions > 0)) && bytesRead < length)
     {
@@ -1365,12 +1365,10 @@ void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned int fontID)
   input->seek(8, WPX_SEEK_CUR);
   std::vector<uint8_t> textStream;
 
-  unsigned int curchar = 0;
-  unsigned int nextchar = 0;
   for (unsigned int i = 0; i < 32; i++)
   {
-    curchar = readU8(input);
-    nextchar = readU8(input);
+    unsigned char curchar = readU8(input);
+    unsigned char nextchar = readU8(input);
     if (curchar == 0 && nextchar == 0)
       break;
     textStream.push_back(curchar);
@@ -1384,10 +1382,9 @@ void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
   input->seek(6, WPX_SEEK_CUR);
   std::vector<uint8_t> textStream;
 
-  unsigned int curchar = 0;
   for (unsigned int i = 0; i < m_header.dataLength - 6; i++)
   {
-    curchar = readU8(input);
+    unsigned char curchar = readU8(input);
     if (curchar == 0)
       break;
     textStream.push_back(curchar);
@@ -1419,9 +1416,9 @@ void libvisio::VSDXParser::readLineStyle(WPXInputStream *input)
   c.g = readU8(input);
   c.b = readU8(input);
   c.a = readU8(input);
-  unsigned linePattern = readU8(input);
+  unsigned char linePattern = readU8(input);
   input->seek(12, WPX_SEEK_CUR);
-  unsigned lineCap = readU8(input);
+  unsigned char lineCap = readU8(input);
 
   m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
 }

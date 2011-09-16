@@ -40,7 +40,7 @@ namespace libvisio {
 struct VSDXLineStyle
 {
   VSDXLineStyle();
-  VSDXLineStyle(double w, Colour col, unsigned short p, unsigned c)
+  VSDXLineStyle(double w, Colour col, unsigned char p, unsigned char c)
   : width(w), colour(col), pattern(p), cap(c) {}
   VSDXLineStyle(const VSDXLineStyle &lineStyle)
   : width(lineStyle.width), colour(lineStyle.colour), pattern(lineStyle.pattern), cap(lineStyle.cap) {}

@@ -1315,17 +1315,17 @@ void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsign
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned /* linePattern */, unsigned /* lineCap */)
+void libvisio::VSDXContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned char /* linePattern */, unsigned char /* lineCap */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned /*colourIndexFG*/, unsigned /*colourIndexBG*/, unsigned /*fillPattern*/, unsigned /*fillFGTransparency*/, unsigned /*fillBGTransparency*/, unsigned /*shadowPattern*/, Colour /*shfgc*/, double /*shadowOffsetX*/, double /*shadowOffsetY*/)
+void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned /*fillFGTransparency*/, unsigned /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/, double /*shadowOffsetX*/, double /*shadowOffsetY*/)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned /*colourIndexFG*/, unsigned /*colourIndexBG*/, unsigned /*fillPattern*/, unsigned /*fillFGTransparency*/, unsigned /*fillBGTransparency*/, unsigned /*shadowPattern*/, Colour /*shfgc*/)
+void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned /*fillFGTransparency*/, unsigned /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/)
 {
   _handleLevelChange(level);
 }
@@ -1690,7 +1690,7 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
   {
     uint16_t high_surrogate = 0;
     bool fail = false;
-    uint32_t ucs4Character;
+    uint32_t ucs4Character = 0;
     while (true)
     {
       if (input->atEOS())
@@ -1778,7 +1778,7 @@ void libvisio::VSDXContentCollector::_appendUCS4(WPXString &text, unsigned int u
     outbuf[i] = (ucs4Character & 0x3f) | 0x80;
     ucs4Character >>= 6;
   }
-  outbuf[0] = ucs4Character | first;
+  outbuf[0] = (ucs4Character & 0xff) | first;
 
   for (i = 0; i < len; i++)
     text.append(outbuf[i]);
