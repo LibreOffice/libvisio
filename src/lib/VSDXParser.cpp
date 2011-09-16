@@ -1016,7 +1016,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
     return;
 
   unsigned degree = 3;
-  unsigned xType = 1; unsigned yType = 1;
+  unsigned char xType = 1; unsigned char yType = 1;
   // Only read formula if block is found
   if (cellRef == 6)
   {
@@ -1174,7 +1174,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
     return;
 
   // Default to local co-ordinates if unspecified
-  unsigned xType = 1; unsigned yType = 1;
+  unsigned char xType = 1; unsigned char yType = 1;
   std::vector<std::pair<double, double> > points;
 
   // Only formula if block is found
@@ -1240,8 +1240,8 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
   {
     unsigned pointCount = 0;
     std::vector<std::pair<double, double> > points;
-    unsigned xType = readU8(input);
-    unsigned yType = readU8(input);
+    unsigned char xType = readU8(input);
+    unsigned char yType = readU8(input);
     pointCount = readU32(input);
 
     for (unsigned i = 0; i < pointCount; i++)
@@ -1270,8 +1270,8 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
     double lastKnot = readDouble(input);
 
     unsigned degree = readU16(input);
-    unsigned xType = readU8(input);
-    unsigned yType = readU8(input);
+    unsigned char xType = readU8(input);
+    unsigned char yType = readU8(input);
     unsigned pointCount = readU32(input);
 
     std::vector<double> knotVector;

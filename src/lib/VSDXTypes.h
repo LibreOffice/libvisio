@@ -56,28 +56,28 @@ struct ChunkHeader
   unsigned id;         // 4 bytes
   unsigned list;       // 4 bytes
   unsigned dataLength; // 4 bytes
-  unsigned level;      // 2 bytes
-  unsigned unknown;    // 1 byte
+  unsigned short level;      // 2 bytes
+  unsigned char unknown;    // 1 byte
   unsigned trailer; // Derived
 };
 
 struct Colour
 {
-  Colour(unsigned red, unsigned green, unsigned blue, unsigned alpha)
+  Colour(unsigned red, unsigned char green, unsigned char blue, unsigned char alpha)
   : r(red), g(green), b(blue), a(alpha) {}
   Colour() : r(0), g(0), b(0), a(0xff) {}
-  unsigned r;
-  unsigned g;
-  unsigned b;
-  unsigned a;
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
+  unsigned char a;
 };
 
 struct NURBSData
 {
   double lastKnot;
   unsigned degree;
-  unsigned xType;
-  unsigned yType;
+  unsigned char xType;
+  unsigned char yType;
   std::vector<double> knots;
   std::vector<double> weights;
   std::vector<std::pair<double, double> > points;
@@ -85,8 +85,8 @@ struct NURBSData
 
 struct PolylineData
 {
-  unsigned xType;
-  unsigned yType;
+  unsigned char xType;
+  unsigned char yType;
   std::vector<std::pair<double, double> > points;
 };
 
