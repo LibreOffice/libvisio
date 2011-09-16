@@ -45,7 +45,7 @@ public:
 private:
   unsigned m_id;
   unsigned m_level;
-  unsigned m_geomFlags;
+  unsigned char m_geomFlags;
 };
 
 class VSDXMoveTo : public VSDXGeometryListElement
@@ -345,7 +345,7 @@ libvisio::VSDXGeometryList::~VSDXGeometryList()
   clear();
 }
 
-void libvisio::VSDXGeometryList::addGeometry(unsigned id, unsigned level, unsigned geomFlags)
+void libvisio::VSDXGeometryList::addGeometry(unsigned id, unsigned level, unsigned char geomFlags)
 {
   m_elements[id] = new VSDXGeometry(id, level, geomFlags);
 }

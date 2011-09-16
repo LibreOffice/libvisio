@@ -66,7 +66,7 @@ public:
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc);
   void collectGeomList(unsigned id, unsigned level);
-  void collectGeometry(unsigned id, unsigned level, unsigned geomFlags);
+  void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
   void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
@@ -101,8 +101,8 @@ public:
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
   void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char lineCap);
-  void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned char shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
-  void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned char shadowPattern, Colour shfgc);
+  void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
+  void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc);
   void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                           double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                           bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
@@ -129,7 +129,7 @@ private:
 
   void _handleLevelChange(unsigned level);
   void _appendUTF16LE(WPXString &text, WPXInputStream *input);
-  void _appendUCS4(WPXString &text, unsigned int ucs4Character);
+  void _appendUCS4(WPXString &text, unsigned ucs4Character);
   
   void _handleForeignData(const WPXBinaryData &data);
 

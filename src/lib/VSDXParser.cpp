@@ -77,8 +77,8 @@ bool libvisio::VSDXParser::parse()
   m_input->seek(0x24, WPX_SEEK_SET);
 
   m_input->seek(8, WPX_SEEK_CUR);
-  unsigned int offset = readU32(m_input);
-  unsigned int length = readU32(m_input);
+  unsigned offset = readU32(m_input);
+  unsigned length = readU32(m_input);
   unsigned short format = readU16(m_input);
   bool compressed = ((format & 2) == 2);
 
@@ -106,12 +106,12 @@ bool libvisio::VSDXParser::parse()
 
 bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 {
-  const unsigned int SHIFT = 4;
+  const unsigned SHIFT = 4;
 
-//  unsigned int ptrType;
-// unsigned int ptrOffset;
-//  unsigned int ptrLength;
-//  unsigned int ptrFormat;
+//  unsigned ptrType;
+// unsigned ptrOffset;
+//  unsigned ptrLength;
+//  unsigned ptrFormat;
   std::vector<libvisio::Pointer> PtrList;
   Pointer ptr;
   
@@ -119,9 +119,9 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
   input->seek(SHIFT, WPX_SEEK_SET);
   unsigned offset = readU32(input);
   input->seek(offset+SHIFT, WPX_SEEK_SET);
-  unsigned int pointerCount = readU32(input);
+  unsigned pointerCount = readU32(input);
   input->seek(SHIFT, WPX_SEEK_CUR);
-  for (unsigned int i = 0; i < pointerCount; i++)
+  for (unsigned i = 0; i < pointerCount; i++)
   {
     ptr.Type = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
@@ -135,7 +135,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
     else if (ptr.Type != 0)
       PtrList.push_back(ptr);
   }
-  for (unsigned int j = 0; j < PtrList.size(); j++)
+  for (unsigned j = 0; j < PtrList.size(); j++)
   {
     ptr = PtrList[j];
     bool compressed = ((ptr.Format & 2) == 2);
@@ -171,18 +171,18 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 
 void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
 {
-  unsigned int ptrType;
-  unsigned int ptrOffset;
-  unsigned int ptrLength;
-  unsigned int ptrFormat;
+  unsigned ptrType;
+  unsigned ptrOffset;
+  unsigned ptrLength;
+  unsigned ptrFormat;
 
   input->seek(shift, WPX_SEEK_CUR);
-  unsigned int offset = readU32(input);
+  unsigned offset = readU32(input);
   input->seek(offset+shift, WPX_SEEK_SET);
-  unsigned int pointerCount = readU32(input);
+  unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
-  for (unsigned int i = 0; i < pointerCount; i++)
+  for (unsigned i = 0; i < pointerCount; i++)
   {
     ptrType = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
@@ -260,17 +260,17 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
 {
   if (m_stencils.count() > 0) return;
   m_isStencilStarted = true;
-  unsigned int ptrType;
-  unsigned int ptrOffset;
-  unsigned int ptrLength;
-  unsigned int ptrFormat;
+  unsigned ptrType;
+  unsigned ptrOffset;
+  unsigned ptrLength;
+  unsigned ptrFormat;
 
   input->seek(shift, WPX_SEEK_CUR);
-  unsigned int offset = readU32(input);
+  unsigned offset = readU32(input);
   input->seek(offset+shift, WPX_SEEK_SET);
-  unsigned int pointerCount = readU32(input);
+  unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
-  for (unsigned int i = 0; i < pointerCount; i++)
+  for (unsigned i = 0; i < pointerCount; i++)
   {
     ptrType = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
@@ -302,18 +302,18 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
 
 void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shift)
 {
-  unsigned int ptrType;
-  unsigned int ptrOffset;
-  unsigned int ptrLength;
-  unsigned int ptrFormat;
+  unsigned ptrType;
+  unsigned ptrOffset;
+  unsigned ptrLength;
+  unsigned ptrFormat;
 
   input->seek(shift, WPX_SEEK_CUR);
-  unsigned int offset = readU32(input);
+  unsigned offset = readU32(input);
   input->seek(offset+shift, WPX_SEEK_SET);
-  unsigned int pointerCount = readU32(input);
+  unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
-  for (unsigned int i = 0; i < pointerCount; i++)
+  for (unsigned i = 0; i < pointerCount; i++)
   {
     ptrType = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
@@ -349,18 +349,18 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
 
 void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned shift)
 {
-  unsigned int ptrType;
-  unsigned int ptrOffset;
-  unsigned int ptrLength;
-  unsigned int ptrFormat;
+  unsigned ptrType;
+  unsigned ptrOffset;
+  unsigned ptrLength;
+  unsigned ptrFormat;
 
   input->seek(shift, WPX_SEEK_CUR);
-  unsigned int offset = readU32(input);
+  unsigned offset = readU32(input);
   input->seek(offset+shift, WPX_SEEK_SET);
-  unsigned int pointerCount = readU32(input);
+  unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
-  for (unsigned int i = 0; i < pointerCount; i++)
+  for (unsigned i = 0; i < pointerCount; i++)
   {
     ptrType = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
@@ -383,7 +383,7 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
       unsigned pointerCount2 = readU32(&tmpInput);
       tmpInput.seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
-      for (unsigned int j = 0; j < pointerCount2; j++)
+      for (unsigned j = 0; j < pointerCount2; j++)
       {
         ptrType = readU32(&tmpInput);
         tmpInput.seek(4, WPX_SEEK_CUR); // Skip dword
@@ -782,7 +782,7 @@ void libvisio::VSDXParser::readPage(WPXInputStream *input)
 
 void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
 {
-  unsigned geomFlags = readU8(input);
+  unsigned char geomFlags = readU8(input);
 
   if (m_isStencilStarted)
     m_stencilShape.m_geometries.back().addGeometry(m_header.id, m_header.level, geomFlags);
@@ -1341,14 +1341,14 @@ void libvisio::VSDXParser::readSplineKnot(WPXInputStream *input)
 void libvisio::VSDXParser::readColours(WPXInputStream *input)
 {
   input->seek(6, WPX_SEEK_SET);
-  unsigned int numColours = readU8(input);
+  unsigned numColours = readU8(input);
   Colour tmpColour;
 
   input->seek(1, WPX_SEEK_CUR);
 
   std::vector<Colour> colours;
 
-  for (unsigned int i = 0; i < numColours; i++)
+  for (unsigned i = 0; i < numColours; i++)
   {
     tmpColour.r = readU8(input);
     tmpColour.g = readU8(input);
@@ -1360,12 +1360,12 @@ void libvisio::VSDXParser::readColours(WPXInputStream *input)
   m_collector->collectColours(colours);
 }
 
-void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned int fontID)
+void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned fontID)
 {
   input->seek(8, WPX_SEEK_CUR);
   std::vector<uint8_t> textStream;
 
-  for (unsigned int i = 0; i < 32; i++)
+  for (unsigned i = 0; i < 32; i++)
   {
     unsigned char curchar = readU8(input);
     unsigned char nextchar = readU8(input);
@@ -1382,7 +1382,7 @@ void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
   input->seek(6, WPX_SEEK_CUR);
   std::vector<uint8_t> textStream;
 
-  for (unsigned int i = 0; i < m_header.dataLength - 6; i++)
+  for (unsigned i = 0; i < m_header.dataLength - 6; i++)
   {
     unsigned char curchar = readU8(input);
     if (curchar == 0)

@@ -47,31 +47,31 @@ struct VSDXLineStyle
   ~VSDXLineStyle() {}
   double width;
   Colour colour;
-  unsigned short pattern;
-  unsigned short cap;
+  unsigned char pattern;
+  unsigned char cap;
 };
 
 struct VSDXFillStyle
 {
   VSDXFillStyle();
-  VSDXFillStyle(unsigned short fgcId, unsigned short bgcId, unsigned short p, unsigned fga, unsigned bga, Colour sfgc, unsigned short shp, double shX, double shY)
+  VSDXFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga, Colour sfgc, unsigned char shp, double shX, double shY)
   : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
   VSDXFillStyle(const VSDXFillStyle &fillStyle)
   : fgColourId(fillStyle.fgColourId), bgColourId(fillStyle.bgColourId), pattern(fillStyle.pattern),
     fgTransparency(fillStyle.fgTransparency), bgTransparency(fillStyle.bgTransparency), shadowFgColour(fillStyle.shadowFgColour),
     shadowPattern(fillStyle.shadowPattern), shadowOffsetX(fillStyle.shadowOffsetX), shadowOffsetY(fillStyle.shadowOffsetY) {}
   ~VSDXFillStyle() {}
-  unsigned short fgColourId;
+  unsigned char fgColourId;
   //  Colour fgColour;
-  unsigned short bgColourId;
+  unsigned char bgColourId;
   //  Colour bgColour;
-  unsigned short pattern;
+  unsigned char pattern;
 
-  unsigned fgTransparency;
-  unsigned bgTransparency;
+  unsigned char fgTransparency;
+  unsigned char bgTransparency;
 
   Colour shadowFgColour;
-  unsigned short shadowPattern;
+  unsigned char shadowPattern;
   double shadowOffsetX;
   double shadowOffsetY;
 };

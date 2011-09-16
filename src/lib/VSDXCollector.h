@@ -48,7 +48,7 @@ public:
   virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
   virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc) = 0;
   virtual void collectGeomList(unsigned id, unsigned level) = 0;
-  virtual void collectGeometry(unsigned id, unsigned level, unsigned geomFlags) = 0;
+  virtual void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags) = 0;
   virtual void collectMoveTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectLineTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow) = 0;
@@ -83,8 +83,8 @@ public:
   // Style collectors
   virtual void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;
   virtual void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char lineCap) = 0;
-  virtual void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned char shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
-  virtual void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned char shadowPattern, Colour shfgc) = 0;
+  virtual void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
+  virtual void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc) = 0;
   virtual void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                                   double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                   bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace) = 0;

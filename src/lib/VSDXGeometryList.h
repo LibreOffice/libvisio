@@ -46,7 +46,7 @@ public:
   ~VSDXGeometryList();
   VSDXGeometryList &operator=(const VSDXGeometryList &geomList);
 
-  void addGeometry(unsigned id, unsigned level, unsigned geomFlags);
+  void addGeometry(unsigned id, unsigned level, unsigned char geomFlags);
   void addMoveTo(unsigned id, unsigned level, double x, double y);
   void addLineTo(unsigned id, unsigned level, double x, double y);
   void addArcTo(unsigned id, unsigned level, double x2, double y2, double bow);

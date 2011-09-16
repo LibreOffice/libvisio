@@ -166,9 +166,9 @@ void libvisio::VSDXContentCollector::_flushText()
       for (unsigned j = 0; j < max; j++)
       {
         if (m_textStream[j] <= 0x20)
-          _appendUCS4(text, (unsigned int) 0x20);
+          _appendUCS4(text, (unsigned) 0x20);
         else
-          _appendUCS4(text, (unsigned int) m_textStream[j]);
+          _appendUCS4(text, (unsigned) m_textStream[j]);
       }
 
       m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
@@ -690,7 +690,7 @@ void libvisio::VSDXContentCollector::collectCharList(unsigned /* id */, unsigned
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned geomFlags)
+void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char geomFlags)
 {
   _handleLevelChange(level);
   m_x = 0.0; m_y = 0.0;
@@ -1238,9 +1238,9 @@ void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const st
     for (unsigned i = 0; i < textStream.size(); i++)
     {
       if (textStream[i] <= 0x20)
-        _appendUCS4(fontname, (unsigned int) 0x20);
+        _appendUCS4(fontname, (unsigned) 0x20);
       else
-        _appendUCS4(fontname, (unsigned int) textStream[i]);
+        _appendUCS4(fontname, (unsigned) textStream[i]);
     }
   }
   else if (format == VSD_TEXT_UTF16)
@@ -1320,12 +1320,12 @@ void libvisio::VSDXContentCollector::collectLineStyle(unsigned /* id */, unsigne
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned /*fillFGTransparency*/, unsigned /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/, double /*shadowOffsetX*/, double /*shadowOffsetY*/)
+void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/, double /*shadowOffsetX*/, double /*shadowOffsetY*/)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned /*fillFGTransparency*/, unsigned /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/)
+void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/)
 {
   _handleLevelChange(level);
 }
@@ -1736,7 +1736,7 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
   }
 }
 
-void libvisio::VSDXContentCollector::_appendUCS4(WPXString &text, unsigned int ucs4Character)
+void libvisio::VSDXContentCollector::_appendUCS4(WPXString &text, unsigned ucs4Character)
 {
   unsigned char first;
   int len;
