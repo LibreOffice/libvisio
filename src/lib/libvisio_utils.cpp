@@ -74,9 +74,9 @@ uint64_t libvisio::readU64(WPXInputStream *input)
 
 double libvisio::readDouble(WPXInputStream *input)
 {
-  uint64_t value = readU64(input);
+  union { uint64_t u; double d; } tmpUnion;
 
-  double *doublePointer = reinterpret_cast<double *>(&value);
-
-  return *doublePointer;
+  tmpUnion.u = readU64(input);
+  
+  return tmpUnion.d;
 }
