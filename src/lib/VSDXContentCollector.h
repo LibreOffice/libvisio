@@ -137,6 +137,12 @@ private:
   void fillStyleFromStyleSheet(unsigned styleId);
   void lineStyleFromStyleSheet(const VSDXLineStyle &style);
   void fillStyleFromStyleSheet(const VSDXFillStyle &style);
+  
+  void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
+  void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
+                                unsigned fillFGTransparency, unsigned fillBGTransparency,
+                                unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
+
 
   bool m_isPageStarted;
   double m_pageWidth;

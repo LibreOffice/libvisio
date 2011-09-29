@@ -348,14 +348,12 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
 
 }
 
-void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
+void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
 {
-  _handleLevelChange(level);
-  m_hasLocalLineStyle = true;
   m_linePattern = linePattern;
 
-  if (m_linePattern == 0) return; // No need to add style
-
+  if (linePattern == 0) return; // No need to add style
+  
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
   m_lineColour = getColourString(c);
   m_styleProps.insert("svg:stroke-color", m_lineColour);
@@ -405,16 +403,23 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
     /* 22 */  "27, 5, 11, 5, 11, 5",
     /* 23 */  "2, 1"
   };
-  if (m_linePattern > 0 && m_linePattern < sizeof(patterns)/sizeof(patterns[0]))
-    m_styleProps.insert("svg:stroke-dasharray", patterns[m_linePattern]);
+  if (linePattern > 0 && linePattern < sizeof(patterns)/sizeof(patterns[0]))
+    m_styleProps.insert("svg:stroke-dasharray", patterns[linePattern]);
   // FIXME: later it will require special treatment for custom line patterns
   // patt ID is 0xfe, link to stencil name is in 'Line' blocks
 }
 
-void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
 {
   _handleLevelChange(level);
-  m_hasLocalFillStyle = true;
+  m_hasLocalLineStyle = true;
+  _lineProperties(strokeWidth, c, linePattern, lineCap);
+}
+
+void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
+                                                              unsigned fillFGTransparency, unsigned fillBGTransparency,
+                                                              unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+{
   m_fillPattern = fillPattern;
   m_fillFGTransparency = fillFGTransparency;
   m_fillBGTransparency = fillBGTransparency;
@@ -577,6 +582,14 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
     m_styleProps.insert("draw:shadow-opacity",(double)(1 - shfgc.a/255.));
   }
   m_styleProps.insert("draw:fill", m_fillType);
+}
+
+
+void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+{
+  _handleLevelChange(level);
+  m_hasLocalFillStyle = true;
+  _fillAndShadowProperties(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc)
@@ -1185,13 +1198,13 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     const VSDXStencil * stencil = m_stencils.getStencil(masterPage);
     if (stencil != 0) m_stencilShape = stencil->getStencilShape(masterShape);
     // Set the foreign types and foreign data if the stencil has foreign
-	// If the shape itself overrides them, they will be overwritten in the
-	// collectForeignDataType and collectForeignData calls
-	if (m_stencilShape && m_stencilShape->m_foreign)
-	{
-	  m_foreignType = m_stencilShape->m_foreign->type;
-	  m_foreignFormat = m_stencilShape->m_foreign->format;
-	  _handleForeignData(m_stencilShape->m_foreign->data);
+    // If the shape itself overrides them, they will be overwritten in the
+    // collectForeignDataType and collectForeignData calls
+    if (m_stencilShape && m_stencilShape->m_foreign)
+    {
+      m_foreignType = m_stencilShape->m_foreign->type;
+      m_foreignFormat = m_stencilShape->m_foreign->format;
+      _handleForeignData(m_stencilShape->m_foreign->data);
     }
   }
   
@@ -1344,66 +1357,7 @@ void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(unsigned styleId)
 
 void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle &lineStyle)
 {
-  m_lineColour = getColourString(lineStyle.colour);
-  m_linePattern = lineStyle.pattern;
-
-  if (m_linePattern == 0) return;
-  m_styleProps.insert("svg:stroke-width", m_scale*lineStyle.width);
-  m_styleProps.insert("svg:stroke-color", m_lineColour);
-  if (lineStyle.colour.a)
-    m_styleProps.insert("svg:stroke-opacity", (1 - lineStyle.colour.a/255.0), WPX_PERCENT);
-  else
-    m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
-
-  if (m_linePattern > 0)
-  {  
-    const char* patterns[] = {
-      /*  0 */  "none",
-      /*  1 */  "solid",
-      /*  2 */  "6, 3",
-      /*  3 */  "1, 3",
-      /*  4 */  "6, 3, 1, 3",
-      /*  5 */  "6, 3, 1, 3, 1, 3",
-      /*  6 */  "6, 3, 6, 3, 1, 3",
-      /*  7 */  "14, 2, 6, 2",
-      /*  8 */  "14, 2, 6, 2, 6, 2",
-      /*  9 */  "3, 1",
-      /* 10 */  "1, 1",
-      /* 11 */  "3, 1, 1, 1",
-      /* 12 */  "3, 1, 1, 1, 1, 1",
-      /* 13 */  "3, 1, 3, 1, 1, 1",
-      /* 14 */  "7, 1, 3, 1",
-      /* 15 */  "7, 1, 3, 1, 3, 1",
-      /* 16 */  "11, 5",
-      /* 17 */  "1, 5",
-      /* 18 */  "11, 5, 1, 5",
-      /* 19 */  "11, 5, 1, 5, 1, 5",
-      /* 20 */  "11, 5, 11, 5, 1, 5",
-      /* 21 */  "27, 5, 11, 5",
-      /* 22 */  "27, 5, 11, 5, 11, 5",
-      /* 23 */  "2, 1"
-    };
-    if (m_linePattern > 0 && m_linePattern < sizeof(patterns)/sizeof(patterns[0]))
-      m_styleProps.insert("svg:stroke-dasharray", patterns[m_linePattern]);
-  }
-  else if (m_linePattern == 0)
-    m_styleProps.insert("svg:stroke-width", 0.0);
-
-  switch (lineStyle.cap)
-  {
-    case 0:
-      m_styleProps.insert("svg:stroke-linecap", "round");
-      m_styleProps.insert("svg:stroke-linejoin", "round");
-      break;
-    case 2:
-      m_styleProps.insert("svg:stroke-linecap", "square");
-      m_styleProps.insert("svg:stroke-linejoin", "miter");
-      break;
-    default:
-      m_styleProps.insert("svg:stroke-linecap", "butt");
-      m_styleProps.insert("svg:stroke-linejoin", "miter");
-      break;
-  }
+  _lineProperties(lineStyle.width, lineStyle.colour, lineStyle.pattern, lineStyle.cap);
 }
 
 void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
@@ -1413,168 +1367,8 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
 
 void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle &fillStyle)
 {
-  m_fillPattern = fillStyle.pattern;
-  m_fillFGTransparency = fillStyle.fgTransparency;
-  m_fillBGTransparency = fillStyle.bgTransparency;
-
-  if (m_fillPattern == 0)
-    m_fillType = "none";
-  else if (m_fillPattern == 1)
-  {
-    m_fillType = "solid";
-    m_styleProps.insert("draw:fill-color", getColourString(m_colours[fillStyle.fgColourId]));
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.remove("draw:opacity");
-  }
-  else if (m_fillPattern == 26 || m_fillPattern == 29)
-  {
-    m_fillType = "gradient";
-    m_styleProps.insert("draw:style", "axial");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[fillStyle.fgColourId]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[fillStyle.bgColourId]));
-    m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
-    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
-
-    if (m_fillPattern == 26)
-      m_styleProps.insert("draw:angle", 90);
-    else
-      m_styleProps.insert("draw:angle", 0);
-  }
-  else if (m_fillPattern >= 25 && m_fillPattern <= 34)
-  {
-    m_fillType = "gradient";
-    m_styleProps.insert("draw:style", "linear");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[fillStyle.bgColourId]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[fillStyle.fgColourId]));
-    m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
-    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
-
-    switch(m_fillPattern)
-    {
-    case 25:
-      m_styleProps.insert("draw:angle", 270);
-      break;
-    case 27:
-      m_styleProps.insert("draw:angle", 90);
-      break;
-    case 28:
-      m_styleProps.insert("draw:angle", 180);
-      break;
-    case 30:
-      m_styleProps.insert("draw:angle", 0);
-      break;
-    case 31:
-      m_styleProps.insert("draw:angle", 225);
-      break;
-    case 32:
-      m_styleProps.insert("draw:angle", 135);
-      break;
-    case 33:
-      m_styleProps.insert("draw:angle", 315);
-      break;
-    case 34:
-      m_styleProps.insert("draw:angle", 45);
-      break;
-    }
-  }
-  else if (m_fillPattern == 35)
-  {
-    m_fillType = "gradient";
-    m_styleProps.insert("draw:style", "rectangular");
-    m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
-    m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[fillStyle.bgColourId]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[fillStyle.fgColourId]));
-    m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
-    m_styleProps.insert("draw:angle", 0);
-    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
-  }
-  else if (m_fillPattern >= 36 && m_fillPattern <= 40)
-  {
-    m_fillType = "gradient";
-    m_styleProps.insert("draw:style", "radial");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[fillStyle.bgColourId]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[fillStyle.fgColourId]));
-    m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
-    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
-
-    switch(m_fillPattern)
-    {
-    case 36:
-      m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
-      break;
-    case 37:
-      m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
-      break;
-    case 38:
-      m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
-      break;
-    case 39:
-      m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
-      break;
-    case 40:
-      m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
-      break;
-    }
-  }
-  else
-  // fill types we don't handle right, but let us approximate with solid fill
-  {
-    m_fillType = "solid";
-    m_styleProps.insert("draw:fill-color", getColourString(m_colours[fillStyle.bgColourId]));
-  }
-
-  if (fillStyle.shadowPattern != 0)
-  {
-    m_styleProps.insert("draw:shadow","visible"); // for ODG
-    m_styleProps.insert("draw:shadow-offset-x", fillStyle.shadowOffsetX);
-    m_styleProps.insert("draw:shadow-offset-y", fillStyle.shadowOffsetY);
-    m_styleProps.insert("draw:shadow-color",getColourString(fillStyle.shadowFgColour));
-    m_styleProps.insert("libwpg:shadow-color-r",(double)(fillStyle.shadowFgColour.r/255.));
-    m_styleProps.insert("libwpg:shadow-color-g",(double)(fillStyle.shadowFgColour.g/255.));
-    m_styleProps.insert("libwpg:shadow-color-b",(double)(fillStyle.shadowFgColour.b/255.));
-    m_styleProps.insert("draw:shadow-opacity",(double)(1 - fillStyle.shadowFgColour.a/255.));
-  }
-  m_styleProps.insert("draw:fill", m_fillType);  
+  _fillAndShadowProperties(fillStyle.fgColourId, fillStyle.bgColourId, fillStyle.pattern, fillStyle.fgTransparency, fillStyle.bgTransparency,
+                           fillStyle.shadowPattern, fillStyle.shadowFgColour, fillStyle.shadowOffsetX, fillStyle.shadowOffsetY);
 }
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
