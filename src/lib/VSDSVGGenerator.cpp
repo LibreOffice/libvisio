@@ -485,6 +485,33 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
 
   if (m_style["svg:stroke-dasharray"])
     m_outputSink << "stroke-dasharray: " << m_style["svg:stroke-dasharray"]->getStr().cstr() <<"; ";
+  else if (m_style["draw:stroke"] && m_style["draw:stroke"]->getStr() == "solid")
+    m_outputSink << "stroke-dasharray:  solid; ";
+  else if (m_style["draw:stroke"] && m_style["draw:stroke"]->getStr() == "dash")
+  {
+    int dots1 = m_style["draw:dots1"]->getInt();
+	int dots2 = m_style["draw:dots2"]->getInt();
+	double dots1len = m_style["draw:dots1-length"]->getDouble();
+	double dots2len = m_style["draw:dots2-length"]->getDouble();
+	double gap = m_style["draw:distance"]->getDouble();
+	m_outputSink << "stroke-dasharray: ";
+	for (int i = 0; i < dots1; i++)
+	{
+	  if (i)
+	    m_outputSink << ", ";
+	  m_outputSink << (int)dots1len;
+	  m_outputSink << ", ";
+	  m_outputSink << (int)gap;
+	}
+	for (int j = 0; j < dots2; j++)
+	{
+      m_outputSink << ", ";
+	  m_outputSink << (int)dots2len;
+	  m_outputSink << ", ";
+	  m_outputSink << (int)gap;
+    }
+	m_outputSink << "; ";
+  }
 
   if (m_style["svg:stroke-linecap"])
      m_outputSink << "stroke-linecap: " << m_style["svg:stroke-linecap"]->getStr().cstr() << "; ";

@@ -377,36 +377,176 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
       break;
   }
 
-  const char* patterns[] = {
-    /*  0 */  "none",
-    /*  1 */  "solid",
-    /*  2 */  "6, 3",
-    /*  3 */  "1, 3",
-    /*  4 */  "6, 3, 1, 3",
-    /*  5 */  "6, 3, 1, 3, 1, 3",
-    /*  6 */  "6, 3, 6, 3, 1, 3",
-    /*  7 */  "14, 2, 6, 2",
-    /*  8 */  "14, 2, 6, 2, 6, 2",
-    /*  9 */  "3, 1",
-    /* 10 */  "1, 1",
-    /* 11 */  "3, 1, 1, 1",
-    /* 12 */  "3, 1, 1, 1, 1, 1",
-    /* 13 */  "3, 1, 3, 1, 1, 1",
-    /* 14 */  "7, 1, 3, 1",
-    /* 15 */  "7, 1, 3, 1, 3, 1",
-    /* 16 */  "11, 5",
-    /* 17 */  "1, 5",
-    /* 18 */  "11, 5, 1, 5",
-    /* 19 */  "11, 5, 1, 5, 1, 5",
-    /* 20 */  "11, 5, 11, 5, 1, 5",
-    /* 21 */  "27, 5, 11, 5",
-    /* 22 */  "27, 5, 11, 5, 11, 5",
-    /* 23 */  "2, 1"
-  };
-  if (linePattern > 0 && linePattern < sizeof(patterns)/sizeof(patterns[0]))
-    m_styleProps.insert("svg:stroke-dasharray", patterns[linePattern]);
-  // FIXME: later it will require special treatment for custom line patterns
-  // patt ID is 0xfe, link to stencil name is in 'Line' blocks
+  int dots1 = 0;
+  int dots2 = 0;
+  double dots1len = 0.0;
+  double dots2len = 0.0;
+  double gap = 0.0;
+
+  m_styleProps.remove("draw:stroke");
+  switch (linePattern)
+  {
+  case 2: // "6, 3"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 6.0;
+    gap = 3.0;
+    break;
+  case 3: // "1, 3"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 4: // "6, 3, 1, 3"
+    dots1 = 1;
+    dots1len = 6.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 5: // "6, 3, 1, 3, 1, 3"
+    dots1 = 1;
+    dots1len = 6.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 6: // "6, 3, 6, 3, 1, 3"
+    dots1 = 2;
+    dots1len = 6.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 7: // "14, 2, 6, 2"
+    dots1 = 1;
+    dots1len = 14.0;
+    dots2 = 1;
+    dots2len = 6.0;
+    gap = 2.0;
+    break;
+  case 8: // "14, 2, 6, 2, 6, 2"
+    dots1 = 1;
+    dots1len = 14.0;
+    dots2 = 2;
+    dots2len = 6.0;
+    gap = 2.0;
+    break;
+  case 9: // "3, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 10: // "1, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 11: // "3, 2, 1, 2"
+    dots1 = 1;
+    dots1len = 3.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 12: // "3, 2, 1, 2, 1, 2"
+    dots1 = 1;
+    dots1len = 3.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 13: // "3, 2, 3, 2, 1, 2"
+    dots1 = 2;
+    dots1len = 3.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 14: // "7, 2, 3, 2"
+    dots1 = 1;
+    dots1len = 7.0;
+    dots2 = 1;
+    dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 15: // "7, 2, 3, 2, 3, 2"
+    dots1 = 1;
+    dots1len = 7.0;
+    dots2 = 2;
+    dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 16: // "11, 5"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 17: // "1, 5"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 18: // "11, 5, 1, 5"
+    dots1 = 1;
+    dots1len = 11.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 19: // "11, 5, 1, 5, 1, 5"
+    dots1 = 1;
+    dots1len = 11.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 20: // "11, 5, 11, 5, 1, 5"
+    dots1 = 2;
+    dots1len = 11.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 21: // "27, 5, 11, 5"
+    dots1 = 1;
+    dots1len = 27.0;
+    dots2 = 1;
+    dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 22: // "27, 5, 11, 5, 11, 5"
+    dots1 = 1;
+    dots1len = 27.0;
+    dots2 = 2;
+    dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 23: // "2, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 2.0;
+    gap = 2.0;
+    break;
+  default:
+    break;
+  }
+
+  if (linePattern == 0)
+    m_styleProps.insert("draw:stroke", "none");
+  else if (linePattern == 1)
+    m_styleProps.insert("draw:stroke", "solid");
+  else if (linePattern > 1 && linePattern <= 23)
+  {
+    m_styleProps.insert("draw:stroke", "dash");
+    m_styleProps.insert("draw:dots1", dots1);
+    m_styleProps.insert("draw:dots1-length", dots1len, WPX_POINT);
+    m_styleProps.insert("draw:dots2", dots2);
+    m_styleProps.insert("draw:dots2-length", dots2len, WPX_POINT);
+    m_styleProps.insert("draw:distance", gap, WPX_POINT);
+  }
+  else
+    // FIXME: later it will require special treatment for custom line patterns
+    // patt ID is 0xfe, link to stencil name is in 'Line' blocks
+    m_styleProps.insert("svg:stroke-dasharray", "solid");
 }
 
 void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
