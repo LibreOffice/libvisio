@@ -92,7 +92,7 @@ AM_CONDITIONAL([PLATFORM_WIN32], [test "x$platform_win32" = "xyes"])
 # Check for cflags
 # ================
 AC_ARG_ENABLE([werror],
-	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, usefull for development])],
+	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, useful for development])],
 	[enable_werror="$enableval"],
 	[enable_werror=yes]
 )
