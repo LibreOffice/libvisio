@@ -102,9 +102,9 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
     m_outputSink << "dx=\"" << doubleToString(72*propList["draw:shadow-offset-x"]->getDouble()) << "\" ";
     m_outputSink << "dy=\"" << doubleToString(72*propList["draw:shadow-offset-y"]->getDouble()) << "\"/>";
     m_outputSink << "<svg:feColorMatrix in=\"offset\" result=\"offset-color\" type=\"matrix\" values=\"";
-    m_outputSink << "0 0 0 0 " << doubleToString(propList["libwpg:shadow-color-r"]->getDouble());
-    m_outputSink << " 0 0 0 0 " << doubleToString(propList["libwpg:shadow-color-g"]->getDouble());
-    m_outputSink << " 0 0 0 0 " << doubleToString(propList["libwpg:shadow-color-b"]->getDouble());
+    m_outputSink << "0 0 0 0 " << propList["libwpg:shadow-color-r"]->getInt();
+    m_outputSink << " 0 0 0 0 " << propList["libwpg:shadow-color-g"]->getInt();
+    m_outputSink << " 0 0 0 0 " << propList["libwpg:shadow-color-b"]->getInt();
     if(m_style["draw:opacity"] && m_style["draw:opacity"]->getDouble() < 1)
       m_outputSink << " 0 0 0 "   << doubleToString(propList["draw:shadow-opacity"]->getDouble()/propList["draw:opacity"]->getDouble()) << " 0\"/>";
     else
@@ -475,7 +475,7 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
   if (m_style["svg:stroke-width"])
     m_outputSink << "stroke-width: " << doubleToString(72*m_style["svg:stroke-width"]->getDouble()) << "; ";
 
-  if((m_style["svg:stroke-width"] && m_style["svg:stroke-width"]->getDouble() > 0.0) || (m_style["draw:stroke"] && m_style["draw:stroke"]->getStr() == "solid"))
+  if ((m_style["draw:stroke"] && m_style["draw:stroke"]->getStr() != "none"))
   {
     if (m_style["svg:stroke-color"])
       m_outputSink << "stroke: " << m_style["svg:stroke-color"]->getStr().cstr()  << "; ";
@@ -483,9 +483,7 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
       m_outputSink << "stroke-opacity: " << doubleToString(m_style["svg:stroke-opacity"]->getDouble()) << "; ";
   }
 
-  if (m_style["svg:stroke-dasharray"])
-    m_outputSink << "stroke-dasharray: " << m_style["svg:stroke-dasharray"]->getStr().cstr() <<"; ";
-  else if (m_style["draw:stroke"] && m_style["draw:stroke"]->getStr() == "solid")
+  if (m_style["draw:stroke"] && m_style["draw:stroke"]->getStr() == "solid")
     m_outputSink << "stroke-dasharray:  solid; ";
   else if (m_style["draw:stroke"] && m_style["draw:stroke"]->getStr() == "dash")
   {

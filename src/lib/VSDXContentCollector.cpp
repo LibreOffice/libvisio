@@ -546,7 +546,7 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
   else
     // FIXME: later it will require special treatment for custom line patterns
     // patt ID is 0xfe, link to stencil name is in 'Line' blocks
-    m_styleProps.insert("svg:stroke-dasharray", "solid");
+    m_styleProps.insert("draw:stroke", "solid");
 }
 
 void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
@@ -876,7 +876,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   m_noLine = noLine;
   m_noShow = noShow;
   if (m_noLine || m_linePattern == 0)
-    m_styleProps.insert("svg:stroke-color", "none");
+    m_styleProps.insert("draw:stroke", "none");
   else
     m_styleProps.insert("svg:stroke-color", m_lineColour);
   if (m_noFill || m_fillPattern == 0)
