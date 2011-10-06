@@ -53,6 +53,24 @@ static std::string doubleToString(const double value)
   return stringValue;
 }
 
+static unsigned stringToColour(const ::WPXString &s)
+{
+	std::string str(s.cstr());
+	if (str[0] == '#')
+	{
+		if (str.length() != 7)
+			return 0;
+		else
+			str.erase(str.begin());
+	}
+	else
+		return 0;
+
+	std::istringstream istr(str);
+	unsigned val = 0;
+	istr >> std::hex >> val;
+	return val;
+}
 
 libvisio::VSDSVGGenerator::VSDSVGGenerator(std::ostream & output_sink): m_gradient(), m_style(), m_gradientIndex(1), m_shadowIndex(1), m_isFirstPage(true), m_outputSink(output_sink)
 {
@@ -94,25 +112,36 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
   m_style = propList;
 
   m_gradient = gradient;
-  if(propList["draw:shadow"] && propList["draw:shadow"]->getStr() == "visible")
+  if(m_style["draw:shadow"] && m_style["draw:shadow"]->getStr() == "visible")
   {
+  	unsigned shadowColour = 0;
+	double shadowRed = 0.0;
+	double shadowGreen = 0.0;
+	double shadowBlue = 0.0;
+    if (m_style["draw:shadow-color"])
+	{
+		shadowColour = stringToColour(m_style["draw:shadow-color"]->getStr());
+		shadowRed = (double)((shadowColour & 0x00ff0000) >> 16)/255.0;
+		shadowGreen = (double)((shadowColour & 0x0000ff00) >> 8)/255.0;
+		shadowBlue = (double)(shadowColour & 0x000000ff)/255.0;
+	}
     m_outputSink << "<svg:defs>\n";
     m_outputSink << "<svg:filter filterUnits=\"userSpaceOnUse\" id=\"shadow" << m_shadowIndex++ << "\">";
     m_outputSink << "<svg:feOffset in=\"SourceGraphic\" result=\"offset\" ";
-    m_outputSink << "dx=\"" << doubleToString(72*propList["draw:shadow-offset-x"]->getDouble()) << "\" ";
-    m_outputSink << "dy=\"" << doubleToString(72*propList["draw:shadow-offset-y"]->getDouble()) << "\"/>";
+    m_outputSink << "dx=\"" << doubleToString(72*m_style["draw:shadow-offset-x"]->getDouble()) << "\" ";
+    m_outputSink << "dy=\"" << doubleToString(72*m_style["draw:shadow-offset-y"]->getDouble()) << "\"/>";
     m_outputSink << "<svg:feColorMatrix in=\"offset\" result=\"offset-color\" type=\"matrix\" values=\"";
-    m_outputSink << "0 0 0 0 " << propList["libwpg:shadow-color-r"]->getInt();
-    m_outputSink << " 0 0 0 0 " << propList["libwpg:shadow-color-g"]->getInt();
-    m_outputSink << " 0 0 0 0 " << propList["libwpg:shadow-color-b"]->getInt();
+    m_outputSink << "0 0 0 0 " << doubleToString(shadowRed) ;
+    m_outputSink << " 0 0 0 0 " << doubleToString(shadowGreen);
+    m_outputSink << " 0 0 0 0 " << doubleToString(shadowBlue);
     if(m_style["draw:opacity"] && m_style["draw:opacity"]->getDouble() < 1)
-      m_outputSink << " 0 0 0 "   << doubleToString(propList["draw:shadow-opacity"]->getDouble()/propList["draw:opacity"]->getDouble()) << " 0\"/>";
+      m_outputSink << " 0 0 0 "   << doubleToString(m_style["draw:shadow-opacity"]->getDouble()/m_style["draw:opacity"]->getDouble()) << " 0\"/>";
     else
-      m_outputSink << " 0 0 0 "   << doubleToString(propList["draw:shadow-opacity"]->getDouble()) << " 0\"/>";
+      m_outputSink << " 0 0 0 "   << doubleToString(m_style["draw:shadow-opacity"]->getDouble()) << " 0\"/>";
     m_outputSink << "<svg:feMerge><svg:feMergeNode in=\"offset-color\" /><svg:feMergeNode in=\"SourceGraphic\" /></svg:feMerge></svg:filter></svg:defs>";
   }
 
-  if(propList["draw:fill"] && propList["draw:fill"]->getStr() == "gradient")
+  if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "gradient")
   {
     double angle = (m_style["draw:angle"] ? m_style["draw:angle"]->getDouble() : 0.0);
 	angle *= -1.0;
@@ -121,56 +150,56 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
     while(angle > 360)
       angle -= 360;
 
-    if (!gradient.count())
+    if (!m_gradient.count())
 	{
-	  if (propList["draw:style"] &&
-	     (propList["draw:style"]->getStr() == "radial" ||
-		  propList["draw:style"]->getStr() == "rectangular" ||
-		  propList["draw:style"]->getStr() == "square" ||
-		  propList["draw:style"]->getStr() == "ellipsoid"))
+	  if (m_style["draw:style"] &&
+	     (m_style["draw:style"]->getStr() == "radial" ||
+		  m_style["draw:style"]->getStr() == "rectangular" ||
+		  m_style["draw:style"]->getStr() == "square" ||
+		  m_style["draw:style"]->getStr() == "ellipsoid"))
       {
         m_outputSink << "<svg:defs>\n";
         m_outputSink << "  <svg:radialGradient id=\"grad" << m_gradientIndex++ << "\"";
 
-		if (propList["svg:cx"])
-		  m_outputSink << " cx=\"" << propList["svg:cx"]->getStr().cstr() << "\"";
-		else if (propList["draw:cx"])
-		  m_outputSink << " cx=\"" << propList["draw:cx"]->getStr().cstr() << "\"";
+		if (m_style["svg:cx"])
+		  m_outputSink << " cx=\"" << m_style["svg:cx"]->getStr().cstr() << "\"";
+		else if (m_style["draw:cx"])
+		  m_outputSink << " cx=\"" << m_style["draw:cx"]->getStr().cstr() << "\"";
 
-		if (propList["svg:cy"])
-		  m_outputSink << " cy=\"" << propList["svg:cy"]->getStr().cstr() << "\"";
-		else if (propList["draw:cy"])
-		  m_outputSink << " cy=\"" << propList["draw:cy"]->getStr().cstr() << "\"";
-        m_outputSink << " r=\"" << (1 - (propList["draw:border"] ? propList["draw:border"]->getDouble() : 0))*100.0 << "%\" >\n";
+		if (m_style["svg:cy"])
+		  m_outputSink << " cy=\"" << m_style["svg:cy"]->getStr().cstr() << "\"";
+		else if (m_style["draw:cy"])
+		  m_outputSink << " cy=\"" << m_style["draw:cy"]->getStr().cstr() << "\"";
+        m_outputSink << " r=\"" << (1 - (m_style["draw:border"] ? m_style["draw:border"]->getDouble() : 0))*100.0 << "%\" >\n";
 		m_outputSink << " >\n";
 		
-        if (propList["draw:start-color"] && propList["draw:end-color"])
+        if (m_style["draw:start-color"] && m_style["draw:end-color"])
 		{
 		  m_outputSink << "    <svg:stop offset=\"0%\"";
-          m_outputSink << " stop-color=\"" << propList["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["libwpg:end-opacity"] ? propList["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-color=\"" << m_style["draw:end-color"]->getStr().cstr() << "\"";
+          m_outputSink << " stop-opacity=\"" << (m_style["libwpg:end-opacity"] ? m_style["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
 
 		  m_outputSink << "    <svg:stop offset=\"100%\"";
-          m_outputSink << " stop-color=\"" << propList["draw:start-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["libwpg:start-opacity"] ? propList["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-color=\"" << m_style["draw:start-color"]->getStr().cstr() << "\"";
+          m_outputSink << " stop-opacity=\"" << (m_style["libwpg:start-opacity"] ? m_style["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
         }
         m_outputSink << "  </svg:radialGradient>\n";
         m_outputSink << "</svg:defs>\n";
       }
-	  else if (propList["draw:style"] && propList["draw:style"]->getStr() == "linear")
+	  else if (m_style["draw:style"] && m_style["draw:style"]->getStr() == "linear")
 	  {
         m_outputSink << "<svg:defs>\n";
         m_outputSink << "  <svg:linearGradient id=\"grad" << m_gradientIndex++ << "\" >\n";
 
-        if (propList["draw:start-color"] && propList["draw:end-color"])
+        if (m_style["draw:start-color"] && m_style["draw:end-color"])
 		{
 		  m_outputSink << "    <svg:stop offset=\"0%\"";
-          m_outputSink << " stop-color=\"" << propList["draw:start-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["libwpg:start-opacity"] ? propList["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-color=\"" << m_style["draw:start-color"]->getStr().cstr() << "\"";
+          m_outputSink << " stop-opacity=\"" << (m_style["libwpg:start-opacity"] ? m_style["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
 
 		  m_outputSink << "    <svg:stop offset=\"100%\"";
-          m_outputSink << " stop-color=\"" << propList["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["libwpg:end-opacity"] ? propList["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-color=\"" << m_style["draw:end-color"]->getStr().cstr() << "\"";
+          m_outputSink << " stop-opacity=\"" << (m_style["libwpg:end-opacity"] ? m_style["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
         }
         m_outputSink << "  </svg:linearGradient>\n";
 
@@ -187,24 +216,24 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 
         m_outputSink << "</svg:defs>\n";
 	  }
-	  else if (propList["draw:style"] && propList["draw:style"]->getStr() == "axial")
+	  else if (m_style["draw:style"] && m_style["draw:style"]->getStr() == "axial")
 	  {
         m_outputSink << "<svg:defs>\n";
         m_outputSink << "  <svg:linearGradient id=\"grad" << m_gradientIndex++ << "\" >\n";
 
-        if (propList["draw:start-color"] && propList["draw:end-color"])
+        if (m_style["draw:start-color"] && m_style["draw:end-color"])
 		{
 		  m_outputSink << "    <svg:stop offset=\"0%\"";
-          m_outputSink << " stop-color=\"" << propList["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["libwpg:end-opacity"] ? propList["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-color=\"" << m_style["draw:end-color"]->getStr().cstr() << "\"";
+          m_outputSink << " stop-opacity=\"" << (m_style["libwpg:end-opacity"] ? m_style["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
 
 		  m_outputSink << "    <svg:stop offset=\"50%\"";
-          m_outputSink << " stop-color=\"" << propList["draw:start-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["libwpg:start-opacity"] ? propList["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-color=\"" << m_style["draw:start-color"]->getStr().cstr() << "\"";
+          m_outputSink << " stop-opacity=\"" << (m_style["libwpg:start-opacity"] ? m_style["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
 
 		  m_outputSink << "    <svg:stop offset=\"100%\"";
-          m_outputSink << " stop-color=\"" << propList["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << (propList["libwpg:end-opacity"] ? propList["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-color=\"" << m_style["draw:end-color"]->getStr().cstr() << "\"";
+          m_outputSink << " stop-opacity=\"" << (m_style["libwpg:end-opacity"] ? m_style["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
         }
         m_outputSink << "  </svg:linearGradient>\n";
 
@@ -224,10 +253,10 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 	}
 	else
 	{
-	  if (propList["draw:style"] && propList["draw:style"]->getStr() == "radial")
+	  if (m_style["draw:style"] && m_style["draw:style"]->getStr() == "radial")
       {
         m_outputSink << "<svg:defs>\n";
-        m_outputSink << "  <svg:radialGradient id=\"grad" << m_gradientIndex++ << "\" cx=\"" << propList["svg:cx"]->getStr().cstr() << "\" cy=\"" << propList["svg:cy"]->getStr().cstr() << "\" r=\"" << propList["svg:r"]->getStr().cstr() << "\" >\n";
+        m_outputSink << "  <svg:radialGradient id=\"grad" << m_gradientIndex++ << "\" cx=\"" << m_style["svg:cx"]->getStr().cstr() << "\" cy=\"" << m_style["svg:cy"]->getStr().cstr() << "\" r=\"" << m_style["svg:r"]->getStr().cstr() << "\" >\n";
         for(unsigned c = 0; c < m_gradient.count(); c++)
         {
           m_outputSink << "    <svg:stop offset=\"" << m_gradient[c]["svg:offset"]->getStr().cstr() << "\"";
