@@ -335,6 +335,7 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
       handleStencilForeign(&tmpInput, shift);
       m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
+    case VSD_SHAPE_GUIDE:
     case VSD_SHAPE_SHAPE:
     case VSD_SHAPE_GROUP:
       m_stencilShape = VSDXStencilShape();
@@ -437,6 +438,7 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
       VSD_DEBUG_MSG(("Stencil: parsing chunk type %x\n", m_header.chunkType));
       switch (m_header.chunkType)
       {
+      case VSD_SHAPE_GUIDE:
       case VSD_SHAPE_SHAPE:
       case VSD_SHAPE_GROUP:
         readShape(input);
@@ -558,6 +560,7 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
       switch (m_header.chunkType)
       {
+      case VSD_SHAPE_GUIDE:
       case VSD_SHAPE_GROUP:
       case VSD_SHAPE_SHAPE:
       case VSD_SHAPE_FOREIGN:

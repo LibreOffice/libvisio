@@ -130,15 +130,15 @@ void libvisio::VSDXContentCollector::_flushText()
   transformAngle(angle);
   
   double x = m_txtxform ? m_txtxform->x : 0.0;
-  double y = m_txtxform ? m_txtxform->y : 0.0;
+  double y = m_txtxform ? m_txtxform->y + m_txtxform->height: 0.0;
   
   transformPoint(x,y);
 
   WPXPropertyList textCoords;
   textCoords.insert("svg:x", m_scale * x);
-  textCoords.insert("svg:y", m_scale * y - (m_txtxform ? m_txtxform->height : m_xform.height));
+  textCoords.insert("svg:y", m_scale * y);
   textCoords.insert("svg:height", m_scale * (m_txtxform ? m_txtxform->height : m_xform.height));
-  textCoords.insert("svg:width", m_scale * (m_xform.width - (m_txtxform ? m_txtxform->x : 0.0)));
+  textCoords.insert("svg:width", m_scale * (m_txtxform ? m_txtxform->width : m_xform.width));
   textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
@@ -1197,7 +1197,7 @@ void libvisio::VSDXContentCollector::collectTxtXForm(unsigned /* id */, unsigned
   m_txtxform->y = m_txtxform->pinY - m_txtxform->pinLocY;
 }
 
-void libvisio::VSDXContentCollector::transformPoint(double &x, double &y)
+void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm * /* txtxform */)
 {
   // We are interested for the while in shapes xforms only
   if (!m_isShapeStarted)
@@ -1207,7 +1207,7 @@ void libvisio::VSDXContentCollector::transformPoint(double &x, double &y)
     return;
 
   unsigned shapeId = m_currentShapeId;
-
+  
   while (true)
   {
     std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
@@ -1241,7 +1241,7 @@ void libvisio::VSDXContentCollector::transformPoint(double &x, double &y)
   y = m_pageHeight - y;
 }
 
-void libvisio::VSDXContentCollector::transformAngle(double &angle)
+void libvisio::VSDXContentCollector::transformAngle(double &angle, XForm * /* txtxform */)
 {
   // We are interested for the while in shape xforms only
   if (!m_isShapeStarted)

@@ -117,8 +117,8 @@ private:
   VSDXContentCollector& operator=(const VSDXContentCollector&);
   libwpg::WPGPaintInterface *m_painter;
 
-  void transformPoint(double &x, double &y);
-  void transformAngle(double &angle);
+  void transformPoint(double &x, double &y, XForm *txtxform = 0);
+  void transformAngle(double &angle, XForm *txtxform = 0);
 
   double _NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector);
 
