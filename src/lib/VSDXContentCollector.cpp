@@ -1197,7 +1197,26 @@ void libvisio::VSDXContentCollector::collectTxtXForm(unsigned /* id */, unsigned
   m_txtxform->y = m_txtxform->pinY - m_txtxform->pinLocY;
 }
 
-void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm * /* txtxform */)
+void libvisio::VSDXContentCollector::applyXForm(double &x, double &y, const XForm &xform)
+{
+  x -= xform.pinLocX;
+  y -= xform.pinLocY;
+  if (xform.flipX)
+    x = xform.width - x - 2.0*xform.pinLocX;
+  if (xform.flipY)
+    y = xform.height -y - 2.0*xform.pinLocY;
+  if (xform.angle != 0.0)
+  {
+    double tmpX = x*cos(xform.angle) - y*sin(xform.angle);
+    double tmpY = y*cos(xform.angle) + x*sin(xform.angle);
+    x = tmpX;
+    y = tmpY;
+  }
+  x += xform.pinX;
+  y += xform.pinY;
+}  
+
+void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm *txtxform)
 {
   // We are interested for the while in shapes xforms only
   if (!m_isShapeStarted)
@@ -1207,6 +1226,9 @@ void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm 
     return;
 
   unsigned shapeId = m_currentShapeId;
+
+  if (txtxform)
+    applyXForm(x, y, *txtxform);
   
   while (true)
   {
@@ -1214,21 +1236,7 @@ void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm 
     if (iterX != m_groupXForms.end())
     {
       XForm xform = iterX->second;
-      x -= xform.pinLocX;
-      y -= xform.pinLocY;
-      if (xform.flipX)
-        x = xform.width - x - 2.0*xform.pinLocX;
-      if (xform.flipY)
-        y = xform.height -y - 2.0*xform.pinLocY;
-      if (xform.angle != 0.0)
-      {
-        double tmpX = x*cos(xform.angle) - y*sin(xform.angle);
-        double tmpY = y*cos(xform.angle) + x*sin(xform.angle);
-        x = tmpX;
-        y = tmpY;
-      }
-      x += xform.pinX;
-      y += xform.pinY;
+      applyXForm(x, y, xform);
     }
     else
       break;
@@ -1241,7 +1249,7 @@ void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm 
   y = m_pageHeight - y;
 }
 
-void libvisio::VSDXContentCollector::transformAngle(double &angle, XForm * /* txtxform */)
+void libvisio::VSDXContentCollector::transformAngle(double &angle, XForm *txtxform)
 {
   // We are interested for the while in shape xforms only
   if (!m_isShapeStarted)
@@ -1254,8 +1262,8 @@ void libvisio::VSDXContentCollector::transformAngle(double &angle, XForm * /* tx
   double y0 = m_xform.pinLocY;
   double x1 = m_xform.pinLocX + cos(angle);
   double y1 =m_xform.pinLocY + sin(angle);
-  transformPoint(x0, y0);
-  transformPoint(x1, y1);
+  transformPoint(x0, y0, txtxform);
+  transformPoint(x1, y1, txtxform);
   angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0))), 2.0*M_PI);
 }
 
