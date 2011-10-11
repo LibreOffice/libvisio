@@ -62,12 +62,7 @@ libvisio::VSDXParser::~VSDXParser()
     delete m_currentStencil;
 }
 
-/** Parses Visio input stream content, making callbacks to functions provided
-by WPGPaintInterface class implementation as needed.
-\param iface A WPGPaintInterface implementation
-\return A value indicating whether parsing was successful
-*/
-bool libvisio::VSDXParser::parse()
+bool libvisio::VSDXParser::parseMain()
 {
   if (!m_input)
   {

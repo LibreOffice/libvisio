@@ -53,7 +53,7 @@ class VSDXParser
 public:
   explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   virtual ~VSDXParser();
-  virtual bool parse();
+  bool parseMain();
 
 protected:
   // reader functions

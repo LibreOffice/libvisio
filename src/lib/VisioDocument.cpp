@@ -94,7 +94,7 @@ bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInt
 
   if (parser)
   {
-    parser->parse();
+    parser->parseMain();
   }
   else
   {
