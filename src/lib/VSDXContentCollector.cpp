@@ -71,6 +71,380 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
 {
 }
 
+void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
+                                                              unsigned fillFGTransparency, unsigned fillBGTransparency,
+                                                              unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+{
+  m_fillPattern = fillPattern;
+  m_fillFGTransparency = fillFGTransparency;
+  m_fillBGTransparency = fillBGTransparency;
+
+  if (m_fillPattern == 0)
+    m_fillType = "none";
+  else if (m_fillPattern == 1)
+  {
+    m_fillType = "solid";
+    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+    if (m_fillFGTransparency > 0)
+      m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.remove("draw:opacity");
+  }
+  else if (m_fillPattern == 26 || m_fillPattern == 29)
+  {
+    m_fillType = "gradient";
+    m_styleProps.insert("draw:style", "axial");
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.remove("draw:opacity");
+    if (m_fillBGTransparency > 0)
+      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
+    if (m_fillFGTransparency > 0)
+      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
+
+    if (m_fillPattern == 26)
+      m_styleProps.insert("draw:angle", 90);
+    else
+      m_styleProps.insert("draw:angle", 0);
+  }
+  else if (m_fillPattern >= 25 && m_fillPattern <= 34)
+  {
+    m_fillType = "gradient";
+    m_styleProps.insert("draw:style", "linear");
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.remove("draw:opacity");
+    if (m_fillBGTransparency > 0)
+      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
+    if (m_fillFGTransparency > 0)
+      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
+
+    switch(m_fillPattern)
+    {
+    case 25:
+      m_styleProps.insert("draw:angle", 270);
+      break;
+    case 27:
+      m_styleProps.insert("draw:angle", 90);
+      break;
+    case 28:
+      m_styleProps.insert("draw:angle", 180);
+      break;
+    case 30:
+      m_styleProps.insert("draw:angle", 0);
+      break;
+    case 31:
+      m_styleProps.insert("draw:angle", 225);
+      break;
+    case 32:
+      m_styleProps.insert("draw:angle", 135);
+      break;
+    case 33:
+      m_styleProps.insert("draw:angle", 315);
+      break;
+    case 34:
+      m_styleProps.insert("draw:angle", 45);
+      break;
+    }
+  }
+  else if (m_fillPattern == 35)
+  {
+    m_fillType = "gradient";
+    m_styleProps.insert("draw:style", "rectangular");
+    m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
+    m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.remove("draw:opacity");
+    if (m_fillBGTransparency > 0)
+      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
+    if (m_fillFGTransparency > 0)
+      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:angle", 0);
+    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
+  }
+  else if (m_fillPattern >= 36 && m_fillPattern <= 40)
+  {
+    m_fillType = "gradient";
+    m_styleProps.insert("draw:style", "radial");
+    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    m_styleProps.remove("draw:opacity");
+    if (m_fillBGTransparency > 0)
+      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
+    if (m_fillFGTransparency > 0)
+      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+    else
+      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
+    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
+
+    switch(m_fillPattern)
+    {
+    case 36:
+      m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
+      break;
+    case 37:
+      m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
+      break;
+    case 38:
+      m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
+      break;
+    case 39:
+      m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
+      break;
+    case 40:
+      m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
+      m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
+      break;
+    }
+  }
+  else
+  // fill types we don't handle right, but let us approximate with solid fill
+  {
+    m_fillType = "solid";
+    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
+  }
+
+  if (shadowPattern != 0)
+  {
+    m_styleProps.insert("draw:shadow","visible"); // for ODG
+    m_styleProps.insert("draw:shadow-offset-x",shadowOffsetX);
+    m_styleProps.insert("draw:shadow-offset-y",shadowOffsetY);
+    m_styleProps.insert("draw:shadow-color",getColourString(shfgc));
+    m_styleProps.insert("draw:shadow-opacity",(double)(1 - shfgc.a/255.), WPX_PERCENT);
+  }
+  m_styleProps.insert("draw:fill", m_fillType);
+}
+
+void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
+{
+  m_linePattern = linePattern;
+
+  if (linePattern == 0) return; // No need to add style
+  
+  m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
+  m_lineColour = getColourString(c);
+  m_styleProps.insert("svg:stroke-color", m_lineColour);
+  if (c.a)
+    m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
+  else
+    m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
+  switch (lineCap)
+  {
+    case 0:
+      m_styleProps.insert("svg:stroke-linecap", "round");
+      m_styleProps.insert("svg:stroke-linejoin", "round");
+      break;
+    case 2:
+      m_styleProps.insert("svg:stroke-linecap", "square");
+      m_styleProps.insert("svg:stroke-linejoin", "miter");
+      break;
+    default:
+      m_styleProps.insert("svg:stroke-linecap", "butt");
+      m_styleProps.insert("svg:stroke-linejoin", "miter");
+      break;
+  }
+
+  int dots1 = 0;
+  int dots2 = 0;
+  double dots1len = 0.0;
+  double dots2len = 0.0;
+  double gap = 0.0;
+
+  m_styleProps.remove("draw:stroke");
+  switch (linePattern)
+  {
+  case 2: // "6, 3"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 6.0;
+    gap = 3.0;
+    break;
+  case 3: // "1, 3"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 4: // "6, 3, 1, 3"
+    dots1 = 1;
+    dots1len = 6.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 5: // "6, 3, 1, 3, 1, 3"
+    dots1 = 1;
+    dots1len = 6.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 6: // "6, 3, 6, 3, 1, 3"
+    dots1 = 2;
+    dots1len = 6.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 7: // "14, 2, 6, 2"
+    dots1 = 1;
+    dots1len = 14.0;
+    dots2 = 1;
+    dots2len = 6.0;
+    gap = 2.0;
+    break;
+  case 8: // "14, 2, 6, 2, 6, 2"
+    dots1 = 1;
+    dots1len = 14.0;
+    dots2 = 2;
+    dots2len = 6.0;
+    gap = 2.0;
+    break;
+  case 9: // "3, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 10: // "1, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 11: // "3, 2, 1, 2"
+    dots1 = 1;
+    dots1len = 3.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 12: // "3, 2, 1, 2, 1, 2"
+    dots1 = 1;
+    dots1len = 3.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 13: // "3, 2, 3, 2, 1, 2"
+    dots1 = 2;
+    dots1len = 3.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 14: // "7, 2, 3, 2"
+    dots1 = 1;
+    dots1len = 7.0;
+    dots2 = 1;
+    dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 15: // "7, 2, 3, 2, 3, 2"
+    dots1 = 1;
+    dots1len = 7.0;
+    dots2 = 2;
+    dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 16: // "11, 5"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 17: // "1, 5"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 18: // "11, 5, 1, 5"
+    dots1 = 1;
+    dots1len = 11.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 19: // "11, 5, 1, 5, 1, 5"
+    dots1 = 1;
+    dots1len = 11.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 20: // "11, 5, 11, 5, 1, 5"
+    dots1 = 2;
+    dots1len = 11.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 21: // "27, 5, 11, 5"
+    dots1 = 1;
+    dots1len = 27.0;
+    dots2 = 1;
+    dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 22: // "27, 5, 11, 5, 11, 5"
+    dots1 = 1;
+    dots1len = 27.0;
+    dots2 = 2;
+    dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 23: // "2, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 2.0;
+    gap = 2.0;
+    break;
+  default:
+    break;
+  }
+
+  if (linePattern == 0)
+    m_styleProps.insert("draw:stroke", "none");
+  else if (linePattern == 1)
+    m_styleProps.insert("draw:stroke", "solid");
+  else if (linePattern > 1 && linePattern <= 23)
+  {
+    m_styleProps.insert("draw:stroke", "dash");
+    m_styleProps.insert("draw:dots1", dots1);
+    m_styleProps.insert("draw:dots1-length", dots1len, WPX_POINT);
+    m_styleProps.insert("draw:dots2", dots2);
+    m_styleProps.insert("draw:dots2-length", dots2len, WPX_POINT);
+    m_styleProps.insert("draw:distance", gap, WPX_POINT);
+  }
+  else
+    // FIXME: later it will require special treatment for custom line patterns
+    // patt ID is 0xfe, link to stencil name is in 'Line' blocks
+    m_styleProps.insert("draw:stroke", "solid");
+}
+
+void libvisio::VSDXContentCollector::_textBlockProperties(const TextBlockFormat & /* txtBlockFormat */)
+{
+}
+
+void libvisio::VSDXContentCollector::_charProperties(const CharFormat & /* format */)
+{
+}
+
 void libvisio::VSDXContentCollector::_flushCurrentPath()
 {
   WPXPropertyListVector path;
@@ -352,207 +726,6 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
 
 }
 
-void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
-{
-  m_linePattern = linePattern;
-
-  if (linePattern == 0) return; // No need to add style
-  
-  m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
-  m_lineColour = getColourString(c);
-  m_styleProps.insert("svg:stroke-color", m_lineColour);
-  if (c.a)
-    m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
-  else
-    m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
-  switch (lineCap)
-  {
-    case 0:
-      m_styleProps.insert("svg:stroke-linecap", "round");
-      m_styleProps.insert("svg:stroke-linejoin", "round");
-      break;
-    case 2:
-      m_styleProps.insert("svg:stroke-linecap", "square");
-      m_styleProps.insert("svg:stroke-linejoin", "miter");
-      break;
-    default:
-      m_styleProps.insert("svg:stroke-linecap", "butt");
-      m_styleProps.insert("svg:stroke-linejoin", "miter");
-      break;
-  }
-
-  int dots1 = 0;
-  int dots2 = 0;
-  double dots1len = 0.0;
-  double dots2len = 0.0;
-  double gap = 0.0;
-
-  m_styleProps.remove("draw:stroke");
-  switch (linePattern)
-  {
-  case 2: // "6, 3"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 6.0;
-    gap = 3.0;
-    break;
-  case 3: // "1, 3"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 1.0;
-    gap = 3.0;
-    break;
-  case 4: // "6, 3, 1, 3"
-    dots1 = 1;
-    dots1len = 6.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 3.0;
-    break;
-  case 5: // "6, 3, 1, 3, 1, 3"
-    dots1 = 1;
-    dots1len = 6.0;
-    dots2 = 2;
-    dots2len = 1.0;
-    gap = 3.0;
-    break;
-  case 6: // "6, 3, 6, 3, 1, 3"
-    dots1 = 2;
-    dots1len = 6.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 3.0;
-    break;
-  case 7: // "14, 2, 6, 2"
-    dots1 = 1;
-    dots1len = 14.0;
-    dots2 = 1;
-    dots2len = 6.0;
-    gap = 2.0;
-    break;
-  case 8: // "14, 2, 6, 2, 6, 2"
-    dots1 = 1;
-    dots1len = 14.0;
-    dots2 = 2;
-    dots2len = 6.0;
-    gap = 2.0;
-    break;
-  case 9: // "3, 2"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 3.0;
-    gap = 2.0;
-    break;
-  case 10: // "1, 2"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 1.0;
-    gap = 2.0;
-    break;
-  case 11: // "3, 2, 1, 2"
-    dots1 = 1;
-    dots1len = 3.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 2.0;
-    break;
-  case 12: // "3, 2, 1, 2, 1, 2"
-    dots1 = 1;
-    dots1len = 3.0;
-    dots2 = 2;
-    dots2len = 1.0;
-    gap = 2.0;
-    break;
-  case 13: // "3, 2, 3, 2, 1, 2"
-    dots1 = 2;
-    dots1len = 3.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 2.0;
-    break;
-  case 14: // "7, 2, 3, 2"
-    dots1 = 1;
-    dots1len = 7.0;
-    dots2 = 1;
-    dots2len = 3.0;
-    gap = 2.0;
-    break;
-  case 15: // "7, 2, 3, 2, 3, 2"
-    dots1 = 1;
-    dots1len = 7.0;
-    dots2 = 2;
-    dots2len = 3.0;
-    gap = 2.0;
-    break;
-  case 16: // "11, 5"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 11.0;
-    gap = 5.0;
-    break;
-  case 17: // "1, 5"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 1.0;
-    gap = 5.0;
-    break;
-  case 18: // "11, 5, 1, 5"
-    dots1 = 1;
-    dots1len = 11.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 5.0;
-    break;
-  case 19: // "11, 5, 1, 5, 1, 5"
-    dots1 = 1;
-    dots1len = 11.0;
-    dots2 = 2;
-    dots2len = 1.0;
-    gap = 5.0;
-    break;
-  case 20: // "11, 5, 11, 5, 1, 5"
-    dots1 = 2;
-    dots1len = 11.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 5.0;
-    break;
-  case 21: // "27, 5, 11, 5"
-    dots1 = 1;
-    dots1len = 27.0;
-    dots2 = 1;
-    dots2len = 11.0;
-    gap = 5.0;
-    break;
-  case 22: // "27, 5, 11, 5, 11, 5"
-    dots1 = 1;
-    dots1len = 27.0;
-    dots2 = 2;
-    dots2len = 11.0;
-    gap = 5.0;
-    break;
-  case 23: // "2, 2"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 2.0;
-    gap = 2.0;
-    break;
-  default:
-    break;
-  }
-
-  if (linePattern == 0)
-    m_styleProps.insert("draw:stroke", "none");
-  else if (linePattern == 1)
-    m_styleProps.insert("draw:stroke", "solid");
-  else if (linePattern > 1 && linePattern <= 23)
-  {
-    m_styleProps.insert("draw:stroke", "dash");
-    m_styleProps.insert("draw:dots1", dots1);
-    m_styleProps.insert("draw:dots1-length", dots1len, WPX_POINT);
-    m_styleProps.insert("draw:dots2", dots2);
-    m_styleProps.insert("draw:dots2-length", dots2len, WPX_POINT);
-    m_styleProps.insert("draw:distance", gap, WPX_POINT);
-  }
-  else
-    // FIXME: later it will require special treatment for custom line patterns
-    // patt ID is 0xfe, link to stencil name is in 'Line' blocks
-    m_styleProps.insert("draw:stroke", "solid");
-}
-
 void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
 {
   _handleLevelChange(level);
@@ -560,173 +733,9 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
   _lineProperties(strokeWidth, c, linePattern, lineCap);
 }
 
-void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
-                                                              unsigned fillFGTransparency, unsigned fillBGTransparency,
-                                                              unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
-{
-  m_fillPattern = fillPattern;
-  m_fillFGTransparency = fillFGTransparency;
-  m_fillBGTransparency = fillBGTransparency;
-
-  if (m_fillPattern == 0)
-    m_fillType = "none";
-  else if (m_fillPattern == 1)
-  {
-    m_fillType = "solid";
-    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.remove("draw:opacity");
-  }
-  else if (m_fillPattern == 26 || m_fillPattern == 29)
-  {
-    m_fillType = "gradient";
-    m_styleProps.insert("draw:style", "axial");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
-    m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
-    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
-
-    if (m_fillPattern == 26)
-      m_styleProps.insert("draw:angle", 90);
-    else
-      m_styleProps.insert("draw:angle", 0);
-  }
-  else if (m_fillPattern >= 25 && m_fillPattern <= 34)
-  {
-    m_fillType = "gradient";
-    m_styleProps.insert("draw:style", "linear");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
-    m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
-    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
-
-    switch(m_fillPattern)
-    {
-    case 25:
-      m_styleProps.insert("draw:angle", 270);
-      break;
-    case 27:
-      m_styleProps.insert("draw:angle", 90);
-      break;
-    case 28:
-      m_styleProps.insert("draw:angle", 180);
-      break;
-    case 30:
-      m_styleProps.insert("draw:angle", 0);
-      break;
-    case 31:
-      m_styleProps.insert("draw:angle", 225);
-      break;
-    case 32:
-      m_styleProps.insert("draw:angle", 135);
-      break;
-    case 33:
-      m_styleProps.insert("draw:angle", 315);
-      break;
-    case 34:
-      m_styleProps.insert("draw:angle", 45);
-      break;
-    }
-  }
-  else if (m_fillPattern == 35)
-  {
-    m_fillType = "gradient";
-    m_styleProps.insert("draw:style", "rectangular");
-    m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
-    m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
-    m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
-    m_styleProps.insert("draw:angle", 0);
-    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
-  }
-  else if (m_fillPattern >= 36 && m_fillPattern <= 40)
-  {
-    m_fillType = "gradient";
-    m_styleProps.insert("draw:style", "radial");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
-    m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
-    else
-      m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
-    m_styleProps.insert("draw:border", 0, WPX_PERCENT);
-
-    switch(m_fillPattern)
-    {
-    case 36:
-      m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
-      break;
-    case 37:
-      m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 0, WPX_PERCENT);
-      break;
-    case 38:
-      m_styleProps.insert("svg:cx", 0, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
-      break;
-    case 39:
-      m_styleProps.insert("svg:cx", 1, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 1, WPX_PERCENT);
-      break;
-    case 40:
-      m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
-      m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
-      break;
-    }
-  }
-  else
-  // fill types we don't handle right, but let us approximate with solid fill
-  {
-    m_fillType = "solid";
-    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
-  }
-
-  if (shadowPattern != 0)
-  {
-    m_styleProps.insert("draw:shadow","visible"); // for ODG
-    m_styleProps.insert("draw:shadow-offset-x",shadowOffsetX);
-    m_styleProps.insert("draw:shadow-offset-y",shadowOffsetY);
-    m_styleProps.insert("draw:shadow-color",getColourString(shfgc));
-    m_styleProps.insert("draw:shadow-opacity",(double)(1 - shfgc.a/255.), WPX_PERCENT);
-  }
-  m_styleProps.insert("draw:fill", m_fillType);
-}
-
-
-void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
+                                                          unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency,
+                                                          unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   _handleLevelChange(level);
   m_hasLocalFillStyle = true;
@@ -1520,9 +1529,9 @@ void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(unsigned styleId)
   lineStyleFromStyleSheet(m_styles.getLineStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle &lineStyle)
+void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle &style)
 {
-  _lineProperties(lineStyle.width, lineStyle.colour, lineStyle.pattern, lineStyle.cap);
+  _lineProperties(style.width, style.colour, style.pattern, style.cap);
 }
 
 void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
@@ -1530,10 +1539,30 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
   fillStyleFromStyleSheet(m_styles.getFillStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle &fillStyle)
+void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle &style)
 {
-  _fillAndShadowProperties(fillStyle.fgColourId, fillStyle.bgColourId, fillStyle.pattern, fillStyle.fgTransparency, fillStyle.bgTransparency,
-                           fillStyle.shadowPattern, fillStyle.shadowFgColour, fillStyle.shadowOffsetX, fillStyle.shadowOffsetY);
+  _fillAndShadowProperties(style.fgColourId, style.bgColourId, style.pattern, style.fgTransparency, style.bgTransparency,
+                           style.shadowPattern, style.shadowFgColour, style.shadowOffsetX, style.shadowOffsetY);
+}
+
+void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(unsigned styleId)
+{
+  textBlockStyleFromStyleSheet(m_styles.getTextStyle(styleId));
+}
+
+void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(const VSDXTextStyle &style)
+{
+  _textBlockProperties(style.txtBlockFormat);
+}
+
+void libvisio::VSDXContentCollector::charStyleFromStyleSheet(unsigned styleId)
+{
+  charStyleFromStyleSheet(m_styles.getTextStyle(styleId));
+}
+
+void libvisio::VSDXContentCollector::charStyleFromStyleSheet(const VSDXTextStyle &style)
+{
+  _charProperties(style.format);
 }
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)

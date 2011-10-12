@@ -81,14 +81,14 @@ struct VSDXFillStyle
 struct VSDXTextStyle
 {
   VSDXTextStyle()
-  : format(), txtBoxFormat() {}
+  : format(), txtBlockFormat() {}
   VSDXTextStyle(CharFormat &f, TextBlockFormat &tbf)
-  : format(f), txtBoxFormat(tbf) {}
+  : format(f), txtBlockFormat(tbf) {}
   VSDXTextStyle(const VSDXTextStyle &textStyle)
-  : format(textStyle.format), txtBoxFormat(textStyle.txtBoxFormat) {}
+  : format(textStyle.format), txtBlockFormat(textStyle.txtBlockFormat) {}
   ~VSDXTextStyle() {}
   CharFormat format;
-  TextBlockFormat txtBoxFormat;
+  TextBlockFormat txtBlockFormat;
 };
 
 class VSDXStyles
