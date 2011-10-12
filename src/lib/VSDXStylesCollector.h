@@ -88,6 +88,9 @@ public:
   void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                          double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
+  void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
+                        unsigned char verticalAlign, unsigned char textBkgndColour, unsigned char textBkgndTransparency, double defaultTabStop,
+                        unsigned char textDirection);
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
@@ -97,6 +100,9 @@ public:
   void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                           double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                           bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
+  void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
+                             unsigned char verticalAlign, unsigned char textBkgndColour, unsigned char textBkgndTransparency, double defaultTabStop,
+                             unsigned char textDirection);
 
   // Temporary hack
   void startPage();

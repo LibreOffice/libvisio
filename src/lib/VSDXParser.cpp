@@ -43,7 +43,7 @@
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()), m_geomListVector(),
     m_charList(new VSDXCharacterList()), m_charListVector(), m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
-    m_stencilShape(), m_isStencilStarted(false), m_currentPageID(0)
+    m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentPageID(0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
@@ -213,7 +213,9 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
 
 void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
 {
- try
+  m_isInStyles = true;
+
+  try
   {
     long endPos = 0;
 
@@ -229,14 +231,17 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
         readStyleSheet(input);
         break;
       case VSD_LINE:
-        readLineStyle(input);
+        readLine(input);
         break;
       case VSD_FILL_AND_SHADOW:
-        readFillStyle(input);
+        readFillAndShadow(input);
         break;
       case VSD_CHAR_IX:
-        readCharIXStyle(input);
+        readCharIX(input);
         break;
+      case VSD_TEXT_BLOCK:
+        readTextBlock(input);
+	break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -249,6 +254,8 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
   {
     _handleLevelChange(0);
   }
+
+  m_isInStyles = false;
 }
 
 void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
@@ -627,6 +634,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       case VSD_CHAR_IX:
         readCharIX(input);
         break;
+      case VSD_TEXT_BLOCK:
+        readTextBlock(input);
+	break;
 //    case VSD_FONT_LIST: // ver 6 only, don't need to handle that
       case VSD_FONT_IX: // ver 6 only
         readFontIX(input);
@@ -726,12 +736,47 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
   input->seek(12, WPX_SEEK_CUR);
   unsigned char lineCap = readU8(input);
 
-  if (m_isStencilStarted)
+  if (m_isInStyles)
+    m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
+  else if (m_isStencilStarted)
   {
-    if (!m_stencilShape.m_lineStyle) m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, lineCap);
+    if (!m_stencilShape.m_lineStyle) 
+      m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, lineCap);
   }
   else
     m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
+}
+
+void libvisio::VSDXParser::readTextBlock(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  double leftMargin = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double rightMargin = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double topMargin = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double bottomMargin = readDouble(input);
+  unsigned char verticalAlign = readU8(input);
+  unsigned char textBkgndColour = readU8(input);
+  input->seek(3, WPX_SEEK_CUR);
+  unsigned char textBkgndTransparency = readU8(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double defaultTabStop = readDouble(input);
+  input->seek(12, WPX_SEEK_CUR);
+  unsigned char textDirection = readU8(input);
+
+  if (m_isInStyles)
+    m_collector->collectTextBlockStyle(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
+                                       verticalAlign, textBkgndColour, textBkgndTransparency, defaultTabStop, textDirection);
+  else if (m_isStencilStarted)
+  {
+    if (!m_stencilShape.m_textStyle) 
+      m_stencilShape.m_textStyle = new VSDXTextStyle();
+  }
+  else
+    m_collector->collectTextBlock(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
+                                  verticalAlign, textBkgndColour, textBkgndTransparency, defaultTabStop, textDirection);
 }
 
 void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
@@ -745,9 +790,7 @@ void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
     geometryOrder.push_back(readU32(input));
 
   if (m_isStencilStarted)
-  {
     m_stencilShape.m_geometries.back().setElementsOrder(geometryOrder);
-  }
   else
   {
     m_geomList->setElementsOrder(geometryOrder);
@@ -1404,22 +1447,4 @@ void libvisio::VSDXParser::readStyleSheet(WPXInputStream *input)
 
   m_collector->collectStyleSheet(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
 }
-
-void libvisio::VSDXParser::readLineStyle(WPXInputStream *input)
-{
-  input->seek(1, WPX_SEEK_CUR);
-  double strokeWidth = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  Colour c;
-  c.r = readU8(input);
-  c.g = readU8(input);
-  c.b = readU8(input);
-  c.a = readU8(input);
-  unsigned char linePattern = readU8(input);
-  input->seek(12, WPX_SEEK_CUR);
-  unsigned char lineCap = readU8(input);
-
-  m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
-}
-
 

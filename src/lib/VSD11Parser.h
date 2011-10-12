@@ -51,9 +51,6 @@ private:
   void readCharIX(WPXInputStream *input);
   void readFillAndShadow(WPXInputStream *input);
 
-  void readFillStyle(WPXInputStream *input);
-  void readCharIXStyle(WPXInputStream *input);
-
   VSD11Parser();
   VSD11Parser(const VSDXParser&);
   VSD11Parser &operator=(const VSDXParser&);

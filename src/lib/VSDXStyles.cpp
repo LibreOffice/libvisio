@@ -31,19 +31,6 @@
 
 #define NOMASTER 0xffffffff
 
-libvisio::VSDXLineStyle::VSDXLineStyle()
-  : width(0.01), colour(), pattern(0), cap(0)
-{}
-
-libvisio::VSDXFillStyle::VSDXFillStyle()
-  : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0),
-    shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0)
-{}
-
-libvisio::VSDXTextStyle::VSDXTextStyle()
-  : format()
-{
-}
 libvisio::VSDXStyles::VSDXStyles()
 {
 }

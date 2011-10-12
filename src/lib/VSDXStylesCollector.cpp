@@ -227,6 +227,14 @@ void libvisio::VSDXStylesCollector::collectCharFormat(unsigned /*id*/ , unsigned
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectTextBlock(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
+                                                     double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
+                                                     unsigned char /* textBkgndColour */, unsigned char /* textBkgndTransparency */,
+                                                     double /* defaultTabStop */,  unsigned char /* textDirection */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned level, unsigned lineStyleParent, unsigned fillStyleParent, unsigned textStyleParent)
 {
   _handleLevelChange(level);
@@ -279,6 +287,14 @@ void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigne
   CharFormat f(charCount, fontID, fontColour, langID, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   m_textStyle->format = f;
+}
+
+void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
+                                                          double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
+                                                          unsigned char /* textBkgndColour */, unsigned char /* textBkgndTransparency */,
+                                                          double /* defaultTabStop */,  unsigned char /* textDirection */)
+{
+  _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc)

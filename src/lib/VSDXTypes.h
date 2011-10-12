@@ -147,6 +147,39 @@ struct CharFormat
   WPXString face;
 };
 
+struct TextBlockFormat
+{
+  TextBlockFormat() :
+    leftMargin(0.0),
+    rightMargin(0.0),
+    topMargin(0.0),
+    bottomMargin(0.0),
+    verticalAlign(0),
+    textBkgndColour(0),
+    textBkgndTransparency(0),
+    defaultTabStop(0.5),
+    textDirection(0) {}
+  TextBlockFormat(double lm, double rm, double tm, double bm, unsigned char va, unsigned char bgClr, unsigned char bgTrans, double defTab, unsigned char td) :
+    leftMargin(lm),
+    rightMargin(rm),
+    topMargin(tm),
+    bottomMargin(bm),
+    verticalAlign(va),
+    textBkgndColour(bgClr),
+    textBkgndTransparency(bgTrans),
+    defaultTabStop(defTab),
+    textDirection(td) {}
+  double leftMargin;
+  double rightMargin;
+  double topMargin;
+  double bottomMargin;
+  unsigned char verticalAlign;
+  unsigned char textBkgndColour;
+  unsigned char textBkgndTransparency;
+  double defaultTabStop;
+  unsigned char textDirection;
+};
+
 struct ForeignData
 {
   unsigned typeId;

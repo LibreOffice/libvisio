@@ -132,9 +132,14 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
   input->seek(42, WPX_SEEK_CUR);
   unsigned langId = readU32(input);
 
-  m_charList->addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize,
-                        bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                        allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  if (m_isInStyles)
+    m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize,
+                                    bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  else
+    m_charList->addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize,
+                          bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                          allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
 void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
@@ -155,74 +160,17 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
   input->seek(5, WPX_SEEK_CUR);  // Shadow Background Colour skipped
   unsigned char shadowPattern = readU8(input);
 
-  if (m_isStencilStarted)
+  if (m_isInStyles)
+    m_collector->collectFillStyle(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,
+                                  fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
+  else if (m_isStencilStarted)
   {
-    if (m_stencilShape.m_fillStyle == 0) m_stencilShape.m_fillStyle = new VSDXFillStyle(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, m_currentStencil->m_shadowOffsetX, m_currentStencil->m_shadowOffsetY);
+    if (!m_stencilShape.m_fillStyle)
+      m_stencilShape.m_fillStyle = new VSDXFillStyle(colourIndexFG, colourIndexBG, fillPattern,
+                                                     fillFGTransparency, fillBGTransparency, shfgc, shadowPattern,
+                                                     m_currentStencil->m_shadowOffsetX, m_currentStencil->m_shadowOffsetY);
   }
   else
-    m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
-}
-
-void libvisio::VSD6Parser::readFillStyle(WPXInputStream *input)
-{
-  unsigned char colourIndexFG = readU8(input);
-  input->seek(3, WPX_SEEK_CUR);
-  unsigned char fillFGTransparency = readU8(input);
-  unsigned char colourIndexBG = readU8(input);
-  input->seek(3, WPX_SEEK_CUR);
-  unsigned char fillBGTransparency = readU8(input);
-  unsigned char fillPattern = readU8(input);
-  input->seek(1, WPX_SEEK_CUR);
-  Colour shfgc;            // Shadow Foreground Colour
-  shfgc.r = readU8(input);
-  shfgc.g = readU8(input);
-  shfgc.b = readU8(input);
-  shfgc.a = readU8(input);
-  input->seek(5, WPX_SEEK_CUR);  // Shadow Background Colour skipped
-  unsigned char shadowPattern = readU8(input);
-
-  m_collector->collectFillStyle(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
-}
-
-void libvisio::VSD6Parser::readCharIXStyle(WPXInputStream *input)
-{
-  WPXString fontFace = "Arial";
-  unsigned charCount = readU32(input);
-  unsigned short fontID = readU16(input);
-  input->seek(1, WPX_SEEK_CUR);  // Color ID
-  Colour fontColour;            // Font Colour
-  fontColour.r = readU8(input);
-  fontColour.g = readU8(input);
-  fontColour.b = readU8(input);
-  fontColour.a = readU8(input);
-
-  bool bold(false); bool italic(false); bool underline(false); bool doubleunderline(false);
-  bool strikeout(false); bool doublestrikeout(false); bool allcaps(false); bool initcaps(false); bool smallcaps(false);
-  bool superscript(false); bool subscript(false);
-  unsigned char fontMod = readU8(input);
-  if (fontMod & 1) bold = true;
-  if (fontMod & 2) italic = true;
-  if (fontMod & 4) underline = true;
-  if (fontMod & 8) smallcaps = true;
-  fontMod = readU8(input);
-  if (fontMod & 1) allcaps = true;
-  if (fontMod & 2) initcaps = true;
-  fontMod = readU8(input);
-  if (fontMod & 1) superscript = true;
-  if (fontMod & 2) subscript = true;
-
-  input->seek(4, WPX_SEEK_CUR);
-  double fontSize = readDouble(input);
-  
-  fontMod = readU8(input);
-  if (fontMod & 1) doubleunderline = true;
-  if (fontMod & 4) strikeout = true;
-  if (fontMod & 0x20) doublestrikeout = true;
-
-  input->seek(42, WPX_SEEK_CUR);
-  unsigned langId = readU32(input);
-
-  m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize,
-                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                  allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+    m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,
+                                      fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
 }

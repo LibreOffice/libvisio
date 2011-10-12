@@ -39,7 +39,8 @@ namespace libvisio {
 
 struct VSDXLineStyle
 {
-  VSDXLineStyle();
+  VSDXLineStyle()
+  : width(0.01), colour(), pattern(0), cap(0) {}
   VSDXLineStyle(double w, Colour col, unsigned char p, unsigned char c)
   : width(w), colour(col), pattern(p), cap(c) {}
   VSDXLineStyle(const VSDXLineStyle &lineStyle)
@@ -53,7 +54,8 @@ struct VSDXLineStyle
 
 struct VSDXFillStyle
 {
-  VSDXFillStyle();
+  VSDXFillStyle()
+  : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
   VSDXFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga, Colour sfgc, unsigned char shp, double shX, double shY)
   : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
   VSDXFillStyle(const VSDXFillStyle &fillStyle)
@@ -78,9 +80,15 @@ struct VSDXFillStyle
 
 struct VSDXTextStyle
 {
-  VSDXTextStyle();
-  VSDXTextStyle(CharFormat &f) : format(f) {} 
+  VSDXTextStyle()
+  : format(), txtBoxFormat() {}
+  VSDXTextStyle(CharFormat &f, TextBlockFormat &tbf)
+  : format(f), txtBoxFormat(tbf) {}
+  VSDXTextStyle(const VSDXTextStyle &textStyle)
+  : format(textStyle.format), txtBoxFormat(textStyle.txtBoxFormat) {}
+  ~VSDXTextStyle() {}
   CharFormat format;
+  TextBlockFormat txtBoxFormat;
 };
 
 class VSDXStyles

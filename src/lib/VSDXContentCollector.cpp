@@ -1472,6 +1472,14 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
   m_charFormats.push_back(format);
 }
 
+void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
+                                                      double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
+                                                      unsigned char /* textBkgndColour */, unsigned char /* textBkgndTransparency */,
+                                                      double /* defaultTabStop */,  unsigned char /* textDirection */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
 {
   _handleLevelChange(level);
@@ -1495,6 +1503,14 @@ void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned 
 void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, unsigned /*langId*/, double /*fontSize*/,
                                                         bool /*bold*/, bool /*italic*/, bool /*underline*/, bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */,
                                                         bool /* allcaps */, bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, WPXString /*fontFace*/)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
+                                                           double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
+                                                           unsigned char /* textBkgndColour */, unsigned char /* textBkgndTransparency */,
+                                                           double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);
 }

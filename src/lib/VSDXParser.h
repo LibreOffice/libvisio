@@ -84,12 +84,10 @@ protected:
   void readPage(WPXInputStream *input);
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
+  void readTextBlock(WPXInputStream *input);
 
   void readStyleSheet(WPXInputStream *input);
-  void readLineStyle(WPXInputStream *input);
-  virtual void readFillStyle(WPXInputStream *input) = 0;
-  virtual void readCharIXStyle(WPXInputStream *input) = 0;
-  
+
   void readSplineStart(WPXInputStream *input);
   void readSplineKnot(WPXInputStream *input);
 
@@ -125,6 +123,7 @@ protected:
   VSDXStencil * m_currentStencil;
   VSDXStencilShape m_stencilShape;
   bool m_isStencilStarted;
+  bool m_isInStyles;
   unsigned m_currentPageID;
 
 private:
