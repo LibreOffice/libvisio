@@ -88,17 +88,17 @@ class VSDXStyles
   public:
     VSDXStyles();
     ~VSDXStyles();
-	void addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle);
-	void addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle);
-	void addTextStyle(unsigned textStyleIndex, VSDXTextStyle *textStyle);
-	
-	void addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster);
-	void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
-	void addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster);
-	
-	const VSDXLineStyle getLineStyle(unsigned lineStyleIndex) const;
-	const VSDXFillStyle getFillStyle(unsigned fillStyleIndex) const;
-	const VSDXTextStyle getTextStyle(unsigned textStyleIndex) const;
+    void addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle);
+    void addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle);
+    void addTextStyle(unsigned textStyleIndex, VSDXTextStyle *textStyle);
+    
+    void addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster);
+    void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
+    void addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster);
+    
+    const VSDXLineStyle getLineStyle(unsigned lineStyleIndex) const;
+    const VSDXFillStyle getFillStyle(unsigned fillStyleIndex) const;
+    const VSDXTextStyle getTextStyle(unsigned textStyleIndex) const;
 
   private:
     std::map<unsigned, VSDXLineStyle> m_lineStyles;

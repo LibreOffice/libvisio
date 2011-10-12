@@ -728,7 +728,7 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
-    if (m_stencilShape.m_lineStyle == 0) m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, lineCap);
+    if (!m_stencilShape.m_lineStyle) m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, lineCap);
   }
   else
     m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
@@ -953,6 +953,7 @@ void libvisio::VSDXParser::readShape(WPXInputStream * input)
   {
     m_stencilShape.m_lineStyleID = lineStyle;
     m_stencilShape.m_fillStyleID = fillStyle;
+    m_stencilShape.m_textStyleID = textStyle;
   }
   else
     m_collector->collectShape(m_header.id, m_header.level, masterPage, masterShape, lineStyle, fillStyle, textStyle);

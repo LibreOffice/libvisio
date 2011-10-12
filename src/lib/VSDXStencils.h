@@ -48,9 +48,10 @@ class VSDXStencilShape
 
     std::vector<VSDXGeometryList> m_geometries;
     ForeignData * m_foreign;
-    unsigned m_lineStyleID, m_fillStyleID;
+    unsigned m_lineStyleID, m_fillStyleID, m_textStyleID;
     VSDXLineStyle * m_lineStyle;
     VSDXFillStyle * m_fillStyle;
+    VSDXTextStyle * m_textStyle;
     WPXString m_text;
     std::vector<CharFormat> m_charFormats;
     std::map<unsigned, NURBSData> m_nurbsData;

@@ -127,18 +127,22 @@ void libvisio::VSDXContentCollector::_flushText()
   if (m_textStream.size() == 0) return;
   WPXString text;
   double angle = 0.0;
-  transformAngle(angle);
+  transformAngle(angle, m_txtxform);
   
-  double x = m_txtxform ? m_txtxform->x : 0.0;
-  double y = m_txtxform ? m_txtxform->y + m_txtxform->height: 0.0;
+  double x = 0.0;
+  double y = m_txtxform ? m_txtxform->height: m_xform.height;
   
-  transformPoint(x,y);
+  transformPoint(x,y, m_txtxform);
 
   WPXPropertyList textCoords;
   textCoords.insert("svg:x", m_scale * x);
   textCoords.insert("svg:y", m_scale * y);
   textCoords.insert("svg:height", m_scale * (m_txtxform ? m_txtxform->height : m_xform.height));
   textCoords.insert("svg:width", m_scale * (m_txtxform ? m_txtxform->width : m_xform.width));
+  textCoords.insert("fo:padding-top", 0.0);
+  textCoords.insert("fo:padding-bottom", 0.0);
+  textCoords.insert("fo:padding-left", 0.0);
+  textCoords.insert("fo:padding-right", 0.0);
   textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
