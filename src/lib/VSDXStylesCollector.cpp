@@ -307,9 +307,9 @@ void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigne
 {
   _handleLevelChange(level);
   if (m_textStyle == 0) m_textStyle = new VSDXTextStyle();
-  CharFormat f(charCount, fontID, fontColour, langID, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+  CharFormat cf(charCount, fontID, fontColour, langID, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
-  m_textStyle->format = f;
+  m_textStyle->characterFormat = cf;
 }
 
 void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
@@ -319,8 +319,8 @@ void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, uns
   if (!m_textStyle)
     m_textStyle = new VSDXTextStyle();
 
-  TextBlockFormat f(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, textBkgndColour, textBkgndTransparency, defaultTabStop, textDirection);
-  m_textStyle->txtBlockFormat = f;
+  TextBlockFormat tbf(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, textBkgndColour, textBkgndTransparency, defaultTabStop, textDirection);
+  m_textStyle->txtBlockFormat = tbf;
 
   _handleLevelChange(level);
 }

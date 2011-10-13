@@ -109,7 +109,7 @@ struct CharFormat
     smallcaps(false),
     superscript(false),
     subscript(false),
-    face("Times New Roman") {}
+    face("Arial") {}
   CharFormat(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, WPXString f) :
     charCount(cc),
     faceID(id),

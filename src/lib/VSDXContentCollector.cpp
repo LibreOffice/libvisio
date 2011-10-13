@@ -63,7 +63,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textStream(),
-    m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_defaultCharFormat(), m_styles(styles),
+    m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_defaultCharFormat(),
+    m_defaultParaFormat(), m_defaultTextBlockFormat(), m_styles(styles),
     m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0),
     m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
     m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
@@ -572,7 +573,7 @@ void libvisio::VSDXContentCollector::_flushText()
     textProps.insert("fo:color",getColourString(m_charFormats[i].colour));
     double opacity = 1.0;
     if (m_charFormats[i].colour.a)
-      opacity -= m_charFormats[i].colour.a/255.0;
+      opacity -= (double)(m_charFormats[i].colour.a)/255.0;
     textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
     textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
 
@@ -1382,7 +1383,9 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_charFormats.clear();
   if (textStyleId != 0xffffffff)
   {
-    m_defaultCharFormat = m_styles.getTextStyle(textStyleId).format;
+    m_defaultCharFormat = m_styles.getTextStyle(textStyleId).characterFormat;
+    m_defaultParaFormat = m_styles.getTextStyle(textStyleId).paragraphFormat;
+    m_defaultTextBlockFormat = m_styles.getTextStyle(textStyleId).txtBlockFormat;
   }
 
   m_currentGeometryCount = 0;
@@ -1562,7 +1565,7 @@ void libvisio::VSDXContentCollector::charStyleFromStyleSheet(unsigned styleId)
 
 void libvisio::VSDXContentCollector::charStyleFromStyleSheet(const VSDXTextStyle &style)
 {
-  _charProperties(style.format);
+  _charProperties(style.characterFormat);
 }
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
