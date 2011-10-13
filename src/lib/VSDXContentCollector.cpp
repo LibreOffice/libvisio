@@ -545,96 +545,93 @@ void libvisio::VSDXContentCollector::_flushText()
       m_paraFormats[iPara].charCount = numCharsInText;
   }
 
-  // Assume 1 para format covers whole block, no splitting needed
-  if (m_paraFormats.size() > 1)
+  m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
+
+  unsigned int charIndex = 0;
+  unsigned int paraCharCount = 0;
+  for (std::vector<ParaFormat>::iterator paraIt = m_paraFormats.begin();
+       paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); paraIt++)
   {
-    unsigned int charIndex = 0;
-    unsigned int paraCharCount = 0;
-    for (std::vector<ParaFormat>::iterator paraIt = m_paraFormats.begin();
-         paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); paraIt++)
+    m_shapeOutput->addStartTextLine(WPXPropertyList());
+
+    paraCharCount = (*paraIt).charCount;
+    // Find char format that overlaps
+    while (charIndex < m_charFormats.size() && paraCharCount)
     {
-      paraCharCount = (*paraIt).charCount;
-      // Find char format that overlaps
-      while (charIndex < m_charFormats.size() || m_charFormats[charIndex].charCount <= paraCharCount)
-        paraCharCount -= m_charFormats[charIndex++].charCount;        
-      if (paraCharCount)
+      paraCharCount -= m_charFormats[charIndex].charCount;
+      {
+        text.clear();
+
+        if (m_textFormat == VSD_TEXT_UTF16)
+        {
+          unsigned long max = m_charFormats[charIndex].charCount <= (m_textStream.size()/2) ? m_charFormats[charIndex].charCount : (m_textStream.size()/2);
+          VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
+          max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
+          VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
+          VSDInternalStream tmpStream(m_textStream, max*2);
+          _appendUTF16LE(text, &tmpStream);
+
+          m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
+        }
+        else
+        {
+          unsigned long max = m_charFormats[charIndex].charCount <= m_textStream.size() ? m_charFormats[charIndex].charCount : m_textStream.size();
+          max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
+          for (unsigned j = 0; j < max; j++)
+          {
+            if (m_textStream[j] <= 0x20)
+              _appendUCS4(text, (unsigned) 0x20);
+            else
+              _appendUCS4(text, (unsigned) m_textStream[j]);
+          }
+
+          m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
+        }
+        WPXPropertyList textProps;
+        if (m_fonts[m_charFormats[charIndex].faceID] == "")
+          textProps.insert("style:font-name", m_charFormats[charIndex].face);
+        else
+          textProps.insert("style:font-name", m_fonts[m_charFormats[charIndex].faceID]);
+
+        if (m_charFormats[charIndex].bold) textProps.insert("fo:font-weight", "bold");
+        if (m_charFormats[charIndex].italic) textProps.insert("fo:font-style", "italic");
+        if (m_charFormats[charIndex].underline) textProps.insert("style:text-underline-type", "single");
+        if (m_charFormats[charIndex].doubleunderline) textProps.insert("style:text-underline-type", "double");
+        if (m_charFormats[charIndex].strikeout) textProps.insert("style:text-line-through-type", "single");
+        if (m_charFormats[charIndex].doublestrikeout) textProps.insert("style:text-line-through-type", "double");
+        if (m_charFormats[charIndex].allcaps) textProps.insert("fo:text-transform", "uppercase");
+        if (m_charFormats[charIndex].initcaps) textProps.insert("fo:text-transform", "capitalize");
+        if (m_charFormats[charIndex].smallcaps) textProps.insert("fo:font-variant", "small-caps");
+        if (m_charFormats[charIndex].superscript) textProps.insert("style:text-position", "super");
+        if (m_charFormats[charIndex].subscript) textProps.insert("style:text-position", "sub");
+        textProps.insert("fo:font-size", m_charFormats[charIndex].size*72.0, WPX_POINT);
+        textProps.insert("fo:color",getColourString(m_charFormats[charIndex].colour));
+        double opacity = 1.0;
+        if (m_charFormats[charIndex].colour.a)
+          opacity -= (double)(m_charFormats[charIndex].colour.a)/255.0;
+        textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
+        textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
+
+        VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
+        m_shapeOutput->addStartTextSpan(textProps);
+        m_shapeOutput->addInsertText(text);
+        m_shapeOutput->addEndTextSpan();
+
+      }
+      
+      charIndex++;
+      if (charIndex < m_charFormats.size() && paraCharCount && m_charFormats[charIndex].charCount > paraCharCount)
       {
         // Insert duplicate
-        std::vector<CharFormat>::iterator charIt = m_charFormats.begin();
-        std::advance(charIt, charIndex);
+        std::vector<CharFormat>::iterator charIt = m_charFormats.begin() + charIndex;
         m_charFormats.insert(charIt, m_charFormats[charIndex]);
         m_charFormats[charIndex].charCount = paraCharCount;
         m_charFormats[charIndex+1].charCount -= paraCharCount;
-        charIndex++;
       }
-    }
-  }
-
-  m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
-
-  // TODO: iterate through para and char formats and get chunks of text with the same para and char formats
-  for (unsigned i = 0; i < m_charFormats.size(); i++)
-  {
-    text.clear();
-
-    if (m_textFormat == VSD_TEXT_UTF16)
-    {
-      unsigned long max = m_charFormats[i].charCount <= (m_textStream.size()/2) ? m_charFormats[i].charCount : (m_textStream.size()/2);
-      VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
-      max = (m_charFormats[i].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
-      VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
-      VSDInternalStream tmpStream(m_textStream, max*2);
-      _appendUTF16LE(text, &tmpStream);
-
-      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
-    }
-    else
-    {
-      unsigned long max = m_charFormats[i].charCount <= m_textStream.size() ? m_charFormats[i].charCount : m_textStream.size();
-      max = (m_charFormats[i].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
-      for (unsigned j = 0; j < max; j++)
-      {
-        if (m_textStream[j] <= 0x20)
-          _appendUCS4(text, (unsigned) 0x20);
-        else
-          _appendUCS4(text, (unsigned) m_textStream[j]);
-      }
-
-      m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
-    }
-    WPXPropertyList textProps;
-    if (m_fonts[m_charFormats[i].faceID] == "")
-      textProps.insert("style:font-name", m_charFormats[i].face);
-    else
-      textProps.insert("style:font-name", m_fonts[m_charFormats[i].faceID]);
-
-    if (m_charFormats[i].bold) textProps.insert("fo:font-weight", "bold");
-    if (m_charFormats[i].italic) textProps.insert("fo:font-style", "italic");
-    if (m_charFormats[i].underline) textProps.insert("style:text-underline-type", "single");
-    if (m_charFormats[i].doubleunderline) textProps.insert("style:text-underline-type", "double");
-    if (m_charFormats[i].strikeout) textProps.insert("style:text-line-through-type", "single");
-    if (m_charFormats[i].doublestrikeout) textProps.insert("style:text-line-through-type", "double");
-    if (m_charFormats[i].allcaps) textProps.insert("fo:text-transform", "uppercase");
-    if (m_charFormats[i].initcaps) textProps.insert("fo:text-transform", "capitalize");
-    if (m_charFormats[i].smallcaps) textProps.insert("fo:font-variant", "small-caps");
-    if (m_charFormats[i].superscript) textProps.insert("style:text-position", "super");
-    if (m_charFormats[i].subscript) textProps.insert("style:text-position", "sub");
-    textProps.insert("fo:font-size", m_charFormats[i].size*72.0, WPX_POINT);
-    textProps.insert("fo:color",getColourString(m_charFormats[i].colour));
-    double opacity = 1.0;
-    if (m_charFormats[i].colour.a)
-      opacity -= (double)(m_charFormats[i].colour.a)/255.0;
-    textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
-    textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
-
-    VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
-    m_shapeOutput->addStartTextLine(WPXPropertyList());
-    m_shapeOutput->addStartTextSpan(textProps);
-    m_shapeOutput->addInsertText(text);
-    m_shapeOutput->addEndTextSpan();
+    }      
     m_shapeOutput->addEndTextLine();
-
   }
+
   m_shapeOutput->addEndTextObject();
 }
 
