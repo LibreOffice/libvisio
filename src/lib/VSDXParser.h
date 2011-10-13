@@ -40,6 +40,7 @@
 #include "VSDXTypes.h"
 #include "VSDXGeometryList.h"
 #include "VSDXCharacterList.h"
+#include "VSDXParagraphList.h"
 #include "VSDXShapeList.h"
 #include "VSDXStencils.h"
 
@@ -84,6 +85,7 @@ protected:
   void readPage(WPXInputStream *input);
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
+  void readParaIX(WPXInputStream *input);
   void readTextBlock(WPXInputStream *input);
 
   void readStyleSheet(WPXInputStream *input);
@@ -115,7 +117,9 @@ protected:
   VSDXGeometryList *m_geomList;
   std::vector<VSDXGeometryList *> m_geomListVector;
   VSDXCharacterList *m_charList;
+  VSDXParagraphList *m_paraList;
   std::vector<VSDXCharacterList *> m_charListVector;
+  std::vector<VSDXParagraphList *> m_paraListVector;
   VSDXShapeList m_shapeList;
   unsigned m_currentLevel;
 

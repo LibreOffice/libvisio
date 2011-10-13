@@ -65,7 +65,7 @@ struct Colour
 {
   Colour(unsigned red, unsigned char green, unsigned char blue, unsigned char alpha)
   : r(red), g(green), b(blue), a(alpha) {}
-  Colour() : r(0), g(0), b(0), a(0xff) {}
+  Colour() : r(0), g(0), b(0), a(0) {}
   unsigned char r;
   unsigned char g;
   unsigned char b;
@@ -109,7 +109,7 @@ struct CharFormat
     smallcaps(false),
     superscript(false),
     subscript(false),
-    face("Arial") {}
+    face("Times New Roman") {}
   CharFormat(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, WPXString f) :
     charCount(cc),
     faceID(id),
@@ -149,7 +149,32 @@ struct CharFormat
 
 struct ParaFormat
 {
-  ParaFormat() {}
+  ParaFormat() :
+    charCount(0),
+    indFirst(0.0),
+    indLeft(0.0),
+    indRight(0.0),
+    spLine(-120.0),
+    spBefore(0.0),
+    spAfter(0.0),
+    align(1) {}
+  ParaFormat(unsigned cc, double ifst, double il, double ir, double sl, double sb, double sa, double a) :
+    charCount(cc),
+    indFirst(ifst),
+    indLeft(il),
+    indRight(ir),
+    spLine(sl),
+    spBefore(sb),
+    spAfter(sa),
+    align(a) {}
+  unsigned charCount;
+  double indFirst;
+  double indLeft;
+  double indRight;
+  double spLine;
+  double spBefore;
+  double spAfter;
+  unsigned char align;
 };
 
 struct TextBlockFormat

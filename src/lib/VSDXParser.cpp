@@ -42,7 +42,8 @@
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()), m_geomListVector(),
-    m_charList(new VSDXCharacterList()), m_charListVector(), m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
+    m_charList(new VSDXCharacterList()), m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
+    m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentPageID(0)
 {}
 
@@ -519,6 +520,7 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
   {
     m_geomListVector.push_back(m_geomList);
     m_charListVector.push_back(m_charList);
+    m_paraListVector.push_back(m_paraList);
     // reinitialize, but don't clear, because we want those pointers to be valid until we handle the whole vector
     m_geomList = new VSDXGeometryList();
     m_charList = new VSDXCharacterList();
@@ -541,6 +543,13 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       delete *iter2;
     }
     m_charListVector.clear();
+    for (std::vector<VSDXParagraphList *>::iterator iter3 = m_paraListVector.begin(); iter3 != m_paraListVector.end(); iter3++)
+    {
+      (*iter3)->handle(m_collector);
+      (*iter3)->clear();
+      delete *iter3;
+    }
+    m_paraListVector.clear();
   }
   m_currentLevel = level;
 }
@@ -1377,6 +1386,31 @@ void libvisio::VSDXParser::readSplineKnot(WPXInputStream *input)
     m_stencilShape.m_geometries.back().addSplineKnot(m_header.id, m_header.level, x, y, knot);
   else
     m_geomList->addSplineKnot(m_header.id, m_header.level, x, y, knot);
+}
+
+void libvisio::VSDXParser::readParaIX(WPXInputStream *input)
+{
+  unsigned charCount = readU32(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double indFirst = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double indLeft = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double indRight = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double spLine = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double spBefore = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double spAfter = readDouble(input);
+  unsigned char align = readU8(input);
+
+  if (m_isInStyles)
+    m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
+                                    spLine, spBefore, spAfter, align);
+  else
+    m_paraList->addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
+                          spLine, spBefore, spAfter, align);
 }
 
 
