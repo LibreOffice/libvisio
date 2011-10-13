@@ -524,6 +524,7 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
     // reinitialize, but don't clear, because we want those pointers to be valid until we handle the whole vector
     m_geomList = new VSDXGeometryList();
     m_charList = new VSDXCharacterList();
+    m_paraList = new VSDXParagraphList();
     m_shapeList.handle(m_collector);
     m_shapeList.clear();
   }

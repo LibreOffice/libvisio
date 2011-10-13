@@ -63,7 +63,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textStream(),
-    m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_defaultCharFormat(),
+    m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_defaultCharFormat(),
     m_defaultParaFormat(), m_defaultTextBlockFormat(), m_styles(styles),
     m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0),
     m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
@@ -1472,6 +1472,14 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   m_textFormat = format;
 }
 
+void libvisio::VSDXContentCollector::collectParaFormat(unsigned /* id */ , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+                         double spLine, double spBefore, double spAfter, unsigned char align)
+{
+  _handleLevelChange(level);
+  ParaFormat format(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
+  m_paraFormats.push_back(format);
+}
+
 void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID,
                                                        Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic,
                                                        bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
@@ -1518,6 +1526,13 @@ void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsign
 {
   _handleLevelChange(level);
 }
+
+void libvisio::VSDXContentCollector::collectParaIXStyle(unsigned /* id */, unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */, double /* indRight */,
+                                                        double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */)
+{
+  _handleLevelChange(level);
+}
+
 
 void libvisio::VSDXContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
                                                            double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,

@@ -221,6 +221,7 @@ private:
   std::vector<unsigned char> m_textStream;
   TextFormat m_textFormat;
   std::vector<CharFormat> m_charFormats;
+  std::vector<ParaFormat> m_paraFormats;
   CharFormat m_defaultCharFormat;
   ParaFormat m_defaultParaFormat;
   TextBlockFormat m_defaultTextBlockFormat;

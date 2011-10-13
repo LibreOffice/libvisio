@@ -238,6 +238,12 @@ void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level,
  _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectParaFormat(unsigned /* id */ , unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */,
+                                                      double /* indRight */, double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/,
                                                       unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/,
                                                       bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */, bool /* allcaps */,
@@ -301,12 +307,24 @@ void libvisio::VSDXStylesCollector::collectFillStyle(unsigned /*id*/, unsigned l
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+                                                       double spLine, double spBefore, double spAfter, unsigned char align)
+{
+  _handleLevelChange(level);
+  if (!m_textStyle)
+    m_textStyle = new VSDXTextStyle();
+  ParaFormat pf(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
+  m_textStyle->paragraphFormat = pf;
+}
+
+			  
 void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langID, double fontSize,
                                                        bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                                        bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace)
 {
   _handleLevelChange(level);
-  if (m_textStyle == 0) m_textStyle = new VSDXTextStyle();
+  if (!m_textStyle)
+    m_textStyle = new VSDXTextStyle();
   CharFormat cf(charCount, fontID, fontColour, langID, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   m_textStyle->characterFormat = cf;
