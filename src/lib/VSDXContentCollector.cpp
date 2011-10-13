@@ -523,6 +523,9 @@ void libvisio::VSDXContentCollector::_flushText()
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
   if (m_charFormats.empty())
     m_charFormats.push_back(m_defaultCharFormat);
+  if (m_paraFormats.empty())
+    m_paraFormats.push_back(m_defaultParaFormat);
+  // TODO: iterate through para and char formats and get chunks of text with the same para and char formats
   for (unsigned i = 0; i < m_charFormats.size(); i++)
   {
     text.clear();
