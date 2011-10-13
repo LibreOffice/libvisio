@@ -88,7 +88,7 @@ void libvisio::VSD6Parser::readText(WPXInputStream *input)
   input->seek(8, WPX_SEEK_CUR);
   std::vector<uint8_t> textStream;
 
-  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength-1; bytesRead++)
+  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
     textStream.push_back(readU8(input));
 
   m_collector->collectText(m_header.id, m_header.level, textStream, VSD_TEXT_ANSI);

@@ -55,6 +55,7 @@
 #define VSD_SHAPE_LIST 0x65
 #define VSD_PROP_LIST 0x68
 #define VSD_CHAR_LIST 0x69
+#define VSD_PARA_LIST 0x6a
 #define VSD_GEOM_LIST 0x6c
 
 #define VSD_SHAPE_ID 0x83

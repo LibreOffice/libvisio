@@ -59,6 +59,11 @@ libvisio::VSDXParser::~VSDXParser()
     m_charList->clear();
     delete m_charList;
   }
+  if (m_paraList)
+  {
+    m_paraList->clear();
+    delete m_paraList;
+  }
   if (m_currentStencil)
     delete m_currentStencil;
 }
@@ -240,9 +245,12 @@ void libvisio::VSDXParser::handleStyles(WPXInputStream *input)
       case VSD_CHAR_IX:
         readCharIX(input);
         break;
+      case VSD_PARA_IX:
+        readParaIX(input);
+        break;
       case VSD_TEXT_BLOCK:
         readTextBlock(input);
-	break;
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -638,15 +646,21 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       case VSD_CHAR_LIST:
         readCharList(input);
         break;
+      case VSD_PARA_LIST:
+        readParaList(input);
+        break;
       case VSD_TEXT:
         readText(input);
         break;
       case VSD_CHAR_IX:
         readCharIX(input);
         break;
+      case VSD_PARA_IX:
+        readParaIX(input);
+        break;
       case VSD_TEXT_BLOCK:
         readTextBlock(input);
-	break;
+        break;
 //    case VSD_FONT_LIST: // ver 6 only, don't need to handle that
       case VSD_FONT_IX: // ver 6 only
         readFontIX(input);
@@ -822,6 +836,21 @@ void libvisio::VSDXParser::readCharList(WPXInputStream *input)
   m_charList->setElementsOrder(characterOrder);
   // We want the collectors to still get the level information
   m_collector->collectCharList(m_header.id, m_header.level);
+}
+
+void libvisio::VSDXParser::readParaList(WPXInputStream *input)
+{
+  uint32_t subHeaderLength = readU32(input);
+  uint32_t childrenListLength = readU32(input);
+  input->seek(subHeaderLength, WPX_SEEK_CUR);
+  std::vector<unsigned> paragraphOrder;
+  paragraphOrder.reserve(childrenListLength / sizeof(uint32_t));
+  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    paragraphOrder.push_back(readU32(input));
+
+  m_paraList->setElementsOrder(paragraphOrder);
+  // We want the collectors to still get the level information
+  m_collector->collectParaList(m_header.id, m_header.level);
 }
 
 void libvisio::VSDXParser::readPage(WPXInputStream *input)

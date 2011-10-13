@@ -106,7 +106,7 @@ void libvisio::VSD11Parser::readText(WPXInputStream *input)
   std::vector<uint8_t> textStream;
 
   // Read up to end of chunk in byte pairs (except from last 2 bytes)
-  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength-2; bytesRead++)
+  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
     textStream.push_back(readU8(input));
 
   m_collector->collectText(m_header.id, m_header.level, textStream, libvisio::VSD_TEXT_UTF16);

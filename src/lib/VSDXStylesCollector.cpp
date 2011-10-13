@@ -97,6 +97,11 @@ void libvisio::VSDXStylesCollector::collectCharList(unsigned /* id */, unsigned 
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectParaList(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char /* geomFlags */)
 {
   _handleLevelChange(level);
