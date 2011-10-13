@@ -520,11 +520,50 @@ void libvisio::VSDXContentCollector::_flushText()
   textCoords.insert("fo:padding-right", 0.0);
   textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
+  // Assume 1 para format covers whole block, no splitting needed
+  if (m_paraFormats.size() > 1) 
+  {
+    unsigned int charIndex = 0;
+    unsigned int paraCharCount = 0;
+    for (std::vector<ParaFormat>::iterator paraIt = m_paraFormats.begin();
+	 paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); paraIt++)
+    {
+      if (m_charFormats[charIndex].charCount == 0)
+      {
+	m_charFormats.push_back(m_charFormats[charIndex]);
+	m_charFormats[charIndex].charCount = (*paraIt).charCount;
+	charIndex++;
+      }
+      else
+      {
+	paraCharCount = (*paraIt).charCount;
+	// Find char format that overlaps
+	while (charIndex < m_charFormats.size() || 
+	       m_charFormats[charIndex].charCount <= paraCharCount) 
+        {
+	  paraCharCount -= m_charFormats[charIndex].charCount;	
+	  charIndex++;
+        }
+	if (paraCharCount)
+	{
+	  // Insert duplicate 
+	  std::vector<CharFormat>::iterator charIt = m_charFormats.begin();
+	  std::advance(charIt, charIndex);
+	  m_charFormats.insert(charIt, m_charFormats[charIndex]);
+	  m_charFormats[charIndex].charCount = paraCharCount;
+	  m_charFormats[charIndex+1].charCount -= paraCharCount;
+	  charIndex++;
+	}
+      }
+    }
+  }
+
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
   if (m_charFormats.empty())
     m_charFormats.push_back(m_defaultCharFormat);
   if (m_paraFormats.empty())
     m_paraFormats.push_back(m_defaultParaFormat);
+
   // TODO: iterate through para and char formats and get chunks of text with the same para and char formats
   for (unsigned i = 0; i < m_charFormats.size(); i++)
   {
