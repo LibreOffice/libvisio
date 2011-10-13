@@ -242,7 +242,7 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
   m_linePattern = linePattern;
 
   if (linePattern == 0) return; // No need to add style
-  
+
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
   m_lineColour = getColourString(c);
   m_styleProps.insert("svg:stroke-color", m_lineColour);
@@ -503,10 +503,10 @@ void libvisio::VSDXContentCollector::_flushText()
   WPXString text;
   double angle = 0.0;
   transformAngle(angle, m_txtxform);
-  
+
   double x = 0.0;
   double y = m_txtxform ? m_txtxform->height: m_xform.height;
-  
+
   transformPoint(x,y, m_txtxform);
 
   WPXPropertyList textCoords;
@@ -521,7 +521,7 @@ void libvisio::VSDXContentCollector::_flushText()
   textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
   // Assume 1 para format covers whole block, no splitting needed
-  if (m_paraFormats.size() > 1) 
+  if (m_paraFormats.size() > 1)
   {
     unsigned int charIndex = 0;
     unsigned int paraCharCount = 0;
@@ -538,15 +538,15 @@ void libvisio::VSDXContentCollector::_flushText()
       {
 	paraCharCount = (*paraIt).charCount;
 	// Find char format that overlaps
-	while (charIndex < m_charFormats.size() || 
-	       m_charFormats[charIndex].charCount <= paraCharCount) 
+	while (charIndex < m_charFormats.size() ||
+	       m_charFormats[charIndex].charCount <= paraCharCount)
         {
 	  paraCharCount -= m_charFormats[charIndex].charCount;	
 	  charIndex++;
         }
 	if (paraCharCount)
 	{
-	  // Insert duplicate 
+	  // Insert duplicate
 	  std::vector<CharFormat>::iterator charIt = m_charFormats.begin();
 	  std::advance(charIt, charIndex);
 	  m_charFormats.insert(charIt, m_charFormats[charIndex]);
@@ -577,7 +577,7 @@ void libvisio::VSDXContentCollector::_flushText()
       VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[i].charCount, max, (unsigned long)m_textStream.size()));
       VSDInternalStream tmpStream(m_textStream, max*2);
       _appendUTF16LE(text, &tmpStream);
-    
+
       m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
     }
     else
@@ -681,7 +681,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
   double y2n = ecc*(y2*cos(angle) -x2*sin(angle));
   double x3n = x3*cos(angle) + y3*sin(angle);
   double y3n = ecc*(y3*cos(angle) - x3*sin(angle));
-  
+
   m_x = x3; m_y = y3;
 
   if (fabs(((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n))) <= LIBVISIO_EPSILON || fabs(((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n))) <= LIBVISIO_EPSILON)
@@ -694,7 +694,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
     m_currentGeometry.push_back(end);
     return;
   }
-  
+
   double x0 = ((x1-x2n)*(x1+x2n)*(y2n-y3n) - (x2n-x3n)*(x2n+x3n)*(y1-y2n) +
                (y1-y2n)*(y2n-y3n)*(y1-y3n)) /
                (2*((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n)));
@@ -904,7 +904,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   bool noFill = ((geomFlags & 1) == 1);
   bool noLine = ((geomFlags & 2) == 2);
   bool noShow = ((geomFlags & 4) == 4);
-  
+
   if ((m_noFill != noFill) || (m_noLine != noLine) || (m_noShow != noShow) || m_isFirstGeometry)
   {
     if (!m_hasLocalLineStyle && m_stencilShape)
@@ -1270,7 +1270,7 @@ void libvisio::VSDXContentCollector::applyXForm(double &x, double &y, const XFor
   }
   x += xform.pinX;
   y += xform.pinY;
-}  
+}
 
 void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm *txtxform)
 {
@@ -1285,7 +1285,7 @@ void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm 
 
   if (txtxform)
     applyXForm(x, y, *txtxform);
-  
+
   while (true)
   {
     std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
@@ -1408,7 +1408,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       _handleForeignData(m_stencilShape->m_foreign->data);
     }
   }
-  
+
   m_hasLocalLineStyle = false;
   m_hasLocalFillStyle = false;
   if (lineStyleId != 0xffffffff)
@@ -1495,7 +1495,7 @@ void libvisio::VSDXContentCollector::collectSplineEnd()
     m_splineKnotVector.clear();
     m_splineControlPoints.clear();
     return;
-  }  
+  }
   m_splineKnotVector.push_back(m_splineLastKnot);
   std::vector<double> weights;
   for (unsigned i=0; i < m_splineControlPoints.size()+2; i++)
@@ -1665,8 +1665,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
         }
         m_isStencilStarted = false;
       }
-
-      
 
       _flushCurrentPath();
       _flushCurrentForeignData();
