@@ -53,7 +53,6 @@ class VSDXStencilShape
     VSDXFillStyle * m_fillStyle;
     VSDXTextStyle * m_textStyle;
     WPXString m_text;
-    std::vector<CharFormat> m_charFormats;
     std::map<unsigned, NURBSData> m_nurbsData;
     std::map<unsigned, PolylineData> m_polylineData;
 };

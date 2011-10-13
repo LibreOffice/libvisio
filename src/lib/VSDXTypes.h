@@ -147,6 +147,11 @@ struct CharFormat
   WPXString face;
 };
 
+struct ParaFormat
+{
+  ParaFormat() {}
+};
+
 struct TextBlockFormat
 {
   TextBlockFormat() :

@@ -520,7 +520,7 @@ void libvisio::VSDXContentCollector::_flushText()
   textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
   m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
-  if (m_charFormats.size() == 0)
+  if (m_charFormats.empty())
     m_charFormats.push_back(m_defaultCharFormat);
   for (unsigned i = 0; i < m_charFormats.size(); i++)
   {
