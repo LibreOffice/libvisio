@@ -1431,6 +1431,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   }
   m_textStream.clear();
   m_charFormats.clear();
+  m_paraFormats.clear();
   if (textStyleId != 0xffffffff)
   {
     m_defaultCharFormat = m_styles.getTextStyle(textStyleId).characterFormat;
