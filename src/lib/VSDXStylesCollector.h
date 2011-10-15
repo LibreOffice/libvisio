@@ -97,8 +97,8 @@ public:
                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
   void collectParaFormat(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                          double spLine, double spBefore, double spAfter, unsigned char align);
-  void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                        unsigned char verticalAlign, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
+  void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
+                        unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
@@ -113,8 +113,8 @@ public:
                           bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
   void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                           double spLine, double spBefore, double spAfter, unsigned char align);
-  void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                             unsigned char verticalAlign, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
+  void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
+                             unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
   // Temporary hack
   void startPage();

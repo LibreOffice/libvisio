@@ -533,13 +533,6 @@ void libvisio::VSDXContentCollector::_flushText()
       break;
   }
 
-#if 0
-  textBlockProps.insert("draw:fill-color", getColourString(m_textBlockFormat.textBkgndColour));
-  textBlockProps.insert("draw:fill", "solid");
-  if (m_textBlockFormat.textBkgndColour.a)
-    textBlockProps.insert("draw:opacity", 1.0 - m_textBlockFormat.textBkgndColour.a/255.0, WPX_PERCENT);
-#endif
-
   if (m_charFormats.empty())
     m_charFormats.push_back(m_defaultCharFormat);
   if (m_paraFormats.empty())
@@ -661,6 +654,15 @@ void libvisio::VSDXContentCollector::_flushText()
         opacity -= (double)(m_charFormats[charIndex].colour.a)/255.0;
       textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
       textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
+      // TODO: In draw, text span background cannot be specified the same way as in writer span
+      if (m_textBlockFormat.textBkgndColourId)
+      {
+        textProps.insert("fo:background-color", getColourString(m_textBlockFormat.textBkgndColour));
+#if 0
+	if (m_textBlockFormat.textBkgndColour.a)
+	  textProps.insert("fo:background-opacity", 1.0 - m_textBlockFormat.textBkgndColour.a/255.0, WPX_PERCENT);
+#endif
+      }
 
       VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
       m_shapeOutput->addStartTextSpan(textProps);
@@ -1596,11 +1598,11 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
 }
 
 void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double leftMargin, double rightMargin,
-                                                      double topMargin, double bottomMargin,  unsigned char verticalAlign,
+                                                      double topMargin, double bottomMargin,  unsigned char verticalAlign, unsigned char bgClrId,
                                                       const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
 {
   _handleLevelChange(level);
-  m_textBlockFormat = TextBlockFormat(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgColour, defaultTabStop, textDirection);
+  m_textBlockFormat = TextBlockFormat(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
@@ -1638,7 +1640,7 @@ void libvisio::VSDXContentCollector::collectParaIXStyle(unsigned /* id */, unsig
 
 
 void libvisio::VSDXContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
-                                                           double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
+                                                           double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */,
                                                            const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);

@@ -88,7 +88,8 @@ public:
   virtual void collectParaFormat(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                  double spLine, double spBefore, double spAfter, unsigned char align) = 0;
   virtual void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                                unsigned char verticalAlign, const Colour &bgColour, double defaultTabStop, unsigned char textDirection) = 0;
+                                unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
+                                unsigned char textDirection) = 0;
 
   // Style collectors
   virtual void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;
@@ -104,7 +105,8 @@ public:
   virtual void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                   double spLine, double spBefore, double spAfter, unsigned char align) = 0;
   virtual void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                                     unsigned char verticalAlign, const Colour &bgColour, double defaultTabStop, unsigned char textDirection) = 0;
+                                     unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
+                                     unsigned char textDirection) = 0;
 
   // Temporary hack
   virtual void startPage() = 0;

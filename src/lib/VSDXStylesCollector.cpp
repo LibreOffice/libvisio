@@ -43,7 +43,7 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   m_groupMembershipsSequence(groupMembershipsSequence), m_pageShapeOrder(),
   m_documentPageShapeOrders(documentPageShapeOrders),
   m_shapeList(), m_currentStyleSheet(0), m_styles(),
-  m_lineStyle(), m_fillStyle(), m_textStyle(), 
+  m_lineStyle(), m_fillStyle(), m_textStyle(),
   m_isStyleStarted(false)
 {
   m_groupXFormsSequence.clear();
@@ -258,7 +258,7 @@ void libvisio::VSDXStylesCollector::collectCharFormat(unsigned /*id*/ , unsigned
 }
 
 void libvisio::VSDXStylesCollector::collectTextBlock(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
-                                                     double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
+                                                     double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */,
                                                      const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);
@@ -321,7 +321,7 @@ void libvisio::VSDXStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned
   m_textStyle->paragraphFormat = pf;
 }
 
-			  
+
 void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langID, double fontSize,
                                                        bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                                        bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace)
@@ -335,12 +335,13 @@ void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigne
 }
 
 void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                                                          unsigned char verticalAlign, const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
+                                                          unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
+                                                          unsigned char textDirection)
 {
   if (!m_textStyle)
     m_textStyle = new VSDXTextStyle();
 
-  TextBlockFormat tbf(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgColour, defaultTabStop, textDirection);
+  TextBlockFormat tbf(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
   m_textStyle->txtBlockFormat = tbf;
 
   _handleLevelChange(level);
