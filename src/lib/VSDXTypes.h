@@ -109,7 +109,7 @@ struct CharFormat
     smallcaps(false),
     superscript(false),
     subscript(false),
-    face("Times New Roman") {}
+    face("Arial") {}
   CharFormat(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, WPXString f) :
     charCount(cc),
     faceID(id),
@@ -185,18 +185,16 @@ struct TextBlockFormat
     topMargin(0.0),
     bottomMargin(0.0),
     verticalAlign(0),
-    textBkgndColour(0),
-    textBkgndTransparency(0),
+    textBkgndColour(0xff,0xff,0xff,0),
     defaultTabStop(0.5),
     textDirection(0) {}
-  TextBlockFormat(double lm, double rm, double tm, double bm, unsigned char va, unsigned char bgClr, unsigned char bgTrans, double defTab, unsigned char td) :
+  TextBlockFormat(double lm, double rm, double tm, double bm, unsigned char va, Colour bgClr, double defTab, unsigned char td) :
     leftMargin(lm),
     rightMargin(rm),
     topMargin(tm),
     bottomMargin(bm),
     verticalAlign(va),
     textBkgndColour(bgClr),
-    textBkgndTransparency(bgTrans),
     defaultTabStop(defTab),
     textDirection(td) {}
   double leftMargin;
@@ -204,8 +202,7 @@ struct TextBlockFormat
   double topMargin;
   double bottomMargin;
   unsigned char verticalAlign;
-  unsigned char textBkgndColour;
-  unsigned char textBkgndTransparency;
+  Colour textBkgndColour;
   double defaultTabStop;
   unsigned char textDirection;
 };

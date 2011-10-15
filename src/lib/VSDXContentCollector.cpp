@@ -514,11 +514,31 @@ void libvisio::VSDXContentCollector::_flushText()
   textBlockProps.insert("svg:y", m_scale * y);
   textBlockProps.insert("svg:height", m_scale * (m_txtxform ? m_txtxform->height : m_xform.height));
   textBlockProps.insert("svg:width", m_scale * (m_txtxform ? m_txtxform->width : m_xform.width));
-  textBlockProps.insert("fo:padding-top", 0.0);
-  textBlockProps.insert("fo:padding-bottom", 0.0);
-  textBlockProps.insert("fo:padding-left", 0.0);
-  textBlockProps.insert("fo:padding-right", 0.0);
+  textBlockProps.insert("fo:padding-top", m_textBlockFormat.topMargin);
+  textBlockProps.insert("fo:padding-bottom", m_textBlockFormat.bottomMargin);
+  textBlockProps.insert("fo:padding-left", m_textBlockFormat.leftMargin);
+  textBlockProps.insert("fo:padding-right", m_textBlockFormat.rightMargin);
   textBlockProps.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
+  
+  switch (m_textBlockFormat.verticalAlign)
+  {
+    case 0: // Top
+      textBlockProps.insert("draw:textarea-vertical-align", "top");
+      break;
+    case 2: // Bottom
+      textBlockProps.insert("draw:textarea-vertical-align", "bottom");
+      break;
+    default: // Center
+      textBlockProps.insert("draw:textarea-vertical-align", "center");
+      break;
+  }
+
+#if 0
+  textBlockProps.insert("draw:fill-color", getColourString(m_textBlockFormat.textBkgndColour));
+  textBlockProps.insert("draw:fill", "solid");
+  if (m_textBlockFormat.textBkgndColour.a)
+    textBlockProps.insert("draw:opacity", 1.0 - m_textBlockFormat.textBkgndColour.a/255.0, WPX_PERCENT);
+#endif
 
   if (m_charFormats.empty())
     m_charFormats.push_back(m_defaultCharFormat);
@@ -1577,11 +1597,10 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
 
 void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double leftMargin, double rightMargin,
                                                       double topMargin, double bottomMargin,  unsigned char verticalAlign,
-                                                      unsigned char textBkgndColour, unsigned char textBkgndTransparency,
-                                                      double defaultTabStop,  unsigned char textDirection)
+                                                      const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
 {
   _handleLevelChange(level);
-  m_textBlockFormat = TextBlockFormat(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, textBkgndColour, textBkgndTransparency, defaultTabStop, textDirection);
+  m_textBlockFormat = TextBlockFormat(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgColour, defaultTabStop, textDirection);
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
@@ -1620,8 +1639,7 @@ void libvisio::VSDXContentCollector::collectParaIXStyle(unsigned /* id */, unsig
 
 void libvisio::VSDXContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
                                                            double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
-                                                           unsigned char /* textBkgndColour */, unsigned char /* textBkgndTransparency */,
-                                                           double /* defaultTabStop */,  unsigned char /* textDirection */)
+                                                           const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);
 }

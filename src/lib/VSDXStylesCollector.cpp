@@ -259,8 +259,7 @@ void libvisio::VSDXStylesCollector::collectCharFormat(unsigned /*id*/ , unsigned
 
 void libvisio::VSDXStylesCollector::collectTextBlock(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
                                                      double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
-                                                     unsigned char /* textBkgndColour */, unsigned char /* textBkgndTransparency */,
-                                                     double /* defaultTabStop */,  unsigned char /* textDirection */)
+                                                     const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);
 }
@@ -336,13 +335,12 @@ void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigne
 }
 
 void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                                                          unsigned char verticalAlign, unsigned char textBkgndColour, unsigned char textBkgndTransparency,
-                                                          double defaultTabStop,  unsigned char textDirection)
+                                                          unsigned char verticalAlign, const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
 {
   if (!m_textStyle)
     m_textStyle = new VSDXTextStyle();
 
-  TextBlockFormat tbf(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, textBkgndColour, textBkgndTransparency, defaultTabStop, textDirection);
+  TextBlockFormat tbf(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgColour, defaultTabStop, textDirection);
   m_textStyle->txtBlockFormat = tbf;
 
   _handleLevelChange(level);
