@@ -223,9 +223,10 @@ private:
   TextFormat m_textFormat;
   std::vector<CharFormat> m_charFormats;
   std::vector<ParaFormat> m_paraFormats;
+  TextBlockFormat m_textBlockFormat;
+  
   CharFormat m_defaultCharFormat;
   ParaFormat m_defaultParaFormat;
-  TextBlockFormat m_defaultTextBlockFormat;
 
   VSDXStyles m_styles;
   bool m_hasLocalLineStyle, m_hasLocalFillStyle;

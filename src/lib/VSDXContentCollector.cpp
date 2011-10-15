@@ -63,8 +63,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
     m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textStream(),
-    m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_defaultCharFormat(),
-    m_defaultParaFormat(), m_defaultTextBlockFormat(), m_styles(styles),
+    m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_textBlockFormat(),
+    m_defaultCharFormat(), m_defaultParaFormat(), m_styles(styles),
     m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0),
     m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
     m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
@@ -509,16 +509,16 @@ void libvisio::VSDXContentCollector::_flushText()
 
   transformPoint(x,y, m_txtxform);
 
-  WPXPropertyList textCoords;
-  textCoords.insert("svg:x", m_scale * x);
-  textCoords.insert("svg:y", m_scale * y);
-  textCoords.insert("svg:height", m_scale * (m_txtxform ? m_txtxform->height : m_xform.height));
-  textCoords.insert("svg:width", m_scale * (m_txtxform ? m_txtxform->width : m_xform.width));
-  textCoords.insert("fo:padding-top", 0.0);
-  textCoords.insert("fo:padding-bottom", 0.0);
-  textCoords.insert("fo:padding-left", 0.0);
-  textCoords.insert("fo:padding-right", 0.0);
-  textCoords.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
+  WPXPropertyList textBlockProps;
+  textBlockProps.insert("svg:x", m_scale * x);
+  textBlockProps.insert("svg:y", m_scale * y);
+  textBlockProps.insert("svg:height", m_scale * (m_txtxform ? m_txtxform->height : m_xform.height));
+  textBlockProps.insert("svg:width", m_scale * (m_txtxform ? m_txtxform->width : m_xform.width));
+  textBlockProps.insert("fo:padding-top", 0.0);
+  textBlockProps.insert("fo:padding-bottom", 0.0);
+  textBlockProps.insert("fo:padding-left", 0.0);
+  textBlockProps.insert("fo:padding-right", 0.0);
+  textBlockProps.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
   if (m_charFormats.empty())
     m_charFormats.push_back(m_defaultCharFormat);
@@ -545,7 +545,7 @@ void libvisio::VSDXContentCollector::_flushText()
       m_paraFormats[iPara].charCount = numCharsInText;
   }
 
-  m_shapeOutput->addStartTextObject(textCoords, WPXPropertyListVector());
+  m_shapeOutput->addStartTextObject(textBlockProps, WPXPropertyListVector());
 
   unsigned int charIndex = 0;
   unsigned int paraCharCount = 0;
@@ -1430,6 +1430,8 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_isShapeStarted = true;
   m_isFirstGeometry = true;
 
+  m_textBlockFormat = TextBlockFormat();
+
   // Get stencil shape
   m_stencilShape = 0;
   if (masterPage != 0xffffffff && masterShape != 0xffffffff)
@@ -1466,7 +1468,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   {
     m_defaultCharFormat = m_styles.getTextStyle(textStyleId).characterFormat;
     m_defaultParaFormat = m_styles.getTextStyle(textStyleId).paragraphFormat;
-    m_defaultTextBlockFormat = m_styles.getTextStyle(textStyleId).txtBlockFormat;
+    m_textBlockFormat = m_styles.getTextStyle(textStyleId).txtBlockFormat;
   }
 
   m_currentGeometryCount = 0;
@@ -1573,12 +1575,13 @@ void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigne
   m_charFormats.push_back(format);
 }
 
-void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
-                                                      double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */,
-                                                      unsigned char /* textBkgndColour */, unsigned char /* textBkgndTransparency */,
-                                                      double /* defaultTabStop */,  unsigned char /* textDirection */)
+void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double leftMargin, double rightMargin,
+                                                      double topMargin, double bottomMargin,  unsigned char verticalAlign,
+                                                      unsigned char textBkgndColour, unsigned char textBkgndTransparency,
+                                                      double defaultTabStop,  unsigned char textDirection)
 {
   _handleLevelChange(level);
+  m_textBlockFormat = TextBlockFormat(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, textBkgndColour, textBkgndTransparency, defaultTabStop, textDirection);
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
