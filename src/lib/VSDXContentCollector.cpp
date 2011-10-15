@@ -552,7 +552,37 @@ void libvisio::VSDXContentCollector::_flushText()
   for (std::vector<ParaFormat>::iterator paraIt = m_paraFormats.begin();
        paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); paraIt++)
   {
-    m_shapeOutput->addStartTextLine(WPXPropertyList());
+    WPXPropertyList paraProps;
+    
+    paraProps.insert("fo:text-indent", (*paraIt).indFirst);
+    paraProps.insert("fo:margin-left", (*paraIt).indLeft);
+    paraProps.insert("fo:margin-right", (*paraIt).indRight);
+    paraProps.insert("fo:margin-top", (*paraIt).spBefore);
+    paraProps.insert("fo:margin-bottom", (*paraIt).spAfter);
+    switch ((*paraIt).align)
+    {
+      case 0: // left
+        paraProps.insert("fo:text-align", "left");
+        break;
+      case 2: // right
+        paraProps.insert("fo:text-align", "end");
+        break;
+      case 4: // justify
+        paraProps.insert("fo:text-align", "justify");
+        break;
+      case 5: // full
+        paraProps.insert("fo:text-align", "full");
+        break;
+      default: // center
+        paraProps.insert("fo:text-align", "center");
+        break;
+    }
+    if ((*paraIt).spLine > 0)
+      paraProps.insert("fo:line-height", (*paraIt).spLine, WPX_POINT);
+    else
+      paraProps.insert("fo:line-height", -(*paraIt).spLine, WPX_PERCENT);
+ 
+    m_shapeOutput->addStartTextLine(paraProps);
 
     paraCharCount = (*paraIt).charCount;
     // Find char format that overlaps

@@ -154,7 +154,7 @@ struct ParaFormat
     indFirst(0.0),
     indLeft(0.0),
     indRight(0.0),
-    spLine(-120.0),
+    spLine(-1.2),
     spBefore(0.0),
     spAfter(0.0),
     align(1) {}
