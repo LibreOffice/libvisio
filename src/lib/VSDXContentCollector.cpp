@@ -824,7 +824,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
 
 }
 
-void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
+void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned lineCap)
 {
   _handleLevelChange(level);
   m_hasLocalLineStyle = true;
@@ -1610,7 +1610,7 @@ void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsign
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned char /* linePattern */, unsigned char /* lineCap */)
+void libvisio::VSDXContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned char /* linePattern */,  unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char /* lineCap */)
 {
   _handleLevelChange(level);
 }

@@ -40,15 +40,18 @@ namespace libvisio {
 struct VSDXLineStyle
 {
   VSDXLineStyle()
-  : width(0.01), colour(), pattern(0), cap(0) {}
-  VSDXLineStyle(double w, Colour col, unsigned char p, unsigned char c)
-  : width(w), colour(col), pattern(p), cap(c) {}
+  : width(0.01), colour(), pattern(0), startMarker(0), endMarker(0), cap(0) {}
+  VSDXLineStyle(double w, Colour col, unsigned char p, unsigned char sm, 
+                unsigned char em, unsigned char c)
+  : width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
   VSDXLineStyle(const VSDXLineStyle &lineStyle)
-  : width(lineStyle.width), colour(lineStyle.colour), pattern(lineStyle.pattern), cap(lineStyle.cap) {}
+  : width(lineStyle.width), colour(lineStyle.colour), pattern(lineStyle.pattern), startMarker(lineStyle.startMarker), endMarker(lineStyle.endMarker), cap(lineStyle.cap) {}
   ~VSDXLineStyle() {}
   double width;
   Colour colour;
   unsigned char pattern;
+  unsigned char startMarker;
+  unsigned char endMarker;
   unsigned char cap;
 };
 

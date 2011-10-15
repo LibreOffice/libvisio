@@ -68,7 +68,7 @@ void libvisio::VSDXStylesCollector::collectEllipse(unsigned /* id */, unsigned l
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned /* linePattern */, unsigned /* lineCap */)
+void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned /* linePattern */, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned /* lineCap */)
 {
   _handleLevelChange(level);
 }
@@ -277,7 +277,7 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
   m_isStyleStarted = true;
 }
 
-void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char lineCap)
+void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char lineCap)
 {
   if (!m_lineStyle)
     m_lineStyle = new VSDXLineStyle();

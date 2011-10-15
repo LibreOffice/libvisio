@@ -53,7 +53,7 @@ public:
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
-  void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
+  void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
                             unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc,
                             double shadowOffsetX, double shadowOffsetY);
@@ -102,7 +102,7 @@ public:
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
-  void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char lineCap);
+  void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char startMarker, unsigned char endMarker, unsigned char lineCap);
   void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern,
                         unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc,
                         double shadowOffsetX, double shadowOffsetY);

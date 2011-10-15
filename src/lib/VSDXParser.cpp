@@ -757,18 +757,20 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
   c.b = readU8(input);
   c.a = readU8(input);
   unsigned char linePattern = readU8(input);
-  input->seek(12, WPX_SEEK_CUR);
+  input->seek(10, WPX_SEEK_CUR);
+  unsigned char startMarker = readU8(input);
+  unsigned char endMarker = readU8(input);
   unsigned char lineCap = readU8(input);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
+    m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_lineStyle) 
-      m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, lineCap);
+      m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   }
   else
-    m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, lineCap);
+    m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
 }
 
 void libvisio::VSDXParser::readTextBlock(WPXInputStream *input)
