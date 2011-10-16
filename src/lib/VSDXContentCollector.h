@@ -156,20 +156,13 @@ private:
 
   void lineStyleFromStyleSheet(unsigned styleId);
   void fillStyleFromStyleSheet(unsigned styleId);
-  void textBlockStyleFromStyleSheet(unsigned styleId);
-  void charStyleFromStyleSheet(unsigned styleId);
   void lineStyleFromStyleSheet(const VSDXLineStyle &style);
   void fillStyleFromStyleSheet(const VSDXFillStyle &style);
-  void textBlockStyleFromStyleSheet(const VSDXTextStyle &style);
-  void charStyleFromStyleSheet(const VSDXTextStyle &style);
   
   void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
   void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
                                 unsigned fillFGTransparency, unsigned fillBGTransparency,
                                 unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
-  void _textBlockProperties(const TextBlockFormat &txtBlockFormat);
-  void _charProperties(const CharFormat &format);
-
 
   bool m_isPageStarted;
   double m_pageWidth;

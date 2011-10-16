@@ -438,14 +438,6 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
     m_styleProps.insert("draw:stroke", "solid");
 }
 
-void libvisio::VSDXContentCollector::_textBlockProperties(const TextBlockFormat & /* txtBlockFormat */)
-{
-}
-
-void libvisio::VSDXContentCollector::_charProperties(const CharFormat & /* format */)
-{
-}
-
 void libvisio::VSDXContentCollector::_flushCurrentPath()
 {
   WPXPropertyListVector path;
@@ -1459,7 +1451,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   if (masterPage != 0xffffffff && masterShape != 0xffffffff)
   {
     const VSDXStencil * stencil = m_stencils.getStencil(masterPage);
-    if (stencil != 0) m_stencilShape = stencil->getStencilShape(masterShape);
+    if (stencil) m_stencilShape = stencil->getStencilShape(masterShape);
     // Set the foreign types and foreign data if the stencil has foreign
     // If the shape itself overrides them, they will be overwritten in the
     // collectForeignDataType and collectForeignData calls
@@ -1486,11 +1478,12 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_textStream.clear();
   m_charFormats.clear();
   m_paraFormats.clear();
+  m_textBlockFormat = TextBlockFormat();
   if (textStyleId != 0xffffffff)
   {
-    m_defaultCharFormat = m_styles.getTextStyle(textStyleId).characterFormat;
-    m_defaultParaFormat = m_styles.getTextStyle(textStyleId).paragraphFormat;
-    m_textBlockFormat = m_styles.getTextStyle(textStyleId).txtBlockFormat;
+    m_defaultCharFormat = m_styles.getTextStyle(textStyleId).characterFormat ? *(m_styles.getTextStyle(textStyleId).characterFormat) : CharFormat();
+    m_defaultParaFormat = m_styles.getTextStyle(textStyleId).paragraphFormat ? *(m_styles.getTextStyle(textStyleId).paragraphFormat) : ParaFormat();
+    m_textBlockFormat = m_styles.getTextStyle(textStyleId).txtBlockFormat ? *(m_styles.getTextStyle(textStyleId).txtBlockFormat) : TextBlockFormat();
   }
 
   m_currentGeometryCount = 0;
@@ -1665,26 +1658,6 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
 {
   _fillAndShadowProperties(style.fgColourId, style.bgColourId, style.pattern, style.fgTransparency, style.bgTransparency,
                            style.shadowPattern, style.shadowFgColour, style.shadowOffsetX, style.shadowOffsetY);
-}
-
-void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(unsigned styleId)
-{
-  textBlockStyleFromStyleSheet(m_styles.getTextStyle(styleId));
-}
-
-void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(const VSDXTextStyle &style)
-{
-  _textBlockProperties(style.txtBlockFormat);
-}
-
-void libvisio::VSDXContentCollector::charStyleFromStyleSheet(unsigned styleId)
-{
-  charStyleFromStyleSheet(m_styles.getTextStyle(styleId));
-}
-
-void libvisio::VSDXContentCollector::charStyleFromStyleSheet(const VSDXTextStyle &style)
-{
-  _charProperties(style.characterFormat);
 }
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)

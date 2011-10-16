@@ -84,15 +84,40 @@ struct VSDXFillStyle
 struct VSDXTextStyle
 {
   VSDXTextStyle()
-  : characterFormat(), paragraphFormat(), txtBlockFormat() {}
+  : characterFormat(0), paragraphFormat(0), txtBlockFormat(0) {}
   VSDXTextStyle(const CharFormat &cf, const ParaFormat &pf, const TextBlockFormat &tbf)
-  : characterFormat(cf), paragraphFormat(pf), txtBlockFormat(tbf) {}
+  : characterFormat(new CharFormat(cf)),
+    paragraphFormat(new ParaFormat(pf)),
+    txtBlockFormat(new TextBlockFormat(tbf)) {}
   VSDXTextStyle(const VSDXTextStyle &textStyle)
-  : characterFormat(textStyle.characterFormat), paragraphFormat(textStyle.paragraphFormat), txtBlockFormat(textStyle.txtBlockFormat) {}
-  ~VSDXTextStyle() {}
-  CharFormat characterFormat;
-  ParaFormat paragraphFormat;
-  TextBlockFormat txtBlockFormat;
+  : characterFormat(textStyle.characterFormat ? new CharFormat(*(textStyle.characterFormat)) : 0),
+    paragraphFormat(textStyle.paragraphFormat ? new ParaFormat(*(textStyle.paragraphFormat)) : 0),
+    txtBlockFormat(textStyle.txtBlockFormat ? new TextBlockFormat(*(textStyle.txtBlockFormat)) : 0) {}
+  ~VSDXTextStyle()
+  {
+    if (characterFormat)
+      delete characterFormat;
+    if (paragraphFormat)
+      delete paragraphFormat;
+    if (txtBlockFormat)
+      delete txtBlockFormat;
+  }
+  VSDXTextStyle &operator=(const VSDXTextStyle &textStyle)
+  {
+    if (characterFormat)
+      delete characterFormat;
+    if (paragraphFormat)
+      delete paragraphFormat;
+    if (txtBlockFormat)
+      delete txtBlockFormat;
+    characterFormat = textStyle.characterFormat ? new CharFormat(*(textStyle.characterFormat)) : 0;
+    paragraphFormat = textStyle.paragraphFormat ? new ParaFormat(*(textStyle.paragraphFormat)) : 0;
+    txtBlockFormat = textStyle.txtBlockFormat ? new TextBlockFormat(*(textStyle.txtBlockFormat)) : 0;
+    return *this;
+  }
+  CharFormat *characterFormat;
+  ParaFormat *paragraphFormat;
+  TextBlockFormat *txtBlockFormat;
 };
 
 class VSDXStyles
