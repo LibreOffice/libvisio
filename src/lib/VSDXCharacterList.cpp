@@ -83,11 +83,15 @@ libvisio::VSDXCharacterListElement *libvisio::VSDXCharIX::clone()
 }
 
 
-libvisio::VSDXCharacterList::VSDXCharacterList()
+libvisio::VSDXCharacterList::VSDXCharacterList() :
+  m_elements(),
+  m_elementsOrder()
 {
 }
 
-libvisio::VSDXCharacterList::VSDXCharacterList(const libvisio::VSDXCharacterList &charList)
+libvisio::VSDXCharacterList::VSDXCharacterList(const libvisio::VSDXCharacterList &charList) :
+  m_elements(),
+  m_elementsOrder(charList.m_elementsOrder)
 {
   std::map<unsigned, VSDXCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
   for (; iter != charList.m_elements.end(); iter++)
@@ -100,6 +104,7 @@ libvisio::VSDXCharacterList &libvisio::VSDXCharacterList::operator=(const libvis
   std::map<unsigned, VSDXCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
   for (; iter != charList.m_elements.end(); iter++)
       m_elements[iter->first] = iter->second->clone();
+  m_elementsOrder = charList.m_elementsOrder;
   return *this;
 }
 

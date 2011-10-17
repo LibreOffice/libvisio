@@ -78,11 +78,15 @@ libvisio::VSDXParagraphListElement *libvisio::VSDXParaIX::clone()
 }
 
 
-libvisio::VSDXParagraphList::VSDXParagraphList()
+libvisio::VSDXParagraphList::VSDXParagraphList() :
+  m_elements(),
+  m_elementsOrder()
 {
 }
 
-libvisio::VSDXParagraphList::VSDXParagraphList(const libvisio::VSDXParagraphList &paraList)
+libvisio::VSDXParagraphList::VSDXParagraphList(const libvisio::VSDXParagraphList &paraList) :
+  m_elements(),
+  m_elementsOrder(paraList.m_elementsOrder)
 {
   std::map<unsigned, VSDXParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
   for (; iter != paraList.m_elements.end(); iter++)
@@ -95,6 +99,7 @@ libvisio::VSDXParagraphList &libvisio::VSDXParagraphList::operator=(const libvis
   std::map<unsigned, VSDXParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
   for (; iter != paraList.m_elements.end(); iter++)
       m_elements[iter->first] = iter->second->clone();
+  m_elementsOrder = paraList.m_elementsOrder;
   return *this;
 }
 

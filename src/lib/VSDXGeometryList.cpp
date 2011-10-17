@@ -318,16 +318,19 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXSplineKnot::clone()
 }
 
 
-libvisio::VSDXGeometryList::VSDXGeometryList()
+libvisio::VSDXGeometryList::VSDXGeometryList() :
+  m_elements(),
+  m_elementsOrder()
 {
 }
 
-libvisio::VSDXGeometryList::VSDXGeometryList(const VSDXGeometryList &geomList)
+libvisio::VSDXGeometryList::VSDXGeometryList(const VSDXGeometryList &geomList) :
+  m_elements(),
+  m_elementsOrder(geomList.m_elementsOrder)
 {
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = geomList.m_elements.begin();
   for (; iter != geomList.m_elements.end(); iter++)
       m_elements[iter->first] = iter->second->clone();
-  m_elementsOrder = geomList.getElementsOrder();
 }
 
 libvisio::VSDXGeometryList &libvisio::VSDXGeometryList::operator=(const VSDXGeometryList &geomList)
@@ -336,7 +339,7 @@ libvisio::VSDXGeometryList &libvisio::VSDXGeometryList::operator=(const VSDXGeom
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = geomList.m_elements.begin();
   for (; iter != geomList.m_elements.end(); iter++)
       m_elements[iter->first] = iter->second->clone();
-  m_elementsOrder = geomList.getElementsOrder();
+  m_elementsOrder = geomList.m_elementsOrder;
   return *this;
 }
 

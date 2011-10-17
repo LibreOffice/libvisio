@@ -81,6 +81,33 @@ struct NURBSData
   std::vector<double> knots;
   std::vector<double> weights;
   std::vector<std::pair<double, double> > points;
+  NURBSData()
+  : lastKnot(0.0),
+    degree(0),
+	xType(0x00),
+	yType(0x00),
+	knots(),
+	weights(),
+	points() {}
+  NURBSData(const NURBSData &data)
+  : lastKnot(data.lastKnot),
+    degree(data.degree),
+	xType(data.xType),
+	yType(data.yType),
+	knots(data.knots),
+	weights(data.weights),
+	points(data.points) {}
+  NURBSData &operator=(const NURBSData &data)
+  {
+    lastKnot = data.lastKnot;
+    degree = data.degree;
+	xType = data.xType;
+	yType = data.yType;
+	knots = data.knots;
+	weights = data.weights;
+	points = data.points;
+	return *this;
+  }
 };
 
 struct PolylineData
@@ -88,6 +115,21 @@ struct PolylineData
   unsigned char xType;
   unsigned char yType;
   std::vector<std::pair<double, double> > points;
+  PolylineData()
+  : xType(0x00),
+    yType(0x00),
+	points() {}
+  PolylineData(const PolylineData &data)
+  : xType(data.xType),
+    yType(data.yType),
+	points(data.points) {}
+  PolylineData &operator=(const PolylineData &data)
+  {
+    xType = data.xType;
+    yType = data.yType;
+	points = data.points;
+	return *this;
+  }
 };
 
 struct CharFormat
@@ -219,6 +261,22 @@ struct ForeignData
   unsigned type;
   unsigned format;
   WPXBinaryData data;
+  ForeignData()
+  : typeId(0),
+    dataId(0),
+    typeLevel(0),
+    dataLevel(0),
+    type(0),
+    format(0),
+    data() {}
+  ForeignData(const ForeignData &fd)
+  : typeId(fd.typeId),
+    dataId(fd.dataId),
+    typeLevel(fd.typeLevel),
+    dataLevel(fd.dataLevel),
+    type(fd.type),
+    format(fd.format),
+    data(fd.data) {}
 };
 
 enum TextFormat { VSD_TEXT_ANSI, VSD_TEXT_UTF16 };

@@ -61,7 +61,9 @@ void libvisio::VSDXShapeId::handle(VSDXCollector *collector)
   collector->collectShapeId(m_id, m_level, m_shapeId);
 }
 
-libvisio::VSDXShapeList::VSDXShapeList()
+libvisio::VSDXShapeList::VSDXShapeList() :
+  m_elements(),
+  m_elementsOrder()
 {
 }
 

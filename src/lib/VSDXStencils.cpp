@@ -32,7 +32,7 @@
 
 libvisio::VSDXStencilShape::VSDXStencilShape()
   : m_geometries(), m_foreign(0), m_lineStyleID(0xffffffff), m_fillStyleID(0xffffffff), m_textStyleID(0xffffffff),
-    m_lineStyle(0), m_fillStyle(0), m_textStyle(0), m_text()
+    m_lineStyle(0), m_fillStyle(0), m_textStyle(0), m_text(), m_nurbsData(), m_polylineData()
 {
 }
 
@@ -119,7 +119,8 @@ const libvisio::VSDXStencilShape *libvisio::VSDXStencil::getStencilShape(unsigne
 
 
 
-libvisio::VSDXStencils::VSDXStencils()
+libvisio::VSDXStencils::VSDXStencils() :
+  m_stencils()
 {
 }
 

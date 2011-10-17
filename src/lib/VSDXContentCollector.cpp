@@ -57,15 +57,16 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
     m_lineColour("black"), m_fillType("none"), m_linePattern(1),
     m_fillPattern(1), m_fillFGTransparency(0), m_fillBGTransparency(0),
-    m_noLine(false), m_noFill(false), m_noShow(false), m_currentLevel(0),
-    m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
-    m_groupXFormsSequence(groupXFormsSequence),
-    m_groupMembershipsSequence(groupMembershipsSequence), m_currentPageNumber(0),
-    m_shapeList(), m_shapeOutput(0), m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_textStream(),
-    m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_textBlockFormat(),
-    m_defaultCharFormat(), m_defaultParaFormat(), m_styles(styles),
-    m_stencils(stencils), m_isStencilStarted(false), m_currentGeometryCount(0),
+    m_noLine(false), m_noFill(false), m_noShow(false), m_colours(), m_fonts(),
+    m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
+    m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
+    m_currentPageNumber(0), m_shapeList(), m_shapeOutput(0), m_pageOutput(),
+    m_documentPageShapeOrders(documentPageShapeOrders),
+    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
+    m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
+    m_charFormats(), m_paraFormats(), m_textBlockFormat(),
+    m_defaultCharFormat(), m_defaultParaFormat(), m_styles(styles), m_hasLocalLineStyle(false), m_hasLocalFillStyle(false),
+    m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
     m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
     m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
     m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0)
@@ -651,8 +652,8 @@ void libvisio::VSDXContentCollector::_flushText()
       {
         textProps.insert("fo:background-color", getColourString(m_textBlockFormat.textBkgndColour));
 #if 0
-	if (m_textBlockFormat.textBkgndColour.a)
-	  textProps.insert("fo:background-opacity", 1.0 - m_textBlockFormat.textBkgndColour.a/255.0, WPX_PERCENT);
+    if (m_textBlockFormat.textBkgndColour.a)
+      textProps.insert("fo:background-opacity", 1.0 - m_textBlockFormat.textBkgndColour.a/255.0, WPX_PERCENT);
 #endif
       }
 

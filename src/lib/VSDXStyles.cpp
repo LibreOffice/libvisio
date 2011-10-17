@@ -31,7 +31,9 @@
 
 #define NOMASTER 0xffffffff
 
-libvisio::VSDXStyles::VSDXStyles()
+libvisio::VSDXStyles::VSDXStyles() :
+  m_lineStyles(), m_fillStyles(), m_textStyles(),
+  m_lineStyleMasters(), m_fillStyleMasters(), m_textStyleMasters()
 {
 }
 

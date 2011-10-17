@@ -40,10 +40,11 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_currentShapeId(0), m_groupXForms(), m_groupMemberships(),
   m_groupXFormsSequence(groupXFormsSequence),
-  m_groupMembershipsSequence(groupMembershipsSequence), m_pageShapeOrder(),
-  m_documentPageShapeOrders(documentPageShapeOrders),
-  m_shapeList(), m_currentStyleSheet(0), m_styles(),
+  m_groupMembershipsSequence(groupMembershipsSequence),
+  m_pageShapeOrder(), m_documentPageShapeOrders(documentPageShapeOrders),
+  m_groupShapeOrder(), m_shapeList(), m_currentStyleSheet(0), m_styles(),
   m_lineStyle(), m_fillStyle(), m_textStyle(),
+  m_lineStyleMaster(0), m_fillStyleMaster(0), m_textStyleMaster(0),
   m_isStyleStarted(false)
 {
   m_groupXFormsSequence.clear();
