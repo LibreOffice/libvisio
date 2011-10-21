@@ -101,10 +101,10 @@ public:
   void collectCharList(unsigned id, unsigned level);
   void collectParaList(unsigned id, unsigned level);
   void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
-  void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
+  void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                          double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
-  void collectParaFormat(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+  void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                          double spLine, double spBefore, double spAfter, unsigned char align);
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
                         unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
@@ -212,12 +212,13 @@ private:
   std::map<unsigned, PolylineData> m_polylineData;
   std::vector<unsigned char> m_textStream;
   TextFormat m_textFormat;
-  std::vector<CharFormat> m_charFormats;
-  std::vector<ParaFormat> m_paraFormats;
-  TextBlockFormat m_textBlockFormat;
+  std::vector<VSDXCharStyle> m_charFormats;
+  std::vector<VSDXParaStyle> m_paraFormats;
+
+  VSDXTextBlockStyle m_textBlockFormat;
   
-  CharFormat m_defaultCharFormat;
-  ParaFormat m_defaultParaFormat;
+  VSDXCharStyle m_defaultCharStyle;
+  VSDXParaStyle m_defaultParaStyle;
 
   VSDXStyles m_styles;
   bool m_hasLocalLineStyle, m_hasLocalFillStyle;

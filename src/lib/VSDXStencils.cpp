@@ -32,7 +32,8 @@
 
 libvisio::VSDXStencilShape::VSDXStencilShape()
   : m_geometries(), m_foreign(0), m_lineStyleID(0xffffffff), m_fillStyleID(0xffffffff), m_textStyleID(0xffffffff),
-    m_lineStyle(0), m_fillStyle(0), m_textStyle(0), m_text(), m_nurbsData(), m_polylineData()
+    m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
+    m_text(), m_nurbsData(), m_polylineData()
 {
 }
 
@@ -41,7 +42,9 @@ libvisio::VSDXStencilShape::VSDXStencilShape(const libvisio::VSDXStencilShape &s
     m_lineStyleID(shape.m_lineStyleID), m_fillStyleID(shape.m_fillStyleID), m_textStyleID(shape.m_textStyleID),
     m_lineStyle(shape.m_lineStyle ? new VSDXLineStyle(*(shape.m_lineStyle)) : 0),
     m_fillStyle(shape.m_fillStyle ? new VSDXFillStyle(*(shape.m_fillStyle)) : 0),
-    m_textStyle(shape.m_textStyle ? new VSDXTextStyle(*(shape.m_textStyle)) : 0),
+    m_textBlockStyle(shape.m_textBlockStyle ? new VSDXTextBlockStyle(*(shape.m_textBlockStyle)) : 0),
+    m_charStyle(shape.m_charStyle ? new VSDXCharStyle(*(shape.m_charStyle)) : 0),
+    m_paraStyle(shape.m_paraStyle ? new VSDXParaStyle(*(shape.m_paraStyle)) : 0),
     m_text(shape.m_text), m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData) {}
 
 libvisio::VSDXStencilShape::~VSDXStencilShape()
@@ -52,8 +55,12 @@ libvisio::VSDXStencilShape::~VSDXStencilShape()
     delete m_lineStyle;
   if (m_fillStyle)
     delete m_fillStyle;
-  if (m_textStyle)
-    delete m_textStyle;
+  if (m_textBlockStyle)
+    delete m_textBlockStyle;
+  if (m_charStyle)
+    delete m_charStyle;
+  if (m_paraStyle)
+    delete m_paraStyle;
 }
 
 libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio::VSDXStencilShape &shape)
@@ -71,9 +78,15 @@ libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio
   if (m_fillStyle)
     delete m_fillStyle;
   m_fillStyle = shape.m_fillStyle ? new VSDXFillStyle(*(shape.m_fillStyle)) : 0;
-  if (m_textStyle)
-    delete m_textStyle;
-  m_textStyle = shape.m_textStyle ? new VSDXTextStyle(*(shape.m_textStyle)) : 0;
+  if (m_textBlockStyle)
+    delete m_textBlockStyle;
+  m_textBlockStyle = shape.m_textBlockStyle ? new VSDXTextBlockStyle(*(shape.m_textBlockStyle)) : 0;
+  if (m_charStyle)
+    delete m_charStyle;
+  m_charStyle = shape.m_charStyle ? new VSDXCharStyle(*(shape.m_charStyle)) : 0;
+  if (m_paraStyle)
+    delete m_paraStyle;
+  m_paraStyle = shape.m_paraStyle ? new VSDXParaStyle(*(shape.m_paraStyle)) : 0;
   m_text = shape.m_text;
   m_nurbsData = shape.m_nurbsData;
   m_polylineData = shape.m_polylineData;

@@ -70,7 +70,7 @@ private:
 
 void libvisio::VSDXCharIX::handle(VSDXCollector *collector)
 {
-  collector->collectCharFormat(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_langId, m_fontSize, m_bold, m_italic, m_underline,
+  collector->collectVSDXCharStyle(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_langId, m_fontSize, m_bold, m_italic, m_underline,
                                m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
                                m_superscript, m_subscript, m_fontFace);
 }

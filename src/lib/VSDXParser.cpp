@@ -800,10 +800,8 @@ void libvisio::VSDXParser::readTextBlock(WPXInputStream *input)
                                        verticalAlign, bgClrId, c, defaultTabStop, textDirection);
   else if (m_isStencilStarted)
   {
-    if (!m_stencilShape.m_textStyle) 
-      m_stencilShape.m_textStyle = new VSDXTextStyle();
-    if (!m_stencilShape.m_textStyle->txtBlockFormat)
-      m_stencilShape.m_textStyle->txtBlockFormat = new TextBlockFormat(leftMargin, rightMargin, topMargin, bottomMargin,
+    if (!m_stencilShape.m_textBlockStyle) 
+      m_stencilShape.m_textBlockStyle = new VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
                                                                        verticalAlign, bgClrId, c, defaultTabStop, textDirection);
   }
   else

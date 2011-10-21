@@ -81,43 +81,124 @@ struct VSDXFillStyle
   double shadowOffsetY;
 };
 
-struct VSDXTextStyle
+struct VSDXCharStyle
 {
-  VSDXTextStyle()
-  : characterFormat(0), paragraphFormat(0), txtBlockFormat(0) {}
-  VSDXTextStyle(const CharFormat &cf, const ParaFormat &pf, const TextBlockFormat &tbf)
-  : characterFormat(new CharFormat(cf)),
-    paragraphFormat(new ParaFormat(pf)),
-    txtBlockFormat(new TextBlockFormat(tbf)) {}
-  VSDXTextStyle(const VSDXTextStyle &textStyle)
-  : characterFormat(textStyle.characterFormat ? new CharFormat(*(textStyle.characterFormat)) : 0),
-    paragraphFormat(textStyle.paragraphFormat ? new ParaFormat(*(textStyle.paragraphFormat)) : 0),
-    txtBlockFormat(textStyle.txtBlockFormat ? new TextBlockFormat(*(textStyle.txtBlockFormat)) : 0) {}
-  ~VSDXTextStyle()
-  {
-    if (characterFormat)
-      delete characterFormat;
-    if (paragraphFormat)
-      delete paragraphFormat;
-    if (txtBlockFormat)
-      delete txtBlockFormat;
-  }
-  VSDXTextStyle &operator=(const VSDXTextStyle &textStyle)
-  {
-    if (characterFormat)
-      delete characterFormat;
-    if (paragraphFormat)
-      delete paragraphFormat;
-    if (txtBlockFormat)
-      delete txtBlockFormat;
-    characterFormat = textStyle.characterFormat ? new CharFormat(*(textStyle.characterFormat)) : 0;
-    paragraphFormat = textStyle.paragraphFormat ? new ParaFormat(*(textStyle.paragraphFormat)) : 0;
-    txtBlockFormat = textStyle.txtBlockFormat ? new TextBlockFormat(*(textStyle.txtBlockFormat)) : 0;
-    return *this;
-  }
-  CharFormat *characterFormat;
-  ParaFormat *paragraphFormat;
-  TextBlockFormat *txtBlockFormat;
+  VSDXCharStyle() :
+    charCount(0),
+    faceID(0),
+    colour(),
+    langID(0),
+    size(12.0/72.0),
+    bold(false),
+    italic(false),
+    underline(false),
+    doubleunderline(false),
+    strikeout(false),
+    doublestrikeout(false),
+    allcaps(false),
+    initcaps(false),
+    smallcaps(false),
+    superscript(false),
+    subscript(false),
+    face("Arial") {}
+  VSDXCharStyle(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, WPXString f) :
+    charCount(cc),
+    faceID(id),
+    colour(c),
+    langID(lang),
+    size(s),
+    bold(b),
+    italic(i),
+    underline(u),
+    doubleunderline(du),
+    strikeout(so),
+    doublestrikeout(dso),
+    allcaps(ac),
+    initcaps(ic),
+    smallcaps(sc),
+    superscript(super),
+    subscript(sub),
+    face(f) {}
+  unsigned charCount;
+  unsigned short faceID;
+  Colour colour;
+  unsigned langID;
+  double size;
+  bool bold;
+  bool italic;
+  bool underline;
+  bool doubleunderline;
+  bool strikeout;
+  bool doublestrikeout;
+  bool allcaps;
+  bool initcaps;
+  bool smallcaps;
+  bool superscript;
+  bool subscript;
+  WPXString face;
+};
+
+struct VSDXParaStyle
+{
+  VSDXParaStyle() :
+    charCount(0),
+    indFirst(0.0),
+    indLeft(0.0),
+    indRight(0.0),
+    spLine(-1.2),
+    spBefore(0.0),
+    spAfter(0.0),
+    align(1) {}
+  VSDXParaStyle(unsigned cc, double ifst, double il, double ir, double sl, double sb, double sa, double a) :
+    charCount(cc),
+    indFirst(ifst),
+    indLeft(il),
+    indRight(ir),
+    spLine(sl),
+    spBefore(sb),
+    spAfter(sa),
+    align(a) {}
+  unsigned charCount;
+  double indFirst;
+  double indLeft;
+  double indRight;
+  double spLine;
+  double spBefore;
+  double spAfter;
+  unsigned char align;
+};
+
+struct VSDXTextBlockStyle
+{
+  VSDXTextBlockStyle() :
+    leftMargin(0.0),
+    rightMargin(0.0),
+    topMargin(0.0),
+    bottomMargin(0.0),
+    verticalAlign(0),
+    textBkgndColourId(0),
+    textBkgndColour(0xff,0xff,0xff,0),
+    defaultTabStop(0.5),
+    textDirection(0) {}
+  VSDXTextBlockStyle(double lm, double rm, double tm, double bm, unsigned char va, unsigned char bgClrId, Colour bgClr, double defTab, unsigned char td) :
+    leftMargin(lm),
+    rightMargin(rm),
+    topMargin(tm),
+    bottomMargin(bm),
+    verticalAlign(va),
+    textBkgndColourId(bgClrId),
+    textBkgndColour(bgClr),
+    defaultTabStop(defTab),
+    textDirection(td) {}
+  double leftMargin;
+  double rightMargin;
+  double topMargin;
+  double bottomMargin;
+  unsigned char verticalAlign;
+  unsigned char textBkgndColourId;
+  Colour textBkgndColour;
+  double defaultTabStop;
+  unsigned char textDirection;
 };
 
 class VSDXStyles
@@ -127,7 +208,9 @@ class VSDXStyles
     ~VSDXStyles();
     void addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle);
     void addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle);
-    void addTextStyle(unsigned textStyleIndex, VSDXTextStyle *textStyle);
+    void addTextBlockStyle(unsigned textStyleIndex, VSDXTextBlockStyle *textBlockStyle);
+    void addCharStyle(unsigned textStyleIndex, VSDXCharStyle *charStyle);
+    void addParaStyle(unsigned textStyleIndex, VSDXParaStyle *paraStyle);
     
     void addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster);
     void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
@@ -135,12 +218,16 @@ class VSDXStyles
     
     const VSDXLineStyle getLineStyle(unsigned lineStyleIndex) const;
     const VSDXFillStyle getFillStyle(unsigned fillStyleIndex) const;
-    const VSDXTextStyle getTextStyle(unsigned textStyleIndex) const;
+    const VSDXTextBlockStyle getTextBlockStyle(unsigned textStyleIndex) const;
+    const VSDXCharStyle getCharStyle(unsigned textStyleIndex) const;
+    const VSDXParaStyle getParaStyle(unsigned textStyleIndex) const;
 
   private:
-    std::map<unsigned, VSDXLineStyle> m_lineStyles;
-    std::map<unsigned, VSDXFillStyle> m_fillStyles;
-    std::map<unsigned, VSDXTextStyle> m_textStyles;
+    std::map<unsigned, VSDXLineStyle*> m_lineStyles;
+    std::map<unsigned, VSDXFillStyle*> m_fillStyles;
+    std::map<unsigned, VSDXTextBlockStyle*> m_textBlockStyles;
+    std::map<unsigned, VSDXCharStyle*> m_charStyles;
+    std::map<unsigned, VSDXParaStyle*> m_paraStyles;
     std::map<unsigned, unsigned> m_lineStyleMasters;
     std::map<unsigned, unsigned> m_fillStyleMasters;
     std::map<unsigned, unsigned> m_textStyleMasters;

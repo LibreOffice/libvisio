@@ -65,7 +65,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
     m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
     m_charFormats(), m_paraFormats(), m_textBlockFormat(),
-    m_defaultCharFormat(), m_defaultParaFormat(), m_styles(styles), m_hasLocalLineStyle(false), m_hasLocalFillStyle(false),
+    m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles), m_hasLocalLineStyle(false), m_hasLocalFillStyle(false),
     m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
     m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
     m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
@@ -527,9 +527,9 @@ void libvisio::VSDXContentCollector::_flushText()
   }
 
   if (m_charFormats.empty())
-    m_charFormats.push_back(m_defaultCharFormat);
+    m_charFormats.push_back(m_defaultCharStyle);
   if (m_paraFormats.empty())
-    m_paraFormats.push_back(m_defaultParaFormat);
+    m_paraFormats.push_back(m_defaultParaStyle);
   
   unsigned numCharsInText =  (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
   
@@ -555,7 +555,7 @@ void libvisio::VSDXContentCollector::_flushText()
 
   unsigned int charIndex = 0;
   unsigned int paraCharCount = 0;
-  for (std::vector<ParaFormat>::iterator paraIt = m_paraFormats.begin();
+  for (std::vector<VSDXParaStyle>::iterator paraIt = m_paraFormats.begin();
        paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); paraIt++)
   {
     WPXPropertyList paraProps;
@@ -666,7 +666,7 @@ void libvisio::VSDXContentCollector::_flushText()
       if (charIndex < m_charFormats.size() && paraCharCount && m_charFormats[charIndex].charCount > paraCharCount)
       {
         // Insert duplicate
-        std::vector<CharFormat>::iterator charIt = m_charFormats.begin() + charIndex;
+        std::vector<VSDXCharStyle>::iterator charIt = m_charFormats.begin() + charIndex;
         m_charFormats.insert(charIt, m_charFormats[charIndex]);
         m_charFormats[charIndex].charCount = paraCharCount;
         m_charFormats[charIndex+1].charCount -= paraCharCount;
@@ -1445,7 +1445,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_isShapeStarted = true;
   m_isFirstGeometry = true;
 
-  m_textBlockFormat = TextBlockFormat();
+  m_textBlockFormat = VSDXTextBlockStyle();
 
   // Get stencil shape
   m_stencilShape = 0;
@@ -1479,12 +1479,14 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_textStream.clear();
   m_charFormats.clear();
   m_paraFormats.clear();
-  m_textBlockFormat = TextBlockFormat();
+  m_textBlockFormat = VSDXTextBlockStyle();
+  m_defaultCharStyle = VSDXCharStyle();
+  m_defaultParaStyle = VSDXParaStyle();
   if (textStyleId != 0xffffffff)
   {
-    m_defaultCharFormat = m_styles.getTextStyle(textStyleId).characterFormat ? *(m_styles.getTextStyle(textStyleId).characterFormat) : CharFormat();
-    m_defaultParaFormat = m_styles.getTextStyle(textStyleId).paragraphFormat ? *(m_styles.getTextStyle(textStyleId).paragraphFormat) : ParaFormat();
-    m_textBlockFormat = m_styles.getTextStyle(textStyleId).txtBlockFormat ? *(m_styles.getTextStyle(textStyleId).txtBlockFormat) : TextBlockFormat();
+    m_defaultCharStyle = m_styles.getCharStyle(textStyleId);
+    m_defaultParaStyle = m_styles.getParaStyle(textStyleId);
+    m_textBlockFormat = m_styles.getTextBlockStyle(textStyleId);
   }
 
   m_currentGeometryCount = 0;
@@ -1571,21 +1573,21 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   m_textFormat = format;
 }
 
-void libvisio::VSDXContentCollector::collectParaFormat(unsigned /* id */ , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+void libvisio::VSDXContentCollector::collectVSDXParaStyle(unsigned /* id */ , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                          double spLine, double spBefore, double spAfter, unsigned char align)
 {
   _handleLevelChange(level);
-  ParaFormat format(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
+  VSDXParaStyle format(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
   m_paraFormats.push_back(format);
 }
 
-void libvisio::VSDXContentCollector::collectCharFormat(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID,
+void libvisio::VSDXContentCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID,
                                                        Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic,
                                                        bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                                        bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace)
 {
   _handleLevelChange(level);
-  CharFormat format(charCount, fontID, fontColour, langId, fontSize, bold, italic,
+  VSDXCharStyle format(charCount, fontID, fontColour, langId, fontSize, bold, italic,
                     underline, doubleunderline, strikeout, doublestrikeout,
                     allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   m_charFormats.push_back(format);
@@ -1596,7 +1598,7 @@ void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigne
                                                       const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
 {
   _handleLevelChange(level);
-  m_textBlockFormat = TextBlockFormat(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
+  m_textBlockFormat = VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)

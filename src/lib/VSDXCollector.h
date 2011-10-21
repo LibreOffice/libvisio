@@ -82,10 +82,10 @@ public:
   virtual void collectCharList(unsigned id, unsigned level) = 0;
   virtual void collectParaList(unsigned id, unsigned level) = 0;
   virtual void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format) = 0;
-  virtual void collectCharFormat(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
+  virtual void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                                  double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                  bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace) = 0;
-  virtual void collectParaFormat(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+  virtual void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                  double spLine, double spBefore, double spAfter, unsigned char align) = 0;
   virtual void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                                 unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,

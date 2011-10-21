@@ -67,7 +67,7 @@ private:
 
 void libvisio::VSDXParaIX::handle(VSDXCollector *collector)
 {
-  collector->collectParaFormat(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
+  collector->collectVSDXParaStyle(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
                                m_spLine, m_spBefore, m_spAfter, m_align);
 }
 
