@@ -69,7 +69,8 @@ void libvisio::VSDXStylesCollector::collectEllipse(unsigned /* id */, unsigned l
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned /* linePattern */, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned /* lineCap */)
+void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */,
+                                                unsigned /* linePattern */, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned /* lineCap */)
 {
   _handleLevelChange(level);
 }
@@ -280,7 +281,8 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
   m_isStyleStarted = true;
 }
 
-void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char lineCap)
+void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned char linePattern,
+                                                     unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char lineCap)
 {
   if (!m_lineStyle)
     m_lineStyle = new VSDXLineStyle();
@@ -323,9 +325,10 @@ void libvisio::VSDXStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned
 }
 
 
-void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langID, double fontSize,
-                                                       bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                                                       bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace)
+void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
+                                                       unsigned langID, double fontSize, bool bold, bool italic, bool underline, bool doubleunderline,
+                                                       bool strikeout, bool doublestrikeout, bool allcaps, bool initcaps, bool smallcaps,
+                                                       bool superscript, bool subscript, WPXString fontFace)
 {
   _handleLevelChange(level);
   if (!m_charStyle)
@@ -342,7 +345,9 @@ void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, uns
     m_textBlockStyle = new VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
 }
 
-void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc)
+void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG,
+                                                     unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency,
+                                                     unsigned char shadowPattern, Colour shfgc)
 {
   collectFillStyle(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
