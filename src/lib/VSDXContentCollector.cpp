@@ -230,8 +230,8 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
   if (shadowPattern != 0)
   {
     m_styleProps.insert("draw:shadow","visible"); // for ODG
-    m_styleProps.insert("draw:shadow-offset-x",shadowOffsetX);
-    m_styleProps.insert("draw:shadow-offset-y",shadowOffsetY);
+    m_styleProps.insert("draw:shadow-offset-x",shadowOffsetX != 0.0 ? shadowOffsetX : m_shadowOffsetX);
+    m_styleProps.insert("draw:shadow-offset-y",shadowOffsetY != 0.0 ? shadowOffsetY : m_shadowOffsetY);
     m_styleProps.insert("draw:shadow-color",getColourString(shfgc));
     m_styleProps.insert("draw:shadow-opacity",(double)(1 - shfgc.a/255.), WPX_PERCENT);
   }
