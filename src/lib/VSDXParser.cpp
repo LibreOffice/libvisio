@@ -1039,9 +1039,9 @@ void libvisio::VSDXParser::readShape(WPXInputStream * input)
 
   if (m_isStencilStarted)
   {
-    m_stencilShape.m_lineStyleID = lineStyle;
-    m_stencilShape.m_fillStyleID = fillStyle;
-    m_stencilShape.m_textStyleID = textStyle;
+    m_stencilShape.m_lineStyleId = lineStyle;
+    m_stencilShape.m_fillStyleId = fillStyle;
+    m_stencilShape.m_textStyleId = textStyle;
   }
   else
     m_collector->collectShape(m_header.id, m_header.level, masterPage, masterShape, lineStyle, fillStyle, textStyle);

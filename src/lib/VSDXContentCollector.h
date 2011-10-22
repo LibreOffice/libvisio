@@ -156,8 +156,14 @@ private:
 
   void lineStyleFromStyleSheet(unsigned styleId);
   void fillStyleFromStyleSheet(unsigned styleId);
+  void textBlockStyleFromStyleSheet(unsigned styleId);
+  void charStyleFromStyleSheet(unsigned styleId);
+  void paraStyleFromStyleSheet(unsigned styleId);
   void lineStyleFromStyleSheet(const VSDXLineStyle &style);
   void fillStyleFromStyleSheet(const VSDXFillStyle &style);
+  void textBlockStyleFromStyleSheet(const VSDXTextBlockStyle &style);
+  void charStyleFromStyleSheet(const VSDXCharStyle &style);
+  void paraStyleFromStyleSheet(const VSDXParaStyle &style);
   
   void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
   void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
@@ -221,7 +227,6 @@ private:
   VSDXParaStyle m_defaultParaStyle;
 
   VSDXStyles m_styles;
-  bool m_hasLocalLineStyle, m_hasLocalFillStyle;
 
   VSDXStencils m_stencils;
   const VSDXStencilShape * m_stencilShape;

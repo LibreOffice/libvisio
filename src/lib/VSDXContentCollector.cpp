@@ -65,7 +65,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
     m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
     m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
     m_charFormats(), m_paraFormats(), m_textBlockFormat(),
-    m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles), m_hasLocalLineStyle(false), m_hasLocalFillStyle(false),
+    m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
     m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
     m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
     m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
@@ -820,7 +820,6 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
 void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned lineCap)
 {
   _handleLevelChange(level);
-  m_hasLocalLineStyle = true;
   _lineProperties(strokeWidth, c, linePattern, lineCap);
 }
 
@@ -829,7 +828,6 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
                                                           unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   _handleLevelChange(level);
-  m_hasLocalFillStyle = true;
   _fillAndShadowProperties(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
 }
 
@@ -959,24 +957,8 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   bool noShow = ((geomFlags & 4) == 4);
 
   if ((m_noFill != noFill) || (m_noLine != noLine) || (m_noShow != noShow) || m_isFirstGeometry)
-  {
-    if (!m_hasLocalLineStyle && m_stencilShape)
-    {
-      if (m_stencilShape->m_lineStyle != 0 && !m_noLine)
-        lineStyleFromStyleSheet(*(m_stencilShape->m_lineStyle));
-      else if (m_stencilShape->m_lineStyleID != 0xffffffff)
-        lineStyleFromStyleSheet(m_stencilShape->m_lineStyleID);
-    }
-
-    if (!m_hasLocalFillStyle && m_stencilShape && !m_noFill)
-    {
-      if (m_stencilShape->m_fillStyle != 0)
-        fillStyleFromStyleSheet(*(m_stencilShape->m_fillStyle));
-      else if (m_stencilShape->m_fillStyleID != 0xffffffff)
-        fillStyleFromStyleSheet(m_stencilShape->m_fillStyleID);
-    }
     _flushCurrentPath();
-  }
+
   m_isFirstGeometry = false;
   m_noFill = noFill;
   m_noLine = noLine;
@@ -1437,15 +1419,21 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   // Reset style
   m_styleProps.clear();
   m_styleProps.insert("draw:fill", m_fillType);
+  // TODO: verify
   m_styleProps.insert("svg:stroke-dasharray", "solid");
+
+  m_textStream.clear();
+  m_charFormats.clear();
+  m_paraFormats.clear();
+  m_textBlockFormat = VSDXTextBlockStyle();
+  m_defaultCharStyle = VSDXCharStyle();
+  m_defaultParaStyle = VSDXParaStyle();
 
   m_currentShapeId = id;
   m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
   m_shapeOutput = &m_pageOutput[m_currentShapeId];
   m_isShapeStarted = true;
   m_isFirstGeometry = true;
-
-  m_textBlockFormat = VSDXTextBlockStyle();
 
   // Get stencil shape
   m_stencilShape = 0;
@@ -1456,32 +1444,44 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     // Set the foreign types and foreign data if the stencil has foreign
     // If the shape itself overrides them, they will be overwritten in the
     // collectForeignDataType and collectForeignData calls
-    if (m_stencilShape && m_stencilShape->m_foreign)
+    if (m_stencilShape)
     {
-      m_foreignType = m_stencilShape->m_foreign->type;
-      m_foreignFormat = m_stencilShape->m_foreign->format;
-      _handleForeignData(m_stencilShape->m_foreign->data);
+      if (m_stencilShape->m_foreign)
+      {
+        m_foreignType = m_stencilShape->m_foreign->type;
+        m_foreignFormat = m_stencilShape->m_foreign->format;
+        _handleForeignData(m_stencilShape->m_foreign->data);
+      }
+
+      if (m_stencilShape->m_lineStyleId)
+        lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
+      if (m_stencilShape->m_lineStyle)
+        lineStyleFromStyleSheet(*(m_stencilShape->m_lineStyle));
+
+      if (m_stencilShape->m_fillStyleId)
+        fillStyleFromStyleSheet(m_stencilShape->m_fillStyleId);
+      if (m_stencilShape->m_fillStyle)
+        fillStyleFromStyleSheet(*(m_stencilShape->m_fillStyle));
+
+      if (m_stencilShape->m_textStyleId)
+      {
+         m_defaultCharStyle = m_styles.getCharStyle(m_stencilShape->m_textStyleId);
+         m_defaultParaStyle = m_styles.getParaStyle(m_stencilShape->m_textStyleId);
+         m_textBlockFormat = m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId);
+      }
+      if (m_stencilShape->m_textBlockStyle)
+        m_textBlockFormat = *(m_stencilShape->m_textBlockStyle);
+      if (m_stencilShape->m_charStyle)
+        m_defaultCharStyle = *(m_stencilShape->m_charStyle);
+      if (m_stencilShape->m_paraStyle)
+        m_defaultParaStyle = *(m_stencilShape->m_paraStyle);
     }
   }
 
-  m_hasLocalLineStyle = false;
-  m_hasLocalFillStyle = false;
   if (lineStyleId != 0xffffffff)
-  {
     lineStyleFromStyleSheet(lineStyleId);
-    m_hasLocalLineStyle = true;
-  }
   if (fillStyleId != 0xffffffff)
-  {
     fillStyleFromStyleSheet(fillStyleId);
-    m_hasLocalFillStyle = true;
-  }
-  m_textStream.clear();
-  m_charFormats.clear();
-  m_paraFormats.clear();
-  m_textBlockFormat = VSDXTextBlockStyle();
-  m_defaultCharStyle = VSDXCharStyle();
-  m_defaultParaStyle = VSDXParaStyle();
   if (textStyleId != 0xffffffff)
   {
     m_defaultCharStyle = m_styles.getCharStyle(textStyleId);
@@ -1663,6 +1663,33 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
                            style.shadowPattern, style.shadowFgColour, style.shadowOffsetX, style.shadowOffsetY);
 }
 
+void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(unsigned styleId)
+{
+  textBlockStyleFromStyleSheet(m_styles.getTextBlockStyle(styleId));
+}
+
+void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(const VSDXTextBlockStyle &style)
+{
+}
+
+void libvisio::VSDXContentCollector::charStyleFromStyleSheet(unsigned styleId)
+{
+  charStyleFromStyleSheet(m_styles.getCharStyle(styleId));
+}
+
+void libvisio::VSDXContentCollector::charStyleFromStyleSheet(const VSDXCharStyle &style)
+{
+}
+
+void libvisio::VSDXContentCollector::paraStyleFromStyleSheet(unsigned styleId)
+{
+  paraStyleFromStyleSheet(m_styles.getParaStyle(styleId));
+}
+
+void libvisio::VSDXContentCollector::paraStyleFromStyleSheet(const VSDXParaStyle &style)
+{
+}
+
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)
@@ -1676,22 +1703,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
         m_isStencilStarted = true;
         m_NURBSData = m_stencilShape->m_nurbsData;
         m_polylineData = m_stencilShape->m_polylineData;
-
-        if (!m_hasLocalLineStyle && !m_noLine)
-        {
-          if (m_stencilShape->m_lineStyle != 0)
-            lineStyleFromStyleSheet(*(m_stencilShape->m_lineStyle));
-          else if (m_stencilShape->m_lineStyleID != 0xffffffff)
-            lineStyleFromStyleSheet(m_stencilShape->m_lineStyleID);
-        }
-
-        if (!m_hasLocalFillStyle && !m_noFill)
-        {
-          if (m_stencilShape->m_fillStyle != 0)
-            fillStyleFromStyleSheet(*(m_stencilShape->m_fillStyle));
-          else if (m_stencilShape->m_fillStyleID != 0xffffffff)
-            fillStyleFromStyleSheet(m_stencilShape->m_fillStyleID);
-        }
 
         if (m_currentGeometry.size() == 0)
         {

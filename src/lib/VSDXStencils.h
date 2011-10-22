@@ -48,7 +48,7 @@ class VSDXStencilShape
 
     std::vector<VSDXGeometryList> m_geometries;
     ForeignData * m_foreign;
-    unsigned m_lineStyleID, m_fillStyleID, m_textStyleID;
+    unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
     VSDXLineStyle * m_lineStyle;
     VSDXFillStyle * m_fillStyle;
     VSDXTextBlockStyle * m_textBlockStyle;
