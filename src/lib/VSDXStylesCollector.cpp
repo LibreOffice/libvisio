@@ -271,6 +271,8 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
   m_lineStyle = 0;
   m_fillStyle = 0;
   m_textBlockStyle = 0;
+  m_charStyle = 0;
+  m_paraStyle = 0;
   m_currentStyleSheet = id;
   m_styles.addLineStyleMaster(m_currentStyleSheet, lineStyleParent);
   m_styles.addFillStyleMaster(m_currentStyleSheet, fillStyleParent);
