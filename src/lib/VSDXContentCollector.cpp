@@ -1668,7 +1668,7 @@ void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(unsigned style
   textBlockStyleFromStyleSheet(m_styles.getTextBlockStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(const VSDXTextBlockStyle &style)
+void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(const VSDXTextBlockStyle & /* style */)
 {
 }
 
@@ -1677,7 +1677,7 @@ void libvisio::VSDXContentCollector::charStyleFromStyleSheet(unsigned styleId)
   charStyleFromStyleSheet(m_styles.getCharStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::charStyleFromStyleSheet(const VSDXCharStyle &style)
+void libvisio::VSDXContentCollector::charStyleFromStyleSheet(const VSDXCharStyle & /* style */)
 {
 }
 
@@ -1686,7 +1686,7 @@ void libvisio::VSDXContentCollector::paraStyleFromStyleSheet(unsigned styleId)
   paraStyleFromStyleSheet(m_styles.getParaStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::paraStyleFromStyleSheet(const VSDXParaStyle &style)
+void libvisio::VSDXContentCollector::paraStyleFromStyleSheet(const VSDXParaStyle & /* style */)
 {
 }
 
