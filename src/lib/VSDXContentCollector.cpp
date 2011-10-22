@@ -522,7 +522,7 @@ void libvisio::VSDXContentCollector::_flushText()
       textBlockProps.insert("draw:textarea-vertical-align", "bottom");
       break;
     default: // Center
-      textBlockProps.insert("draw:textarea-vertical-align", "center");
+      textBlockProps.insert("draw:textarea-vertical-align", "middle");
       break;
   }
 
