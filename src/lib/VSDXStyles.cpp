@@ -95,7 +95,7 @@ void libvisio::VSDXStyles::addParaStyle(unsigned textStyleIndex, VSDXParaStyle *
     m_paraStyles.insert(iter, std::map<unsigned, VSDXParaStyle *>::value_type(textStyleIndex, new VSDXParaStyle(*paraStyle)));
   }
 }
-	
+
 void libvisio::VSDXStyles::addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster)
 {
   m_lineStyleMasters[lineStyleIndex] = lineStyleMaster;
@@ -110,7 +110,7 @@ void libvisio::VSDXStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned 
 {
   m_textStyleMasters[textStyleIndex] = textStyleMaster;
 }
-	
+
 const libvisio::VSDXLineStyle libvisio::VSDXStyles::getLineStyle(unsigned lineStyleIndex) const
 {
   unsigned tmpIndex = lineStyleIndex;
