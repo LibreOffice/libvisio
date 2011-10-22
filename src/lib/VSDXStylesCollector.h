@@ -121,7 +121,7 @@ public:
   void endPage();
   void endPages() {}
 
-  VSDXStyles getStyleSheets() { return m_styles; }
+  VSDXStyles getStyleSheets() const { return m_styles; }
 
 
 private:
