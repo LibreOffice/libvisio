@@ -119,6 +119,7 @@ struct VSDXCharStyle
     superscript(super),
     subscript(sub),
     face(f) {}
+  ~VSDXCharStyle() {}
   unsigned charCount;
   unsigned short faceID;
   Colour colour;
@@ -158,6 +159,7 @@ struct VSDXParaStyle
     spBefore(sb),
     spAfter(sa),
     align(a) {}
+  ~VSDXParaStyle() {}
   unsigned charCount;
   double indFirst;
   double indLeft;
@@ -190,6 +192,7 @@ struct VSDXTextBlockStyle
     textBkgndColour(bgClr),
     defaultTabStop(defTab),
     textDirection(td) {}
+  ~VSDXTextBlockStyle() {}
   double leftMargin;
   double rightMargin;
   double topMargin;
@@ -205,7 +208,9 @@ class VSDXStyles
 {
   public:
     VSDXStyles();
+    VSDXStyles(const VSDXStyles &styles);
     ~VSDXStyles();
+    VSDXStyles &operator=(const VSDXStyles &styles);
     void addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle);
     void addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle);
     void addTextBlockStyle(unsigned textStyleIndex, VSDXTextBlockStyle *textBlockStyle);
