@@ -41,11 +41,12 @@ SLOFILES= \
 	$(SLO)$/VSDXGeometryList.obj \
 	$(SLO)$/VSDXOutputElementList.obj \
 	$(SLO)$/VSDXPages.obj \
+	$(SLO)$/VSDXParagraphList.obj \
 	$(SLO)$/VSDXParser.obj \
 	$(SLO)$/VSDXShapeList.obj \
 	$(SLO)$/VSDXStencils.obj \
-	$(SLO)$/VSDXStyles.obj \
-	$(SLO)$/VSDXStylesCollector.obj
+	$(SLO)$/VSDXStylesCollector.obj \
+	$(SLO)$/VSDXStyles.obj
 
 LIB1ARCHIV=$(LB)$/libvisiolib.a
 LIB1TARGET=$(SLB)$/$(TARGET).lib
