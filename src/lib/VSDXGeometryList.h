@@ -33,7 +33,8 @@
 #include <vector>
 #include <map>
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXGeometryListElement;
 class VSDXCollector;
@@ -61,10 +62,19 @@ public:
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDXCollector *collector) const;
   void clear();
-  bool empty() const { return (!m_elements.size()); }
-  VSDXGeometryListElement * getElement(unsigned index) const;
-  std::vector<unsigned> getElementsOrder() const { return m_elementsOrder; }
-  unsigned count() const { return m_elements.size(); }
+  bool empty() const
+  {
+    return (!m_elements.size());
+  }
+  VSDXGeometryListElement *getElement(unsigned index) const;
+  std::vector<unsigned> getElementsOrder() const
+  {
+    return m_elementsOrder;
+  }
+  unsigned count() const
+  {
+    return m_elements.size();
+  }
 private:
   std::map<unsigned, VSDXGeometryListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;

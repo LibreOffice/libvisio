@@ -38,14 +38,15 @@
 namespace libvisio
 {
 
-class VSDSVGGenerator : public libwpg::WPGPaintInterface {
+class VSDSVGGenerator : public libwpg::WPGPaintInterface
+{
 public:
-  VSDSVGGenerator(std::ostream & output_sink);
+  VSDSVGGenerator(std::ostream &output_sink);
   ~VSDSVGGenerator();
 
   void startGraphics(const ::WPXPropertyList &propList);
   void endGraphics();
-  void startLayer(const ::WPXPropertyList& propList);
+  void startLayer(const ::WPXPropertyList &propList);
   void endLayer();
   void startEmbeddedGraphics(const ::WPXPropertyList & /*propList*/) {}
   void endEmbeddedGraphics() {}
@@ -73,9 +74,9 @@ private:
   int m_shadowIndex;
   bool m_isFirstPage;
   void writeStyle(bool isClosed=true);
-  void drawPolySomething(const ::WPXPropertyListVector& vertices, bool isClosed);
+  void drawPolySomething(const ::WPXPropertyListVector &vertices, bool isClosed);
 
-  std::ostream & m_outputSink;
+  std::ostream &m_outputSink;
 };
 
 } // namespace libvisio

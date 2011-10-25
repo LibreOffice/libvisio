@@ -35,17 +35,18 @@
 #include <libwpg/libwpg.h>
 #include "VSDXTypes.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 struct VSDXLineStyle
 {
   VSDXLineStyle()
-  : width(0.01), colour(), pattern(0), startMarker(0), endMarker(0), cap(0) {}
-  VSDXLineStyle(double w, Colour col, unsigned char p, unsigned char sm, 
+    : width(0.01), colour(), pattern(0), startMarker(0), endMarker(0), cap(0) {}
+  VSDXLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
                 unsigned char em, unsigned char c)
-  : width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
+    : width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
   VSDXLineStyle(const VSDXLineStyle &lineStyle)
-  : width(lineStyle.width), colour(lineStyle.colour), pattern(lineStyle.pattern), startMarker(lineStyle.startMarker), endMarker(lineStyle.endMarker), cap(lineStyle.cap) {}
+    : width(lineStyle.width), colour(lineStyle.colour), pattern(lineStyle.pattern), startMarker(lineStyle.startMarker), endMarker(lineStyle.endMarker), cap(lineStyle.cap) {}
   ~VSDXLineStyle() {}
   double width;
   Colour colour;
@@ -58,13 +59,13 @@ struct VSDXLineStyle
 struct VSDXFillStyle
 {
   VSDXFillStyle()
-  : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
+    : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
   VSDXFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga, Colour sfgc, unsigned char shp, double shX, double shY)
-  : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
+    : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
   VSDXFillStyle(const VSDXFillStyle &fillStyle)
-  : fgColourId(fillStyle.fgColourId), bgColourId(fillStyle.bgColourId), pattern(fillStyle.pattern),
-    fgTransparency(fillStyle.fgTransparency), bgTransparency(fillStyle.bgTransparency), shadowFgColour(fillStyle.shadowFgColour),
-    shadowPattern(fillStyle.shadowPattern), shadowOffsetX(fillStyle.shadowOffsetX), shadowOffsetY(fillStyle.shadowOffsetY) {}
+    : fgColourId(fillStyle.fgColourId), bgColourId(fillStyle.bgColourId), pattern(fillStyle.pattern),
+      fgTransparency(fillStyle.fgTransparency), bgTransparency(fillStyle.bgTransparency), shadowFgColour(fillStyle.shadowFgColour),
+      shadowPattern(fillStyle.shadowPattern), shadowOffsetX(fillStyle.shadowOffsetX), shadowOffsetY(fillStyle.shadowOffsetY) {}
   ~VSDXFillStyle() {}
   unsigned char fgColourId;
   //  Colour fgColour;
@@ -206,36 +207,36 @@ struct VSDXTextBlockStyle
 
 class VSDXStyles
 {
-  public:
-    VSDXStyles();
-    VSDXStyles(const VSDXStyles &styles);
-    ~VSDXStyles();
-    VSDXStyles &operator=(const VSDXStyles &styles);
-    void addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle);
-    void addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle);
-    void addTextBlockStyle(unsigned textStyleIndex, VSDXTextBlockStyle *textBlockStyle);
-    void addCharStyle(unsigned textStyleIndex, VSDXCharStyle *charStyle);
-    void addParaStyle(unsigned textStyleIndex, VSDXParaStyle *paraStyle);
-    
-    void addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster);
-    void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
-    void addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster);
-    
-    const VSDXLineStyle getLineStyle(unsigned lineStyleIndex) const;
-    const VSDXFillStyle getFillStyle(unsigned fillStyleIndex) const;
-    const VSDXTextBlockStyle getTextBlockStyle(unsigned textStyleIndex) const;
-    const VSDXCharStyle getCharStyle(unsigned textStyleIndex) const;
-    const VSDXParaStyle getParaStyle(unsigned textStyleIndex) const;
+public:
+  VSDXStyles();
+  VSDXStyles(const VSDXStyles &styles);
+  ~VSDXStyles();
+  VSDXStyles &operator=(const VSDXStyles &styles);
+  void addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle);
+  void addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle);
+  void addTextBlockStyle(unsigned textStyleIndex, VSDXTextBlockStyle *textBlockStyle);
+  void addCharStyle(unsigned textStyleIndex, VSDXCharStyle *charStyle);
+  void addParaStyle(unsigned textStyleIndex, VSDXParaStyle *paraStyle);
 
-  private:
-    std::map<unsigned, VSDXLineStyle*> m_lineStyles;
-    std::map<unsigned, VSDXFillStyle*> m_fillStyles;
-    std::map<unsigned, VSDXTextBlockStyle*> m_textBlockStyles;
-    std::map<unsigned, VSDXCharStyle*> m_charStyles;
-    std::map<unsigned, VSDXParaStyle*> m_paraStyles;
-    std::map<unsigned, unsigned> m_lineStyleMasters;
-    std::map<unsigned, unsigned> m_fillStyleMasters;
-    std::map<unsigned, unsigned> m_textStyleMasters;
+  void addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster);
+  void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
+  void addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster);
+
+  const VSDXLineStyle getLineStyle(unsigned lineStyleIndex) const;
+  const VSDXFillStyle getFillStyle(unsigned fillStyleIndex) const;
+  const VSDXTextBlockStyle getTextBlockStyle(unsigned textStyleIndex) const;
+  const VSDXCharStyle getCharStyle(unsigned textStyleIndex) const;
+  const VSDXParaStyle getParaStyle(unsigned textStyleIndex) const;
+
+private:
+  std::map<unsigned, VSDXLineStyle *> m_lineStyles;
+  std::map<unsigned, VSDXFillStyle *> m_fillStyles;
+  std::map<unsigned, VSDXTextBlockStyle *> m_textBlockStyles;
+  std::map<unsigned, VSDXCharStyle *> m_charStyles;
+  std::map<unsigned, VSDXParaStyle *> m_paraStyles;
+  std::map<unsigned, unsigned> m_lineStyleMasters;
+  std::map<unsigned, unsigned> m_fillStyleMasters;
+  std::map<unsigned, unsigned> m_textStyleMasters;
 };
 
 

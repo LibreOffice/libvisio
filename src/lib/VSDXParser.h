@@ -125,7 +125,7 @@ protected:
   unsigned m_currentLevel;
 
   VSDXStencils m_stencils;
-  VSDXStencil * m_currentStencil;
+  VSDXStencil *m_currentStencil;
   VSDXStencilShape m_stencilShape;
   bool m_isStencilStarted;
   bool m_isInStyles;
@@ -133,8 +133,8 @@ protected:
 
 private:
   VSDXParser();
-  VSDXParser(const VSDXParser&);
-  VSDXParser &operator=(const VSDXParser&);
+  VSDXParser(const VSDXParser &);
+  VSDXParser &operator=(const VSDXParser &);
 
 };
 

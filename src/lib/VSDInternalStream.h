@@ -42,20 +42,29 @@ public:
   VSDInternalStream(std::vector<unsigned char> buffer, unsigned long size);
   ~VSDInternalStream() {}
 
-  bool isOLEStream() { return false; }
-  WPXInputStream * getDocumentOLEStream(const char*) { return 0; }
+  bool isOLEStream()
+  {
+    return false;
+  }
+  WPXInputStream *getDocumentOLEStream(const char *)
+  {
+    return 0;
+  }
 
   const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
   int seek(long offset, WPX_SEEK_TYPE seekType);
   long tell();
   bool atEOS();
-  unsigned long getSize() const { return m_buffer.size(); };
+  unsigned long getSize() const
+  {
+    return m_buffer.size();
+  };
 
 private:
   long m_offset;
   std::vector<unsigned char> m_buffer;
-  VSDInternalStream(const VSDInternalStream&);
-  VSDInternalStream& operator=(const VSDInternalStream&);
+  VSDInternalStream(const VSDInternalStream &);
+  VSDInternalStream &operator=(const VSDInternalStream &);
 };
 
 #endif

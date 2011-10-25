@@ -52,8 +52,8 @@ private:
   void readFillAndShadow(WPXInputStream *input);
 
   VSD6Parser();
-  VSD6Parser(const VSDXParser&);
-  VSD6Parser &operator=(const VSDXParser&);
+  VSD6Parser(const VSDXParser &);
+  VSD6Parser &operator=(const VSDXParser &);
 };
 
 } // namespace libvisio

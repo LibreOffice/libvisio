@@ -36,7 +36,8 @@
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXOutputElement;
 
@@ -62,7 +63,10 @@ public:
   void addEndTextSpan();
   void addEndTextLine();
   void addEndTextObject();
-  bool empty() const  { return !m_elements.size(); }
+  bool empty() const
+  {
+    return !m_elements.size();
+  }
   void clear();
 private:
   std::vector<VSDXOutputElement *> m_elements;

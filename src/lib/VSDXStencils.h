@@ -36,53 +36,57 @@
 #include "VSDXGeometryList.h"
 #include "VSDXTypes.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXStencilShape
 {
-  public:
-    VSDXStencilShape();
-    VSDXStencilShape(const VSDXStencilShape &shape);
-    ~VSDXStencilShape();
-    VSDXStencilShape &operator=(const VSDXStencilShape &shape);
+public:
+  VSDXStencilShape();
+  VSDXStencilShape(const VSDXStencilShape &shape);
+  ~VSDXStencilShape();
+  VSDXStencilShape &operator=(const VSDXStencilShape &shape);
 
-    std::vector<VSDXGeometryList> m_geometries;
-    ForeignData * m_foreign;
-    unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
-    VSDXLineStyle * m_lineStyle;
-    VSDXFillStyle * m_fillStyle;
-    VSDXTextBlockStyle * m_textBlockStyle;
-    VSDXCharStyle * m_charStyle;
-    VSDXParaStyle * m_paraStyle;
-    WPXString m_text;
-    std::map<unsigned, NURBSData> m_nurbsData;
-    std::map<unsigned, PolylineData> m_polylineData;
+  std::vector<VSDXGeometryList> m_geometries;
+  ForeignData *m_foreign;
+  unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
+  VSDXLineStyle *m_lineStyle;
+  VSDXFillStyle *m_fillStyle;
+  VSDXTextBlockStyle *m_textBlockStyle;
+  VSDXCharStyle *m_charStyle;
+  VSDXParaStyle *m_paraStyle;
+  WPXString m_text;
+  std::map<unsigned, NURBSData> m_nurbsData;
+  std::map<unsigned, PolylineData> m_polylineData;
 };
 
 class VSDXStencil
 {
-  public:
-    VSDXStencil();
-    VSDXStencil(const VSDXStencil &stencil);
-    ~VSDXStencil();
-    VSDXStencil &operator=(const VSDXStencil &stencil);
-    void addStencilShape(unsigned id, const VSDXStencilShape &shape);
-    const VSDXStencilShape *getStencilShape(unsigned id) const;
-    std::map<unsigned, VSDXStencilShape> m_shapes;
-    double m_shadowOffsetX;
-    double m_shadowOffsetY;
+public:
+  VSDXStencil();
+  VSDXStencil(const VSDXStencil &stencil);
+  ~VSDXStencil();
+  VSDXStencil &operator=(const VSDXStencil &stencil);
+  void addStencilShape(unsigned id, const VSDXStencilShape &shape);
+  const VSDXStencilShape *getStencilShape(unsigned id) const;
+  std::map<unsigned, VSDXStencilShape> m_shapes;
+  double m_shadowOffsetX;
+  double m_shadowOffsetY;
 };
 
 class VSDXStencils
 {
-  public:
-    VSDXStencils();
-    ~VSDXStencils();
-    void addStencil(unsigned idx, const VSDXStencil &stencil);
-    const VSDXStencil *getStencil(unsigned idx) const;
-    unsigned count() const { return m_stencils.size(); }
-  private:
-    std::map<unsigned, VSDXStencil> m_stencils;
+public:
+  VSDXStencils();
+  ~VSDXStencils();
+  void addStencil(unsigned idx, const VSDXStencil &stencil);
+  const VSDXStencil *getStencil(unsigned idx) const;
+  unsigned count() const
+  {
+    return m_stencils.size();
+  }
+private:
+  std::map<unsigned, VSDXStencil> m_stencils;
 };
 
 

@@ -38,7 +38,8 @@
 #include "libvisio_utils.h"
 #include "VSDXStyles.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXStylesCollector : public VSDXCollector
 {
@@ -93,10 +94,10 @@ public:
   void collectParaList(unsigned id, unsigned level);
   void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
-                         double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                         bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
+                            double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
   void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                         double spLine, double spBefore, double spAfter, unsigned char align);
+                            double spLine, double spBefore, double spAfter, unsigned char align);
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
                         unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
@@ -121,12 +122,15 @@ public:
   void endPage();
   void endPages() {}
 
-  VSDXStyles getStyleSheets() const { return m_styles; }
+  VSDXStyles getStyleSheets() const
+  {
+    return m_styles;
+  }
 
 
 private:
-  VSDXStylesCollector(const VSDXStylesCollector&);
-  VSDXStylesCollector& operator=(const VSDXStylesCollector&);
+  VSDXStylesCollector(const VSDXStylesCollector &);
+  VSDXStylesCollector &operator=(const VSDXStylesCollector &);
 
   void _handleLevelChange(unsigned level);
   void _flushShapeList();
@@ -149,12 +153,12 @@ private:
 
   unsigned m_currentStyleSheet;
   VSDXStyles m_styles;
-  VSDXLineStyle * m_lineStyle;
-  VSDXFillStyle * m_fillStyle;
-  VSDXTextBlockStyle * m_textBlockStyle;
-  VSDXCharStyle * m_charStyle;
-  VSDXParaStyle * m_paraStyle;
-  
+  VSDXLineStyle *m_lineStyle;
+  VSDXFillStyle *m_fillStyle;
+  VSDXTextBlockStyle *m_textBlockStyle;
+  VSDXCharStyle *m_charStyle;
+  VSDXParaStyle *m_paraStyle;
+
   unsigned m_lineStyleMaster;
   unsigned m_fillStyleMaster;
   unsigned m_textStyleMaster;

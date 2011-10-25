@@ -45,7 +45,8 @@
 #include "VSDXStyles.h"
 #include "VSDXPages.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXContentCollector : public VSDXCollector
 {
@@ -57,7 +58,10 @@ public:
     std::vector<std::list<unsigned> > &documentPageShapeOrders,
     VSDXStyles &styles, VSDXStencils &stencils
   );
-  virtual ~VSDXContentCollector() { if (m_txtxform) delete(m_txtxform); };
+  virtual ~VSDXContentCollector()
+  {
+    if (m_txtxform) delete(m_txtxform);
+  };
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
@@ -102,10 +106,10 @@ public:
   void collectParaList(unsigned id, unsigned level);
   void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
-                         double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                         bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
+                            double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
   void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                         double spLine, double spBefore, double spAfter, unsigned char align);
+                            double spLine, double spBefore, double spAfter, unsigned char align);
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
                         unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
@@ -132,10 +136,10 @@ public:
 
 
 private:
-  VSDXContentCollector(const VSDXContentCollector&);
-  VSDXContentCollector& operator=(const VSDXContentCollector&);
+  VSDXContentCollector(const VSDXContentCollector &);
+  VSDXContentCollector &operator=(const VSDXContentCollector &);
   libwpg::WPGPaintInterface *m_painter;
-  
+
   void applyXForm(double &x, double &y, const XForm &xform);
 
   void transformPoint(double &x, double &y, XForm *txtxform = 0);
@@ -151,7 +155,7 @@ private:
   void _handleLevelChange(unsigned level);
   void _appendUTF16LE(WPXString &text, WPXInputStream *input);
   void _appendUCS4(WPXString &text, unsigned ucs4Character);
-  
+
   void _handleForeignData(const WPXBinaryData &data);
 
   void lineStyleFromStyleSheet(unsigned styleId);
@@ -164,7 +168,7 @@ private:
   void textBlockStyleFromStyleSheet(const VSDXTextBlockStyle &style);
   void charStyleFromStyleSheet(const VSDXCharStyle &style);
   void paraStyleFromStyleSheet(const VSDXParaStyle &style);
-  
+
   void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
   void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
                                 unsigned fillFGTransparency, unsigned fillBGTransparency,
@@ -222,23 +226,23 @@ private:
   std::vector<VSDXParaStyle> m_paraFormats;
 
   VSDXTextBlockStyle m_textBlockFormat;
-  
+
   VSDXCharStyle m_defaultCharStyle;
   VSDXParaStyle m_defaultParaStyle;
 
   VSDXStyles m_styles;
 
   VSDXStencils m_stencils;
-  const VSDXStencilShape * m_stencilShape;
+  const VSDXStencilShape *m_stencilShape;
   bool m_isStencilStarted;
 
   unsigned m_currentGeometryCount;
-  
+
   unsigned m_backgroundPageID;
   unsigned m_currentPageID;
   VSDXPage m_currentPage;
   VSDXPages m_pages;
-  
+
   std::vector<std::pair<double, double> > m_splineControlPoints;
   std::vector<double> m_splineKnotVector;
   double m_splineX, m_splineY;

@@ -30,7 +30,8 @@
 #ifndef VSDXTYPES_H
 #define VSDXTYPES_H
 
-namespace libvisio {
+namespace libvisio
+{
 struct XForm
 {
   double pinX;
@@ -45,8 +46,8 @@ struct XForm
   double x;
   double y;
   XForm() : pinX(0.0), pinY(0.0), height(0.0), width(0.0),
-            pinLocX(0.0), pinLocY(0.0), angle(0.0),
-            flipX(false), flipY(false), x(0.0), y(0.0) {}
+    pinLocX(0.0), pinLocY(0.0), angle(0.0),
+    flipX(false), flipY(false), x(0.0), y(0.0) {}
 };
 
 // Utilities
@@ -64,7 +65,7 @@ struct ChunkHeader
 struct Colour
 {
   Colour(unsigned red, unsigned char green, unsigned char blue, unsigned char alpha)
-  : r(red), g(green), b(blue), a(alpha) {}
+    : r(red), g(green), b(blue), a(alpha) {}
   Colour() : r(0), g(0), b(0), a(0) {}
   unsigned char r;
   unsigned char g;
@@ -82,31 +83,31 @@ struct NURBSData
   std::vector<double> weights;
   std::vector<std::pair<double, double> > points;
   NURBSData()
-  : lastKnot(0.0),
-    degree(0),
-	xType(0x00),
-	yType(0x00),
-	knots(),
-	weights(),
-	points() {}
+    : lastKnot(0.0),
+      degree(0),
+      xType(0x00),
+      yType(0x00),
+      knots(),
+      weights(),
+      points() {}
   NURBSData(const NURBSData &data)
-  : lastKnot(data.lastKnot),
-    degree(data.degree),
-	xType(data.xType),
-	yType(data.yType),
-	knots(data.knots),
-	weights(data.weights),
-	points(data.points) {}
+    : lastKnot(data.lastKnot),
+      degree(data.degree),
+      xType(data.xType),
+      yType(data.yType),
+      knots(data.knots),
+      weights(data.weights),
+      points(data.points) {}
   NURBSData &operator=(const NURBSData &data)
   {
     lastKnot = data.lastKnot;
     degree = data.degree;
-	xType = data.xType;
-	yType = data.yType;
-	knots = data.knots;
-	weights = data.weights;
-	points = data.points;
-	return *this;
+    xType = data.xType;
+    yType = data.yType;
+    knots = data.knots;
+    weights = data.weights;
+    points = data.points;
+    return *this;
   }
 };
 
@@ -116,19 +117,19 @@ struct PolylineData
   unsigned char yType;
   std::vector<std::pair<double, double> > points;
   PolylineData()
-  : xType(0x00),
-    yType(0x00),
-	points() {}
+    : xType(0x00),
+      yType(0x00),
+      points() {}
   PolylineData(const PolylineData &data)
-  : xType(data.xType),
-    yType(data.yType),
-	points(data.points) {}
+    : xType(data.xType),
+      yType(data.yType),
+      points(data.points) {}
   PolylineData &operator=(const PolylineData &data)
   {
     xType = data.xType;
     yType = data.yType;
-	points = data.points;
-	return *this;
+    points = data.points;
+    return *this;
   }
 };
 
@@ -143,21 +144,21 @@ struct ForeignData
   unsigned format;
   WPXBinaryData data;
   ForeignData()
-  : typeId(0),
-    dataId(0),
-    typeLevel(0),
-    dataLevel(0),
-    type(0),
-    format(0),
-    data() {}
+    : typeId(0),
+      dataId(0),
+      typeLevel(0),
+      dataLevel(0),
+      type(0),
+      format(0),
+      data() {}
   ForeignData(const ForeignData &fd)
-  : typeId(fd.typeId),
-    dataId(fd.dataId),
-    typeLevel(fd.typeLevel),
-    dataLevel(fd.dataLevel),
-    type(fd.type),
-    format(fd.format),
-    data(fd.data) {}
+    : typeId(fd.typeId),
+      dataId(fd.dataId),
+      typeLevel(fd.typeLevel),
+      dataLevel(fd.dataLevel),
+      type(fd.type),
+      format(fd.format),
+      data(fd.data) {}
 };
 
 enum TextFormat { VSD_TEXT_ANSI, VSD_TEXT_UTF16 };

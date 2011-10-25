@@ -32,33 +32,34 @@
 
 #include "VSDXOutputElementList.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXPage
 {
-  public:
-    VSDXPage();
-    VSDXPage(double pageWidth, double pageHeight, unsigned currentPageID, unsigned backgroundPageID, const VSDXOutputElementList &pageElements);
-    VSDXPage(const VSDXPage &page);
-    ~VSDXPage();
-    VSDXPage &operator=(const VSDXPage &page);
-    void append(const VSDXOutputElementList &outputElements);
-    void draw(libwpg::WPGPaintInterface *painter) const;
-    double m_pageWidth, m_pageHeight;
-    unsigned m_currentPageID, m_backgroundPageID;
-    VSDXOutputElementList m_pageElements;
+public:
+  VSDXPage();
+  VSDXPage(double pageWidth, double pageHeight, unsigned currentPageID, unsigned backgroundPageID, const VSDXOutputElementList &pageElements);
+  VSDXPage(const VSDXPage &page);
+  ~VSDXPage();
+  VSDXPage &operator=(const VSDXPage &page);
+  void append(const VSDXOutputElementList &outputElements);
+  void draw(libwpg::WPGPaintInterface *painter) const;
+  double m_pageWidth, m_pageHeight;
+  unsigned m_currentPageID, m_backgroundPageID;
+  VSDXOutputElementList m_pageElements;
 };
 
 class VSDXPages
 {
-  public:
-    VSDXPages();
-    ~VSDXPages();
-    void addPage(const VSDXPage &page);
-    void draw(libwpg::WPGPaintInterface *painter);
-  private:
-    void _drawWithBackground(libwpg::WPGPaintInterface *painter, const VSDXPage &page);
-    std::map<unsigned, VSDXPage> m_pages;
+public:
+  VSDXPages();
+  ~VSDXPages();
+  void addPage(const VSDXPage &page);
+  void draw(libwpg::WPGPaintInterface *painter);
+private:
+  void _drawWithBackground(libwpg::WPGPaintInterface *painter, const VSDXPage &page);
+  std::map<unsigned, VSDXPage> m_pages;
 };
 
 

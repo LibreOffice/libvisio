@@ -62,19 +62,20 @@ typedef unsigned __int64 uint64_t;
 
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
-  #ifdef VERBOSE_DEBUG
-    #define VSD_DEBUG_MSG(M) printf("%15s:%5d: ", __FILE__, __LINE__); printf M
-    #define VSD_DEBUG(M) M
-  #else
-    #define VSD_DEBUG_MSG(M) printf M
-    #define VSD_DEBUG(M) M
-  #endif
+#ifdef VERBOSE_DEBUG
+#define VSD_DEBUG_MSG(M) printf("%15s:%5d: ", __FILE__, __LINE__); printf M
+#define VSD_DEBUG(M) M
 #else
-  #define VSD_DEBUG_MSG(M)
-  #define VSD_DEBUG(M)
+#define VSD_DEBUG_MSG(M) printf M
+#define VSD_DEBUG(M) M
+#endif
+#else
+#define VSD_DEBUG_MSG(M)
+#define VSD_DEBUG(M)
 #endif
 
-namespace libvisio {
+namespace libvisio
+{
 
 uint8_t readU8(WPXInputStream *input);
 uint16_t readU16(WPXInputStream *input);

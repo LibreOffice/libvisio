@@ -42,11 +42,11 @@ class VisioDocument
 {
 public:
 
-  static bool isSupported(WPXInputStream* input);
+  static bool isSupported(WPXInputStream *input);
 
-  static bool parse(WPXInputStream* input, libwpg::WPGPaintInterface* painter);
+  static bool parse(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
 
-  static bool generateSVG(WPXInputStream* input, WPXString& output);
+  static bool generateSVG(WPXInputStream *input, WPXString &output);
 };
 
 } // namespace libvisio

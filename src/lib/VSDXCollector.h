@@ -33,7 +33,8 @@
 #include <vector>
 #include "VSDXParser.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXCollector
 {
@@ -83,10 +84,10 @@ public:
   virtual void collectParaList(unsigned id, unsigned level) = 0;
   virtual void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format) = 0;
   virtual void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
-                                 double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                                 bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace) = 0;
+                                    double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+                                    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace) = 0;
   virtual void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                                 double spLine, double spBefore, double spAfter, unsigned char align) = 0;
+                                    double spLine, double spBefore, double spAfter, unsigned char align) = 0;
   virtual void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                                 unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
                                 unsigned char textDirection) = 0;
@@ -114,11 +115,11 @@ public:
   virtual void endPages() = 0;
 
 protected:
-  const ::WPXString getColourString(const Colour& c) const;
+  const ::WPXString getColourString(const Colour &c) const;
 
 private:
-  VSDXCollector(const VSDXCollector&);
-  VSDXCollector& operator=(const VSDXCollector&);
+  VSDXCollector(const VSDXCollector &);
+  VSDXCollector &operator=(const VSDXCollector &);
 };
 
 } // namespace libvisio

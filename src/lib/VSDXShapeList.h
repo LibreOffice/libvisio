@@ -33,7 +33,8 @@
 #include <vector>
 #include <map>
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXShapeListElement;
 
@@ -46,7 +47,10 @@ public:
   void setElementsOrder(const std::vector<unsigned> &elementsOrder);
   void handle(VSDXCollector *collector);
   void clear();
-  bool empty() const { return (!m_elements.size()); }
+  bool empty() const
+  {
+    return (!m_elements.size());
+  }
 private:
   std::map<unsigned, VSDXShapeListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;
