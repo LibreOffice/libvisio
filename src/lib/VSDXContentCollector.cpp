@@ -443,11 +443,13 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
   {
     m_styleProps.insert("draw:marker-start-viewbox", "0 0 20 30");
     m_styleProps.insert("draw:marker-start-path", "m10 0-10 30h20z");
+    m_styleProps.insert("draw:marker-start-width", 0.118);
   }
   else if (endMarker > 0)
   {
     m_styleProps.insert("draw:marker-end-viewbox", "0 0 20 30");
     m_styleProps.insert("draw:marker-end-path", "m10 0-10 30h20z");
+    m_styleProps.insert("draw:marker-end-width", 0.118);
   }
 }
 
