@@ -169,7 +169,7 @@ private:
   void charStyleFromStyleSheet(const VSDXCharStyle &style);
   void paraStyleFromStyleSheet(const VSDXParaStyle &style);
 
-  void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap);
+  void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
   void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
                                 unsigned fillFGTransparency, unsigned fillBGTransparency,
                                 unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);

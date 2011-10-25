@@ -282,7 +282,7 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
 }
 
 void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned char linePattern,
-    unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char lineCap)
+    unsigned char startMarker, unsigned char endMarker, unsigned char lineCap)
 {
   if (!m_lineStyle)
     m_lineStyle = new VSDXLineStyle();
@@ -290,6 +290,8 @@ void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned
   m_lineStyle->width = strokeWidth;
   m_lineStyle->colour = c;
   m_lineStyle->pattern = linePattern;
+  m_lineStyle->startMarker = startMarker;
+  m_lineStyle->endMarker = endMarker;
   m_lineStyle->cap = lineCap;
 
   _handleLevelChange(level);

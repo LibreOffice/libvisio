@@ -238,7 +238,7 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
   m_styleProps.insert("draw:fill", m_fillType);
 }
 
-void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned lineCap)
+void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap)
 {
   m_linePattern = linePattern;
 
@@ -437,6 +437,18 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
     // FIXME: later it will require special treatment for custom line patterns
     // patt ID is 0xfe, link to stencil name is in 'Line' blocks
     m_styleProps.insert("draw:stroke", "solid");
+
+  // Deal with line markers (arrows, etc.)
+  if (startMarker > 0)
+  {
+    m_styleProps.insert("draw:marker-start-viewbox", "0 0 20 30");
+    m_styleProps.insert("draw:marker-start-path", "m10 0-10 30h20z");
+  }
+  else if (endMarker > 0)
+  {
+    m_styleProps.insert("draw:marker-end-viewbox", "0 0 20 30");
+    m_styleProps.insert("draw:marker-end-path", "m10 0-10 30h20z");
+  }
 }
 
 void libvisio::VSDXContentCollector::_flushCurrentPath()
@@ -822,10 +834,10 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
 
 }
 
-void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned lineCap)
+void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap)
 {
   _handleLevelChange(level);
-  _lineProperties(strokeWidth, c, linePattern, lineCap);
+  _lineProperties(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
 }
 
 void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
@@ -1681,7 +1693,7 @@ void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(unsigned styleId)
 
 void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle &style)
 {
-  _lineProperties(style.width, style.colour, style.pattern, style.cap);
+  _lineProperties(style.width, style.colour, style.pattern, style.startMarker, style.endMarker, style.cap);
 }
 
 void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
