@@ -48,34 +48,34 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
   std::vector<std::list<unsigned> > &documentPageShapeOrders,
   VSDXStyles &styles, VSDXStencils &stencils
-  ) :
-    m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
-    m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
-    m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
-    m_txtxform(0), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]),
-    m_currentForeignData(), m_currentForeignProps(),
-    m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
-    m_lineColour("black"), m_fillType("none"), m_linePattern(1),
-    m_fillPattern(1), m_fillFGTransparency(0), m_fillBGTransparency(0),
-    m_noLine(false), m_noFill(false), m_noShow(false), m_colours(), m_fonts(),
-    m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
-    m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
-    m_currentPageNumber(0), m_shapeList(), m_shapeOutput(0), m_pageOutput(),
-    m_documentPageShapeOrders(documentPageShapeOrders),
-    m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
-    m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
-    m_charFormats(), m_paraFormats(), m_textBlockFormat(),
-    m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
-    m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
-    m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
-    m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
-    m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0)
+) :
+  m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
+  m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
+  m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
+  m_txtxform(0), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]),
+  m_currentForeignData(), m_currentForeignProps(),
+  m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
+  m_lineColour("black"), m_fillType("none"), m_linePattern(1),
+  m_fillPattern(1), m_fillFGTransparency(0), m_fillBGTransparency(0),
+  m_noLine(false), m_noFill(false), m_noShow(false), m_colours(), m_fonts(),
+  m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
+  m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
+  m_currentPageNumber(0), m_shapeList(), m_shapeOutput(0), m_pageOutput(),
+  m_documentPageShapeOrders(documentPageShapeOrders),
+  m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
+  m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
+  m_charFormats(), m_paraFormats(), m_textBlockFormat(),
+  m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
+  m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
+  m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
+  m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
+  m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0)
 {
 }
 
 void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
-                                                              unsigned fillFGTransparency, unsigned fillBGTransparency,
-                                                              unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+    unsigned fillFGTransparency, unsigned fillBGTransparency,
+    unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   m_fillPattern = fillPattern;
   m_fillFGTransparency = fillFGTransparency;
@@ -221,7 +221,7 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
     }
   }
   else
-  // fill types we don't handle right, but let us approximate with solid fill
+    // fill types we don't handle right, but let us approximate with solid fill
   {
     m_fillType = "solid";
     m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
@@ -253,18 +253,18 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
     m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
   switch (lineCap)
   {
-    case 0:
-      m_styleProps.insert("svg:stroke-linecap", "round");
-      m_styleProps.insert("svg:stroke-linejoin", "round");
-      break;
-    case 2:
-      m_styleProps.insert("svg:stroke-linecap", "square");
-      m_styleProps.insert("svg:stroke-linejoin", "miter");
-      break;
-    default:
-      m_styleProps.insert("svg:stroke-linecap", "butt");
-      m_styleProps.insert("svg:stroke-linejoin", "miter");
-      break;
+  case 0:
+    m_styleProps.insert("svg:stroke-linecap", "round");
+    m_styleProps.insert("svg:stroke-linejoin", "round");
+    break;
+  case 2:
+    m_styleProps.insert("svg:stroke-linecap", "square");
+    m_styleProps.insert("svg:stroke-linejoin", "miter");
+    break;
+  default:
+    m_styleProps.insert("svg:stroke-linecap", "butt");
+    m_styleProps.insert("svg:stroke-linejoin", "miter");
+    break;
   }
 
   int dots1 = 0;
@@ -442,27 +442,29 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
 void libvisio::VSDXContentCollector::_flushCurrentPath()
 {
   WPXPropertyListVector path;
-  double startX = 0; double startY = 0;
-  double x = 0; double y = 0;
+  double startX = 0;
+  double startY = 0;
+  double x = 0;
+  double y = 0;
   bool firstPoint = true;
 
   for (unsigned i = 0; i < m_currentGeometry.size(); i++)
   {
     if (firstPoint)
     {
-       x = m_currentGeometry[i]["svg:x"]->getDouble();
-       y = m_currentGeometry[i]["svg:y"]->getDouble();
-       startX = x;
-       startY = y;
-       firstPoint = false;
+      x = m_currentGeometry[i]["svg:x"]->getDouble();
+      y = m_currentGeometry[i]["svg:y"]->getDouble();
+      startX = x;
+      startY = y;
+      firstPoint = false;
     }
     else if (m_currentGeometry[i]["libwpg:path-action"]->getStr() == "M")
     {
       if (((startX == x && startY == y) || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")) && path.count())
       {
-         WPXPropertyList closedPath;
-         closedPath.insert("libwpg:path-action", "Z");
-         path.append(closedPath);
+        WPXPropertyList closedPath;
+        closedPath.insert("libwpg:path-action", "Z");
+        path.append(closedPath);
       }
       x = m_currentGeometry[i]["svg:x"]->getDouble();
       y = m_currentGeometry[i]["svg:y"]->getDouble();
@@ -478,9 +480,9 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
   }
   if (((startX == x && startY == y) || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")) && path.count())
   {
-     WPXPropertyList closedPath;
-     closedPath.insert("libwpg:path-action", "Z");
-     path.append(closedPath);
+    WPXPropertyList closedPath;
+    closedPath.insert("libwpg:path-action", "Z");
+    path.append(closedPath);
   }
   if (path.count() && !m_noShow)
   {
@@ -512,41 +514,41 @@ void libvisio::VSDXContentCollector::_flushText()
   textBlockProps.insert("fo:padding-left", m_textBlockFormat.leftMargin);
   textBlockProps.insert("fo:padding-right", m_textBlockFormat.rightMargin);
   textBlockProps.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
-  
+
   switch (m_textBlockFormat.verticalAlign)
   {
-    case 0: // Top
-      textBlockProps.insert("draw:textarea-vertical-align", "top");
-      break;
-    case 2: // Bottom
-      textBlockProps.insert("draw:textarea-vertical-align", "bottom");
-      break;
-    default: // Center
-      textBlockProps.insert("draw:textarea-vertical-align", "middle");
-      break;
+  case 0: // Top
+    textBlockProps.insert("draw:textarea-vertical-align", "top");
+    break;
+  case 2: // Bottom
+    textBlockProps.insert("draw:textarea-vertical-align", "bottom");
+    break;
+  default: // Center
+    textBlockProps.insert("draw:textarea-vertical-align", "middle");
+    break;
   }
 
   if (m_charFormats.empty())
     m_charFormats.push_back(m_defaultCharStyle);
   if (m_paraFormats.empty())
     m_paraFormats.push_back(m_defaultParaStyle);
-  
+
   unsigned numCharsInText =  (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
-  
+
   for (unsigned iChar = 0; iChar < m_charFormats.size(); iChar++)
   {
     if (m_charFormats[iChar].charCount)
-      numCharsInText -= m_charFormats[iChar].charCount; 
+      numCharsInText -= m_charFormats[iChar].charCount;
     else
       m_charFormats[iChar].charCount = numCharsInText;
   }
 
   numCharsInText =  (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
-  
+
   for (unsigned iPara = 0; iPara < m_paraFormats.size(); iPara++)
   {
     if (m_paraFormats[iPara].charCount)
-      numCharsInText -= m_paraFormats[iPara].charCount; 
+      numCharsInText -= m_paraFormats[iPara].charCount;
     else
       m_paraFormats[iPara].charCount = numCharsInText;
   }
@@ -559,7 +561,7 @@ void libvisio::VSDXContentCollector::_flushText()
        paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); paraIt++)
   {
     WPXPropertyList paraProps;
-    
+
     paraProps.insert("fo:text-indent", (*paraIt).indFirst);
     paraProps.insert("fo:margin-left", (*paraIt).indLeft);
     paraProps.insert("fo:margin-right", (*paraIt).indRight);
@@ -567,27 +569,27 @@ void libvisio::VSDXContentCollector::_flushText()
     paraProps.insert("fo:margin-bottom", (*paraIt).spAfter);
     switch ((*paraIt).align)
     {
-      case 0: // left
-        paraProps.insert("fo:text-align", "left");
-        break;
-      case 2: // right
-        paraProps.insert("fo:text-align", "end");
-        break;
-      case 4: // justify
-        paraProps.insert("fo:text-align", "justify");
-        break;
-      case 5: // full
-        paraProps.insert("fo:text-align", "full");
-        break;
-      default: // center
-        paraProps.insert("fo:text-align", "center");
-        break;
+    case 0: // left
+      paraProps.insert("fo:text-align", "left");
+      break;
+    case 2: // right
+      paraProps.insert("fo:text-align", "end");
+      break;
+    case 4: // justify
+      paraProps.insert("fo:text-align", "justify");
+      break;
+    case 5: // full
+      paraProps.insert("fo:text-align", "full");
+      break;
+    default: // center
+      paraProps.insert("fo:text-align", "center");
+      break;
     }
     if ((*paraIt).spLine > 0)
       paraProps.insert("fo:line-height", (*paraIt).spLine, WPX_POINT);
     else
       paraProps.insert("fo:line-height", -(*paraIt).spLine, WPX_PERCENT);
- 
+
     m_shapeOutput->addStartTextLine(paraProps);
 
     paraCharCount = (*paraIt).charCount;
@@ -652,8 +654,8 @@ void libvisio::VSDXContentCollector::_flushText()
       {
         textProps.insert("fo:background-color", getColourString(m_textBlockFormat.textBkgndColour));
 #if 0
-    if (m_textBlockFormat.textBkgndColour.a)
-      textProps.insert("fo:background-opacity", 1.0 - m_textBlockFormat.textBkgndColour.a/255.0, WPX_PERCENT);
+        if (m_textBlockFormat.textBkgndColour.a)
+          textProps.insert("fo:background-opacity", 1.0 - m_textBlockFormat.textBkgndColour.a/255.0, WPX_PERCENT);
 #endif
       }
 
@@ -671,7 +673,7 @@ void libvisio::VSDXContentCollector::_flushText()
         m_charFormats[charIndex].charCount = paraCharCount;
         m_charFormats[charIndex+1].charCount -= paraCharCount;
       }
-    }      
+    }
     m_shapeOutput->addEndTextLine();
   }
 
@@ -682,7 +684,8 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
   m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
   m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
-  double x = 0.0; double y = 0.0;
+  double x = 0.0;
+  double y = 0.0;
   transformPoint(x,y);
 
   m_currentForeignProps.insert("svg:x", m_scale*x);
@@ -718,7 +721,8 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
 {
   _handleLevelChange(level);
 
-  m_originalX = x3; m_originalY = y3;
+  m_originalX = x3;
+  m_originalY = y3;
   transformPoint(x2, y2);
   transformPoint(x3, y3);
   transformAngle(angle);
@@ -730,10 +734,11 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
   double x3n = x3*cos(angle) + y3*sin(angle);
   double y3n = ecc*(y3*cos(angle) - x3*sin(angle));
 
-  m_x = x3; m_y = y3;
+  m_x = x3;
+  m_y = y3;
 
   if (fabs(((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n))) <= LIBVISIO_EPSILON || fabs(((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n))) <= LIBVISIO_EPSILON)
-  // most probably all of the points lie on the same line, so use lineTo instead
+    // most probably all of the points lie on the same line, so use lineTo instead
   {
     WPXPropertyList end;
     end.insert("svg:x", m_scale*m_x);
@@ -745,10 +750,10 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
 
   double x0 = ((x1-x2n)*(x1+x2n)*(y2n-y3n) - (x2n-x3n)*(x2n+x3n)*(y1-y2n) +
                (y1-y2n)*(y2n-y3n)*(y1-y3n)) /
-               (2*((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n)));
+              (2*((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n)));
   double y0 = ((x1-x2n)*(x2n-x3n)*(x1-x3n) + (x2n-x3n)*(y1-y2n)*(y1+y2n) -
                (x1-x2n)*(y2n-y3n)*(y2n+y3n)) /
-               (2*((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n)));
+              (2*((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n)));
 
   VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
 
@@ -824,8 +829,8 @@ void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned lev
 }
 
 void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
-                                                          unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency,
-                                                          unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+    unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency,
+    unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   _handleLevelChange(level);
   _fillAndShadowProperties(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
@@ -877,17 +882,23 @@ void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &bin
       switch(m_foreignFormat)
       {
       case 0:
-        filename.sprintf("binarydump%i.bmp", bitmapId++); break;
+        filename.sprintf("binarydump%i.bmp", bitmapId++);
+        break;
       case 1:
-        filename.sprintf("binarydump%i.jpeg", bitmapId++); break;
+        filename.sprintf("binarydump%i.jpeg", bitmapId++);
+        break;
       case 2:
-        filename.sprintf("binarydump%i.gif", bitmapId++); break;
+        filename.sprintf("binarydump%i.gif", bitmapId++);
+        break;
       case 3:
-        filename.sprintf("binarydump%i.tiff", bitmapId++); break;
+        filename.sprintf("binarydump%i.tiff", bitmapId++);
+        break;
       case 4:
-        filename.sprintf("binarydump%i.png", bitmapId++); break;
+        filename.sprintf("binarydump%i.png", bitmapId++);
+        break;
       default:
-        filename.sprintf("binarydump%i.bin", bitmapId++); break;
+        filename.sprintf("binarydump%i.bin", bitmapId++);
+        break;
       }
       FILE *f = fopen(filename.cstr(), "wb");
       if (f)
@@ -905,15 +916,20 @@ void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &bin
       switch(m_foreignFormat)
       {
       case 0:
-        m_currentForeignProps.insert("libwpg:mime-type", "image/bmp"); break;
+        m_currentForeignProps.insert("libwpg:mime-type", "image/bmp");
+        break;
       case 1:
-        m_currentForeignProps.insert("libwpg:mime-type", "image/jpeg"); break;
+        m_currentForeignProps.insert("libwpg:mime-type", "image/jpeg");
+        break;
       case 2:
-        m_currentForeignProps.insert("libwpg:mime-type", "image/gif"); break;
+        m_currentForeignProps.insert("libwpg:mime-type", "image/gif");
+        break;
       case 3:
-        m_currentForeignProps.insert("libwpg:mime-type", "image/tiff"); break;
+        m_currentForeignProps.insert("libwpg:mime-type", "image/tiff");
+        break;
       case 4:
-        m_currentForeignProps.insert("libwpg:mime-type", "image/png"); break;
+        m_currentForeignProps.insert("libwpg:mime-type", "image/png");
+        break;
       }
     }
     else if (m_foreignType == 4)
@@ -950,8 +966,10 @@ void libvisio::VSDXContentCollector::collectParaList(unsigned /* id */, unsigned
 void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char geomFlags)
 {
   _handleLevelChange(level);
-  m_x = 0.0; m_y = 0.0;
-  m_originalX = 0.0; m_originalY = 0.0;
+  m_x = 0.0;
+  m_y = 0.0;
+  m_originalX = 0.0;
+  m_originalY = 0.0;
   bool noFill = ((geomFlags & 1) == 1);
   bool noLine = ((geomFlags & 2) == 2);
   bool noShow = ((geomFlags & 4) == 4);
@@ -981,7 +999,8 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
 void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
-  m_originalX = x; m_originalY = y;
+  m_originalX = x;
+  m_originalY = y;
   transformPoint(x, y);
   m_x = x;
   m_y = y;
@@ -995,7 +1014,8 @@ void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned l
 void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
-  m_originalX = x; m_originalY = y;
+  m_originalX = x;
+  m_originalY = y;
   transformPoint(x, y);
   m_x = x;
   m_y = y;
@@ -1009,14 +1029,16 @@ void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned l
 void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned level, double x2, double y2, double bow)
 {
   _handleLevelChange(level);
-  m_originalX = x2; m_originalY = y2;
+  m_originalX = x2;
+  m_originalY = y2;
   transformPoint(x2, y2);
   double angle = 0.0;
   transformAngle(angle);
 
   if (bow == 0)
   {
-    m_x = x2; m_y = y2;
+    m_x = x2;
+    m_y = y2;
     WPXPropertyList end;
     end.insert("svg:x", m_scale*m_x);
     end.insert("svg:y", m_scale*m_y);
@@ -1050,7 +1072,8 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
       else
         break;
     }
-    m_x = x2; m_y = y2;
+    m_x = x2;
+    m_y = y2;
     arc.insert("svg:rx", m_scale*radius);
     arc.insert("svg:ry", m_scale*radius);
     arc.insert("libwpg:rotate", angle*180/M_PI, WPX_GENERIC);
@@ -1070,7 +1093,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
   _handleLevelChange(level);
 
   if (!knotVector.size() || !controlPoints.size() || !weights.size())
-  // Here, maybe we should just draw line to (x2,y2)
+    // Here, maybe we should just draw line to (x2,y2)
     return;
 
   // Fill in end knots
@@ -1099,7 +1122,9 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
   {
     NURBS.clear();
     NURBS.insert("libwpg:path-action", "L");
-    double nextX = 0; double nextY = 0; double denominator = 0.0000001;
+    double nextX = 0;
+    double nextY = 0;
+    double denominator = 0.0000001;
 
     for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
     {
@@ -1116,7 +1141,8 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
     m_currentGeometry.push_back(NURBS);
   }
 
-  m_originalX = x2; m_originalY = y2;
+  m_originalX = x2;
+  m_originalY = y2;
   m_x = x2;
   m_y = y2;
   transformPoint(m_x, m_y);
@@ -1157,8 +1183,8 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     }
 
     // Get stencil geometry so as to find stencil NURBS data ID
-    VSDXGeometryListElement * element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
-    VSDXNURBSTo2* tmpElement = dynamic_cast<VSDXNURBSTo2*>(element);
+    VSDXGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
+    VSDXNURBSTo2 *tmpElement = dynamic_cast<VSDXNURBSTo2 *>(element);
     if (!tmpElement)
     {
       _handleLevelChange(level);
@@ -1183,7 +1209,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     collectNURBSTo(id, level, x2, y2, data.xType, data.yType, data.degree, data.points, data.knots, data.weights);
   }
   else
-      _handleLevelChange(level);
+    _handleLevelChange(level);
 }
 
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > &points)
@@ -1206,8 +1232,10 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
     m_currentGeometry.push_back(polyline);
   }
 
-  m_originalX = x; m_originalY = y;
-  m_x = x; m_y = y;
+  m_originalX = x;
+  m_originalY = y;
+  m_x = x;
+  m_y = y;
   transformPoint(m_x, m_y);
   polyline.insert("libwpg:path-action", "L");
   polyline.insert("svg:x", m_x);
@@ -1228,8 +1256,8 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned lev
     }
 
     // Get stencil geometry so as to find stencil polyline data ID
-    VSDXGeometryListElement * element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
-    dataID = dynamic_cast<VSDXPolylineTo2*>(element)->m_dataID;
+    VSDXGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
+    dataID = dynamic_cast<VSDXPolylineTo2 *>(element)->m_dataID;
     iter = m_stencilShape->m_polylineData.find(dataID);
   }
   else // No stencils involved, directly get dataID
@@ -1243,7 +1271,7 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned lev
     collectPolylineTo(id, level, x, y, data.xType, data.yType, data.points);
   }
   else
-      _handleLevelChange(level);
+    _handleLevelChange(level);
 }
 
 /* NURBS shape data */
@@ -1402,8 +1430,10 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
 
-  m_originalX = 0.0; m_originalY = 0.0;
-  m_x = 0; m_y = 0;
+  m_originalX = 0.0;
+  m_originalY = 0.0;
+  m_x = 0;
+  m_y = 0;
 
   // Geometry flags
   m_noLine = false;
@@ -1439,7 +1469,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_stencilShape = 0;
   if (masterPage != 0xffffffff && masterShape != 0xffffffff)
   {
-    const VSDXStencil * stencil = m_stencils.getStencil(masterPage);
+    const VSDXStencil *stencil = m_stencils.getStencil(masterPage);
     if (stencil) m_stencilShape = stencil->getStencilShape(masterShape);
     // Set the foreign types and foreign data if the stencil has foreign
     // If the shape itself overrides them, they will be overwritten in the
@@ -1465,9 +1495,9 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
 
       if (m_stencilShape->m_textStyleId)
       {
-         m_defaultCharStyle = m_styles.getCharStyle(m_stencilShape->m_textStyleId);
-         m_defaultParaStyle = m_styles.getParaStyle(m_stencilShape->m_textStyleId);
-         m_textBlockFormat = m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId);
+        m_defaultCharStyle = m_styles.getCharStyle(m_stencilShape->m_textStyleId);
+        m_defaultParaStyle = m_styles.getParaStyle(m_stencilShape->m_textStyleId);
+        m_textBlockFormat = m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId);
       }
       if (m_stencilShape->m_textBlockStyle)
         m_textBlockFormat = *(m_stencilShape->m_textBlockStyle);
@@ -1534,7 +1564,8 @@ void libvisio::VSDXContentCollector::collectSplineStart(unsigned /* id */, unsig
   m_splineKnotVector.push_back(firstKnot);
   m_splineKnotVector.push_back(secondKnot);
   m_splineLastKnot = lastKnot;
-  m_splineX = x; m_splineY = y;
+  m_splineX = x;
+  m_splineY = y;
   m_splineDegree = degree;
 }
 
@@ -1543,7 +1574,8 @@ void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsign
 {
   m_splineKnotVector.push_back(knot);
   m_splineControlPoints.push_back(std::pair<double,double>(m_splineX,m_splineY));
-  m_splineX = x; m_splineY = y;
+  m_splineX = x;
+  m_splineY = y;
 }
 
 
@@ -1574,7 +1606,7 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
 }
 
 void libvisio::VSDXContentCollector::collectVSDXParaStyle(unsigned /* id */ , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                         double spLine, double spBefore, double spAfter, unsigned char align)
+    double spLine, double spBefore, double spAfter, unsigned char align)
 {
   _handleLevelChange(level);
   VSDXParaStyle format(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
@@ -1582,20 +1614,20 @@ void libvisio::VSDXContentCollector::collectVSDXParaStyle(unsigned /* id */ , un
 }
 
 void libvisio::VSDXContentCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID,
-                                                       Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic,
-                                                       bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                                                       bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace)
+    Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic,
+    bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace)
 {
   _handleLevelChange(level);
   VSDXCharStyle format(charCount, fontID, fontColour, langId, fontSize, bold, italic,
-                    underline, doubleunderline, strikeout, doublestrikeout,
-                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+                       underline, doubleunderline, strikeout, doublestrikeout,
+                       allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   m_charFormats.push_back(format);
 }
 
 void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double leftMargin, double rightMargin,
-                                                      double topMargin, double bottomMargin,  unsigned char verticalAlign, unsigned char bgClrId,
-                                                      const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
+    double topMargin, double bottomMargin,  unsigned char verticalAlign, unsigned char bgClrId,
+    const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
 {
   _handleLevelChange(level);
   m_textBlockFormat = VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
@@ -1622,22 +1654,22 @@ void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned 
 }
 
 void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, unsigned /*langId*/, double /*fontSize*/,
-                                                        bool /*bold*/, bool /*italic*/, bool /*underline*/, bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */,
-                                                        bool /* allcaps */, bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, WPXString /*fontFace*/)
+    bool /*bold*/, bool /*italic*/, bool /*underline*/, bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */,
+    bool /* allcaps */, bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, WPXString /*fontFace*/)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXContentCollector::collectParaIXStyle(unsigned /* id */, unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */, double /* indRight */,
-                                                        double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */)
+    double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */)
 {
   _handleLevelChange(level);
 }
 
 
 void libvisio::VSDXContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
-                                                           double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */,
-                                                           const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
+    double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */,
+    const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);
 }
@@ -1708,7 +1740,8 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
         {
           for (unsigned i = 0; i < m_stencilShape->m_geometries.size(); i++)
           {
-            m_x = 0.0; m_y = 0.0;
+            m_x = 0.0;
+            m_y = 0.0;
             m_stencilShape->m_geometries[i].handle(this);
           }
         }
@@ -1722,8 +1755,10 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
       m_isShapeStarted = false;
 
     }
-    m_originalX = 0.0; m_originalY = 0.0;
-    m_x = 0; m_y = 0;
+    m_originalX = 0.0;
+    m_originalY = 0.0;
+    m_x = 0;
+    m_y = 0;
     if (m_txtxform)
       delete(m_txtxform);
     m_txtxform = 0;
@@ -1744,12 +1779,14 @@ void libvisio::VSDXContentCollector::startPage()
     _flushCurrentForeignData();
     m_isShapeStarted = false;
   }
-  m_originalX = 0.0; m_originalY = 0.0;
+  m_originalX = 0.0;
+  m_originalY = 0.0;
   if (m_txtxform)
     delete(m_txtxform);
   m_txtxform = 0;
   m_xform = XForm();
-  m_x = 0; m_y = 0;
+  m_x = 0;
+  m_y = 0;
   m_currentPageNumber++;
   if (m_groupXFormsSequence.size() >= m_currentPageNumber)
     m_groupXForms = m_groupXFormsSequence[m_currentPageNumber-1];

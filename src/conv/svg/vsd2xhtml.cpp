@@ -35,62 +35,63 @@
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
 
-namespace {
+namespace
+{
 
 int printUsage()
 {
-	printf("Usage: vsd2xhtml [OPTION] <Visio Document>\n");
-	printf("\n");
-	printf("Options:\n");
-	printf("--help                Shows this help message\n");
-	return -1;
+  printf("Usage: vsd2xhtml [OPTION] <Visio Document>\n");
+  printf("\n");
+  printf("Options:\n");
+  printf("--help                Shows this help message\n");
+  return -1;
 }
 
 } // anonymous namespace
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2)
-		return printUsage();
-	
-	char *file = 0;
+  if (argc < 2)
+    return printUsage();
 
-	for (int i = 1; i < argc; i++)
-	{
-		if (!file && strncmp(argv[i], "--", 2))
-			file = argv[i];
-		else
-			return printUsage();
-	}
+  char *file = 0;
 
-	if (!file)
-		return printUsage();
-		
-	WPXFileStream input(file);
+  for (int i = 1; i < argc; i++)
+  {
+    if (!file && strncmp(argv[i], "--", 2))
+      file = argv[i];
+    else
+      return printUsage();
+  }
 
-	if (!libvisio::VisioDocument::isSupported(&input))
-	{
-		std::cerr << "ERROR: Unsupported file format (unsupported version) or file is encrypted!" << std::endl;
-		return 1;
-	}
+  if (!file)
+    return printUsage();
 
-	::WPXString output;
-	if (!libvisio::VisioDocument::generateSVG(&input, output))
-	{
-		std::cerr << "ERROR: SVG Generation failed!" << std::endl;
-		return 1;
-	}		
+  WPXFileStream input(file);
 
-	std::cout << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl;
-	std::cout << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" << std::endl;
-	std::cout << "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" << std::endl;
-	std::cout << "<body>" << std::endl;
-	std::cout << "<?import namespace=\"svg\" urn=\"http://www.w3.org/2000/svg\"?>" << std::endl;
+  if (!libvisio::VisioDocument::isSupported(&input))
+  {
+    std::cerr << "ERROR: Unsupported file format (unsupported version) or file is encrypted!" << std::endl;
+    return 1;
+  }
 
-	std::cout << output.cstr() << std::endl;
+  ::WPXString output;
+  if (!libvisio::VisioDocument::generateSVG(&input, output))
+  {
+    std::cerr << "ERROR: SVG Generation failed!" << std::endl;
+    return 1;
+  }
 
-	std::cout << "</body>" << std::endl;
-	std::cout << "</html>" << std::endl;
+  std::cout << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << std::endl;
+  std::cout << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">" << std::endl;
+  std::cout << "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" << std::endl;
+  std::cout << "<body>" << std::endl;
+  std::cout << "<?import namespace=\"svg\" urn=\"http://www.w3.org/2000/svg\"?>" << std::endl;
 
-	return 0;
+  std::cout << output.cstr() << std::endl;
+
+  std::cout << "</body>" << std::endl;
+  std::cout << "</html>" << std::endl;
+
+  return 0;
 }

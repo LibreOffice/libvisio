@@ -53,7 +53,7 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
 }
 
 void libvisio::VSDXStylesCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double /* x3 */, double /* y3 */,
-                                                           double /* x2 */, double /* y2 */, double /* angle */, double /* ecc */)
+    double /* x2 */, double /* y2 */, double /* angle */, double /* ecc */)
 {
   _handleLevelChange(level);
 }
@@ -64,27 +64,27 @@ void libvisio::VSDXStylesCollector::collectForeignData(unsigned /* id */, unsign
 }
 
 void libvisio::VSDXStylesCollector::collectEllipse(unsigned /* id */, unsigned level, double /* cx */, double /* cy */,
-                                                   double /* xleft */, double /* yleft */, double /* xtop */, double /* ytop */)
+    double /* xleft */, double /* yleft */, double /* xtop */, double /* ytop */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */,
-                                                unsigned /* linePattern */, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned /* lineCap */)
+    unsigned /* linePattern */, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned /* lineCap */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned /* colourIndexFG */, unsigned /* colourIndexBG */,
-                                                         unsigned /* fillPattern */, unsigned /* fillFGTransparency */, unsigned /* fillBGTransparency */,
-                                                         unsigned /* shadowPattern */, Colour /* shfgc */, double /* shadowOffsetX */, double /* shadowOffsetY */)
+    unsigned /* fillPattern */, unsigned /* fillFGTransparency */, unsigned /* fillBGTransparency */,
+    unsigned /* shadowPattern */, Colour /* shfgc */, double /* shadowOffsetX */, double /* shadowOffsetY */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned /* colourIndexFG */, unsigned /* colourIndexBG */,
-                                                         unsigned /* fillPattern */, unsigned /* fillFGTransparency */, unsigned /* fillBGTransparency */,
-                                                         unsigned /* shadowPattern */, Colour /* shfgc */)
+    unsigned /* fillPattern */, unsigned /* fillFGTransparency */, unsigned /* fillBGTransparency */,
+    unsigned /* shadowPattern */, Colour /* shfgc */)
 {
   _handleLevelChange(level);
 }
@@ -125,22 +125,22 @@ void libvisio::VSDXStylesCollector::collectArcTo(unsigned /* id */, unsigned lev
 }
 
 void libvisio::VSDXStylesCollector::collectNURBSTo(unsigned /* id */, unsigned level, double /* x2 */, double /* y2 */,
-                                                   unsigned char /* xType */, unsigned char /* yType */, unsigned /* degree */,
-                                                   std::vector<std::pair<double, double> > /* controlPoints */,
-                                                   std::vector<double> /* knotVector */, std::vector<double> /* weights */)
+    unsigned char /* xType */, unsigned char /* yType */, unsigned /* degree */,
+    std::vector<std::pair<double, double> > /* controlPoints */,
+    std::vector<double> /* knotVector */, std::vector<double> /* weights */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectNURBSTo(unsigned /* id */, unsigned level, double /* x2 */, double /* y2 */, double /* knot */,
-                                                   double /* knotPrev */, double /* weight */, double /* weightPrev */, unsigned /* dataID */)
+    double /* knotPrev */, double /* weight */, double /* weightPrev */, unsigned /* dataID */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectPolylineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */,
-                                                      unsigned char /* xType */, unsigned char /* yType */,
-                                                      std::vector<std::pair<double, double> > & /* points */)
+    unsigned char /* xType */, unsigned char /* yType */,
+    std::vector<std::pair<double, double> > & /* points */)
 {
   _handleLevelChange(level);
 }
@@ -151,7 +151,7 @@ void libvisio::VSDXStylesCollector::collectPolylineTo(unsigned /* id */, unsigne
 }
 
 void libvisio::VSDXStylesCollector::collectSplineStart(unsigned /* id */, unsigned level, double /* x */, double /* y */,
-                                                       double /* secondKnot */, double /* firstKnot */, double /* lastKnot */, unsigned /* degree */)
+    double /* secondKnot */, double /* firstKnot */, double /* lastKnot */, unsigned /* degree */)
 {
   _handleLevelChange(level);
 }
@@ -166,14 +166,14 @@ void libvisio::VSDXStylesCollector::collectSplineEnd()
 }
 
 void libvisio::VSDXStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned char /* xType */, unsigned char /* yType */,
-                                                     unsigned /* degree */, double /*lastKnot*/, std::vector<std::pair<double, double> > /* controlPoints */,
-                                                     std::vector<double> /* knotVector */, std::vector<double> /* weights */)
+    unsigned /* degree */, double /*lastKnot*/, std::vector<std::pair<double, double> > /* controlPoints */,
+    std::vector<double> /* knotVector */, std::vector<double> /* weights */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned char /* xType */, unsigned char /* yType */,
-                                                     std::vector<std::pair<double, double> > /* points */)
+    std::vector<std::pair<double, double> > /* points */)
 {
   _handleLevelChange(level);
 }
@@ -209,7 +209,7 @@ void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned /* id */, un
 }
 
 void libvisio::VSDXStylesCollector::collectPageProps(unsigned /* id */, unsigned level, double /* pageWidth */, double /* pageHeight */,
-                                                     double /* shadowOffsetX */, double /* shadowOffsetY */)
+    double /* shadowOffsetX */, double /* shadowOffsetY */)
 {
   _handleLevelChange(level);
 }
@@ -220,7 +220,7 @@ void libvisio::VSDXStylesCollector::collectPage(unsigned /* id */, unsigned leve
 }
 
 void libvisio::VSDXStylesCollector::collectShape(unsigned id, unsigned level, unsigned /*masterPage*/, unsigned /*masterShape*/,
-                                                 unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
+    unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
 {
   _handleLevelChange(level);
   m_currentShapeId = id;
@@ -242,26 +242,26 @@ void libvisio::VSDXStylesCollector::collectFont(unsigned short /* fontID */, con
 
 void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<unsigned char> & /*textStream*/, TextFormat /*format*/)
 {
- _handleLevelChange(level);
+  _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectVSDXParaStyle(unsigned /* id */ , unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */,
-                                                      double /* indRight */, double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */)
+    double /* indRight */, double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/,
-                                                      unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/,
-                                                      bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */, bool /* allcaps */,
-                                                      bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, WPXString /*fontFace*/)
+    unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/,
+    bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */, bool /* allcaps */,
+    bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, WPXString /*fontFace*/)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectTextBlock(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
-                                                     double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */,
-                                                     const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
+    double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */,
+    const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);
 }
@@ -282,7 +282,7 @@ void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned leve
 }
 
 void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned char linePattern,
-                                                     unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char lineCap)
+    unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char lineCap)
 {
   if (!m_lineStyle)
     m_lineStyle = new VSDXLineStyle();
@@ -296,8 +296,8 @@ void libvisio::VSDXStylesCollector::collectLineStyle(unsigned /* id */, unsigned
 }
 
 void libvisio::VSDXStylesCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG,
-                                                     unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency,
-                                                     unsigned char shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+    unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency,
+    unsigned char shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   if (!m_fillStyle)
     m_fillStyle = new VSDXFillStyle();
@@ -317,7 +317,7 @@ void libvisio::VSDXStylesCollector::collectFillStyle(unsigned /*id*/, unsigned l
 }
 
 void libvisio::VSDXStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                                                       double spLine, double spBefore, double spAfter, unsigned char align)
+    double spLine, double spBefore, double spAfter, unsigned char align)
 {
   _handleLevelChange(level);
   if (!m_paraStyle)
@@ -326,19 +326,19 @@ void libvisio::VSDXStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned
 
 
 void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
-                                                       unsigned langID, double fontSize, bool bold, bool italic, bool underline, bool doubleunderline,
-                                                       bool strikeout, bool doublestrikeout, bool allcaps, bool initcaps, bool smallcaps,
-                                                       bool superscript, bool subscript, WPXString fontFace)
+    unsigned langID, double fontSize, bool bold, bool italic, bool underline, bool doubleunderline,
+    bool strikeout, bool doublestrikeout, bool allcaps, bool initcaps, bool smallcaps,
+    bool superscript, bool subscript, WPXString fontFace)
 {
   _handleLevelChange(level);
   if (!m_charStyle)
     m_charStyle = new VSDXCharStyle(charCount, fontID, fontColour, langID, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                                  allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+                                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
 void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                                                          unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
-                                                          unsigned char textDirection)
+    unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
+    unsigned char textDirection)
 {
   _handleLevelChange(level);
   if (!m_textBlockStyle)
@@ -346,8 +346,8 @@ void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, uns
 }
 
 void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG,
-                                                     unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency,
-                                                     unsigned char shadowPattern, Colour shfgc)
+    unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency,
+    unsigned char shadowPattern, Colour shfgc)
 {
   collectFillStyle(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }

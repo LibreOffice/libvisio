@@ -115,7 +115,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 //  unsigned ptrFormat;
   std::vector<libvisio::Pointer> PtrList;
   Pointer ptr;
-  
+
   // Parse out pointers to other streams from trailer
   input->seek(SHIFT, WPX_SEEK_SET);
   unsigned offset = readU32(input);
@@ -129,7 +129,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
     ptr.Offset = readU32(input);
     ptr.Length = readU32(input);
     ptr.Format = readU16(input);
-    
+
     if (ptr.Type == VSD_FONTFACES)
       PtrList.insert(PtrList.begin(),ptr);
 //      PtrList.push_back(ptr);
@@ -296,14 +296,14 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
     switch (ptrType)
     {
     case VSD_STENCIL_PAGE:
-      {
-        VSDXStencil tmpStencil;
-        m_currentStencil = &tmpStencil;
-        handleStencilPage(&tmpInput, shift2);
-        m_stencils.addStencil(i, *m_currentStencil);
-        m_currentStencil = 0;
-      }
-      break;
+    {
+      VSDXStencil tmpStencil;
+      m_currentStencil = &tmpStencil;
+      handleStencilPage(&tmpInput, shift2);
+      m_stencils.addStencil(i, *m_currentStencil);
+      m_currentStencil = 0;
+    }
+    break;
     default:
       break;
     }
@@ -420,7 +420,7 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
         foreignLength = readU32(&tmpInput);
       else
         tmpInput.seek(0x4, WPX_SEEK_CUR);
-        
+
       unsigned long tmpBytesRead = 0;
       const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
       if (foreignLength == tmpBytesRead)
@@ -461,7 +461,7 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
       case VSD_GEOMETRY:
         readGeometry(input);
         break;
-        case VSD_MOVE_TO:
+      case VSD_MOVE_TO:
         readMoveTo(input);
         break;
       case VSD_LINE_TO:
@@ -766,7 +766,7 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
     m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   else if (m_isStencilStarted)
   {
-    if (!m_stencilShape.m_lineStyle) 
+    if (!m_stencilShape.m_lineStyle)
       m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   }
   else
@@ -800,9 +800,9 @@ void libvisio::VSDXParser::readTextBlock(WPXInputStream *input)
                                        verticalAlign, bgClrId, c, defaultTabStop, textDirection);
   else if (m_isStencilStarted)
   {
-    if (!m_stencilShape.m_textBlockStyle) 
+    if (!m_stencilShape.m_textBlockStyle)
       m_stencilShape.m_textBlockStyle = new VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-                                                                       verticalAlign, bgClrId, c, defaultTabStop, textDirection);
+          verticalAlign, bgClrId, c, defaultTabStop, textDirection);
   }
   else
     m_collector->collectTextBlock(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
@@ -1013,7 +1013,8 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double shadowOffsetY = -readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  /* m_scale = */ readDouble(input);
+  /* m_scale = */
+  readDouble(input);
 
   if (m_isStencilStarted)
   {
@@ -1024,7 +1025,7 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
     m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY);
 }
 
-void libvisio::VSDXParser::readShape(WPXInputStream * input)
+void libvisio::VSDXParser::readShape(WPXInputStream *input)
 {
   input->seek(0x12, WPX_SEEK_CUR);
   unsigned masterPage = readU32(input);
@@ -1103,7 +1104,8 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
     return;
 
   unsigned degree = 3;
-  unsigned char xType = 1; unsigned char yType = 1;
+  unsigned char xType = 1;
+  unsigned char yType = 1;
   // Only read formula if block is found
   if (cellRef == 6)
   {
@@ -1201,7 +1203,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
       m_stencilShape.m_geometries.back().addNURBSTo(m_header.id, m_header.level, x, y, xType, yType, degree, controlPoints, knotVector, weights);
     else
       m_geomList->addNURBSTo(m_header.id, m_header.level, x, y, xType,
-                           yType, degree, controlPoints, knotVector, weights);
+                             yType, degree, controlPoints, knotVector, weights);
   }
   else // No formula found, use line
   {
@@ -1238,7 +1240,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   input->seek(0x9, WPX_SEEK_CUR);
   unsigned long chunkBytesRead = 0x30;
 
-    // Find formula block referring to cell A (cell 2)
+  // Find formula block referring to cell A (cell 2)
   unsigned cellRef = 0;
   unsigned length = 0;
   unsigned long inputPos = input->tell();
@@ -1261,7 +1263,8 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
     return;
 
   // Default to local co-ordinates if unspecified
-  unsigned char xType = 1; unsigned char yType = 1;
+  unsigned char xType = 1;
+  unsigned char yType = 1;
   std::vector<std::pair<double, double> > points;
 
   // Only formula if block is found
@@ -1283,7 +1286,8 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
     while (flag != 0x81 && blockBytesRead < length)
     {
       inputPos = input->tell();
-      double x2 = 0; double y2 = 0;
+      double x2 = 0;
+      double y2 = 0;
 
       valueType = flag;
       if (valueType == 0x20)
@@ -1333,7 +1337,8 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
 
     for (unsigned i = 0; i < pointCount; i++)
     {
-      double x = 0; double y = 0;
+      double x = 0;
+      double y = 0;
       x = readDouble(input);
       y = readDouble(input);
       points.push_back(std::pair<double, double>(x, y));

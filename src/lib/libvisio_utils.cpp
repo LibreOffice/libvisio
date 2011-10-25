@@ -36,7 +36,7 @@ uint8_t libvisio::readU8(WPXInputStream *input)
   if (!input || input->atEOS())
     throw EndOfStreamException();
   unsigned long numBytesRead;
-  uint8_t const * p = input->read(sizeof(uint8_t), numBytesRead);
+  uint8_t const *p = input->read(sizeof(uint8_t), numBytesRead);
 
   if (p && numBytesRead == sizeof(uint8_t))
     return *(uint8_t const *)(p);
@@ -74,9 +74,13 @@ uint64_t libvisio::readU64(WPXInputStream *input)
 
 double libvisio::readDouble(WPXInputStream *input)
 {
-  union { uint64_t u; double d; } tmpUnion;
+  union
+  {
+    uint64_t u;
+    double d;
+  } tmpUnion;
 
   tmpUnion.u = readU64(input);
-  
+
   return tmpUnion.d;
 }

@@ -30,7 +30,8 @@
 #include "VSDXCollector.h"
 #include "VSDXShapeList.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXShapeListElement
 {

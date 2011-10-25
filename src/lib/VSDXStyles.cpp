@@ -108,7 +108,7 @@ libvisio::VSDXStyles::~VSDXStyles()
   }
 }
 
-libvisio::VSDXStyles & libvisio::VSDXStyles::operator=(const libvisio::VSDXStyles &styles)
+libvisio::VSDXStyles &libvisio::VSDXStyles::operator=(const libvisio::VSDXStyles &styles)
 {
   for (std::map<unsigned, VSDXFillStyle *>::iterator iterFillStyle = m_fillStyles.begin();
        iterFillStyle != m_fillStyles.end(); iterFillStyle++)

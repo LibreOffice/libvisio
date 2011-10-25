@@ -106,7 +106,7 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
   }
 }
 
-const unsigned char * VSDInternalStream::read(unsigned long numBytes, unsigned long &numBytesRead)
+const unsigned char *VSDInternalStream::read(unsigned long numBytes, unsigned long &numBytesRead)
 {
   numBytesRead = 0;
 

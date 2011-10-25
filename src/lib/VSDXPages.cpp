@@ -67,7 +67,7 @@ libvisio::VSDXPage &libvisio::VSDXPage::operator=(const libvisio::VSDXPage &page
 
 void libvisio::VSDXPage::append(const libvisio::VSDXOutputElementList &outputElements)
 {
-    m_pageElements.append(outputElements);
+  m_pageElements.append(outputElements);
 }
 
 void libvisio::VSDXPage::draw(libwpg::WPGPaintInterface *painter) const
@@ -109,9 +109,9 @@ void libvisio::VSDXPages::_drawWithBackground(libwpg::WPGPaintInterface *painter
 
   if (page.m_backgroundPageID != 0xffffffff)
   {
-     std::map<unsigned, libvisio::VSDXPage>::iterator iter = m_pages.find(page.m_backgroundPageID);
-     if (iter != m_pages.end())
-       _drawWithBackground(painter, iter->second);
+    std::map<unsigned, libvisio::VSDXPage>::iterator iter = m_pages.find(page.m_backgroundPageID);
+    if (iter != m_pages.end())
+      _drawWithBackground(painter, iter->second);
   }
   page.draw(painter);
 }

@@ -60,7 +60,7 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
   m_header.id = readU32(input);
   m_header.list = readU32(input);
 
-   // Certain chunk types seem to always have a trailer
+  // Certain chunk types seem to always have a trailer
   m_header.trailer = 0;
   if (m_header.list != 0 || m_header.chunkType == 0x71 || m_header.chunkType == 0x70 ||
       m_header.chunkType == 0x6b || m_header.chunkType == 0x6a || m_header.chunkType == 0x69 ||
@@ -72,7 +72,8 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
   m_header.unknown = readU8(input);
 
   unsigned trailerChunks [14] = {0x64, 0x65, 0x66, 0x69, 0x6a, 0x6b, 0x6f, 0x71,
-                                 0x92, 0xa9, 0xb4, 0xb6, 0xb9, 0xc7};
+                                 0x92, 0xa9, 0xb4, 0xb6, 0xb9, 0xc7
+                                };
   // Add word separator under certain circumstances for v11
   // Below are known conditions, may be more or a simpler pattern
   if (m_header.list != 0 || (m_header.level == 2 && m_header.unknown == 0x55) ||
@@ -124,9 +125,17 @@ void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)
   fontColour.b = readU8(input);
   fontColour.a = readU8(input);
 
-  bool bold(false); bool italic(false); bool underline(false); bool doubleunderline(false);
-  bool strikeout(false); bool doublestrikeout(false); bool allcaps(false); bool initcaps(false); bool smallcaps(false);
-  bool superscript(false); bool subscript(false);
+  bool bold(false);
+  bool italic(false);
+  bool underline(false);
+  bool doubleunderline(false);
+  bool strikeout(false);
+  bool doublestrikeout(false);
+  bool allcaps(false);
+  bool initcaps(false);
+  bool smallcaps(false);
+  bool superscript(false);
+  bool subscript(false);
   unsigned char fontMod = readU8(input);
   if (fontMod & 1) bold = true;
   if (fontMod & 2) italic = true;
@@ -141,7 +150,7 @@ void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)
 
   input->seek(4, WPX_SEEK_CUR);
   double fontSize = readDouble(input);
-  
+
   fontMod = readU8(input);
   if (fontMod & 1) doubleunderline = true;
   if (fontMod & 4) strikeout = true;
@@ -192,8 +201,8 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
     VSD_DEBUG_MSG(("Found stencil fill\n"));
     if (!m_stencilShape.m_fillStyle)
       m_stencilShape.m_fillStyle = new VSDXFillStyle(colourIndexFG, colourIndexBG, fillPattern,
-                                                     fillFGTransparency, fillBGTransparency, shfgc, shadowPattern,
-                                                     shadowOffsetX, shadowOffsetY);
+          fillFGTransparency, fillBGTransparency, shfgc, shadowPattern,
+          shadowOffsetX, shadowOffsetY);
   }
   else
     m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,

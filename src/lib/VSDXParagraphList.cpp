@@ -30,7 +30,8 @@
 #include "VSDXCollector.h"
 #include "VSDXParagraphList.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXParagraphListElement
 {
@@ -45,10 +46,10 @@ class VSDXParaIX : public VSDXParagraphListElement
 {
 public:
   VSDXParaIX(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                 double spLine, double spBefore, double spAfter, unsigned char align) :
+             double spLine, double spBefore, double spAfter, unsigned char align) :
     m_id(id), m_level(level), m_charCount(charCount), m_indFirst(indFirst), m_indLeft(indLeft), m_indRight(indRight),
     m_spLine(spLine), m_spBefore(spBefore), m_spAfter(spAfter), m_align(align) {}
-  ~VSDXParaIX() {} 
+  ~VSDXParaIX() {}
   void handle(VSDXCollector *collector);
   VSDXParagraphListElement *clone();
 private:
@@ -68,7 +69,7 @@ private:
 void libvisio::VSDXParaIX::handle(VSDXCollector *collector)
 {
   collector->collectVSDXParaStyle(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
-                               m_spLine, m_spBefore, m_spAfter, m_align);
+                                  m_spLine, m_spBefore, m_spAfter, m_align);
 }
 
 libvisio::VSDXParagraphListElement *libvisio::VSDXParaIX::clone()
@@ -90,7 +91,7 @@ libvisio::VSDXParagraphList::VSDXParagraphList(const libvisio::VSDXParagraphList
 {
   std::map<unsigned, VSDXParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
   for (; iter != paraList.m_elements.end(); iter++)
-      m_elements[iter->first] = iter->second->clone();
+    m_elements[iter->first] = iter->second->clone();
 }
 
 libvisio::VSDXParagraphList &libvisio::VSDXParagraphList::operator=(const libvisio::VSDXParagraphList &paraList)
@@ -98,7 +99,7 @@ libvisio::VSDXParagraphList &libvisio::VSDXParagraphList::operator=(const libvis
   clear();
   std::map<unsigned, VSDXParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
   for (; iter != paraList.m_elements.end(); iter++)
-      m_elements[iter->first] = iter->second->clone();
+    m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = paraList.m_elementsOrder;
   return *this;
 }
@@ -109,7 +110,7 @@ libvisio::VSDXParagraphList::~VSDXParagraphList()
 }
 
 void libvisio::VSDXParagraphList::addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                                            double spLine, double spBefore, double spAfter, unsigned char align)
+    double spLine, double spBefore, double spAfter, unsigned char align)
 {
   m_elements[id] = new VSDXParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
 }

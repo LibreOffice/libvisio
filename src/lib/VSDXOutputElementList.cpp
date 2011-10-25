@@ -29,7 +29,8 @@
 
 #include "VSDXOutputElementList.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 class VSDXOutputElement
 {
@@ -37,7 +38,7 @@ public:
   VSDXOutputElement() {}
   virtual ~VSDXOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter) = 0;
-  virtual VSDXOutputElement * clone() = 0;
+  virtual VSDXOutputElement *clone() = 0;
 };
 
 
@@ -47,7 +48,10 @@ public:
   VSDXStyleOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
   virtual ~VSDXStyleOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXStyleOutputElement(m_propList, m_propListVec); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXStyleOutputElement(m_propList, m_propListVec);
+  }
 private:
   WPXPropertyList m_propList;
   WPXPropertyListVector m_propListVec;
@@ -60,7 +64,10 @@ public:
   VSDXEllipseOutputElement(const WPXPropertyList &propList);
   virtual ~VSDXEllipseOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXEllipseOutputElement(m_propList); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXEllipseOutputElement(m_propList);
+  }
 private:
   WPXPropertyList m_propList;
 };
@@ -72,7 +79,10 @@ public:
   VSDXPathOutputElement(const WPXPropertyListVector &propListVec);
   virtual ~VSDXPathOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXPathOutputElement(m_propListVec); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXPathOutputElement(m_propListVec);
+  }
 private:
   WPXPropertyListVector m_propListVec;
 };
@@ -84,7 +94,10 @@ public:
   VSDXGraphicObjectOutputElement(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
   virtual ~VSDXGraphicObjectOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXGraphicObjectOutputElement(m_propList, m_binaryData); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXGraphicObjectOutputElement(m_propList, m_binaryData);
+  }
 private:
   WPXPropertyList m_propList;
   WPXBinaryData m_binaryData;
@@ -97,7 +110,10 @@ public:
   VSDXStartLayerOutputElement(const WPXPropertyList &propList);
   virtual ~VSDXStartLayerOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXStartLayerOutputElement(m_propList); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXStartLayerOutputElement(m_propList);
+  }
 private:
   WPXPropertyList m_propList;
 };
@@ -109,7 +125,10 @@ public:
   VSDXEndLayerOutputElement();
   virtual ~VSDXEndLayerOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXEndLayerOutputElement(); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXEndLayerOutputElement();
+  }
 };
 
 
@@ -119,7 +138,10 @@ public:
   VSDXStartTextObjectOutputElement(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
   virtual ~VSDXStartTextObjectOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXStartTextObjectOutputElement(m_propList, m_propListVec); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXStartTextObjectOutputElement(m_propList, m_propListVec);
+  }
 private:
   WPXPropertyList m_propList;
   WPXPropertyListVector m_propListVec;
@@ -132,7 +154,10 @@ public:
   VSDXStartTextLineOutputElement(const WPXPropertyList &propList);
   virtual ~VSDXStartTextLineOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXStartTextLineOutputElement(m_propList); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXStartTextLineOutputElement(m_propList);
+  }
 private:
   WPXPropertyList m_propList;
 };
@@ -144,7 +169,10 @@ public:
   VSDXStartTextSpanOutputElement(const WPXPropertyList &propList);
   virtual ~VSDXStartTextSpanOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXStartTextSpanOutputElement(m_propList); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXStartTextSpanOutputElement(m_propList);
+  }
 private:
   WPXPropertyList m_propList;
 };
@@ -156,7 +184,10 @@ public:
   VSDXInsertTextOutputElement(const WPXString &text);
   virtual ~VSDXInsertTextOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXInsertTextOutputElement(m_text); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXInsertTextOutputElement(m_text);
+  }
 private:
   WPXString m_text;
 };
@@ -168,7 +199,10 @@ public:
   VSDXEndTextSpanOutputElement();
   virtual ~VSDXEndTextSpanOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXEndTextSpanOutputElement(); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXEndTextSpanOutputElement();
+  }
 };
 
 
@@ -178,7 +212,10 @@ public:
   VSDXEndTextLineOutputElement();
   virtual ~VSDXEndTextLineOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXEndTextLineOutputElement(); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXEndTextLineOutputElement();
+  }
 };
 
 
@@ -188,7 +225,10 @@ public:
   VSDXEndTextObjectOutputElement();
   virtual ~VSDXEndTextObjectOutputElement() {}
   virtual void draw(libwpg::WPGPaintInterface *painter);
-  virtual VSDXOutputElement *clone() { return new VSDXEndTextObjectOutputElement(); }
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXEndTextObjectOutputElement();
+  }
 };
 
 } // namespace libvisio
@@ -327,20 +367,20 @@ libvisio::VSDXOutputElementList::VSDXOutputElementList(const libvisio::VSDXOutpu
 {
   std::vector<libvisio::VSDXOutputElement *>::const_iterator iter;
   for (iter = elementList.m_elements.begin(); iter != elementList.m_elements.end(); iter++)
-    m_elements.push_back((*iter)->clone());     
+    m_elements.push_back((*iter)->clone());
 }
 
-libvisio::VSDXOutputElementList & libvisio::VSDXOutputElementList::operator=(const libvisio::VSDXOutputElementList &elementList)
+libvisio::VSDXOutputElementList &libvisio::VSDXOutputElementList::operator=(const libvisio::VSDXOutputElementList &elementList)
 {
   for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
     delete (*iter);
 
   m_elements.clear();
-  
+
   for (std::vector<VSDXOutputElement *>::const_iterator cstiter = elementList.m_elements.begin(); cstiter != elementList.m_elements.end(); cstiter++)
     m_elements.push_back((*cstiter)->clone());
 
-  return *this;   
+  return *this;
 }
 
 void libvisio::VSDXOutputElementList::append(const libvisio::VSDXOutputElementList &elementList)

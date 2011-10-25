@@ -43,9 +43,9 @@ Analyzes the content of an input stream to see if it can be parsed
 \return A value that indicates whether the content from the input
 stream is a Visio Document that libvisio able to parse
 */
-bool libvisio::VisioDocument::isSupported(WPXInputStream* input)
+bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
 {
-  WPXInputStream* tmpDocStream = input->getDocumentOLEStream("VisioDocument");
+  WPXInputStream *tmpDocStream = input->getDocumentOLEStream("VisioDocument");
   if (!tmpDocStream)
     return false;
 
@@ -73,9 +73,9 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInterface* painter)
+bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
 {
-  WPXInputStream* docStream = input->getDocumentOLEStream("VisioDocument");
+  WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
   if (!docStream)
   {
     return false;
@@ -84,12 +84,17 @@ bool libvisio::VisioDocument::parse(::WPXInputStream* input, libwpg::WPGPaintInt
   docStream->seek(0x1A, WPX_SEEK_SET);
 
   unsigned char version = readU8(docStream);
-  VSDXParser* parser;
+  VSDXParser *parser;
   switch(version)
   {
-  case 6: parser = new VSD6Parser(docStream, painter); break;
-  case 11: parser = new VSD11Parser(docStream, painter); break;
-  default: return false;
+  case 6:
+    parser = new VSD6Parser(docStream, painter);
+    break;
+  case 11:
+    parser = new VSD11Parser(docStream, painter);
+    break;
+  default:
+    return false;
   }
 
   if (parser)
@@ -115,7 +120,7 @@ Provided as a convenience function for applications that support SVG internally.
 \param output The output string whose content is the resulting SVG
 \return A value that indicates whether the SVG generation was successful.
 */
-bool libvisio::VisioDocument::generateSVG(::WPXInputStream* input, WPXString& output)
+bool libvisio::VisioDocument::generateSVG(::WPXInputStream *input, WPXString &output)
 {
   std::ostringstream tmpOutputStream;
   libvisio::VSDSVGGenerator generator(tmpOutputStream);

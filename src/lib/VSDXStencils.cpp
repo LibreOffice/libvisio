@@ -127,7 +127,7 @@ const libvisio::VSDXStencilShape *libvisio::VSDXStencil::getStencilShape(unsigne
   if (iter != m_shapes.end())
     return &(iter->second);
   else
-    return 0;  
+    return 0;
 }
 
 

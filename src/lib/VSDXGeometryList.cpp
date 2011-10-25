@@ -31,7 +31,8 @@
 #include "VSDXGeometryList.h"
 #include "libvisio_utils.h"
 
-namespace libvisio {
+namespace libvisio
+{
 
 
 class VSDXGeometry : public VSDXGeometryListElement
@@ -330,7 +331,7 @@ libvisio::VSDXGeometryList::VSDXGeometryList(const VSDXGeometryList &geomList) :
 {
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = geomList.m_elements.begin();
   for (; iter != geomList.m_elements.end(); iter++)
-      m_elements[iter->first] = iter->second->clone();
+    m_elements[iter->first] = iter->second->clone();
 }
 
 libvisio::VSDXGeometryList &libvisio::VSDXGeometryList::operator=(const VSDXGeometryList &geomList)
@@ -338,7 +339,7 @@ libvisio::VSDXGeometryList &libvisio::VSDXGeometryList::operator=(const VSDXGeom
   clear();
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = geomList.m_elements.begin();
   for (; iter != geomList.m_elements.end(); iter++)
-      m_elements[iter->first] = iter->second->clone();
+    m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = geomList.m_elementsOrder;
   return *this;
 }
@@ -445,11 +446,11 @@ void libvisio::VSDXGeometryList::clear()
   m_elementsOrder.clear();
 }
 
-libvisio::VSDXGeometryListElement * libvisio::VSDXGeometryList::getElement(unsigned index) const
+libvisio::VSDXGeometryListElement *libvisio::VSDXGeometryList::getElement(unsigned index) const
 {
   if (m_elementsOrder.size() > index)
-    index = m_elementsOrder[index];    
-    
+    index = m_elementsOrder[index];
+
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = m_elements.find(index);
   if (iter != m_elements.end())
     return iter->second;
