@@ -174,6 +174,20 @@ private:
   double m_x, m_y;
   double m_knot;
 };
+
+class VSDXInfiniteLine : public VSDXGeometryListElement
+{
+public:
+  VSDXInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2) :
+    m_id(id), m_level(level), m_x1(x1), m_y1(y1), m_x2(x2), m_y2(y2) {}
+  ~VSDXInfiniteLine() {}
+  void handle(VSDXCollector *collector);
+  VSDXGeometryListElement *clone();
+private:
+  unsigned m_id, m_level;
+  double m_x1, m_y1, m_x2, m_y2;
+};
+
 } // namespace libvisio
 
 
@@ -319,6 +333,18 @@ libvisio::VSDXGeometryListElement *libvisio::VSDXSplineKnot::clone()
 }
 
 
+void libvisio::VSDXInfiniteLine::handle(VSDXCollector *collector)
+{
+  collector->collectSplineEnd();
+  collector->collectInfiniteLine(m_id, m_level, m_x1, m_y1, m_x2, m_y2);
+}
+
+libvisio::VSDXGeometryListElement *libvisio::VSDXInfiniteLine::clone()
+{
+  return new VSDXInfiniteLine(m_id, m_level, m_x1, m_y1, m_x2, m_y2);
+}
+
+
 libvisio::VSDXGeometryList::VSDXGeometryList() :
   m_elements(),
   m_elementsOrder()
@@ -407,6 +433,11 @@ void libvisio::VSDXGeometryList::addSplineStart(unsigned id, unsigned level, dou
 void libvisio::VSDXGeometryList::addSplineKnot(unsigned id, unsigned level, double x, double y, double knot)
 {
   m_elements[id] = new VSDXSplineKnot(id, level, x, y, knot);
+}
+
+void libvisio::VSDXGeometryList::addInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2)
+{
+  m_elements[id] = new VSDXInfiniteLine(id, level, x1, y1, x2, y2);
 }
 
 void libvisio::VSDXGeometryList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

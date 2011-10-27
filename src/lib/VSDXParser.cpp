@@ -485,6 +485,9 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
       case VSD_POLYLINE_TO:
         readPolylineTo(input);
         break;
+      case VSD_INFINITE_LINE:
+        readInfiniteLine(input);
+        break;
       case VSD_SHAPE_DATA:
         readShapeData(input);
         break;
@@ -630,6 +633,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
         break;
       case VSD_POLYLINE_TO:
         readPolylineTo(input);
+        break;
+      case VSD_INFINITE_LINE:
+        readInfiniteLine(input);
         break;
       case VSD_SHAPE_DATA:
         readShapeData(input);
@@ -1319,6 +1325,22 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
     else
       m_geomList->addLineTo(m_header.id, m_header.level, x, y);
   }
+}
+
+void libvisio::VSDXParser::readInfiniteLine(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  double x1 = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double y1 = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double x2 = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double y2 = readDouble(input);
+  if (m_isStencilStarted)
+    m_stencilShape.m_geometries.back().addInfiniteLine(m_header.id, m_header.level, x1, y1, x2, y2);
+  else
+    m_geomList->addInfiniteLine(m_header.id, m_header.level, x1, y1, x2, y2);
 }
 
 void libvisio::VSDXParser::readShapeData(WPXInputStream *input)

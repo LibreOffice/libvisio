@@ -165,6 +165,11 @@ void libvisio::VSDXStylesCollector::collectSplineEnd()
 {
 }
 
+void libvisio::VSDXStylesCollector::collectInfiniteLine(unsigned /* id */, unsigned level, double /* x1 */, double /* y1 */, double /* x2 */, double /* y2 */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned char /* xType */, unsigned char /* yType */,
     unsigned /* degree */, double /*lastKnot*/, std::vector<std::pair<double, double> > /* controlPoints */,
     std::vector<double> /* knotVector */, std::vector<double> /* weights */)

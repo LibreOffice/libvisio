@@ -428,10 +428,10 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
   {
     m_styleProps.insert("draw:stroke", "dash");
     m_styleProps.insert("draw:dots1", dots1);
-    m_styleProps.insert("draw:dots1-length", dots1len, WPX_POINT);
+    m_styleProps.insert("draw:dots1-length", dots1len, WPX_PERCENT);
     m_styleProps.insert("draw:dots2", dots2);
-    m_styleProps.insert("draw:dots2-length", dots2len, WPX_POINT);
-    m_styleProps.insert("draw:distance", gap, WPX_POINT);
+    m_styleProps.insert("draw:dots2-length", dots2len, WPX_PERCENT);
+    m_styleProps.insert("draw:distance", gap, WPX_PERCENT);
   }
   else
     // FIXME: later it will require special treatment for custom line patterns
@@ -834,6 +834,86 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   ellipse.insert("libwpg:large-arc", largeArc?0:1);
   m_currentGeometry.push_back(ellipse);
 
+}
+
+void libvisio::VSDXContentCollector::collectInfiniteLine(unsigned /* id */, unsigned level, double x1, double y1, double x2, double y2)
+{
+  _handleLevelChange(level);
+  transformPoint(x1, y1);
+  transformPoint(x2, y2);
+
+  double xmove = 0.0;
+  double ymove = 0.0;
+  double xline = 0.0;
+  double yline = 0.0;
+
+  if (x1 == x2)
+  {
+    xmove = x1;
+    ymove = 0;
+    xline = x1;
+    yline = m_pageHeight;
+  }
+  else if (y1 == y2)
+  {
+    xmove = 0;
+    ymove = y1;
+    xline = m_pageWidth;
+    yline = y1;
+  }
+  else
+  {
+    // coming from equation: y = p*x + q => x = y/p - q/p
+
+    double p = (y1-y2)/(x1-x2);
+    double q = (x1*y2 - x2*y1)/(x1-x2);
+    std::map<double, double> points;
+
+    // compute intersection with left border of the page
+    double x = 0.0;
+    double y = p*x + q;
+    if (y <= m_pageHeight && y >= 0) // line intersects the left border inside the viewport
+      points[x] = y;
+
+    // compute intersection with right border of the page
+    x = m_pageWidth;
+    y = p*x + q;
+    if (y <= m_pageHeight && y >= 0) // line intersects the right border inside the viewport
+      points[x] = y;
+
+    // compute intersection with top border of the page
+    y = 0.0;
+    x = y/p - q/p;
+    if (x <= m_pageWidth && x >= 0)
+      points[x] = y;
+
+    // compute intersection with bottom border of the page
+    y = m_pageHeight;
+    x = y/p - q/p;
+    if (x <= m_pageWidth && x >= 0)
+      points[x] = y;
+
+    xmove = points.begin()->first;
+    ymove = points.begin()->second;
+    for (std::map<double, double>::iterator iter = points.begin(); iter != points.end(); iter++)
+    {
+      if (iter->first != xmove || iter->second != ymove)
+      {
+        xline = iter->first;
+        yline = iter->second;
+      }
+    }
+  }
+
+  WPXPropertyList infLine;
+  infLine.insert("svg:x",m_scale*xmove);
+  infLine.insert("svg:y",m_scale*ymove);
+  infLine.insert("libwpg:path-action", "M");
+  m_currentGeometry.push_back(infLine);
+  infLine.insert("svg:x",m_scale*xline);
+  infLine.insert("svg:y",m_scale*yline);
+  infLine.insert("libwpg:path-action", "L");
+  m_currentGeometry.push_back(infLine);
 }
 
 void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap)

@@ -70,6 +70,7 @@ protected:
   void readArcTo(WPXInputStream *input);
   void readNURBSTo(WPXInputStream *input);
   void readPolylineTo(WPXInputStream *input);
+  void readInfiniteLine(WPXInputStream *input);
   void readShapeData(WPXInputStream *input);
   void readXFormData(WPXInputStream *input);
   void readTxtXForm(WPXInputStream *input);

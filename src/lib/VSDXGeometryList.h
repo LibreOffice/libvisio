@@ -59,6 +59,7 @@ public:
   void addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void addSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree);
   void addSplineKnot(unsigned id, unsigned level, double x, double y, double knot);
+  void addInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDXCollector *collector) const;
   void clear();

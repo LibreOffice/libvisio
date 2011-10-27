@@ -97,6 +97,7 @@ public:
   void collectSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree);
   void collectSplineKnot(unsigned id, unsigned level, double x, double y, double knot);
   void collectSplineEnd();
+  void collectInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2);
 
   void collectUnhandledChunk(unsigned id, unsigned level);
 
