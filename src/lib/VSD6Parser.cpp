@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* libvisio
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -182,3 +183,4 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
     m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,
                                       fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
 }
+/* vim:set shiftwidth=2 softtabstop=2 expandtab: */

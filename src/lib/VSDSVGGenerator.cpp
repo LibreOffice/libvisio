@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* libvisio
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -564,3 +565,4 @@ void libvisio::VSDSVGGenerator::writeStyle(bool /* isClosed */)
     m_outputSink << "fill-opacity: " << doubleToString(m_style["draw:opacity"]->getDouble()) << "; ";
   m_outputSink << "\""; // style
 }
+/* vim:set shiftwidth=2 softtabstop=2 expandtab: */

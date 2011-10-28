@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* libvisio
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -166,3 +167,4 @@ enum TextFormat { VSD_TEXT_ANSI, VSD_TEXT_UTF16 };
 } // namespace libvisio
 
 #endif /* VSDXTYPES_H */
+/* vim:set shiftwidth=2 softtabstop=2 expandtab: */

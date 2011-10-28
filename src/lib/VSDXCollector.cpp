@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* libvisio
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -39,3 +40,4 @@ const ::WPXString libvisio::VSDXCollector::getColourString(const struct Colour &
   sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
   return sColour;
 }
+/* vim:set shiftwidth=2 softtabstop=2 expandtab: */

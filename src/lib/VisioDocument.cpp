@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* libvisio
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -131,3 +132,4 @@ bool libvisio::VisioDocument::generateSVG(::WPXInputStream *input, WPXString &ou
     output = WPXString("");
   return result;
 }
+/* vim:set shiftwidth=2 softtabstop=2 expandtab: */

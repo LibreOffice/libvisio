@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* libvisio
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -154,3 +155,4 @@ const libvisio::VSDXStencil *libvisio::VSDXStencils::getStencil(unsigned idx) co
   else
     return 0;
 }
+/* vim:set shiftwidth=2 softtabstop=2 expandtab: */

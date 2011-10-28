@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* libvisio
  * Version: MPL 1.1 / GPLv2+ / LGPLv2+
  *
@@ -441,3 +442,4 @@ void libvisio::VSDXStylesCollector::_flushShapeList()
 
   m_shapeList.clear();
 }
+/* vim:set shiftwidth=2 softtabstop=2 expandtab: */
