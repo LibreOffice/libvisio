@@ -215,7 +215,7 @@ void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned /* id */, un
 }
 
 void libvisio::VSDXStylesCollector::collectPageProps(unsigned /* id */, unsigned level, double /* pageWidth */, double /* pageHeight */,
-    double /* shadowOffsetX */, double /* shadowOffsetY */)
+    double /* shadowOffsetX */, double /* shadowOffsetY */, double /* scale */)
 {
   _handleLevelChange(level);
 }

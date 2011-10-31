@@ -1038,8 +1038,9 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double shadowOffsetY = -readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  /* m_scale = */
-  readDouble(input);
+  double scale = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  scale /= readDouble(input);
 
   if (m_isStencilStarted)
   {
@@ -1047,7 +1048,7 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
     m_currentStencil->m_shadowOffsetY = shadowOffsetY;
   }
   else
-    m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY);
+    m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale);
 }
 
 void libvisio::VSDXParser::readShape(WPXInputStream *input)

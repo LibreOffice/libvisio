@@ -1499,11 +1499,12 @@ void libvisio::VSDXContentCollector::collectForeignDataType(unsigned /* id */, u
   m_foreignFormat = foreignFormat;
 }
 
-void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY)
+void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale)
 {
   _handleLevelChange(level);
   m_pageWidth = pageWidth;
   m_pageHeight = pageHeight;
+  m_scale = scale;
   m_shadowOffsetX = shadowOffsetX;
   m_shadowOffsetY = shadowOffsetY;
 
