@@ -223,11 +223,11 @@ public:
   void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
   void addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster);
 
-  const VSDXLineStyle getLineStyle(unsigned lineStyleIndex) const;
-  const VSDXFillStyle getFillStyle(unsigned fillStyleIndex) const;
-  const VSDXTextBlockStyle getTextBlockStyle(unsigned textStyleIndex) const;
-  const VSDXCharStyle getCharStyle(unsigned textStyleIndex) const;
-  const VSDXParaStyle getParaStyle(unsigned textStyleIndex) const;
+  const VSDXLineStyle *getLineStyle(unsigned lineStyleIndex) const;
+  const VSDXFillStyle *getFillStyle(unsigned fillStyleIndex) const;
+  const VSDXTextBlockStyle *getTextBlockStyle(unsigned textStyleIndex) const;
+  const VSDXCharStyle *getCharStyle(unsigned textStyleIndex) const;
+  const VSDXParaStyle *getParaStyle(unsigned textStyleIndex) const;
 
 private:
   std::map<unsigned, VSDXLineStyle *> m_lineStyles;

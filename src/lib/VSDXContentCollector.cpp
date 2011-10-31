@@ -1544,15 +1544,23 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   // Reset style
   m_styleProps.clear();
   m_styleProps.insert("draw:fill", m_fillType);
-  // TODO: verify
-  m_styleProps.insert("svg:stroke-dasharray", "solid");
+  m_styleProps.insert("draw:stroke", "solid");
 
   m_textStream.clear();
   m_charFormats.clear();
   m_paraFormats.clear();
-  m_textBlockFormat = VSDXTextBlockStyle();
+
   m_defaultCharStyle = VSDXCharStyle();
+  if (m_styles.getCharStyle(0))
+    m_defaultCharStyle = *(m_styles.getCharStyle(0));
+
   m_defaultParaStyle = VSDXParaStyle();
+  if (m_styles.getParaStyle(0))
+    m_defaultParaStyle = *(m_styles.getParaStyle(0));
+
+  m_textBlockFormat = VSDXTextBlockStyle();
+  if (m_styles.getTextBlockStyle(0))
+    m_textBlockFormat = *(m_styles.getTextBlockStyle(0));
 
   m_currentShapeId = id;
   m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
@@ -1581,18 +1589,21 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       if (m_stencilShape->m_lineStyleId)
         lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
       if (m_stencilShape->m_lineStyle)
-        lineStyleFromStyleSheet(*(m_stencilShape->m_lineStyle));
+        lineStyleFromStyleSheet(m_stencilShape->m_lineStyle);
 
       if (m_stencilShape->m_fillStyleId)
         fillStyleFromStyleSheet(m_stencilShape->m_fillStyleId);
       if (m_stencilShape->m_fillStyle)
-        fillStyleFromStyleSheet(*(m_stencilShape->m_fillStyle));
+        fillStyleFromStyleSheet(m_stencilShape->m_fillStyle);
 
       if (m_stencilShape->m_textStyleId)
       {
-        m_defaultCharStyle = m_styles.getCharStyle(m_stencilShape->m_textStyleId);
-        m_defaultParaStyle = m_styles.getParaStyle(m_stencilShape->m_textStyleId);
-        m_textBlockFormat = m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId);
+        if (m_styles.getCharStyle(m_stencilShape->m_textStyleId))
+          m_defaultCharStyle = *(m_styles.getCharStyle(m_stencilShape->m_textStyleId));
+        if (m_styles.getParaStyle(m_stencilShape->m_textStyleId))
+          m_defaultParaStyle = *(m_styles.getParaStyle(m_stencilShape->m_textStyleId));
+        if (m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId))
+          m_textBlockFormat = *(m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId));
       }
       if (m_stencilShape->m_textBlockStyle)
         m_textBlockFormat = *(m_stencilShape->m_textBlockStyle);
@@ -1609,9 +1620,12 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     fillStyleFromStyleSheet(fillStyleId);
   if (textStyleId != 0xffffffff)
   {
-    m_defaultCharStyle = m_styles.getCharStyle(textStyleId);
-    m_defaultParaStyle = m_styles.getParaStyle(textStyleId);
-    m_textBlockFormat = m_styles.getTextBlockStyle(textStyleId);
+    if (m_styles.getCharStyle(textStyleId))
+      m_defaultCharStyle = *(m_styles.getCharStyle(textStyleId));
+    if (m_styles.getParaStyle(textStyleId))
+      m_defaultParaStyle = *(m_styles.getParaStyle(textStyleId));
+    if (m_styles.getTextBlockStyle(textStyleId))
+      m_textBlockFormat = *(m_styles.getTextBlockStyle(textStyleId));
   }
 
   m_currentGeometryCount = 0;
@@ -1774,9 +1788,10 @@ void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(unsigned styleId)
   lineStyleFromStyleSheet(m_styles.getLineStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle &style)
+void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle *style)
 {
-  _lineProperties(style.width, style.colour, style.pattern, style.startMarker, style.endMarker, style.cap);
+  if (style)
+    _lineProperties(style->width, style->colour, style->pattern, style->startMarker, style->endMarker, style->cap);
 }
 
 void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
@@ -1784,37 +1799,11 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
   fillStyleFromStyleSheet(m_styles.getFillStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle &style)
+void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle *style)
 {
-  _fillAndShadowProperties(style.fgColourId, style.bgColourId, style.pattern, style.fgTransparency, style.bgTransparency,
-                           style.shadowPattern, style.shadowFgColour, style.shadowOffsetX, style.shadowOffsetY);
-}
-
-void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(unsigned styleId)
-{
-  textBlockStyleFromStyleSheet(m_styles.getTextBlockStyle(styleId));
-}
-
-void libvisio::VSDXContentCollector::textBlockStyleFromStyleSheet(const VSDXTextBlockStyle & /* style */)
-{
-}
-
-void libvisio::VSDXContentCollector::charStyleFromStyleSheet(unsigned styleId)
-{
-  charStyleFromStyleSheet(m_styles.getCharStyle(styleId));
-}
-
-void libvisio::VSDXContentCollector::charStyleFromStyleSheet(const VSDXCharStyle & /* style */)
-{
-}
-
-void libvisio::VSDXContentCollector::paraStyleFromStyleSheet(unsigned styleId)
-{
-  paraStyleFromStyleSheet(m_styles.getParaStyle(styleId));
-}
-
-void libvisio::VSDXContentCollector::paraStyleFromStyleSheet(const VSDXParaStyle & /* style */)
-{
+  if (style)
+    _fillAndShadowProperties(style->fgColourId, style->bgColourId, style->pattern, style->fgTransparency, style->bgTransparency,
+                             style->shadowPattern, style->shadowFgColour, style->shadowOffsetX, style->shadowOffsetY);
 }
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
