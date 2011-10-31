@@ -45,7 +45,7 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   m_pageShapeOrder(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_groupShapeOrder(), m_shapeList(), m_currentStyleSheet(0), m_styles(),
   m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
-  m_lineStyleMaster(0), m_fillStyleMaster(0), m_textStyleMaster(0),
+  m_lineStyleMaster(0xffffffff), m_fillStyleMaster(0xffffffff), m_textStyleMaster(0xffffffff),
   m_isStyleStarted(false)
 {
   m_groupXFormsSequence.clear();
@@ -345,8 +345,7 @@ void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigne
 }
 
 void libvisio::VSDXStylesCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-    unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
-    unsigned char textDirection)
+    unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection)
 {
   _handleLevelChange(level);
   if (!m_textBlockStyle)
@@ -412,15 +411,19 @@ void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
       if (m_lineStyle)
         delete m_lineStyle;
       m_lineStyle = 0;
+
       if (m_fillStyle)
         delete m_fillStyle;
       m_fillStyle = 0;
+
       if (m_textBlockStyle)
         delete m_textBlockStyle;
       m_textBlockStyle = 0;
+
       if (m_charStyle)
         delete m_charStyle;
       m_charStyle = 0;
+
       if (m_paraStyle)
         delete m_paraStyle;
       m_paraStyle = 0;

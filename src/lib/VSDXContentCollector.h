@@ -221,7 +221,7 @@ private:
   std::vector<VSDXCharStyle> m_charFormats;
   std::vector<VSDXParaStyle> m_paraFormats;
 
-  VSDXTextBlockStyle m_textBlockFormat;
+  VSDXTextBlockStyle m_textBlockStyle;
 
   VSDXCharStyle m_defaultCharStyle;
   VSDXParaStyle m_defaultParaStyle;

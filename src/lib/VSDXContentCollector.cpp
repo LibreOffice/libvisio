@@ -65,7 +65,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
   m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
-  m_charFormats(), m_paraFormats(), m_textBlockFormat(),
+  m_charFormats(), m_paraFormats(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
   m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
@@ -524,13 +524,13 @@ void libvisio::VSDXContentCollector::_flushText()
   textBlockProps.insert("svg:y", m_scale * y);
   textBlockProps.insert("svg:height", m_scale * (m_txtxform ? m_txtxform->height : m_xform.height));
   textBlockProps.insert("svg:width", m_scale * (m_txtxform ? m_txtxform->width : m_xform.width));
-  textBlockProps.insert("fo:padding-top", m_textBlockFormat.topMargin);
-  textBlockProps.insert("fo:padding-bottom", m_textBlockFormat.bottomMargin);
-  textBlockProps.insert("fo:padding-left", m_textBlockFormat.leftMargin);
-  textBlockProps.insert("fo:padding-right", m_textBlockFormat.rightMargin);
+  textBlockProps.insert("fo:padding-top", m_textBlockStyle.topMargin);
+  textBlockProps.insert("fo:padding-bottom", m_textBlockStyle.bottomMargin);
+  textBlockProps.insert("fo:padding-left", m_textBlockStyle.leftMargin);
+  textBlockProps.insert("fo:padding-right", m_textBlockStyle.rightMargin);
   textBlockProps.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
 
-  switch (m_textBlockFormat.verticalAlign)
+  switch (m_textBlockStyle.verticalAlign)
   {
   case 0: // Top
     textBlockProps.insert("draw:textarea-vertical-align", "top");
@@ -658,19 +658,19 @@ void libvisio::VSDXContentCollector::_flushText()
       if (m_charFormats[charIndex].superscript) textProps.insert("style:text-position", "super");
       if (m_charFormats[charIndex].subscript) textProps.insert("style:text-position", "sub");
       textProps.insert("fo:font-size", m_charFormats[charIndex].size*72.0, WPX_POINT);
-      textProps.insert("fo:color",getColourString(m_charFormats[charIndex].colour));
+      textProps.insert("fo:color", getColourString(m_charFormats[charIndex].colour));
       double opacity = 1.0;
       if (m_charFormats[charIndex].colour.a)
         opacity -= (double)(m_charFormats[charIndex].colour.a)/255.0;
       textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
       textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
       // TODO: In draw, text span background cannot be specified the same way as in writer span
-      if (m_textBlockFormat.textBkgndColourId)
+      if (m_textBlockStyle.textBkgndColourId)
       {
-        textProps.insert("fo:background-color", getColourString(m_textBlockFormat.textBkgndColour));
+        textProps.insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
 #if 0
-        if (m_textBlockFormat.textBkgndColour.a)
-          textProps.insert("fo:background-opacity", 1.0 - m_textBlockFormat.textBkgndColour.a/255.0, WPX_PERCENT);
+        if (m_textBlockStyle.textBkgndColour.a)
+          textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, WPX_PERCENT);
 #endif
       }
 
@@ -1558,9 +1558,9 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   if (m_styles.getParaStyle(0))
     m_defaultParaStyle = *(m_styles.getParaStyle(0));
 
-  m_textBlockFormat = VSDXTextBlockStyle();
+  m_textBlockStyle = VSDXTextBlockStyle();
   if (m_styles.getTextBlockStyle(0))
-    m_textBlockFormat = *(m_styles.getTextBlockStyle(0));
+    m_textBlockStyle = *(m_styles.getTextBlockStyle(0));
 
   m_currentShapeId = id;
   m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
@@ -1603,10 +1603,10 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
         if (m_styles.getParaStyle(m_stencilShape->m_textStyleId))
           m_defaultParaStyle = *(m_styles.getParaStyle(m_stencilShape->m_textStyleId));
         if (m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId))
-          m_textBlockFormat = *(m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId));
+          m_textBlockStyle = *(m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId));
       }
       if (m_stencilShape->m_textBlockStyle)
-        m_textBlockFormat = *(m_stencilShape->m_textBlockStyle);
+        m_textBlockStyle = *(m_stencilShape->m_textBlockStyle);
       if (m_stencilShape->m_charStyle)
         m_defaultCharStyle = *(m_stencilShape->m_charStyle);
       if (m_stencilShape->m_paraStyle)
@@ -1625,7 +1625,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     if (m_styles.getParaStyle(textStyleId))
       m_defaultParaStyle = *(m_styles.getParaStyle(textStyleId));
     if (m_styles.getTextBlockStyle(textStyleId))
-      m_textBlockFormat = *(m_styles.getTextBlockStyle(textStyleId));
+      m_textBlockStyle = *(m_styles.getTextBlockStyle(textStyleId));
   }
 
   m_currentGeometryCount = 0;
@@ -1739,7 +1739,7 @@ void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigne
     const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
 {
   _handleLevelChange(level);
-  m_textBlockFormat = VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
+  m_textBlockStyle = VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)

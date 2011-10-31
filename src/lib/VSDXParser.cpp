@@ -504,6 +504,24 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
       case VSD_PAGE_PROPS:
         readPageProps(input);
         break;
+      case VSD_CHAR_LIST:
+        readCharList(input);
+        break;
+      case VSD_PARA_LIST:
+        readParaList(input);
+        break;
+      case VSD_TEXT:
+        readText(input);
+        break;
+      case VSD_CHAR_IX:
+        readCharIX(input);
+        break;
+      case VSD_PARA_IX:
+        readParaIX(input);
+        break;
+      case VSD_TEXT_BLOCK:
+        readTextBlock(input);
+        break;
       case VSD_SPLINE_START:
         readSplineStart(input);
         break;
@@ -1472,6 +1490,13 @@ void libvisio::VSDXParser::readParaIX(WPXInputStream *input)
   if (m_isInStyles)
     m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
                                     spLine, spBefore, spAfter, align);
+  else if (m_isStencilStarted)
+  {
+    VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
+    if (!m_stencilShape.m_paraStyle)
+      m_stencilShape.m_paraStyle= new VSDXParaStyle(charCount, indFirst, indLeft, indRight,
+          spLine, spBefore, spAfter, align);
+  }
   else
     m_paraList->addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
                           spLine, spBefore, spAfter, align);
