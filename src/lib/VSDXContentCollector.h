@@ -208,8 +208,9 @@ private:
   std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
   unsigned m_currentPageNumber;
   std::vector<unsigned> m_shapeList;
-  VSDXOutputElementList *m_shapeOutput;
-  std::map<unsigned, VSDXOutputElementList> m_pageOutput;
+  VSDXOutputElementList *m_shapeOutputDrawing, *m_shapeOutputText;
+  std::map<unsigned, VSDXOutputElementList> m_pageOutputDrawing;
+  std::map<unsigned, VSDXOutputElementList> m_pageOutputText;
   std::vector<std::list<unsigned> > &m_documentPageShapeOrders;
   std::list<unsigned> &m_pageShapeOrder;
   bool m_isFirstGeometry;

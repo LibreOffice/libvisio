@@ -61,8 +61,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_noLine(false), m_noFill(false), m_noShow(false), m_colours(), m_fonts(),
   m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
   m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
-  m_currentPageNumber(0), m_shapeList(), m_shapeOutput(0), m_pageOutput(),
-  m_documentPageShapeOrders(documentPageShapeOrders),
+  m_currentPageNumber(0), m_shapeList(), m_shapeOutputDrawing(0), m_shapeOutputText(0),
+  m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
   m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
   m_charFormats(), m_paraFormats(), m_textBlockStyle(),
@@ -501,8 +501,8 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
   }
   if (path.count() && !m_noShow)
   {
-    m_shapeOutput->addStyle(m_styleProps, WPXPropertyListVector());
-    m_shapeOutput->addPath(path);
+    m_shapeOutputDrawing->addStyle(m_styleProps, WPXPropertyListVector());
+    m_shapeOutputDrawing->addPath(path);
   }
   m_currentGeometry.clear();
 }
@@ -568,7 +568,7 @@ void libvisio::VSDXContentCollector::_flushText()
       m_paraFormats[iPara].charCount = numCharsInText;
   }
 
-  m_shapeOutput->addStartTextObject(textBlockProps, WPXPropertyListVector());
+  m_shapeOutputText->addStartTextObject(textBlockProps, WPXPropertyListVector());
 
   unsigned int charIndex = 0;
   unsigned int paraCharCount = 0;
@@ -605,7 +605,7 @@ void libvisio::VSDXContentCollector::_flushText()
     else
       paraProps.insert("fo:line-height", -(*paraIt).spLine, WPX_PERCENT);
 
-    m_shapeOutput->addStartTextLine(paraProps);
+    m_shapeOutputText->addStartTextLine(paraProps);
 
     paraCharCount = (*paraIt).charCount;
     // Find char format that overlaps
@@ -675,9 +675,9 @@ void libvisio::VSDXContentCollector::_flushText()
       }
 
       VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
-      m_shapeOutput->addStartTextSpan(textProps);
-      m_shapeOutput->addInsertText(text);
-      m_shapeOutput->addEndTextSpan();
+      m_shapeOutputText->addStartTextSpan(textProps);
+      m_shapeOutputText->addInsertText(text);
+      m_shapeOutputText->addEndTextSpan();
 
       charIndex++;
       if (charIndex < m_charFormats.size() && paraCharCount && m_charFormats[charIndex].charCount > paraCharCount)
@@ -689,10 +689,10 @@ void libvisio::VSDXContentCollector::_flushText()
         m_charFormats[charIndex+1].charCount -= paraCharCount;
       }
     }
-    m_shapeOutput->addEndTextLine();
+    m_shapeOutputText->addEndTextLine();
   }
 
-  m_shapeOutput->addEndTextObject();
+  m_shapeOutputText->addEndTextObject();
 }
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
@@ -709,8 +709,8 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
   {
-    m_shapeOutput->addStyle(m_styleProps, WPXPropertyListVector());
-    m_shapeOutput->addGraphicObject(m_currentForeignProps, m_currentForeignData);
+    m_shapeOutputDrawing->addStyle(m_styleProps, WPXPropertyListVector());
+    m_shapeOutputDrawing->addGraphicObject(m_currentForeignProps, m_currentForeignData);
   }
   m_currentForeignData.clear();
   m_currentForeignProps.clear();
@@ -718,17 +718,21 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 
 void libvisio::VSDXContentCollector::_flushCurrentPage()
 {
-  std::map<unsigned, VSDXOutputElementList>::iterator iter;
   if (m_pageShapeOrder.size())
   {
     for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); iterList++)
     {
-      iter = m_pageOutput.find(*iterList);
-      if (iter != m_pageOutput.end())
+      std::map<unsigned, VSDXOutputElementList>::iterator iter;
+      iter = m_pageOutputDrawing.find(*iterList);
+      if (iter != m_pageOutputDrawing.end())
+        m_currentPage.append(iter->second);
+      iter = m_pageOutputText.find(*iterList);
+      if (iter != m_pageOutputText.end())
         m_currentPage.append(iter->second);
     }
   }
-  m_pageOutput.clear();
+  m_pageOutputDrawing.clear();
+  m_pageOutputText.clear();
 }
 
 #define LIBVISIO_EPSILON 1E-10
@@ -1564,8 +1568,10 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
     m_textBlockStyle = *(m_styles.getTextBlockStyle(0));
 
   m_currentShapeId = id;
-  m_pageOutput[m_currentShapeId] = VSDXOutputElementList();
-  m_shapeOutput = &m_pageOutput[m_currentShapeId];
+  m_pageOutputDrawing[m_currentShapeId] = VSDXOutputElementList();
+  m_pageOutputText[m_currentShapeId] = VSDXOutputElementList();
+  m_shapeOutputDrawing = &m_pageOutputDrawing[m_currentShapeId];
+  m_shapeOutputText = &m_pageOutputText[m_currentShapeId];
   m_isShapeStarted = true;
   m_isFirstGeometry = true;
 
