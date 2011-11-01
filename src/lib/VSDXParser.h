@@ -131,6 +131,7 @@ protected:
   VSDXStencilShape m_stencilShape;
   bool m_isStencilStarted;
   bool m_isInStyles;
+  bool m_isGroupShape;
   unsigned m_currentPageID;
 
 private:

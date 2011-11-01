@@ -44,8 +44,8 @@
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()), m_geomListVector(),
     m_charList(new VSDXCharacterList()), m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
-    m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
-    m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentPageID(0)
+    m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0), m_stencilShape(),
+    m_isStencilStarted(false), m_isInStyles(false), m_isGroupShape(false), m_currentPageID(0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
@@ -347,9 +347,9 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
       handleStencilForeign(&tmpInput, shift);
       m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
+    case VSD_SHAPE_GROUP:
     case VSD_SHAPE_GUIDE:
     case VSD_SHAPE_SHAPE:
-    case VSD_SHAPE_GROUP:
       m_stencilShape = VSDXStencilShape();
       handleStencilShape(&tmpInput);
       m_currentStencil->addStencilShape(i, m_stencilShape);
@@ -450,9 +450,9 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
       VSD_DEBUG_MSG(("Stencil: parsing chunk type %x\n", m_header.chunkType));
       switch (m_header.chunkType)
       {
+      case VSD_SHAPE_GROUP:
       case VSD_SHAPE_GUIDE:
       case VSD_SHAPE_SHAPE:
-      case VSD_SHAPE_GROUP:
         readShape(input);
         break;
       case VSD_GEOM_LIST:
@@ -595,6 +595,7 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
 
     while (!input->atEOS())
     {
+      m_isGroupShape = false;
       getChunkHeader(input);
       endPos = m_header.dataLength+m_header.trailer+input->tell();
 
@@ -602,8 +603,9 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
       switch (m_header.chunkType)
       {
-      case VSD_SHAPE_GUIDE:
       case VSD_SHAPE_GROUP:
+        m_isGroupShape = true; // Fall through intended
+      case VSD_SHAPE_GUIDE:
       case VSD_SHAPE_SHAPE:
       case VSD_SHAPE_FOREIGN:
         readShape(input);
