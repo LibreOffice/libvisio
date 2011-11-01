@@ -758,9 +758,10 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
         stackOfTexts.push(VSDXOutputElementList());
     }
     while (!stackOfTexts.empty())
-	{
-	  m_currentPage.append(stackOfTexts.top());
+    {
+      m_currentPage.append(stackOfTexts.top());
       stackOfTexts.pop();
+    }
   }
   m_pageOutputDrawing.clear();
   m_pageOutputText.clear();
