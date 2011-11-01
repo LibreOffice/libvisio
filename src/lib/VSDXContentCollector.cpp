@@ -726,35 +726,36 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
     for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); iterList++)
     {
       std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships.find(*iterList);
-      if (iterGroup != m_groupMemberships.end() && !stackOfGroups.empty() && iterGroup->second == stackOfGroups.top())
+      if (iterGroup == m_groupMemberships.end())
       {
-        stackOfGroups.push(*iterList);
-        stackOfTexts.push(VSDXOutputElementList());
-      }
-      else if (iterGroup != m_groupMemberships.end())
-      {
-        while (!stackOfGroups.empty() && !stackOfTexts.empty() && iterGroup->second != stackOfGroups.top())
-        {
+        while (!stackOfGroups.empty())
           stackOfGroups.pop();
+        while (!stackOfTexts.empty())
+        {
+          m_currentPage.append(stackOfTexts.top());
           stackOfTexts.pop();
         }
       }
-      else
+      else if (iterGroup->second != stackOfGroups.top())
       {
-        while (!stackOfGroups.empty() && !stackOfTexts.empty())
+        while (stackOfGroups.top() != iterGroup->second && !stackOfGroups.empty() && !stackOfTexts.empty())
         {
           stackOfGroups.pop();
+          m_currentPage.append(stackOfTexts.top());
           stackOfTexts.pop();
         }
       }
 
+      stackOfGroups.push(*iterList);
       std::map<unsigned, VSDXOutputElementList>::iterator iter;
       iter = m_pageOutputDrawing.find(*iterList);
       if (iter != m_pageOutputDrawing.end())
         m_currentPage.append(iter->second);
       iter = m_pageOutputText.find(*iterList);
       if (iter != m_pageOutputText.end())
-        m_currentPage.append(iter->second);
+        stackOfTexts.push(iter->second);
+      else
+        stackOfTexts.push(VSDXOutputElementList());
     }
     while (!stackOfTexts.empty())
       stackOfTexts.pop();
