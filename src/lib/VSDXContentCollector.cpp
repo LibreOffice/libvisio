@@ -28,6 +28,7 @@
  * instead of those above.
  */
 
+#include <stack>
 #include "VSDXContentCollector.h"
 #include "VSDXParser.h"
 #include "VSDInternalStream.h"
@@ -61,7 +62,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_noLine(false), m_noFill(false), m_noShow(false), m_colours(), m_fonts(),
   m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
   m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
-  m_currentPageNumber(0), m_shapeList(), m_shapeOutputDrawing(0), m_shapeOutputText(0),
+  m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
   m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
@@ -720,8 +721,33 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
 {
   if (m_pageShapeOrder.size())
   {
+    std::stack<unsigned> stackOfGroups;
+    std::stack<VSDXOutputElementList> stackOfTexts;
     for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); iterList++)
     {
+      std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships.find(*iterList);
+      if (iterGroup != m_groupMemberships.end() && !stackOfGroups.empty() && iterGroup->second == stackOfGroups.top())
+      {
+        stackOfGroups.push(*iterList);
+        stackOfTexts.push(VSDXOutputElementList());
+      }
+      else if (iterGroup != m_groupMemberships.end())
+      {
+        while (!stackOfGroups.empty() && !stackOfTexts.empty() && iterGroup->second != stackOfGroups.top())
+        {
+          stackOfGroups.pop();
+          stackOfTexts.pop();
+        }
+      }
+      else
+      {
+        while (!stackOfGroups.empty() && !stackOfTexts.empty())
+        {
+          stackOfGroups.pop();
+          stackOfTexts.pop();
+        }
+      }
+
       std::map<unsigned, VSDXOutputElementList>::iterator iter;
       iter = m_pageOutputDrawing.find(*iterList);
       if (iter != m_pageOutputDrawing.end())
@@ -730,6 +756,8 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
       if (iter != m_pageOutputText.end())
         m_currentPage.append(iter->second);
     }
+    while (!stackOfTexts.empty())
+      stackOfTexts.pop();
   }
   m_pageOutputDrawing.clear();
   m_pageOutputText.clear();

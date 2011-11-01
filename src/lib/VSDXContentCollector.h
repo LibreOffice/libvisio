@@ -207,7 +207,6 @@ private:
   std::vector<std::map<unsigned, XForm> > &m_groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
   unsigned m_currentPageNumber;
-  std::vector<unsigned> m_shapeList;
   VSDXOutputElementList *m_shapeOutputDrawing, *m_shapeOutputText;
   std::map<unsigned, VSDXOutputElementList> m_pageOutputDrawing;
   std::map<unsigned, VSDXOutputElementList> m_pageOutputText;
