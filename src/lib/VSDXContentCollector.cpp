@@ -721,46 +721,41 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
 {
   if (m_pageShapeOrder.size())
   {
-    std::stack<unsigned> stackOfGroups;
-    std::stack<VSDXOutputElementList> stackOfTexts;
+    std::stack<std::pair<unsigned, VSDXOutputElementList> > groupTextStack;
     for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); iterList++)
     {
       std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships.find(*iterList);
       if (iterGroup == m_groupMemberships.end())
       {
-        while (!stackOfGroups.empty())
-          stackOfGroups.pop();
-        while (!stackOfTexts.empty())
+        while (!groupTextStack.empty())
         {
-          m_currentPage.append(stackOfTexts.top());
-          stackOfTexts.pop();
+          m_currentPage.append(groupTextStack.top().second);
+          groupTextStack.pop();
         }
       }
-      else if (iterGroup->second != stackOfGroups.top())
+      else if (iterGroup->second != groupTextStack.top().first)
       {
-        while (stackOfGroups.top() != iterGroup->second && !stackOfGroups.empty() && !stackOfTexts.empty())
+        while (groupTextStack.top().first != iterGroup->second && !groupTextStack.empty())
         {
-          stackOfGroups.pop();
-          m_currentPage.append(stackOfTexts.top());
-          stackOfTexts.pop();
+          m_currentPage.append(groupTextStack.top().second);
+          groupTextStack.pop();
         }
       }
 
-      stackOfGroups.push(*iterList);
       std::map<unsigned, VSDXOutputElementList>::iterator iter;
       iter = m_pageOutputDrawing.find(*iterList);
       if (iter != m_pageOutputDrawing.end())
         m_currentPage.append(iter->second);
       iter = m_pageOutputText.find(*iterList);
       if (iter != m_pageOutputText.end())
-        stackOfTexts.push(iter->second);
+        groupTextStack.push(std::make_pair(*iterList, iter->second));
       else
-        stackOfTexts.push(VSDXOutputElementList());
+        groupTextStack.push(std::make_pair(*iterList, VSDXOutputElementList()));
     }
-    while (!stackOfTexts.empty())
+    while (!groupTextStack.empty())
     {
-      m_currentPage.append(stackOfTexts.top());
-      stackOfTexts.pop();
+      m_currentPage.append(groupTextStack.top().second);
+      groupTextStack.pop();
     }
   }
   m_pageOutputDrawing.clear();
