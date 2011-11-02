@@ -510,7 +510,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
 
 void libvisio::VSDXContentCollector::_flushText()
 {
-  if (!m_textStream.size()) return;
+  if (m_textStream.empty()) return;
   WPXString text;
   double angle = 0.0;
   transformAngle(angle, m_txtxform);
@@ -1620,6 +1620,9 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
         _handleForeignData(m_stencilShape->m_foreign->data);
       }
 
+      m_textStream = m_stencilShape->m_text;
+      m_textFormat = m_stencilShape->m_textFormat;
+
       if (m_stencilShape->m_lineStyleId)
         lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
       if (m_stencilShape->m_lineStyle)
@@ -1868,7 +1871,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 
       _flushCurrentPath();
       _flushCurrentForeignData();
-      if (m_textStream.size())
+      if (!m_textStream.empty())
         _flushText();
       m_isShapeStarted = false;
 

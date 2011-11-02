@@ -111,7 +111,14 @@ void libvisio::VSD11Parser::readText(WPXInputStream *input)
   for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
     textStream.push_back(readU8(input));
 
-  m_collector->collectText(m_header.id, m_header.level, textStream, libvisio::VSD_TEXT_UTF16);
+  if (m_isStencilStarted)
+  {
+    VSD_DEBUG_MSG(("Found stencil text\n"));
+    m_stencilShape.m_text = textStream;
+    m_stencilShape.m_textFormat = libvisio::VSD_TEXT_UTF16;
+  }
+  else
+    m_collector->collectText(m_header.id, m_header.level, textStream, libvisio::VSD_TEXT_UTF16);
 }
 
 void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)

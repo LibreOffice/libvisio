@@ -34,7 +34,7 @@
 libvisio::VSDXStencilShape::VSDXStencilShape()
   : m_geometries(), m_foreign(0), m_lineStyleId(0xffffffff), m_fillStyleId(0xffffffff), m_textStyleId(0xffffffff),
     m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
-    m_text(), m_nurbsData(), m_polylineData()
+    m_text(), m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData()
 {
 }
 
@@ -46,7 +46,8 @@ libvisio::VSDXStencilShape::VSDXStencilShape(const libvisio::VSDXStencilShape &s
     m_textBlockStyle(shape.m_textBlockStyle ? new VSDXTextBlockStyle(*(shape.m_textBlockStyle)) : 0),
     m_charStyle(shape.m_charStyle ? new VSDXCharStyle(*(shape.m_charStyle)) : 0),
     m_paraStyle(shape.m_paraStyle ? new VSDXParaStyle(*(shape.m_paraStyle)) : 0),
-    m_text(shape.m_text), m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData) {}
+    m_text(shape.m_text), m_textFormat(shape.m_textFormat),
+    m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData) {}
 
 libvisio::VSDXStencilShape::~VSDXStencilShape()
 {
@@ -89,6 +90,7 @@ libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio
     delete m_paraStyle;
   m_paraStyle = shape.m_paraStyle ? new VSDXParaStyle(*(shape.m_paraStyle)) : 0;
   m_text = shape.m_text;
+  m_textFormat = shape.m_textFormat;
   m_nurbsData = shape.m_nurbsData;
   m_polylineData = shape.m_polylineData;
   return *this;
