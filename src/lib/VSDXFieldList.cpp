@@ -74,6 +74,7 @@ public:
 private:
   unsigned m_id, m_level;
 };
+
 } // namespace libvisio
 
 

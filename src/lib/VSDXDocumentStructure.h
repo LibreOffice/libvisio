@@ -46,6 +46,9 @@
 
 #define VSD_PAGES 0x27
 
+#define VSD_NAME_LIST 0x2c
+#define VSD_NAME 0x2d
+
 #define VSD_SHAPE_GROUP 0x47
 #define VSD_SHAPE_SHAPE 0x48
 #define VSD_SHAPE_GUIDE 0x4d
@@ -54,6 +57,7 @@
 #define VSD_STYLE_SHEET 0x4a
 
 #define VSD_SHAPE_LIST 0x65
+#define VSD_FIELD_LIST 0x66
 #define VSD_PROP_LIST 0x68
 #define VSD_CHAR_LIST 0x69
 #define VSD_PARA_LIST 0x6a
@@ -89,7 +93,7 @@
 #define VSD_SCRATCH 0x9e
 
 #define VSD_PROTECTION 0xa0
-
+#define VSD_TEXT_FIELD 0xa1
 #define VSD_CONTROL_ANOTHER_TYPE 0xa2
 
 #define VSD_MISC 0xa4
