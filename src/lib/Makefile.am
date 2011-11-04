@@ -27,6 +27,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXCharacterList.cpp \
 	VSDXCollector.cpp \
 	VSDXContentCollector.cpp \
+	VSDXFieldList.cpp \
 	VSDXGeometryList.cpp \
 	VSDXOutputElementList.cpp \
 	VSDXPages.cpp \
@@ -45,6 +46,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXCollector.h \
 	VSDXContentCollector.h \
 	VSDXDocumentStructure.h \
+	VSDXFieldList.h \
 	VSDXGeometryList.h \
 	VSDXOutputElementList.h \
 	VSDXPages.h \
