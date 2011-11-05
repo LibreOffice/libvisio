@@ -84,6 +84,7 @@ public:
   virtual void collectFont(unsigned short fontID, const std::vector<unsigned char> &textStream, TextFormat format) = 0;
   virtual void collectCharList(unsigned id, unsigned level) = 0;
   virtual void collectParaList(unsigned id, unsigned level) = 0;
+  virtual void collectFieldList(unsigned id, unsigned level) = 0;
   virtual void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format) = 0;
   virtual void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                                     double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,

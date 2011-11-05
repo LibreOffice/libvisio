@@ -1089,6 +1089,11 @@ void libvisio::VSDXContentCollector::collectParaList(unsigned /* id */, unsigned
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXContentCollector::collectFieldList(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char geomFlags)
 {
   _handleLevelChange(level);

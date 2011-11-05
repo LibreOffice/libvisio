@@ -48,6 +48,7 @@ public:
   ~VSDXFieldList();
   VSDXFieldList &operator=(const VSDXFieldList &paraList);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
+  void handle(VSDXCollector *collector);
   void clear();
   bool empty() const
   {

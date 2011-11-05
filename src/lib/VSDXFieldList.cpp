@@ -39,6 +39,7 @@ class VSDXFieldListElement
 public:
   VSDXFieldListElement() {}
   virtual ~VSDXFieldListElement() {}
+  virtual void handle(VSDXCollector *collector) = 0;
   virtual VSDXFieldListElement *clone() = 0;
 };
 
@@ -144,6 +145,27 @@ void libvisio::VSDXFieldList::setElementsOrder(const std::vector<unsigned> &elem
   m_elementsOrder.clear();
   for (unsigned i = 0; i<elementsOrder.size(); i++)
     m_elementsOrder.push_back(elementsOrder[i]);
+}
+
+void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
+{
+  if (empty())
+    return;
+  std::map<unsigned, VSDXFieldListElement *>::iterator iter;
+  if (m_elementsOrder.size())
+  {
+    for (unsigned i = 0; i < m_elementsOrder.size(); i++)
+    {
+      iter = m_elements.find(m_elementsOrder[i]);
+      if (iter != m_elements.end())
+        iter->second->handle(collector);
+    }
+  }
+  else
+  {
+    for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
+      iter->second->handle(collector);
+  }
 }
 
 void libvisio::VSDXFieldList::clear()

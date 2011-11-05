@@ -42,9 +42,9 @@
 #include "VSDXStylesCollector.h"
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()), m_geomListVector(),
-    m_charList(new VSDXCharacterList()), m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
-    m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
+  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()),
+    m_geomListVector(), m_fieldList(), m_charList(new VSDXCharacterList()), m_paraList(new VSDXParagraphList()),
+    m_charListVector(), m_paraListVector(), m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentPageID(0)
 {}
 
@@ -581,6 +581,8 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       delete *iter3;
     }
     m_paraListVector.clear();
+    m_fieldList.handle(m_collector);
+    m_fieldList.clear();
   }
   m_currentLevel = level;
 }
@@ -1503,6 +1505,38 @@ void libvisio::VSDXParser::readParaIX(WPXInputStream *input)
                           spLine, spBefore, spAfter, align);
 }
 
+
+void libvisio::VSDXParser::readNameList(WPXInputStream *input)
+{
+}
+
+void libvisio::VSDXParser::readName(WPXInputStream *input)
+{
+}
+
+void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
+{
+  uint32_t subHeaderLength = readU32(input);
+  uint32_t childrenListLength = readU32(input);
+  input->seek(subHeaderLength, WPX_SEEK_CUR);
+  std::vector<unsigned> fieldOrder;
+  fieldOrder.reserve(childrenListLength / sizeof(uint32_t));
+  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    fieldOrder.push_back(readU32(input));
+
+  if (m_isStencilStarted)
+    m_stencilShape.m_fields.setElementsOrder(fieldOrder);
+  else
+  {
+    m_fieldList.setElementsOrder(fieldOrder);
+    // We want the collectors to still get the level information
+    m_collector->collectFieldList(m_header.id, m_header.level);
+  }
+}
+
+void libvisio::VSDXParser::readTextField(WPXInputStream *input)
+{
+}
 
 void libvisio::VSDXParser::readColours(WPXInputStream *input)
 {

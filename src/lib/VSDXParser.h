@@ -40,6 +40,7 @@
 #include <libwpg/libwpg.h>
 #include "VSDXTypes.h"
 #include "VSDXGeometryList.h"
+#include "VSDXFieldList.h"
 #include "VSDXCharacterList.h"
 #include "VSDXParagraphList.h"
 #include "VSDXShapeList.h"
@@ -91,6 +92,12 @@ protected:
   void readParaIX(WPXInputStream *input);
   void readTextBlock(WPXInputStream *input);
 
+  void readNameList(WPXInputStream *input);
+  void readName(WPXInputStream *input);
+
+  void readFieldList(WPXInputStream *input);
+  void readTextField(WPXInputStream *input);
+
   void readStyleSheet(WPXInputStream *input);
 
   void readSplineStart(WPXInputStream *input);
@@ -119,6 +126,7 @@ protected:
   VSDXCollector *m_collector;
   VSDXGeometryList *m_geomList;
   std::vector<VSDXGeometryList *> m_geomListVector;
+  VSDXFieldList m_fieldList;
   VSDXCharacterList *m_charList;
   VSDXParagraphList *m_paraList;
   std::vector<VSDXCharacterList *> m_charListVector;

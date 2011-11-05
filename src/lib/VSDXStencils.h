@@ -35,6 +35,7 @@
 #include <vector>
 #include "VSDXStyles.h"
 #include "VSDXGeometryList.h"
+#include "VSDXFieldList.h"
 #include "VSDXTypes.h"
 
 namespace libvisio
@@ -49,6 +50,7 @@ public:
   VSDXStencilShape &operator=(const VSDXStencilShape &shape);
 
   std::vector<VSDXGeometryList> m_geometries;
+  VSDXFieldList m_fields;
   ForeignData *m_foreign;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
   VSDXLineStyle *m_lineStyle;

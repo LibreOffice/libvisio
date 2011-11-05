@@ -106,6 +106,7 @@ public:
   void collectFont(unsigned short fontID, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectCharList(unsigned id, unsigned level);
   void collectParaList(unsigned id, unsigned level);
+  void collectFieldList(unsigned id, unsigned level);
   void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                             double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
