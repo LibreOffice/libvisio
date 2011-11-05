@@ -1074,26 +1074,6 @@ void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &bin
   }
 }
 
-void libvisio::VSDXContentCollector::collectGeomList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXContentCollector::collectCharList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXContentCollector::collectParaList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXContentCollector::collectFieldList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
-}
-
 void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char geomFlags)
 {
   _handleLevelChange(level);
@@ -1518,12 +1498,6 @@ void libvisio::VSDXContentCollector::transformAngle(double &angle, XForm *txtxfo
 }
 
 void libvisio::VSDXContentCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned /* shapeId */)
-{
-  _handleLevelChange(level);
-}
-
-
-void libvisio::VSDXContentCollector::collectShapeList(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
 }

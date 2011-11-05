@@ -61,7 +61,6 @@ public:
                             double shadowOffsetX, double shadowOffsetY);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
                             unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc);
-  void collectGeomList(unsigned id, unsigned level);
   void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
@@ -78,7 +77,6 @@ public:
   void collectXFormData(unsigned id, unsigned level, const XForm &xform);
   void collectTxtXForm(unsigned id, unsigned level, const XForm &txtxform);
   void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
-  void collectShapeList(unsigned id, unsigned level);
   void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale);
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, unsigned currentPageID);
@@ -92,9 +90,6 @@ public:
   void collectColours(const std::vector<Colour> &colours);
   void collectFont(unsigned short fontID, const std::vector<unsigned char> &textStream, TextFormat format);
 
-  void collectCharList(unsigned id, unsigned level);
-  void collectParaList(unsigned id, unsigned level);
-  void collectFieldList(unsigned id, unsigned level);
   void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
   void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                             double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,

@@ -852,7 +852,7 @@ void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
   {
     m_geomList->setElementsOrder(geometryOrder);
     // We want the collectors to still get the level information
-    m_collector->collectGeomList(m_header.id, m_header.level);
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
 }
 
@@ -868,7 +868,7 @@ void libvisio::VSDXParser::readCharList(WPXInputStream *input)
 
   m_charList->setElementsOrder(characterOrder);
   // We want the collectors to still get the level information
-  m_collector->collectCharList(m_header.id, m_header.level);
+  m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
 void libvisio::VSDXParser::readParaList(WPXInputStream *input)
@@ -883,7 +883,7 @@ void libvisio::VSDXParser::readParaList(WPXInputStream *input)
 
   m_paraList->setElementsOrder(paragraphOrder);
   // We want the collectors to still get the level information
-  m_collector->collectParaList(m_header.id, m_header.level);
+  m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
 void libvisio::VSDXParser::readPage(WPXInputStream *input)
@@ -1007,7 +1007,7 @@ void libvisio::VSDXParser::readShapeList(WPXInputStream *input)
 
   m_shapeList.setElementsOrder(shapeOrder);
   // We want the collectors to still get the level information
-  m_collector->collectShapeList(m_header.id, m_header.level);
+  m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
 void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
@@ -1530,7 +1530,7 @@ void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
   {
     m_fieldList.setElementsOrder(fieldOrder);
     // We want the collectors to still get the level information
-    m_collector->collectFieldList(m_header.id, m_header.level);
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
 }
 

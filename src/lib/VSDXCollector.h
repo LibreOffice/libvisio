@@ -52,7 +52,6 @@ public:
                                     double shadowOffsetX, double shadowOffsetY) = 0;
   virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
                                     unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc) = 0;
-  virtual void collectGeomList(unsigned id, unsigned level) = 0;
   virtual void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags) = 0;
   virtual void collectMoveTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectLineTo(unsigned id, unsigned level, double x, double y) = 0;
@@ -68,7 +67,6 @@ public:
   virtual void collectXFormData(unsigned id, unsigned level, const XForm &xform) = 0;
   virtual void collectTxtXForm(unsigned id, unsigned level, const XForm &txtxform) = 0;
   virtual void collectShapeId(unsigned id, unsigned level, unsigned shapeId) = 0;
-  virtual void collectShapeList(unsigned id, unsigned level) = 0;
   virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat) = 0;
   virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale) = 0;
   virtual void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, unsigned currentPageID) = 0;
@@ -82,9 +80,6 @@ public:
 
   virtual void collectColours(const std::vector<Colour> &colours) = 0;
   virtual void collectFont(unsigned short fontID, const std::vector<unsigned char> &textStream, TextFormat format) = 0;
-  virtual void collectCharList(unsigned id, unsigned level) = 0;
-  virtual void collectParaList(unsigned id, unsigned level) = 0;
-  virtual void collectFieldList(unsigned id, unsigned level) = 0;
   virtual void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format) = 0;
   virtual void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                                     double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,

@@ -90,26 +90,6 @@ void libvisio::VSDXStylesCollector::collectFillAndShadow(unsigned /* id */, unsi
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectGeomList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXStylesCollector::collectCharList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXStylesCollector::collectParaList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXStylesCollector::collectFieldList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
-}
-
 void libvisio::VSDXStylesCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char /* geomFlags */)
 {
   _handleLevelChange(level);
@@ -207,11 +187,6 @@ void libvisio::VSDXStylesCollector::collectShapeId(unsigned /* id */, unsigned l
   if (m_isShapeStarted)
     m_groupMemberships[shapeId] = m_currentShapeId;
   m_shapeList.push_back(shapeId);
-}
-
-void libvisio::VSDXStylesCollector::collectShapeList(unsigned /* id */, unsigned level)
-{
-  _handleLevelChange(level);
 }
 
 void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */)
