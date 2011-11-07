@@ -1340,8 +1340,8 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
 
     transformPoint(points[i].first, points[i].second);
     polyline.insert("libwpg:path-action", "L");
-    polyline.insert("svg:x", points[i].first);
-    polyline.insert("svg:y", points[i].second);
+    polyline.insert("svg:x", m_scale*points[i].first);
+    polyline.insert("svg:y", m_scale*points[i].second);
     m_currentGeometry.push_back(polyline);
   }
 
@@ -1351,8 +1351,8 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
   m_y = y;
   transformPoint(m_x, m_y);
   polyline.insert("libwpg:path-action", "L");
-  polyline.insert("svg:x", m_x);
-  polyline.insert("svg:y", m_y);
+  polyline.insert("svg:x", m_scale*m_x);
+  polyline.insert("svg:y", m_scale*m_y);
   m_currentGeometry.push_back(polyline);
 }
 
