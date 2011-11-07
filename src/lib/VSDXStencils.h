@@ -59,6 +59,7 @@ public:
   VSDXCharStyle *m_charStyle;
   VSDXParaStyle *m_paraStyle;
   ::WPXBinaryData m_text;
+  std::vector< ::WPXBinaryData > m_names;
   TextFormat m_textFormat;
   std::map<unsigned, NURBSData> m_nurbsData;
   std::map<unsigned, PolylineData> m_polylineData;
