@@ -110,6 +110,8 @@ public:
                             double spLine, double spBefore, double spAfter, unsigned char align);
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
                         unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
+  void collectNameList(unsigned id, unsigned level);
+  void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format);
 
 
   // Style collectors
@@ -213,6 +215,7 @@ private:
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
   ::WPXBinaryData  m_textStream;
+  std::vector< ::WPXBinaryData> m_names;
   TextFormat m_textFormat;
   std::vector<VSDXCharStyle> m_charFormats;
   std::vector<VSDXParaStyle> m_paraFormats;

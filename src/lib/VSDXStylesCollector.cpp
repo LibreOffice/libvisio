@@ -252,6 +252,11 @@ void libvisio::VSDXStylesCollector::collectTextBlock(unsigned /* id */, unsigned
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectName(unsigned /*id*/, unsigned level, const ::WPXBinaryData & /*name*/, TextFormat /*format*/)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned level, unsigned lineStyleParent, unsigned fillStyleParent, unsigned textStyleParent)
 {
   _handleLevelChange(level);

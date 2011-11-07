@@ -65,7 +65,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
-  m_NURBSData(), m_polylineData(), m_textStream(), m_textFormat(VSD_TEXT_ANSI),
+  m_NURBSData(), m_polylineData(), m_textStream(), m_names(), m_textFormat(VSD_TEXT_ANSI),
   m_charFormats(), m_paraFormats(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
@@ -1759,6 +1759,21 @@ void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigne
 {
   _handleLevelChange(level);
   m_textBlockStyle = VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
+}
+
+void libvisio::VSDXContentCollector::collectNameList(unsigned /*id*/, unsigned level)
+{
+  _handleLevelChange(level);
+
+  m_names.clear();
+}
+
+void libvisio::VSDXContentCollector::collectName(unsigned /*id*/, unsigned level, const ::WPXBinaryData &name, TextFormat format)
+{
+  _handleLevelChange(level);
+
+  m_names.push_back(name);
+  m_textFormat = format;
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)

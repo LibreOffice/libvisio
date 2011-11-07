@@ -93,7 +93,7 @@ protected:
   void readTextBlock(WPXInputStream *input);
 
   void readNameList(WPXInputStream *input);
-  void readName(WPXInputStream *input);
+  virtual void readName(WPXInputStream *input) = 0;
 
   void readFieldList(WPXInputStream *input);
   void readTextField(WPXInputStream *input);

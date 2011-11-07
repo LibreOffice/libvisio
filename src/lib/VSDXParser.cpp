@@ -1508,10 +1508,12 @@ void libvisio::VSDXParser::readParaIX(WPXInputStream *input)
 
 void libvisio::VSDXParser::readNameList(WPXInputStream *input)
 {
-}
-
-void libvisio::VSDXParser::readName(WPXInputStream *input)
-{
+  if (m_isStencilStarted)
+    m_stencilShape.m_names.clear();
+  else
+  {
+//    m_collector->collectNameList(m_header.id, m_header.level);
+  }
 }
 
 void libvisio::VSDXParser::readFieldList(WPXInputStream *input)

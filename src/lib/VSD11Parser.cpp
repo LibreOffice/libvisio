@@ -225,4 +225,22 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
                                       fillFGTransparency, fillBGTransparency, shadowPattern, shfgc,
                                       shadowOffsetX, shadowOffsetY);
 }
+
+void libvisio::VSD11Parser::readName(WPXInputStream *input)
+{
+  input->seek(8, WPX_SEEK_CUR);
+  ::WPXBinaryData name;
+
+  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
+    name.append(readU8(input));
+
+  if (m_isStencilStarted)
+  {
+    m_stencilShape.m_names.push_back(name);
+    m_stencilShape.m_textFormat = libvisio::VSD_TEXT_UTF16;
+  }
+  else
+    m_collector->collectName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_UTF16);
+}
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

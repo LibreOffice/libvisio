@@ -198,4 +198,22 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
     m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,
                                       fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
 }
+
+void libvisio::VSD6Parser::readName(WPXInputStream *input)
+{
+  input->seek(8, WPX_SEEK_CUR);
+  ::WPXBinaryData name;
+
+  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
+    name.append(readU8(input));
+
+  if (m_isStencilStarted)
+  {
+    m_stencilShape.m_names.push_back(name);
+    m_stencilShape.m_textFormat = libvisio::VSD_TEXT_ANSI;
+  }
+  else
+    m_collector->collectName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_ANSI);
+}
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

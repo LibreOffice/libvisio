@@ -98,6 +98,11 @@ public:
                             double spLine, double spBefore, double spAfter, unsigned char align);
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
                         unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
+  void collectNameList(unsigned id, unsigned level)
+  {
+    collectUnhandledChunk(id, level);
+  }
+  void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format);
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
