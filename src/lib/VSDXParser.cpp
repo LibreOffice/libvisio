@@ -1563,7 +1563,7 @@ void libvisio::VSDXParser::readColours(WPXInputStream *input)
 void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned fontID)
 {
   input->seek(8, WPX_SEEK_CUR);
-  std::vector<uint8_t> textStream;
+  ::WPXBinaryData textStream;
 
   for (unsigned i = 0; i < 32; i++)
   {
@@ -1571,8 +1571,8 @@ void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned fontID)
     unsigned char nextchar = readU8(input);
     if (curchar == 0 && nextchar == 0)
       break;
-    textStream.push_back(curchar);
-    textStream.push_back(nextchar);
+    textStream.append(curchar);
+    textStream.append(nextchar);
   }
   m_collector->collectFont((unsigned short) fontID, textStream, libvisio::VSD_TEXT_UTF16);
 }
@@ -1580,14 +1580,14 @@ void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned fontID)
 void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
 {
   input->seek(6, WPX_SEEK_CUR);
-  std::vector<uint8_t> textStream;
+  ::WPXBinaryData textStream;
 
   for (unsigned i = 0; i < m_header.dataLength - 6; i++)
   {
     unsigned char curchar = readU8(input);
     if (curchar == 0)
       break;
-    textStream.push_back(curchar);
+    textStream.append(curchar);
   }
   m_collector->collectFont((unsigned short) m_header.id, textStream, libvisio::VSD_TEXT_ANSI);
 }

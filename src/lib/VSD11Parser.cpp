@@ -105,11 +105,11 @@ bool libvisio::VSD11Parser::getChunkHeader(WPXInputStream *input)
 void libvisio::VSD11Parser::readText(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR);
-  std::vector<uint8_t> textStream;
+  ::WPXBinaryData textStream;
 
   // Read up to end of chunk in byte pairs (except from last 2 bytes)
   for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
-    textStream.push_back(readU8(input));
+    textStream.append(readU8(input));
 
   if (m_isStencilStarted)
   {

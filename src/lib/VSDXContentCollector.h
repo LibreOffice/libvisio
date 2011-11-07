@@ -101,8 +101,8 @@ public:
   void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectColours(const std::vector<Colour> &colours);
-  void collectFont(unsigned short fontID, const std::vector<unsigned char> &textStream, TextFormat format);
-  void collectText(unsigned id, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format);
+  void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format);
+  void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
   void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                             double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
@@ -212,7 +212,7 @@ private:
 
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
-  std::vector<unsigned char> m_textStream;
+  ::WPXBinaryData  m_textStream;
   TextFormat m_textFormat;
   std::vector<VSDXCharStyle> m_charFormats;
   std::vector<VSDXParaStyle> m_paraFormats;

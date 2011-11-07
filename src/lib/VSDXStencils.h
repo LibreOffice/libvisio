@@ -58,7 +58,7 @@ public:
   VSDXTextBlockStyle *m_textBlockStyle;
   VSDXCharStyle *m_charStyle;
   VSDXParaStyle *m_paraStyle;
-  std::vector<unsigned char> m_text;
+  ::WPXBinaryData m_text;
   TextFormat m_textFormat;
   std::map<unsigned, NURBSData> m_nurbsData;
   std::map<unsigned, PolylineData> m_polylineData;

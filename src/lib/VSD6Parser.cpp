@@ -87,10 +87,10 @@ bool libvisio::VSD6Parser::getChunkHeader(WPXInputStream *input)
 void libvisio::VSD6Parser::readText(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR);
-  std::vector<uint8_t> textStream;
+  ::WPXBinaryData  textStream;
 
   for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
-    textStream.push_back(readU8(input));
+    textStream.append(readU8(input));
 
   if (m_isStencilStarted)
   {

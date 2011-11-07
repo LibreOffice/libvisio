@@ -40,7 +40,7 @@ class VSDInternalStream : public WPXInputStream
 {
 public:
   VSDInternalStream(WPXInputStream *input, unsigned long size, bool compressed);
-  VSDInternalStream(std::vector<unsigned char> buffer, unsigned long size);
+  VSDInternalStream(const unsigned char *buffer, unsigned long size);
   ~VSDInternalStream() {}
 
   bool isOLEStream()
@@ -62,7 +62,7 @@ public:
   };
 
 private:
-  long m_offset;
+  volatile long m_offset;
   std::vector<unsigned char> m_buffer;
   VSDInternalStream(const VSDInternalStream &);
   VSDInternalStream &operator=(const VSDInternalStream &);

@@ -32,7 +32,7 @@
 #include "VSDInternalStream.h"
 
 
-VSDInternalStream::VSDInternalStream(std::vector<unsigned char> buffer, unsigned long size) :
+VSDInternalStream::VSDInternalStream(const unsigned char *buffer, unsigned long size) :
   WPXInputStream(),
   m_offset(0),
   m_buffer()

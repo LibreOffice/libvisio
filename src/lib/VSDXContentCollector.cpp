@@ -510,8 +510,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
 
 void libvisio::VSDXContentCollector::_flushText()
 {
-  if (m_textStream.empty()) return;
-  WPXString text;
+  if (!m_textStream.size()) return;
   double angle = 0.0;
   transformAngle(angle, m_txtxform);
 
@@ -573,6 +572,9 @@ void libvisio::VSDXContentCollector::_flushText()
 
   unsigned int charIndex = 0;
   unsigned int paraCharCount = 0;
+  unsigned long textBufferPosition = 0;
+  const unsigned char *pTextBuffer = m_textStream.getDataBuffer();
+
   for (std::vector<VSDXParaStyle>::iterator paraIt = m_paraFormats.begin();
        paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); paraIt++)
   {
@@ -614,7 +616,7 @@ void libvisio::VSDXContentCollector::_flushText()
     {
       paraCharCount -= m_charFormats[charIndex].charCount;
 
-      text.clear();
+      WPXString text;
 
       if (m_textFormat == VSD_TEXT_UTF16)
       {
@@ -622,24 +624,24 @@ void libvisio::VSDXContentCollector::_flushText()
         VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
         VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
-        VSDInternalStream tmpStream(m_textStream, max*2);
+        VSDInternalStream tmpStream(&pTextBuffer[textBufferPosition], max*2);
         _appendUTF16LE(text, &tmpStream);
-
-        m_textStream.erase(m_textStream.begin(), m_textStream.begin() + (max*2));
+        textBufferPosition += max*2;
       }
       else
       {
         unsigned long max = m_charFormats[charIndex].charCount <= m_textStream.size() ? m_charFormats[charIndex].charCount : m_textStream.size();
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
-        for (unsigned j = 0; j < max; j++)
+        VSDInternalStream tmpStream(&pTextBuffer[textBufferPosition], max);
+        while (!tmpStream.atEOS())
         {
-          if (m_textStream[j] <= 0x20)
+          unsigned char character = readU8(&tmpStream);
+          if (character <= 0x20)
             _appendUCS4(text, (unsigned) 0x20);
           else
-            _appendUCS4(text, (unsigned) m_textStream[j]);
+            _appendUCS4(text, (unsigned) character);
         }
-
-        m_textStream.erase(m_textStream.begin(), m_textStream.begin() + max);
+        textBufferPosition += max;
       }
       WPXPropertyList textProps;
       if (m_fonts[m_charFormats[charIndex].faceID] == "")
@@ -1660,22 +1662,23 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
     m_colours.push_back(colours[i]);
 }
 
-void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const std::vector<unsigned char> &textStream, TextFormat format)
+void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format)
 {
   WPXString fontname;
+  const unsigned char *pTextStream = textStream.getDataBuffer();
   if (format == VSD_TEXT_ANSI)
   {
     for (unsigned i = 0; i < textStream.size(); i++)
     {
-      if (textStream[i] <= 0x20)
+      if (pTextStream[i] <= 0x20)
         _appendUCS4(fontname, (unsigned) 0x20);
       else
-        _appendUCS4(fontname, (unsigned) textStream[i]);
+        _appendUCS4(fontname, (unsigned) pTextStream[i]);
     }
   }
   else if (format == VSD_TEXT_UTF16)
   {
-    VSDInternalStream tmpStream(textStream, textStream.size());
+    VSDInternalStream tmpStream(pTextStream, textStream.size());
     _appendUTF16LE(fontname, &tmpStream);
   }
 
@@ -1722,7 +1725,7 @@ void libvisio::VSDXContentCollector::collectSplineEnd()
 }
 
 
-void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const std::vector<unsigned char> &textStream, TextFormat format)
+void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const ::WPXBinaryData &textStream, TextFormat format)
 {
   _handleLevelChange(level);
 
@@ -1850,7 +1853,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 
       _flushCurrentPath();
       _flushCurrentForeignData();
-      if (!m_textStream.empty())
+      if (m_textStream.size())
         _flushText();
       m_isShapeStarted = false;
 
