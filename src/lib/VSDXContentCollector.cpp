@@ -445,13 +445,13 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
   {
     m_styleProps.insert("draw:marker-start-viewbox", "0 0 20 30");
     m_styleProps.insert("draw:marker-start-path", "m10 0-10 30h20z");
-    m_styleProps.insert("draw:marker-start-width", 0.118);
+    m_styleProps.insert("draw:marker-start-width", m_scale*0.118);
   }
   else if (endMarker > 0)
   {
     m_styleProps.insert("draw:marker-end-viewbox", "0 0 20 30");
     m_styleProps.insert("draw:marker-end-path", "m10 0-10 30h20z");
-    m_styleProps.insert("draw:marker-end-width", 0.118);
+    m_styleProps.insert("draw:marker-end-width", m_scale*0.118);
   }
 }
 
@@ -1434,9 +1434,9 @@ void libvisio::VSDXContentCollector::applyXForm(double &x, double &y, const XFor
   x -= xform.pinLocX;
   y -= xform.pinLocY;
   if (xform.flipX)
-    x = xform.width - x - 2.0*xform.pinLocX;
+    x = -x;
   if (xform.flipY)
-    y = xform.height -y - 2.0*xform.pinLocY;
+    y = -y;
   if (xform.angle != 0.0)
   {
     double tmpX = x*cos(xform.angle) - y*sin(xform.angle);
