@@ -51,6 +51,7 @@ public:
   void addTextField(unsigned id, unsigned level, unsigned nameId);
   void addNumericField(unsigned id, unsigned level, unsigned format, double number);
   void addDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue);
+  void addEmptyField(unsigned id, unsigned level);
   void handle(VSDXCollector *collector);
   void clear();
   bool empty() const
