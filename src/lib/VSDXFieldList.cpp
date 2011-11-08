@@ -46,34 +46,47 @@ public:
 class VSDXTextField : public VSDXFieldListElement
 {
 public:
-  VSDXTextField(unsigned id, unsigned level) : m_id(id), m_level(level) {}
+  VSDXTextField(unsigned id, unsigned level, unsigned nameId)
+    : m_id(id),
+      m_level(level),
+      m_nameId(nameId) {}
   ~VSDXTextField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
 private:
-  unsigned m_id, m_level;
+  unsigned m_id, m_level, m_nameId;
 };
 
 class VSDXNumericField : public VSDXFieldListElement
 {
 public:
-  VSDXNumericField(unsigned id, unsigned level) : m_id(id), m_level(level) {}
+  VSDXNumericField(unsigned id, unsigned level, unsigned format, double number)
+    : m_id(id),
+      m_level(level),
+      m_format(format),
+      m_number(number) {}
   ~VSDXNumericField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
 private:
-  unsigned m_id, m_level;
+  unsigned m_id, m_level, m_format;
+  double m_number;
 };
 
-class VSDXGenericField : public VSDXFieldListElement
+class VSDXDatetimeField : public VSDXFieldListElement
 {
 public:
-  VSDXGenericField(unsigned id, unsigned level) : m_id(id), m_level(level) {}
-  ~VSDXGenericField() {}
+  VSDXDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue)
+    : m_id(id),
+      m_level(level),
+      m_format(format),
+      m_timeValue(timeValue) {}
+  ~VSDXDatetimeField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
 private:
-  unsigned m_id, m_level;
+  unsigned m_id, m_level, m_format;
+  unsigned long m_timeValue;
 };
 
 } // namespace libvisio
@@ -86,7 +99,7 @@ void libvisio::VSDXTextField::handle(VSDXCollector *collector)
 
 libvisio::VSDXFieldListElement *libvisio::VSDXTextField::clone()
 {
-  return new VSDXTextField(m_id, m_level);
+  return new VSDXTextField(m_id, m_level, m_nameId);
 }
 
 
@@ -96,17 +109,17 @@ void libvisio::VSDXNumericField::handle(VSDXCollector *collector)
 
 libvisio::VSDXFieldListElement *libvisio::VSDXNumericField::clone()
 {
-  return new VSDXTextField(m_id, m_level);
+  return new VSDXNumericField(m_id, m_level, m_format, m_number);
 }
 
 
-void libvisio::VSDXGenericField::handle(VSDXCollector *collector)
+void libvisio::VSDXDatetimeField::handle(VSDXCollector *collector)
 {
 }
 
-libvisio::VSDXFieldListElement *libvisio::VSDXGenericField::clone()
+libvisio::VSDXFieldListElement *libvisio::VSDXDatetimeField::clone()
 {
-  return new VSDXGenericField(m_id, m_level);
+  return new VSDXDatetimeField(m_id, m_level, m_format, m_timeValue);
 }
 
 
@@ -145,6 +158,21 @@ void libvisio::VSDXFieldList::setElementsOrder(const std::vector<unsigned> &elem
   m_elementsOrder.clear();
   for (unsigned i = 0; i<elementsOrder.size(); i++)
     m_elementsOrder.push_back(elementsOrder[i]);
+}
+
+void libvisio::VSDXFieldList::addTextField(unsigned id, unsigned level, unsigned nameId)
+{
+  m_elements[id] = new VSDXTextField(id, level, nameId);
+}
+
+void libvisio::VSDXFieldList::addNumericField(unsigned id, unsigned level, unsigned format, double number)
+{
+  m_elements[id] = new VSDXNumericField(id, level, format, number);
+}
+
+void libvisio::VSDXFieldList::addDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue)
+{
+  m_elements[id] = new VSDXDatetimeField(id, level, format, timeValue);
 }
 
 void libvisio::VSDXFieldList::handle(VSDXCollector *collector)

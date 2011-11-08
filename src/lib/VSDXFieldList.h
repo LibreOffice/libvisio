@@ -48,6 +48,9 @@ public:
   ~VSDXFieldList();
   VSDXFieldList &operator=(const VSDXFieldList &paraList);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
+  void addTextField(unsigned id, unsigned level, unsigned nameId);
+  void addNumericField(unsigned id, unsigned level, unsigned format, double number);
+  void addDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue);
   void handle(VSDXCollector *collector);
   void clear();
   bool empty() const
