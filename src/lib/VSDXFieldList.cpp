@@ -108,6 +108,7 @@ private:
 
 void libvisio::VSDXTextField::handle(VSDXCollector *collector)
 {
+  collector->collectTextField(m_id, m_level, m_nameId);
 }
 
 libvisio::VSDXFieldListElement *libvisio::VSDXTextField::clone()
@@ -118,6 +119,7 @@ libvisio::VSDXFieldListElement *libvisio::VSDXTextField::clone()
 
 void libvisio::VSDXNumericField::handle(VSDXCollector *collector)
 {
+  collector->collectNumericField(m_id, m_level, m_format, m_number);
 }
 
 libvisio::VSDXFieldListElement *libvisio::VSDXNumericField::clone()
@@ -128,6 +130,7 @@ libvisio::VSDXFieldListElement *libvisio::VSDXNumericField::clone()
 
 void libvisio::VSDXDatetimeField::handle(VSDXCollector *collector)
 {
+  collector->collectDatetimeField(m_id, m_level, m_format, m_timeValue);
 }
 
 libvisio::VSDXFieldListElement *libvisio::VSDXDatetimeField::clone()
@@ -138,6 +141,7 @@ libvisio::VSDXFieldListElement *libvisio::VSDXDatetimeField::clone()
 
 void libvisio::VSDXEmptyField::handle(VSDXCollector *collector)
 {
+  collector->collectEmptyField(m_id, m_level);
 }
 
 libvisio::VSDXFieldListElement *libvisio::VSDXEmptyField::clone()

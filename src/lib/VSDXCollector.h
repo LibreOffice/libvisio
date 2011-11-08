@@ -109,6 +109,13 @@ public:
                                      unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
                                      unsigned char textDirection) = 0;
 
+  // Field list
+  virtual void collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder) = 0;
+  virtual void collectTextField(unsigned id, unsigned level, unsigned nameId) = 0;
+  virtual void collectNumericField(unsigned id, unsigned level, unsigned format, double number) = 0;
+  virtual void collectDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue) = 0;
+  virtual void collectEmptyField(unsigned id, unsigned level) = 0;
+
   // Temporary hack
   virtual void startPage() = 0;
   virtual void endPage() = 0;

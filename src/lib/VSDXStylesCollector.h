@@ -120,6 +120,13 @@ public:
   void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
                              unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
+  // Field list
+  void collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder);
+  void collectTextField(unsigned id, unsigned level, unsigned nameId);
+  void collectNumericField(unsigned id, unsigned level, unsigned format, double number);
+  void collectDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue);
+  void collectEmptyField(unsigned id, unsigned level);
+
   // Temporary hack
   void startPage();
   void endPage();

@@ -1840,6 +1840,32 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
                              style->shadowPattern, style->shadowFgColour, style->shadowOffsetX, style->shadowOffsetY);
 }
 
+void libvisio::VSDXContentCollector::collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, unsigned nameId)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, unsigned format, double number)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXContentCollector::collectDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXContentCollector::collectEmptyField(unsigned id, unsigned level)
+{
+  _handleLevelChange(level);
+}
+
+
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)

@@ -344,6 +344,31 @@ void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level
   collectFillStyle(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
+void libvisio::VSDXStylesCollector::collectFieldList(unsigned /* id */, unsigned level, const std::vector<unsigned> & /*fieldsOrder*/)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectTextField(unsigned /* id */, unsigned level, unsigned /* nameId */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectNumericField(unsigned /* id */, unsigned level, unsigned /* format */, double /* number */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectDatetimeField(unsigned /* id */, unsigned level, unsigned /* format */, unsigned long /* timeValue */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDXStylesCollector::collectEmptyField(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::startPage()
 {
   m_groupXForms.clear();

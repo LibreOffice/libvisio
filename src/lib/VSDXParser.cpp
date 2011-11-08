@@ -529,17 +529,17 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
         readSplineKnot(input);
         break;
       case VSD_NAME_LIST:
-	    readNameList(input);
-		break;
-	  case VSD_NAME:
-	    readName(input);
-		break;
-	  case VSD_FIELD_LIST:
-	    readFieldList(input);
-		break;
-	  case VSD_TEXT_FIELD:
-	    readTextField(input);
-		break;
+        readNameList(input);
+        break;
+      case VSD_NAME:
+        readName(input);
+        break;
+      case VSD_FIELD_LIST:
+        readFieldList(input);
+        break;
+      case VSD_TEXT_FIELD:
+        readTextField(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -714,17 +714,17 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
         readSplineKnot(input);
         break;
       case VSD_NAME_LIST:
-	    readNameList(input);
-		break;
-	  case VSD_NAME:
-	    readName(input);
-		break;
-	  case VSD_FIELD_LIST:
-	    readFieldList(input);
-		break;
-	  case VSD_TEXT_FIELD:
-	    readTextField(input);
-		break;
+        readNameList(input);
+        break;
+      case VSD_NAME:
+        readName(input);
+        break;
+      case VSD_FIELD_LIST:
+        readFieldList(input);
+        break;
+      case VSD_TEXT_FIELD:
+        readTextField(input);
+        break;
       default:
         m_collector->collectUnhandledChunk(m_header.id, m_header.level);
       }
@@ -1556,7 +1556,7 @@ void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
   {
     m_fieldList.setElementsOrder(fieldOrder);
     // We want the collectors to still get the level information
-    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+    m_collector->collectFieldList(m_header.id, m_header.level, fieldOrder);
   }
 }
 
@@ -1567,40 +1567,40 @@ void libvisio::VSDXParser::readTextField(WPXInputStream *input)
   if (tmpCode == 0xe8)
   {
     unsigned nameId = readU32(input);
-	if (nameId == 0xfffc)
-	{
-	  if (m_isStencilStarted)
-	    m_stencilShape.m_fields.addEmptyField(m_header.id, m_header.level);
-	  else
-	    m_fieldList.addEmptyField(m_header.id, m_header.level);
-	}
-	else
-	{
-	  if (m_isStencilStarted)
-	    m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, nameId);
-	  else
-	    m_fieldList.addTextField(m_header.id, m_header.level, nameId);
-	}
+    if (nameId == 0xfffc)
+    {
+      if (m_isStencilStarted)
+        m_stencilShape.m_fields.addEmptyField(m_header.id, m_header.level);
+      else
+        m_fieldList.addEmptyField(m_header.id, m_header.level);
+    }
+    else
+    {
+      if (m_isStencilStarted)
+        m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, nameId);
+      else
+        m_fieldList.addTextField(m_header.id, m_header.level, nameId);
+    }
   }
   else
   {
     double numericValue = readDouble(input);
-	input->seek(2, WPX_SEEK_CUR);
-	unsigned formatId = readU32(input);
-	if (tmpCode == 0x28)
-	{
-	  if (m_isStencilStarted)
-	    m_stencilShape.m_fields.addDatetimeField(m_header.id, m_header.level, formatId, numericValue);
-	  else
-	    m_fieldList.addDatetimeField(m_header.id, m_header.level, formatId, numericValue);
-	}
-	else
-	{
-	  if (m_isStencilStarted)
-	    m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatId, numericValue);
-	  else
-	    m_fieldList.addNumericField(m_header.id, m_header.level, formatId, numericValue);
-	}
+    input->seek(2, WPX_SEEK_CUR);
+    unsigned formatId = readU32(input);
+    if (tmpCode == 0x28)
+    {
+      if (m_isStencilStarted)
+        m_stencilShape.m_fields.addDatetimeField(m_header.id, m_header.level, formatId, numericValue);
+      else
+        m_fieldList.addDatetimeField(m_header.id, m_header.level, formatId, numericValue);
+    }
+    else
+    {
+      if (m_isStencilStarted)
+        m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatId, numericValue);
+      else
+        m_fieldList.addNumericField(m_header.id, m_header.level, formatId, numericValue);
+    }
   }
 }
 
