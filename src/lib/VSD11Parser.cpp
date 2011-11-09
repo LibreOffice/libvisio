@@ -228,10 +228,9 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
 
 void libvisio::VSD11Parser::readName(WPXInputStream *input)
 {
-  input->seek(8, WPX_SEEK_CUR);
   ::WPXBinaryData name;
 
-  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
+  for (unsigned bytesRead = 0; bytesRead < m_header.dataLength; bytesRead++)
     name.append(readU8(input));
 
   if (m_isStencilStarted)

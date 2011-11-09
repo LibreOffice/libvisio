@@ -28,20 +28,12 @@
  * instead of those above.
  */
 
+#include <libwpd/libwpd.h>
 #include "VSDXCollector.h"
 #include "VSDXFieldList.h"
 
 namespace libvisio
 {
-
-class VSDXFieldListElement
-{
-public:
-  VSDXFieldListElement() {}
-  virtual ~VSDXFieldListElement() {}
-  virtual void handle(VSDXCollector *collector) = 0;
-  virtual VSDXFieldListElement *clone() = 0;
-};
 
 class VSDXTextField : public VSDXFieldListElement
 {
@@ -53,6 +45,13 @@ public:
   ~VSDXTextField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
+  WPXString getString(const std::vector<WPXString> &strVec)
+  {
+    if (m_nameId >= strVec.size())
+      return WPXString();
+    else
+      return strVec[m_nameId];
+  }
 private:
   unsigned m_id, m_level, m_nameId;
 };
@@ -68,10 +67,33 @@ public:
   ~VSDXNumericField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
+  WPXString getString(const std::vector<WPXString> &)
+  {
+    WPXString result;
+    WPXProperty *pProp = WPXPropertyFactory::newDoubleProp(m_number);
+    if (pProp)
+    {
+      result = pProp->getStr();
+      delete pProp;
+    }
+    return result;
+  }
 private:
   unsigned m_id, m_level, m_format;
   double m_number;
 };
+
+#define MAX_BUFFER 1024
+
+static WPXString datetimeToString(const char *format, double datetime)
+{
+  WPXString result;
+  char buffer[MAX_BUFFER];
+  time_t timer = (time_t)(86400 * datetime - 2209161600.0);
+  strftime(&buffer[0], MAX_BUFFER-1, format, gmtime(&timer));
+  result.append(&buffer[0]);
+  return result;
+}
 
 class VSDXDatetimeField : public VSDXFieldListElement
 {
@@ -84,6 +106,10 @@ public:
   ~VSDXDatetimeField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
+  WPXString getString(const std::vector<WPXString> &)
+  {
+    return datetimeToString("%x %X", m_timeValue);
+  }
 private:
   unsigned m_id, m_level, m_format;
   unsigned long m_timeValue;
@@ -173,6 +199,29 @@ libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDX
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = fieldList.m_elementsOrder;
   return *this;
+}
+
+void libvisio::VSDXFieldList::toVector(std::vector<libvisio::VSDXFieldListElement *> &vec) const
+{
+  if (!vec.empty())
+    vec.clear();
+  if (empty())
+    return;
+  std::map<unsigned, VSDXFieldListElement *>::const_iterator iter;
+  if (m_elementsOrder.size())
+  {
+    for (unsigned i = 0; i < m_elementsOrder.size(); i++)
+    {
+      iter = m_elements.find(m_elementsOrder[i]);
+      if (iter != m_elements.end())
+        vec.push_back(iter->second);
+    }
+  }
+  else
+  {
+    for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
+      vec.push_back(iter->second);
+  }
 }
 
 libvisio::VSDXFieldList::~VSDXFieldList()

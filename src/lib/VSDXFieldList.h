@@ -33,20 +33,35 @@
 
 #include <vector>
 #include <map>
+#include <libwpd/libwpd.h>
+#include <VSDXTypes.h>
 
 namespace libvisio
 {
 
-class VSDXFieldListElement;
 class VSDXCollector;
+
+class VSDXFieldListElement
+{
+public:
+  VSDXFieldListElement() {}
+  virtual ~VSDXFieldListElement() {}
+  virtual void handle(VSDXCollector *collector) = 0;
+  virtual VSDXFieldListElement *clone() = 0;
+  virtual WPXString getString(const std::vector<WPXString>&)
+  {
+    return WPXString();
+  };
+};
 
 class VSDXFieldList
 {
 public:
   VSDXFieldList();
-  VSDXFieldList(const VSDXFieldList &paraList);
+  VSDXFieldList(const VSDXFieldList &fieldList);
   ~VSDXFieldList();
-  VSDXFieldList &operator=(const VSDXFieldList &paraList);
+  VSDXFieldList &operator=(const VSDXFieldList &fieldList);
+  void toVector(std::vector<VSDXFieldListElement *> &vec) const;
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void addTextField(unsigned id, unsigned level, unsigned nameId);
   void addNumericField(unsigned id, unsigned level, unsigned format, double number);

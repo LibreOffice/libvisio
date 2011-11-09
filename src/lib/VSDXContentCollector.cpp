@@ -65,7 +65,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
-  m_NURBSData(), m_polylineData(), m_textStream(), m_names(), m_textFormat(VSD_TEXT_ANSI),
+  m_NURBSData(), m_polylineData(), m_textStream(), m_names(), m_fields(), m_textFormat(VSD_TEXT_ANSI),
   m_charFormats(), m_paraFormats(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
@@ -1588,10 +1588,9 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   if (masterPage != 0xffffffff && masterShape != 0xffffffff)
   {
     const VSDXStencil *stencil = m_stencils.getStencil(masterPage);
-    if (stencil) m_stencilShape = stencil->getStencilShape(masterShape);
-    // Set the foreign types and foreign data if the stencil has foreign
-    // If the shape itself overrides them, they will be overwritten in the
-    // collectForeignDataType and collectForeignData calls
+    if (stencil)
+      m_stencilShape = stencil->getStencilShape(masterShape);
+    // Initialize the shape from stencil content
     if (m_stencilShape)
     {
       if (m_stencilShape->m_foreign)
@@ -1603,6 +1602,16 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
 
       m_textStream = m_stencilShape->m_text;
       m_textFormat = m_stencilShape->m_textFormat;
+
+      m_names.clear();
+      for (std::vector<WPXBinaryData>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
+      {
+        WPXString nameString;
+        _convertDataToString(nameString, *(iterData), m_stencilShape->m_textFormat);
+        m_names.push_back(nameString);
+      }
+
+      m_stencilShape->m_fields.toVector(m_fields);
 
       if (m_stencilShape->m_lineStyleId)
         lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
@@ -1662,26 +1671,10 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
     m_colours.push_back(colours[i]);
 }
 
-void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format)
+void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format)
 {
   WPXString fontname;
-  const unsigned char *pTextStream = textStream.getDataBuffer();
-  if (format == VSD_TEXT_ANSI)
-  {
-    for (unsigned i = 0; i < textStream.size(); i++)
-    {
-      if (pTextStream[i] <= 0x20)
-        _appendUCS4(fontname, (unsigned) 0x20);
-      else
-        _appendUCS4(fontname, (unsigned) pTextStream[i]);
-    }
-  }
-  else if (format == VSD_TEXT_UTF16)
-  {
-    VSDInternalStream tmpStream(pTextStream, textStream.size());
-    _appendUTF16LE(fontname, &tmpStream);
-  }
-
+  _convertDataToString(fontname, textStream, format);
   m_fonts[fontID] = fontname;
 }
 
@@ -1725,7 +1718,7 @@ void libvisio::VSDXContentCollector::collectSplineEnd()
 }
 
 
-void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const ::WPXBinaryData &textStream, TextFormat format)
+void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const WPXBinaryData &textStream, TextFormat format)
 {
   _handleLevelChange(level);
 
@@ -1768,12 +1761,33 @@ void libvisio::VSDXContentCollector::collectNameList(unsigned /*id*/, unsigned l
   m_names.clear();
 }
 
-void libvisio::VSDXContentCollector::collectName(unsigned /*id*/, unsigned level, const ::WPXBinaryData &name, TextFormat format)
+void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format)
+{
+  WPXInputStream *pStream = const_cast<WPXInputStream *>(data.getDataStream());
+  if (format == VSD_TEXT_ANSI)
+  {
+    while (!pStream->atEOS())
+    {
+      unsigned char character = readU8(pStream);
+      if (character <= 0x20)
+        _appendUCS4(result, (unsigned) 0x20);
+      else
+        _appendUCS4(result, (unsigned) character);
+    }
+  }
+  else if (format == VSD_TEXT_UTF16)
+  {
+    _appendUTF16LE(result, pStream);
+  }
+}
+
+void libvisio::VSDXContentCollector::collectName(unsigned /*id*/, unsigned level, const WPXBinaryData &name, TextFormat format)
 {
   _handleLevelChange(level);
 
-  m_names.push_back(name);
-  m_textFormat = format;
+  WPXString nameString;
+  _convertDataToString(nameString, name, format);
+  m_names.push_back(nameString);
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)

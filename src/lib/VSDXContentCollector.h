@@ -101,8 +101,8 @@ public:
   void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectColours(const std::vector<Colour> &colours);
-  void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format);
-  void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
+  void collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format);
+  void collectText(unsigned id, unsigned level, const WPXBinaryData &textStream, TextFormat format);
   void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                             double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
@@ -111,7 +111,7 @@ public:
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
                         unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
   void collectNameList(unsigned id, unsigned level);
-  void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format);
+  void collectName(unsigned id, unsigned level,  const WPXBinaryData &name, TextFormat format);
 
 
   // Style collectors
@@ -175,6 +175,8 @@ private:
                                 unsigned fillFGTransparency, unsigned fillBGTransparency,
                                 unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
 
+  void _convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format);
+
   bool m_isPageStarted;
   double m_pageWidth;
   double m_pageHeight;
@@ -221,8 +223,9 @@ private:
 
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
-  ::WPXBinaryData  m_textStream;
-  std::vector< ::WPXBinaryData> m_names;
+  WPXBinaryData m_textStream;
+  std::vector<WPXString> m_names;
+  std::vector<VSDXFieldListElement *> m_fields;
   TextFormat m_textFormat;
   std::vector<VSDXCharStyle> m_charFormats;
   std::vector<VSDXParaStyle> m_paraFormats;
