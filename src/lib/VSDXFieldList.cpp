@@ -85,16 +85,6 @@ private:
 
 #define MAX_BUFFER 1024
 
-static WPXString datetimeToString(const char *format, double datetime)
-{
-  WPXString result;
-  char buffer[MAX_BUFFER];
-  time_t timer = (time_t)(86400 * datetime - 2209161600.0);
-  strftime(&buffer[0], MAX_BUFFER-1, format, gmtime(&timer));
-  result.append(&buffer[0]);
-  return result;
-}
-
 class VSDXDatetimeField : public VSDXFieldListElement
 {
 public:
@@ -106,6 +96,15 @@ public:
   ~VSDXDatetimeField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
+  static WPXString datetimeToString(const char *format, double datetime)
+  {
+    WPXString result;
+    char buffer[MAX_BUFFER];
+    time_t timer = (time_t)(86400 * datetime - 2209161600.0);
+    strftime(&buffer[0], MAX_BUFFER-1, format, gmtime(&timer));
+    result.append(&buffer[0]);
+    return result;
+  }
   WPXString getString(const std::vector<WPXString> &)
   {
     return datetimeToString("%x %X", m_timeValue);
