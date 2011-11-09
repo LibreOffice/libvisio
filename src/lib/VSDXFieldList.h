@@ -61,7 +61,7 @@ public:
   VSDXFieldList(const VSDXFieldList &fieldList);
   ~VSDXFieldList();
   VSDXFieldList &operator=(const VSDXFieldList &fieldList);
-  void toVector(std::vector<VSDXFieldListElement *> &vec) const;
+  std::vector<VSDXFieldListElement *> getVector() const;
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void addTextField(unsigned id, unsigned level, unsigned nameId);
   void addNumericField(unsigned id, unsigned level, unsigned format, double number);

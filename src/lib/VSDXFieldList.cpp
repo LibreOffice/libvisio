@@ -200,27 +200,28 @@ libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDX
   return *this;
 }
 
-void libvisio::VSDXFieldList::toVector(std::vector<libvisio::VSDXFieldListElement *> &vec) const
+std::vector<libvisio::VSDXFieldListElement *> libvisio::VSDXFieldList::getVector() const
 {
-  if (!vec.empty())
-    vec.clear();
-  if (empty())
-    return;
-  std::map<unsigned, VSDXFieldListElement *>::const_iterator iter;
-  if (m_elementsOrder.size())
+  std::vector<libvisio::VSDXFieldListElement *> vec;
+  if (!empty())
   {
-    for (unsigned i = 0; i < m_elementsOrder.size(); i++)
+    std::map<unsigned, VSDXFieldListElement *>::const_iterator iter;
+    if (m_elementsOrder.size())
     {
-      iter = m_elements.find(m_elementsOrder[i]);
-      if (iter != m_elements.end())
-        vec.push_back(iter->second);
+      for (unsigned i = 0; i < m_elementsOrder.size(); i++)
+      {
+        iter = m_elements.find(m_elementsOrder[i]);
+        if (iter != m_elements.end())
+          vec.push_back(iter->second->clone());
+      }
+    }
+    else
+    {
+      for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
+        vec.push_back(iter->second->clone());
     }
   }
-  else
-  {
-    for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
-      vec.push_back(iter->second);
-  }
+  return vec;
 }
 
 libvisio::VSDXFieldList::~VSDXFieldList()

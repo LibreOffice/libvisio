@@ -62,6 +62,10 @@ public:
   virtual ~VSDXContentCollector()
   {
     if (m_txtxform) delete(m_txtxform);
+    for (std::vector<VSDXFieldListElement *>::iterator iterField = m_fields.begin(); iterField != m_fields.end(); iterField++)
+      if (*iterField)
+        delete (*iterField);
+    m_fields.clear();
   };
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);

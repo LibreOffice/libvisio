@@ -1611,7 +1611,11 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
         m_names.push_back(nameString);
       }
 
-      m_stencilShape->m_fields.toVector(m_fields);
+      for (std::vector<VSDXFieldListElement *>::iterator iterField = m_fields.begin(); iterField != m_fields.end(); iterField++)
+        if (*iterField)
+          delete (*iterField);
+      m_fields.clear();
+      m_fields = m_stencilShape->m_fields.getVector();
 
       if (m_stencilShape->m_lineStyleId)
         lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
@@ -1857,6 +1861,10 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
 void libvisio::VSDXContentCollector::collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder)
 {
   _handleLevelChange(level);
+  for (std::vector<VSDXFieldListElement *>::iterator iterField = m_fields.begin(); iterField != m_fields.end(); iterField++)
+    if (*iterField)
+      delete (*iterField);
+  m_fields.clear();
 }
 
 void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, unsigned nameId)
