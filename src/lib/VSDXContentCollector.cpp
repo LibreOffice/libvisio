@@ -65,8 +65,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
-  m_NURBSData(), m_polylineData(), m_textStream(), m_names(), m_fields(), m_textFormat(VSD_TEXT_ANSI),
-  m_charFormats(), m_paraFormats(), m_textBlockStyle(),
+  m_NURBSData(), m_polylineData(), m_textStream(), m_names(), m_fields(), m_fieldIndex(0),
+  m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
   m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
@@ -1611,11 +1611,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
         m_names.push_back(nameString);
       }
 
-      for (std::vector<VSDXFieldListElement *>::iterator iterField = m_fields.begin(); iterField != m_fields.end(); iterField++)
-        if (*iterField)
-          delete (*iterField);
-      m_fields.clear();
-      m_fields = m_stencilShape->m_fields.getVector();
+      m_fields = m_stencilShape->m_fields;
 
       if (m_stencilShape->m_lineStyleId)
         lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
@@ -1660,6 +1656,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   }
 
   m_currentGeometryCount = 0;
+  m_fieldIndex = 0;
 }
 
 void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
@@ -1767,6 +1764,7 @@ void libvisio::VSDXContentCollector::collectNameList(unsigned /*id*/, unsigned l
 
 void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format)
 {
+  m_fieldIndex = 0;
   WPXInputStream *pStream = const_cast<WPXInputStream *>(data.getDataStream());
   if (format == VSD_TEXT_ANSI)
   {
@@ -1861,30 +1859,32 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
 void libvisio::VSDXContentCollector::collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder)
 {
   _handleLevelChange(level);
-  for (std::vector<VSDXFieldListElement *>::iterator iterField = m_fields.begin(); iterField != m_fields.end(); iterField++)
-    if (*iterField)
-      delete (*iterField);
   m_fields.clear();
+  m_fields.setElementsOrder(fieldsOrder);
 }
 
 void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, unsigned nameId)
 {
   _handleLevelChange(level);
+  m_fields.addTextField(id, level, nameId);
 }
 
 void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, unsigned format, double number)
 {
   _handleLevelChange(level);
+  m_fields.addNumericField(id, level, format, number);
 }
 
 void libvisio::VSDXContentCollector::collectDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue)
 {
   _handleLevelChange(level);
+  m_fields.addDatetimeField(id, level, format, timeValue);
 }
 
 void libvisio::VSDXContentCollector::collectEmptyField(unsigned id, unsigned level)
 {
   _handleLevelChange(level);
+  m_fields.addEmptyField(id, level);
 }
 
 
@@ -1919,7 +1919,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
       if (m_textStream.size())
         _flushText();
       m_isShapeStarted = false;
-
     }
     m_originalX = 0.0;
     m_originalY = 0.0;
@@ -1989,6 +1988,7 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
     uint16_t high_surrogate = 0;
     bool fail = false;
     uint32_t ucs4Character = 0;
+    uint16_t character = 0;
     while (true)
     {
       if (input->atEOS())
@@ -1996,8 +1996,10 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
         fail = true;
         break;
       }
-      uint16_t character = readU16(input);
-      if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
+      character = readU16(input);
+      if (character == 0xfffc)
+        text.append(m_fields.getElement(m_fieldIndex++)->getString(m_names).cstr());
+      else if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
       {
         if (high_surrogate)
         {

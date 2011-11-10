@@ -200,30 +200,6 @@ libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDX
   return *this;
 }
 
-std::vector<libvisio::VSDXFieldListElement *> libvisio::VSDXFieldList::getVector() const
-{
-  std::vector<libvisio::VSDXFieldListElement *> vec;
-  if (!empty())
-  {
-    std::map<unsigned, VSDXFieldListElement *>::const_iterator iter;
-    if (m_elementsOrder.size())
-    {
-      for (unsigned i = 0; i < m_elementsOrder.size(); i++)
-      {
-        iter = m_elements.find(m_elementsOrder[i]);
-        if (iter != m_elements.end())
-          vec.push_back(iter->second->clone());
-      }
-    }
-    else
-    {
-      for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
-        vec.push_back(iter->second->clone());
-    }
-  }
-  return vec;
-}
-
 libvisio::VSDXFieldList::~VSDXFieldList()
 {
   clear();
@@ -260,6 +236,7 @@ void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
 {
   if (empty())
     return;
+
   std::map<unsigned, VSDXFieldListElement *>::iterator iter;
   if (m_elementsOrder.size())
   {
@@ -287,7 +264,10 @@ void libvisio::VSDXFieldList::clear()
 
 libvisio::VSDXFieldListElement *libvisio::VSDXFieldList::getElement(unsigned index)
 {
-  std::map<unsigned, VSDXFieldListElement *>::iterator iter = m_elements.find(index);
+  if (m_elementsOrder.size() > index)
+    index = m_elementsOrder[index];
+
+  std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = m_elements.find(index);
   if (iter != m_elements.end())
     return iter->second;
   else

@@ -62,10 +62,6 @@ public:
   virtual ~VSDXContentCollector()
   {
     if (m_txtxform) delete(m_txtxform);
-    for (std::vector<VSDXFieldListElement *>::iterator iterField = m_fields.begin(); iterField != m_fields.end(); iterField++)
-      if (*iterField)
-        delete (*iterField);
-    m_fields.clear();
   };
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
@@ -229,7 +225,8 @@ private:
   std::map<unsigned, PolylineData> m_polylineData;
   WPXBinaryData m_textStream;
   std::vector<WPXString> m_names;
-  std::vector<VSDXFieldListElement *> m_fields;
+  VSDXFieldList m_fields;
+  unsigned m_fieldIndex;
   TextFormat m_textFormat;
   std::vector<VSDXCharStyle> m_charFormats;
   std::vector<VSDXParaStyle> m_paraFormats;
