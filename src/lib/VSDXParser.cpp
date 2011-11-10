@@ -1570,7 +1570,7 @@ void libvisio::VSDXParser::readTextField(WPXInputStream *input)
   if (tmpCode == 0xe8)
   {
     unsigned nameId = readU32(input);
-    if (nameId == 0xfffc)
+    if (nameId == 0xfffffffc)
     {
       if (m_isStencilStarted)
         m_stencilShape.m_fields.addEmptyField(m_header.id, m_header.level);

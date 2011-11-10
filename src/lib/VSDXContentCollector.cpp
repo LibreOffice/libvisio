@@ -510,6 +510,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
 
 void libvisio::VSDXContentCollector::_flushText()
 {
+  m_fieldIndex = 0;
   if (!m_textStream.size()) return;
   double angle = 0.0;
   transformAngle(angle, m_txtxform);
