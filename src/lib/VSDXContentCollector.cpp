@@ -1857,7 +1857,7 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
                              style->shadowPattern, style->shadowFgColour, style->shadowOffsetX, style->shadowOffsetY);
 }
 
-void libvisio::VSDXContentCollector::collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder)
+void libvisio::VSDXContentCollector::collectFieldList(unsigned /* id */, unsigned level, const std::vector<unsigned> &fieldsOrder)
 {
   _handleLevelChange(level);
   m_fields.clear();

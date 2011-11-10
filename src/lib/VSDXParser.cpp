@@ -1530,7 +1530,7 @@ void libvisio::VSDXParser::readParaIX(WPXInputStream *input)
 }
 
 
-void libvisio::VSDXParser::readNameList(WPXInputStream *input)
+void libvisio::VSDXParser::readNameList(WPXInputStream * /* input */)
 {
   if (m_isStencilStarted)
     m_stencilShape.m_names.clear();
