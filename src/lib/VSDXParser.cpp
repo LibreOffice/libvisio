@@ -1536,7 +1536,7 @@ void libvisio::VSDXParser::readNameList(WPXInputStream *input)
     m_stencilShape.m_names.clear();
   else
   {
-//    m_collector->collectNameList(m_header.id, m_header.level);
+    m_collector->collectNameList(m_header.id, m_header.level);
   }
 }
 
@@ -1551,7 +1551,10 @@ void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
     fieldOrder.push_back(readU32(input));
 
   if (m_isStencilStarted)
+  {
+    m_stencilShape.m_fields.clear();
     m_stencilShape.m_fields.setElementsOrder(fieldOrder);
+  }
   else
   {
     m_fieldList.setElementsOrder(fieldOrder);
