@@ -38,13 +38,6 @@ libvisio::VSDXPage::VSDXPage()
 {
 }
 
-libvisio::VSDXPage::VSDXPage(double pageWidth, double pageHeight, unsigned currentPageID, unsigned backgroundPageID, const libvisio::VSDXOutputElementList &pageElements)
-  : m_pageWidth(pageWidth), m_pageHeight(pageHeight),
-    m_currentPageID(currentPageID), m_backgroundPageID(backgroundPageID),
-    m_pageElements(pageElements)
-{
-}
-
 libvisio::VSDXPage::VSDXPage(const libvisio::VSDXPage &page)
   : m_pageWidth(page.m_pageWidth), m_pageHeight(page.m_pageHeight),
     m_currentPageID(page.m_currentPageID), m_backgroundPageID(page.m_backgroundPageID),

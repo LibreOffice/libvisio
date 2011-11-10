@@ -152,12 +152,4 @@ void libvisio::VSDXParagraphList::clear()
   m_elementsOrder.clear();
 }
 
-libvisio::VSDXParagraphListElement *libvisio::VSDXParagraphList::getElement(unsigned index)
-{
-  std::map<unsigned, VSDXParagraphListElement *>::iterator iter = m_elements.find(index);
-  if (iter != m_elements.end())
-    return iter->second;
-  else
-    return 0;
-}
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

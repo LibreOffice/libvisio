@@ -57,7 +57,6 @@ public:
   {
     return (!m_elements.size());
   }
-  VSDXCharacterListElement *getElement(unsigned index);
 private:
   std::map<unsigned, VSDXCharacterListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;

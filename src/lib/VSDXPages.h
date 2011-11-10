@@ -40,7 +40,6 @@ class VSDXPage
 {
 public:
   VSDXPage();
-  VSDXPage(double pageWidth, double pageHeight, unsigned currentPageID, unsigned backgroundPageID, const VSDXOutputElementList &pageElements);
   VSDXPage(const VSDXPage &page);
   ~VSDXPage();
   VSDXPage &operator=(const VSDXPage &page);

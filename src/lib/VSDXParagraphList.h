@@ -57,7 +57,6 @@ public:
   {
     return (!m_elements.size());
   }
-  VSDXParagraphListElement *getElement(unsigned index);
 private:
   std::map<unsigned, VSDXParagraphListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;

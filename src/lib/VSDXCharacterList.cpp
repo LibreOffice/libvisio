@@ -159,12 +159,4 @@ void libvisio::VSDXCharacterList::clear()
   m_elementsOrder.clear();
 }
 
-libvisio::VSDXCharacterListElement *libvisio::VSDXCharacterList::getElement(unsigned index)
-{
-  std::map<unsigned, VSDXCharacterListElement *>::iterator iter = m_elements.find(index);
-  if (iter != m_elements.end())
-    return iter->second;
-  else
-    return 0;
-}
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

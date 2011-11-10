@@ -52,11 +52,8 @@ public:
   void append(const VSDXOutputElementList &elementList);
   void draw(libwpg::WPGPaintInterface *painter) const;
   void addStyle(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
-  void addEllipse(const WPXPropertyList &propList);
   void addPath(const WPXPropertyListVector &propListVec);
   void addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-  void addStartLayer(const WPXPropertyList &propList);
-  void addEndLayer();
   void addStartTextObject(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
   void addStartTextLine(const WPXPropertyList &propList);
   void addStartTextSpan(const WPXPropertyList &propList);
@@ -68,7 +65,6 @@ public:
   {
     return !m_elements.size();
   }
-  void clear();
 private:
   std::vector<VSDXOutputElement *> m_elements;
 };
