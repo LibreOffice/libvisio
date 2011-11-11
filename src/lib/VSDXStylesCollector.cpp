@@ -349,22 +349,17 @@ void libvisio::VSDXStylesCollector::collectFieldList(unsigned /* id */, unsigned
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectTextField(unsigned /* id */, unsigned level, unsigned /* nameId */)
+void libvisio::VSDXStylesCollector::collectTextField(unsigned /* id */, unsigned level, int /* format */, int /* nameId */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectNumericField(unsigned /* id */, unsigned level, unsigned /* format */, double /* number */)
+void libvisio::VSDXStylesCollector::collectNumericField(unsigned /* id */, unsigned level, int /* format */, double /* number */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectDatetimeField(unsigned /* id */, unsigned level, unsigned /* format */, unsigned long /* timeValue */)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXStylesCollector::collectEmptyField(unsigned /* id */, unsigned level)
+void libvisio::VSDXStylesCollector::collectDatetimeField(unsigned /* id */, unsigned level, int /* format */, double /* timeValue */)
 {
   _handleLevelChange(level);
 }

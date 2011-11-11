@@ -62,12 +62,10 @@ public:
   ~VSDXFieldList();
   VSDXFieldList &operator=(const VSDXFieldList &fieldList);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
-  void setId(unsigned id);
-  void setLevel(unsigned level);
-  void addTextField(unsigned id, unsigned level, unsigned nameId);
-  void addNumericField(unsigned id, unsigned level, unsigned format, double number);
-  void addDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue);
-  void addEmptyField(unsigned id, unsigned level);
+  void addFieldList(unsigned id, unsigned level);
+  void addTextField(unsigned id, unsigned level, int format, int nameId);
+  void addNumericField(unsigned id, unsigned level, int format, double number);
+  void addDatetimeField(unsigned id, unsigned level, int format, double timeValue);
   void addClonedField(unsigned id);
   void handle(VSDXCollector *collector);
   void clear();
@@ -79,11 +77,16 @@ public:
   {
     return (!m_elements.size());
   }
+  bool initialized() const
+  {
+    return m_initialized;
+  }
   VSDXFieldListElement *getElement(unsigned index);
 private:
   std::map<unsigned, VSDXFieldListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;
   unsigned m_id, m_level;
+  bool m_initialized;
 };
 
 } // namespace libvisio

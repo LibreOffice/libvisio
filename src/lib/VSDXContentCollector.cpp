@@ -1862,28 +1862,22 @@ void libvisio::VSDXContentCollector::collectFieldList(unsigned /* id */, unsigne
   m_fields.setElementsOrder(fieldsOrder);
 }
 
-void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, unsigned nameId)
+void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, int format, int nameId)
 {
   _handleLevelChange(level);
-  m_fields.addTextField(id, level, nameId);
+  m_fields.addTextField(id, level, format, nameId);
 }
 
-void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, unsigned format, double number)
+void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, int format, double number)
 {
   _handleLevelChange(level);
   m_fields.addNumericField(id, level, format, number);
 }
 
-void libvisio::VSDXContentCollector::collectDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue)
+void libvisio::VSDXContentCollector::collectDatetimeField(unsigned id, unsigned level, int format, double timeValue)
 {
   _handleLevelChange(level);
   m_fields.addDatetimeField(id, level, format, timeValue);
-}
-
-void libvisio::VSDXContentCollector::collectEmptyField(unsigned id, unsigned level)
-{
-  _handleLevelChange(level);
-  m_fields.addClonedField(id);
 }
 
 

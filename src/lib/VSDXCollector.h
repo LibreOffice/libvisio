@@ -111,10 +111,9 @@ public:
 
   // Field list
   virtual void collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder) = 0;
-  virtual void collectTextField(unsigned id, unsigned level, unsigned nameId) = 0;
-  virtual void collectNumericField(unsigned id, unsigned level, unsigned format, double number) = 0;
-  virtual void collectDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue) = 0;
-  virtual void collectEmptyField(unsigned id, unsigned level) = 0;
+  virtual void collectTextField(unsigned id, unsigned level, int format, int nameId) = 0;
+  virtual void collectNumericField(unsigned id, unsigned level, int format, double number) = 0;
+  virtual void collectDatetimeField(unsigned id, unsigned level, int format, double timeValue) = 0;
 
   // Temporary hack
   virtual void startPage() = 0;

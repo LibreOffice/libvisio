@@ -132,10 +132,9 @@ public:
 
   // Field list
   void collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder);
-  void collectTextField(unsigned id, unsigned level, unsigned nameId);
-  void collectNumericField(unsigned id, unsigned level, unsigned format, double number);
-  void collectDatetimeField(unsigned id, unsigned level, unsigned format, unsigned long timeValue);
-  void collectEmptyField(unsigned id, unsigned level);
+  void collectTextField(unsigned id, unsigned level, int format, int nameId);
+  void collectNumericField(unsigned id, unsigned level, int format, double number);
+  void collectDatetimeField(unsigned id, unsigned level, int format, double timeValue);
 
   void startPage();
   void endPage();

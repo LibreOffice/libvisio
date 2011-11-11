@@ -594,7 +594,13 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       delete *iter3;
     }
     m_paraListVector.clear();
-    if (!m_fieldList.empty())
+    if (m_fieldList.empty() && m_fieldList.initialized())
+    {
+      m_fieldList.handle(m_collector);
+      m_fieldList.clear();
+      m_nameList.clear();
+    }
+    else if (!m_fieldList.empty())
     {
       if (!m_nameList.empty())
         m_nameList.handle(m_collector);
@@ -602,6 +608,7 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       m_fieldList.clear();
     }
     m_nameList.clear();
+
   }
   m_currentLevel = level;
 }
@@ -1566,8 +1573,7 @@ void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
   else
   {
     m_fieldList.setElementsOrder(fieldOrder);
-    m_fieldList.setId(m_header.id);
-    m_fieldList.setLevel(m_header.level);
+    m_fieldList.addFieldList(m_header.id, m_header.level);
     // We want the collectors to still get the level information
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
@@ -1579,20 +1585,23 @@ void libvisio::VSDXParser::readTextField(WPXInputStream *input)
   unsigned char tmpCode = readU8(input);
   if (tmpCode == 0xe8)
   {
-    int nameId = readU32(input);
+    int nameId = (int)readU32(input);
     if (nameId >= 0)
     {
+      input->seek(6, WPX_SEEK_CUR);
+      int formatId = (int)readU32(input);
       if (m_isStencilStarted)
-        m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, (unsigned)nameId);
+        m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, formatId, nameId);
       else
-        m_fieldList.addTextField(m_header.id, m_header.level, (unsigned)nameId);
+        m_fieldList.addTextField(m_header.id, m_header.level, formatId, nameId);
     }
   }
   else
   {
     double numericValue = readDouble(input);
     input->seek(2, WPX_SEEK_CUR);
-    unsigned formatId = readU32(input);
+    int formatId = (int)readU32(input);
+    printf("Fridrich is a good guy 2 %i\n", formatId);
     if (tmpCode == 0x28)
     {
       if (m_isStencilStarted)
