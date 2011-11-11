@@ -1601,7 +1601,6 @@ void libvisio::VSDXParser::readTextField(WPXInputStream *input)
     double numericValue = readDouble(input);
     input->seek(2, WPX_SEEK_CUR);
     int formatId = (int)readU32(input);
-    printf("Fridrich is a good guy 2 %i\n", formatId);
     if (tmpCode == 0x28)
     {
       if (m_isStencilStarted)
