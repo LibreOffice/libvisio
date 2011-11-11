@@ -212,7 +212,7 @@ void libvisio::VSD6Parser::readName(WPXInputStream *input)
     m_stencilShape.m_textFormat = libvisio::VSD_TEXT_ANSI;
   }
   else
-    m_collector->collectName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_ANSI);
+    m_nameList.addName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_ANSI);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

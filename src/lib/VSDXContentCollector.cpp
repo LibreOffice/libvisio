@@ -510,7 +510,6 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
 
 void libvisio::VSDXContentCollector::_flushText()
 {
-  m_fieldIndex = 0;
   if (!m_textStream.size()) return;
   double angle = 0.0;
   transformAngle(angle, m_txtxform);
@@ -1765,7 +1764,6 @@ void libvisio::VSDXContentCollector::collectNameList(unsigned /*id*/, unsigned l
 
 void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format)
 {
-  m_fieldIndex = 0;
   WPXInputStream *pStream = const_cast<WPXInputStream *>(data.getDataStream());
   if (format == VSD_TEXT_ANSI)
   {
@@ -1885,7 +1883,7 @@ void libvisio::VSDXContentCollector::collectDatetimeField(unsigned id, unsigned 
 void libvisio::VSDXContentCollector::collectEmptyField(unsigned id, unsigned level)
 {
   _handleLevelChange(level);
-  m_fields.addEmptyField(id, level);
+  m_fields.addClonedField(id);
 }
 
 
@@ -1999,7 +1997,11 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
       }
       character = readU16(input);
       if (character == 0xfffc)
-        text.append(m_fields.getElement(m_fieldIndex++)->getString(m_names).cstr());
+      {
+        VSDXFieldListElement *element = m_fields.getElement(m_fieldIndex++);
+        if (element)
+          text.append(element->getString(m_names).cstr());
+      }
       else if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
       {
         if (high_surrogate)

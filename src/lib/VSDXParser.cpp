@@ -43,8 +43,9 @@
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()),
-    m_geomListVector(), m_fieldList(), m_charList(new VSDXCharacterList()), m_paraList(new VSDXParagraphList()),
-    m_charListVector(), m_paraListVector(), m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
+    m_geomListVector(), m_fieldList(), m_nameList(), m_charList(new VSDXCharacterList()),
+    m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
+    m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentPageID(0)
 {}
 
@@ -593,8 +594,14 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       delete *iter3;
     }
     m_paraListVector.clear();
-    m_fieldList.handle(m_collector);
-    m_fieldList.clear();
+    if (!m_fieldList.empty())
+    {
+      if (!m_nameList.empty())
+        m_nameList.handle(m_collector);
+      m_fieldList.handle(m_collector);
+      m_fieldList.clear();
+    }
+    m_nameList.clear();
   }
   m_currentLevel = level;
 }
@@ -1536,7 +1543,8 @@ void libvisio::VSDXParser::readNameList(WPXInputStream * /* input */)
     m_stencilShape.m_names.clear();
   else
   {
-    m_collector->collectNameList(m_header.id, m_header.level);
+    m_nameList.setId(m_header.id);
+    m_nameList.setLevel(m_header.level);
   }
 }
 
@@ -1558,8 +1566,10 @@ void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
   else
   {
     m_fieldList.setElementsOrder(fieldOrder);
+    m_fieldList.setId(m_header.id);
+    m_fieldList.setLevel(m_header.level);
     // We want the collectors to still get the level information
-    m_collector->collectFieldList(m_header.id, m_header.level, fieldOrder);
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
 }
 
@@ -1569,20 +1579,13 @@ void libvisio::VSDXParser::readTextField(WPXInputStream *input)
   unsigned char tmpCode = readU8(input);
   if (tmpCode == 0xe8)
   {
-    unsigned nameId = readU32(input);
-    if (nameId == 0xfffffffc)
+    int nameId = readU32(input);
+    if (nameId >= 0)
     {
       if (m_isStencilStarted)
-        m_stencilShape.m_fields.addEmptyField(m_header.id, m_header.level);
+        m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, (unsigned)nameId);
       else
-        m_fieldList.addEmptyField(m_header.id, m_header.level);
-    }
-    else
-    {
-      if (m_isStencilStarted)
-        m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, nameId);
-      else
-        m_fieldList.addTextField(m_header.id, m_header.level, nameId);
+        m_fieldList.addTextField(m_header.id, m_header.level, (unsigned)nameId);
     }
   }
   else

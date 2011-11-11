@@ -178,13 +178,17 @@ libvisio::VSDXFieldListElement *libvisio::VSDXEmptyField::clone()
 
 libvisio::VSDXFieldList::VSDXFieldList() :
   m_elements(),
-  m_elementsOrder()
+  m_elementsOrder(),
+  m_id(0),
+  m_level(0)
 {
 }
 
 libvisio::VSDXFieldList::VSDXFieldList(const libvisio::VSDXFieldList &fieldList) :
   m_elements(),
-  m_elementsOrder(fieldList.m_elementsOrder)
+  m_elementsOrder(fieldList.m_elementsOrder),
+  m_id(fieldList.m_id),
+  m_level(fieldList.m_level)
 {
   std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
   for (; iter != fieldList.m_elements.end(); iter++)
@@ -198,6 +202,8 @@ libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDX
   for (; iter != fieldList.m_elements.end(); iter++)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = fieldList.m_elementsOrder;
+  m_id = fieldList.m_id;
+  m_level = fieldList.m_level;
   return *this;
 }
 
@@ -211,6 +217,16 @@ void libvisio::VSDXFieldList::setElementsOrder(const std::vector<unsigned> &elem
   m_elementsOrder.clear();
   for (unsigned i = 0; i<elementsOrder.size(); i++)
     m_elementsOrder.push_back(elementsOrder[i]);
+}
+
+void libvisio::VSDXFieldList::setId(unsigned id)
+{
+  m_id = id;
+}
+
+void libvisio::VSDXFieldList::setLevel(unsigned level)
+{
+  m_level = level;
 }
 
 void libvisio::VSDXFieldList::addTextField(unsigned id, unsigned level, unsigned nameId)
@@ -233,11 +249,19 @@ void libvisio::VSDXFieldList::addEmptyField(unsigned id, unsigned level)
   m_elements[id] = new VSDXEmptyField(id, level);
 }
 
+void libvisio::VSDXFieldList::addClonedField(unsigned id)
+{
+  VSDXFieldListElement *element = getElement(id);
+  if (element)
+    m_elements[id] = element->clone();
+}
+
 void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
 {
   if (empty())
     return;
 
+  collector->collectFieldList(m_id, m_level, m_elementsOrder);
   std::map<unsigned, VSDXFieldListElement *>::iterator iter;
   if (m_elementsOrder.size())
   {

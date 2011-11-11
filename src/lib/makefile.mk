@@ -40,6 +40,7 @@ SLOFILES= \
 	$(SLO)$/VSDXContentCollector.obj \
 	$(SLO)$/VSDXFieldList.obj \
 	$(SLO)$/VSDXGeometryList.obj \
+	$(SLO)$/VSDXNameList.obj \
 	$(SLO)$/VSDXOutputElementList.obj \
 	$(SLO)$/VSDXPages.obj \
 	$(SLO)$/VSDXParagraphList.obj \

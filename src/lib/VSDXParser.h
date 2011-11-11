@@ -41,6 +41,7 @@
 #include "VSDXTypes.h"
 #include "VSDXGeometryList.h"
 #include "VSDXFieldList.h"
+#include "VSDXNameList.h"
 #include "VSDXCharacterList.h"
 #include "VSDXParagraphList.h"
 #include "VSDXShapeList.h"
@@ -127,6 +128,7 @@ protected:
   VSDXGeometryList *m_geomList;
   std::vector<VSDXGeometryList *> m_geomListVector;
   VSDXFieldList m_fieldList;
+  VSDXNameList m_nameList;
   VSDXCharacterList *m_charList;
   VSDXParagraphList *m_paraList;
   std::vector<VSDXCharacterList *> m_charListVector;
