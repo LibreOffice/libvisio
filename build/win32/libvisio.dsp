@@ -123,6 +123,10 @@ SOURCE=..\..\src\lib\VSDXContentCollector.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXFieldList.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDXGeometryList.cpp
 # End Source File
 # Begin Source File
@@ -132,6 +136,10 @@ SOURCE=..\..\src\lib\VSDXOutputElementList.cpp
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXPages.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXParagraphList.cpp
 # End Source File
 # Begin Source File
 
@@ -203,6 +211,10 @@ SOURCE=..\..\src\lib\VSDXDocumentStructure.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXFieldList.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDXGeometryList.h
 # End Source File
 # Begin Source File
@@ -212,6 +224,10 @@ SOURCE=..\..\src\lib\VSDXOutputElementList.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXPages.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXParagraphList.h
 # End Source File
 # Begin Source File
 

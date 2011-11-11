@@ -34,7 +34,7 @@
 #include <vector>
 #include <map>
 #include <libwpd/libwpd.h>
-#include <VSDXTypes.h>
+#include "VSDXTypes.h"
 
 namespace libvisio
 {

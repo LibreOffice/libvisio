@@ -28,6 +28,7 @@
  * instead of those above.
  */
 
+#include <time.h>
 #include <libwpd/libwpd.h>
 #include "VSDXCollector.h"
 #include "VSDXFieldList.h"
