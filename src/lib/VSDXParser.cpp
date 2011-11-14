@@ -1632,8 +1632,6 @@ void libvisio::VSDXParser::readTextField(WPXInputStream *input)
         formatNumber = 0xffff;
     }
 
-    printf("Fridrich is a good guy 0x%.4x\n", formatNumber);
-
     if (m_isStencilStarted)
       m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue);
     else
