@@ -1616,6 +1616,14 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       }
 
       m_stencilFields = m_stencilShape->m_fields;
+      for (unsigned i = 0; i < m_stencilFields.size(); i++)
+      {
+        VSDXFieldListElement *elem = m_stencilFields.getElement(i);
+        if (elem)
+          m_fields.push_back(elem->getString(m_stencilNames));
+        else
+          m_fields.push_back(WPXString());
+      }
 
       if (m_stencilShape->m_lineStyleId)
         lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
@@ -1857,6 +1865,12 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
   if (style)
     _fillAndShadowProperties(style->fgColourId, style->bgColourId, style->pattern, style->fgTransparency, style->bgTransparency,
                              style->shadowPattern, style->shadowFgColour, style->shadowOffsetX, style->shadowOffsetY);
+}
+
+void libvisio::VSDXContentCollector::collectFieldList(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+  m_fields.clear();
 }
 
 void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, int nameId)

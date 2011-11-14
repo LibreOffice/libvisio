@@ -344,6 +344,11 @@ void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level
   collectFillStyle(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
+void libvisio::VSDXStylesCollector::collectFieldList(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectTextField(unsigned /* id */, unsigned level, int /* nameId */)
 {
   _handleLevelChange(level);

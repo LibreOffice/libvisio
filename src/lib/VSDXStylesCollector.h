@@ -121,6 +121,7 @@ public:
                              unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
   // Field list
+  void collectFieldList(unsigned id, unsigned level);
   void collectTextField(unsigned id, unsigned level, int nameId);
   void collectNumericField(unsigned id, unsigned level, unsigned short format, double number);
 

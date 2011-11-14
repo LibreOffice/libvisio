@@ -243,6 +243,7 @@ void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
   if (empty())
     return;
 
+  collector->collectFieldList(m_id, m_level);
   std::map<unsigned, VSDXFieldListElement *>::iterator iter;
   if (m_elementsOrder.size())
   {

@@ -110,6 +110,7 @@ public:
                                      unsigned char textDirection) = 0;
 
   // Field list
+  virtual void collectFieldList(unsigned id, unsigned level) = 0;
   virtual void collectTextField(unsigned id, unsigned level, int nameId) = 0;
   virtual void collectNumericField(unsigned id, unsigned level, unsigned short format, double number) = 0;
 
