@@ -1892,7 +1892,8 @@ void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned l
     if (element)
     {
       element->setValue(number);
-      element->setFormat(format);
+      if (format != 0xffff)
+        element->setFormat(format);
       m_fields.push_back(element->getString(m_names));
       delete element;
     }

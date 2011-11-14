@@ -28,6 +28,7 @@
  * instead of those above.
  */
 
+#include <time.h>
 #include "VSDXCollector.h"
 #include "VSDXFieldList.h"
 
@@ -42,6 +43,19 @@ libvisio::VSDXFieldListElement *libvisio::VSDXTextField::clone()
   return new VSDXTextField(m_id, m_level, m_nameId);
 }
 
+WPXString libvisio::VSDXTextField::getString(const std::vector<WPXString> &strVec)
+{
+  if (m_nameId < 0 || (unsigned)m_nameId >= strVec.size())
+    return WPXString();
+  else
+    return strVec[m_nameId];
+}
+
+void libvisio::VSDXTextField::setNameId(int nameId)
+{
+  m_nameId = nameId;
+}
+
 
 void libvisio::VSDXNumericField::handle(VSDXCollector *collector)
 {
@@ -53,14 +67,115 @@ libvisio::VSDXFieldListElement *libvisio::VSDXNumericField::clone()
   return new VSDXNumericField(m_id, m_level, m_format, m_number);
 }
 
+#define MAX_BUFFER 1024
 
-void libvisio::VSDXDatetimeField::handle(VSDXCollector * /*collector*/)
+WPXString libvisio::VSDXNumericField::datetimeToString(const char *format, double datetime)
 {
+  WPXString result;
+  char buffer[MAX_BUFFER];
+  time_t timer = (time_t)(86400 * datetime - 2209161600.0);
+  strftime(&buffer[0], MAX_BUFFER-1, format, gmtime(&timer));
+  result.append(&buffer[0]);
+  return result;
 }
 
-libvisio::VSDXFieldListElement *libvisio::VSDXDatetimeField::clone()
+WPXString libvisio::VSDXNumericField::getString(const std::vector<WPXString> &)
 {
-  return new VSDXDatetimeField(m_id, m_level, m_format, m_timeValue);
+  if (m_format == 0xffff)
+    return WPXString();
+  switch (m_format)
+  {
+  case VSD_FIELD_FORMAT_DateMDYY:
+  case VSD_FIELD_FORMAT_DateMMDDYY:
+  case VSD_FIELD_FORMAT_DateMmmDYYYY:
+  case VSD_FIELD_FORMAT_DateMmmmDYYYY:
+  case VSD_FIELD_FORMAT_DateDMYY:
+  case VSD_FIELD_FORMAT_DateDDMMYY:
+  case VSD_FIELD_FORMAT_DateDMMMYYYY:
+  case VSD_FIELD_FORMAT_DateDMMMMYYYY:
+  case VSD_FIELD_FORMAT_Dateyyyymd:
+  case VSD_FIELD_FORMAT_Dateyymmdd:
+  case VSD_FIELD_FORMAT_DateTWNfYYYYMMDDD_C:
+  case VSD_FIELD_FORMAT_DateTWNsYYYYMMDDD_C:
+  case VSD_FIELD_FORMAT_DateTWNfyyyymmddww_C:
+  case VSD_FIELD_FORMAT_DateTWNfyyyymmdd_C:
+  case VSD_FIELD_FORMAT_Dategggemdww_J:
+  case VSD_FIELD_FORMAT_Dateyyyymdww_J:
+  case VSD_FIELD_FORMAT_Dategggemd_J:
+  case VSD_FIELD_FORMAT_Dateyyyymd_J:
+  case VSD_FIELD_FORMAT_DateYYYYMMMDDDWWW_C:
+  case VSD_FIELD_FORMAT_DateYYYYMMMDDD_C:
+  case VSD_FIELD_FORMAT_DategeMMMMddddww_K:
+  case VSD_FIELD_FORMAT_Dateyyyymdww_K:
+  case VSD_FIELD_FORMAT_DategeMMMMddd_K:
+  case VSD_FIELD_FORMAT_Dateyyyymd_K:
+  case VSD_FIELD_FORMAT_Dateyyyy_m_d:
+  case VSD_FIELD_FORMAT_Dateyy_mm_dd:
+  case VSD_FIELD_FORMAT_Dateyyyymd_S:
+  case VSD_FIELD_FORMAT_Dateyyyymmdd_S:
+  case VSD_FIELD_FORMAT_Datewwyyyymmdd_S:
+  case VSD_FIELD_FORMAT_Datewwyyyymd_S:
+  case VSD_FIELD_FORMAT_MsoDateShort:
+  case VSD_FIELD_FORMAT_MsoDateLongDay:
+  case VSD_FIELD_FORMAT_MsoDateLong:
+  case VSD_FIELD_FORMAT_MsoDateShortAlt:
+  case VSD_FIELD_FORMAT_MsoDateISO:
+  case VSD_FIELD_FORMAT_MsoDateShortMon:
+  case VSD_FIELD_FORMAT_MsoDateShortSlash:
+  case VSD_FIELD_FORMAT_MsoDateShortAbb:
+  case VSD_FIELD_FORMAT_MsoDateEnglish:
+  case VSD_FIELD_FORMAT_MsoDateMonthYr:
+  case VSD_FIELD_FORMAT_MsoDateMon_Yr:
+    return datetimeToString("%x", m_number);
+  case VSD_FIELD_FORMAT_TimeGen:
+  case VSD_FIELD_FORMAT_TimeHMM:
+  case VSD_FIELD_FORMAT_TimeHHMM:
+  case VSD_FIELD_FORMAT_TimeHMM24:
+  case VSD_FIELD_FORMAT_TimeHHMM24:
+  case VSD_FIELD_FORMAT_TimeHMMAMPM:
+  case VSD_FIELD_FORMAT_TimeHHMMAMPM:
+  case VSD_FIELD_FORMAT_TimeAMPMhmm_J:
+  case VSD_FIELD_FORMAT_TimeAMPMhmm_C:
+  case VSD_FIELD_FORMAT_TimeAMPMhmm_K:
+  case VSD_FIELD_FORMAT_TimeAMPM_hmm_J:
+  case VSD_FIELD_FORMAT_Timehmm_J:
+  case VSD_FIELD_FORMAT_TimeAMPM_hmm_C:
+  case VSD_FIELD_FORMAT_Timehmm_C:
+  case VSD_FIELD_FORMAT_TimeAMPM_hmm_K:
+  case VSD_FIELD_FORMAT_Timehmm_K:
+  case VSD_FIELD_FORMAT_TimeHMMAMPM_E:
+  case VSD_FIELD_FORMAT_TimeHHMMAMPM_E:
+  case VSD_FIELD_FORMAT_TimeAMPMhmm_S:
+  case VSD_FIELD_FORMAT_TimeAMPMhhmm_S:
+  case VSD_FIELD_FORMAT_MsoTimePM:
+  case VSD_FIELD_FORMAT_MsoTimeSecPM:
+  case VSD_FIELD_FORMAT_MsoTime24:
+  case VSD_FIELD_FORMAT_MsoTimeSec24:
+    return datetimeToString("%X", m_number);
+  case VSD_FIELD_FORMAT_MsoTimeDatePM:
+  case VSD_FIELD_FORMAT_MsoTimeDateSecPM:
+    return datetimeToString("%x %X", m_number);
+  default:
+    {
+      WPXString result;
+      WPXProperty *pProp = WPXPropertyFactory::newDoubleProp(m_number);
+      if (pProp)
+      {
+        result = pProp->getStr();
+        delete pProp;
+      }
+      return result;
+    }
+  }
+}
+
+void libvisio::VSDXNumericField::setFormat(unsigned short format)
+{
+  m_format = format;
+}
+void libvisio::VSDXNumericField::setValue(double number)
+{
+  m_number = number;
 }
 
 
@@ -121,11 +236,6 @@ void libvisio::VSDXFieldList::addTextField(unsigned id, unsigned level, int name
 void libvisio::VSDXFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number)
 {
   m_elements[id] = new VSDXNumericField(id, level, format, number);
-}
-
-void libvisio::VSDXFieldList::addDatetimeField(unsigned id, unsigned level, int format, double timeValue)
-{
-  m_elements[id] = new VSDXDatetimeField(id, level, format, timeValue);
 }
 
 void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
