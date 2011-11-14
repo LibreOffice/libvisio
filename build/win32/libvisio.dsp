@@ -115,10 +115,6 @@ SOURCE=..\..\src\lib\VSDXCharacterList.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSDXCollector.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\lib\VSDXContentCollector.cpp
 # End Source File
 # Begin Source File
@@ -128,10 +124,6 @@ SOURCE=..\..\src\lib\VSDXFieldList.cpp
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXGeometryList.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXNameList.cpp
 # End Source File
 # Begin Source File
 
@@ -220,10 +212,6 @@ SOURCE=..\..\src\lib\VSDXFieldList.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXGeometryList.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXNameList.h
 # End Source File
 # Begin Source File
 

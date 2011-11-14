@@ -40,7 +40,7 @@ namespace libvisio
 class VSDXCollector
 {
 public:
-  VSDXCollector();
+  VSDXCollector() {};
   virtual ~VSDXCollector() {}
 
   virtual void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) = 0;
@@ -110,10 +110,8 @@ public:
                                      unsigned char textDirection) = 0;
 
   // Field list
-  virtual void collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder) = 0;
-  virtual void collectTextField(unsigned id, unsigned level, int format, int nameId) = 0;
-  virtual void collectNumericField(unsigned id, unsigned level, int format, double number) = 0;
-  virtual void collectDatetimeField(unsigned id, unsigned level, int format, double timeValue) = 0;
+  virtual void collectTextField(unsigned id, unsigned level, int nameId) = 0;
+  virtual void collectNumericField(unsigned id, unsigned level, unsigned short format, double number) = 0;
 
   // Temporary hack
   virtual void startPage() = 0;
@@ -121,7 +119,12 @@ public:
   virtual void endPages() = 0;
 
 protected:
-  const ::WPXString getColourString(const Colour &c) const;
+  const ::WPXString getColourString(const Colour &c) const
+  {
+    ::WPXString sColour;
+    sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
+    return sColour;
+  }
 
 private:
   VSDXCollector(const VSDXCollector &);

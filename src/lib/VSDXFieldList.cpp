@@ -28,109 +28,18 @@
  * instead of those above.
  */
 
-#include <time.h>
-#include <libwpd/libwpd.h>
 #include "VSDXCollector.h"
 #include "VSDXFieldList.h"
-
-namespace libvisio
-{
-
-class VSDXTextField : public VSDXFieldListElement
-{
-public:
-  VSDXTextField(unsigned id, unsigned level, int format, int nameId)
-    : m_id(id),
-      m_level(level),
-      m_format(format),
-      m_nameId(nameId) {}
-  ~VSDXTextField() {}
-  void handle(VSDXCollector *collector);
-  VSDXFieldListElement *clone();
-  WPXString getString(const std::vector<WPXString> &strVec)
-  {
-    if (m_nameId < 0 || (unsigned)m_nameId >= strVec.size())
-      return WPXString();
-    else
-      return strVec[m_nameId];
-  }
-private:
-  unsigned m_id, m_level;
-  int m_format, m_nameId;
-};
-
-class VSDXNumericField : public VSDXFieldListElement
-{
-public:
-  VSDXNumericField(unsigned id, unsigned level, int format, double number)
-    : m_id(id),
-      m_level(level),
-      m_format(format),
-      m_number(number) {}
-  ~VSDXNumericField() {}
-  void handle(VSDXCollector *collector);
-  VSDXFieldListElement *clone();
-  WPXString getString(const std::vector<WPXString> &)
-  {
-    WPXString result;
-    WPXProperty *pProp = WPXPropertyFactory::newDoubleProp(m_number);
-    if (pProp)
-    {
-      result = pProp->getStr();
-      delete pProp;
-    }
-    return result;
-  }
-private:
-  unsigned m_id, m_level;
-  int m_format;
-  double m_number;
-};
-
-#define MAX_BUFFER 1024
-
-class VSDXDatetimeField : public VSDXFieldListElement
-{
-public:
-  VSDXDatetimeField(unsigned id, unsigned level, unsigned format, double timeValue)
-    : m_id(id),
-      m_level(level),
-      m_format(format),
-      m_timeValue(timeValue) {}
-  ~VSDXDatetimeField() {}
-  void handle(VSDXCollector *collector);
-  VSDXFieldListElement *clone();
-  static WPXString datetimeToString(const char *format, double datetime)
-  {
-    WPXString result;
-    char buffer[MAX_BUFFER];
-    time_t timer = (time_t)(86400 * datetime - 2209161600.0);
-    strftime(&buffer[0], MAX_BUFFER-1, format, gmtime(&timer));
-    result.append(&buffer[0]);
-    return result;
-  }
-  WPXString getString(const std::vector<WPXString> &)
-  {
-    return datetimeToString("%x %X", m_timeValue);
-  }
-private:
-  unsigned m_id, m_level;
-  int m_format;
-  double m_timeValue;
-};
-
-} // namespace libvisio
-
 
 
 void libvisio::VSDXTextField::handle(VSDXCollector *collector)
 {
-  collector->collectTextField(m_id, m_level, m_format, m_nameId);
+  collector->collectTextField(m_id, m_level, m_nameId);
 }
 
 libvisio::VSDXFieldListElement *libvisio::VSDXTextField::clone()
 {
-  return new VSDXTextField(m_id, m_level, m_format, m_nameId);
+  return new VSDXTextField(m_id, m_level, m_nameId);
 }
 
 
@@ -145,9 +54,8 @@ libvisio::VSDXFieldListElement *libvisio::VSDXNumericField::clone()
 }
 
 
-void libvisio::VSDXDatetimeField::handle(VSDXCollector *collector)
+void libvisio::VSDXDatetimeField::handle(VSDXCollector * /*collector*/)
 {
-  collector->collectDatetimeField(m_id, m_level, m_format, m_timeValue);
 }
 
 libvisio::VSDXFieldListElement *libvisio::VSDXDatetimeField::clone()
@@ -160,8 +68,7 @@ libvisio::VSDXFieldList::VSDXFieldList() :
   m_elements(),
   m_elementsOrder(),
   m_id(0),
-  m_level(0),
-  m_initialized(false)
+  m_level(0)
 {
 }
 
@@ -169,8 +76,7 @@ libvisio::VSDXFieldList::VSDXFieldList(const libvisio::VSDXFieldList &fieldList)
   m_elements(),
   m_elementsOrder(fieldList.m_elementsOrder),
   m_id(fieldList.m_id),
-  m_level(fieldList.m_level),
-  m_initialized(fieldList.m_initialized)
+  m_level(fieldList.m_level)
 {
   std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
   for (; iter != fieldList.m_elements.end(); iter++)
@@ -186,7 +92,6 @@ libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDX
   m_elementsOrder = fieldList.m_elementsOrder;
   m_id = fieldList.m_id;
   m_level = fieldList.m_level;
-  m_initialized = fieldList.m_initialized;
   return *this;
 }
 
@@ -206,15 +111,14 @@ void libvisio::VSDXFieldList::addFieldList(unsigned id, unsigned level)
 {
   m_id = id;
   m_level = level;
-  m_initialized = true;
 }
 
-void libvisio::VSDXFieldList::addTextField(unsigned id, unsigned level, int format, int nameId)
+void libvisio::VSDXFieldList::addTextField(unsigned id, unsigned level, int nameId)
 {
-  m_elements[id] = new VSDXTextField(id, level, format, nameId);
+  m_elements[id] = new VSDXTextField(id, level, nameId);
 }
 
-void libvisio::VSDXFieldList::addNumericField(unsigned id, unsigned level, int format, double number)
+void libvisio::VSDXFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number)
 {
   m_elements[id] = new VSDXNumericField(id, level, format, number);
 }
@@ -229,7 +133,6 @@ void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
   if (empty())
     return;
 
-  collector->collectFieldList(m_id, m_level, m_elementsOrder);
   std::map<unsigned, VSDXFieldListElement *>::iterator iter;
   if (m_elementsOrder.size())
   {

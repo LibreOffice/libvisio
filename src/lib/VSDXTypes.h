@@ -31,6 +31,8 @@
 #ifndef VSDXTYPES_H
 #define VSDXTYPES_H
 
+#include <libwpd/libwpd.h>
+
 namespace libvisio
 {
 struct XForm
@@ -163,6 +165,26 @@ struct ForeignData
 };
 
 enum TextFormat { VSD_TEXT_ANSI, VSD_TEXT_UTF16 };
+
+class VSDXName
+{
+public:
+  VSDXName(const WPXBinaryData &data, TextFormat format)
+    : m_data(data),
+      m_format(format) {}
+  VSDXName() : m_data(), m_format(VSD_TEXT_ANSI) {}
+  VSDXName(const VSDXName &element)
+    : m_data(element.m_data),
+      m_format(element.m_format) {}
+  VSDXName &operator=(const VSDXName &element)
+  {
+    m_data = element.m_data;
+    m_format = element.m_format;
+    return *this;
+  }
+  WPXBinaryData m_data;
+  TextFormat m_format;
+};
 
 } // namespace libvisio
 

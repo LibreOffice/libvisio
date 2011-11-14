@@ -234,12 +234,9 @@ void libvisio::VSD11Parser::readName(WPXInputStream *input)
     name.append(readU8(input));
 
   if (m_isStencilStarted)
-  {
-    m_stencilShape.m_names.push_back(name);
-    m_stencilShape.m_textFormat = libvisio::VSD_TEXT_UTF16;
-  }
+    m_stencilShape.m_names.push_back(VSDXName(name, libvisio::VSD_TEXT_UTF16));
   else
-    m_nameList.addName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_UTF16);
+    m_collector->collectName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_UTF16);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

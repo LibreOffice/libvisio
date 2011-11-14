@@ -43,7 +43,7 @@
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()),
-    m_geomListVector(), m_fieldList(), m_nameList(), m_charList(new VSDXCharacterList()),
+    m_geomListVector(), m_fieldList(), m_charList(new VSDXCharacterList()),
     m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
     m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentPageID(0)
@@ -298,14 +298,14 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
     switch (ptrType)
     {
     case VSD_STENCIL_PAGE:
-    {
-      VSDXStencil tmpStencil;
-      m_currentStencil = &tmpStencil;
-      handleStencilPage(&tmpInput, shift2);
-      m_stencils.addStencil(i, *m_currentStencil);
-      m_currentStencil = 0;
-    }
-    break;
+      {
+        VSDXStencil tmpStencil;
+        m_currentStencil = &tmpStencil;
+        handleStencilPage(&tmpInput, shift2);
+        m_stencils.addStencil(i, *m_currentStencil);
+        m_currentStencil = 0;
+      }
+      break;
     default:
       break;
     }
@@ -594,21 +594,11 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
       delete *iter3;
     }
     m_paraListVector.clear();
-    if (m_fieldList.empty() && m_fieldList.initialized())
+    if (!m_fieldList.empty())
     {
       m_fieldList.handle(m_collector);
       m_fieldList.clear();
-      m_nameList.clear();
     }
-    else if (!m_fieldList.empty())
-    {
-      if (!m_nameList.empty())
-        m_nameList.handle(m_collector);
-      m_fieldList.handle(m_collector);
-      m_fieldList.clear();
-    }
-    m_nameList.clear();
-
   }
   m_currentLevel = level;
 }
@@ -1549,10 +1539,7 @@ void libvisio::VSDXParser::readNameList(WPXInputStream * /* input */)
   if (m_isStencilStarted)
     m_stencilShape.m_names.clear();
   else
-  {
-    m_nameList.setId(m_header.id);
-    m_nameList.setLevel(m_header.level);
-  }
+    m_collector->collectNameList(m_header.id, m_header.level);
 }
 
 void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
@@ -1581,40 +1568,76 @@ void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
 
 void libvisio::VSDXParser::readTextField(WPXInputStream *input)
 {
+  unsigned long initialPosition = input->tell();
   input->seek(7, WPX_SEEK_CUR);
   unsigned char tmpCode = readU8(input);
   if (tmpCode == 0xe8)
   {
     int nameId = (int)readU32(input);
-    if (nameId >= 0)
-    {
-      input->seek(6, WPX_SEEK_CUR);
-      int formatId = (int)readU32(input);
-      if (m_isStencilStarted)
-        m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, formatId, nameId);
-      else
-        m_fieldList.addTextField(m_header.id, m_header.level, formatId, nameId);
-    }
+    input->seek(6, WPX_SEEK_CUR);
+    if (m_isStencilStarted)
+      m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, nameId);
+    else
+      m_fieldList.addTextField(m_header.id, m_header.level, nameId);
   }
   else
   {
     double numericValue = readDouble(input);
     input->seek(2, WPX_SEEK_CUR);
-    int formatId = (int)readU32(input);
-    if (tmpCode == 0x28)
+
+    unsigned blockIdx = 0;
+    unsigned length = 0;
+    unsigned short formatNumber = 0;
+    input->seek(initialPosition+0x36, WPX_SEEK_SET);
+    while (blockIdx != 2 && !input->atEOS() && (unsigned long) input->tell() < (unsigned long)(initialPosition+m_header.dataLength+m_header.trailer))
     {
-      if (m_isStencilStarted)
-        m_stencilShape.m_fields.addDatetimeField(m_header.id, m_header.level, formatId, numericValue);
+      unsigned long inputPos = input->tell();
+      length = readU32(input);
+      if (!length)
+        break;
+      input->seek(1, WPX_SEEK_CUR);
+      blockIdx = readU8(input);
+      if (blockIdx != 2)
+        input->seek(inputPos + length, WPX_SEEK_SET);
       else
-        m_fieldList.addDatetimeField(m_header.id, m_header.level, formatId, numericValue);
+      {
+        input->seek(1, WPX_SEEK_CUR);
+        formatNumber = readU16(input);
+        if (0x80 != readU8(input))
+        {
+          input->seek(inputPos + length, WPX_SEEK_SET);
+          blockIdx = 0;
+        }
+        else
+        {
+          if (0xc2 != readU8(input))
+          {
+            input->seek(inputPos + length, WPX_SEEK_SET);
+            blockIdx = 0;
+          }
+          else
+            break;
+        }
+      }
     }
+
+    if (input->atEOS())
+      return;
+
+    if (blockIdx != 2)
+    {
+      if (tmpCode == 0x28)
+        formatNumber = 200;
+      else
+        formatNumber = 0xffff;
+    }
+
+    printf("Fridrich is a good guy 0x%.4x\n", formatNumber);
+
+    if (m_isStencilStarted)
+      m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue);
     else
-    {
-      if (m_isStencilStarted)
-        m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatId, numericValue);
-      else
-        m_fieldList.addNumericField(m_header.id, m_header.level, formatId, numericValue);
-    }
+      m_fieldList.addNumericField(m_header.id, m_header.level, formatNumber, numericValue);
   }
 }
 

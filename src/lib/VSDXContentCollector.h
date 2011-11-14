@@ -131,10 +131,8 @@ public:
                              unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
   // Field list
-  void collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder);
-  void collectTextField(unsigned id, unsigned level, int format, int nameId);
-  void collectNumericField(unsigned id, unsigned level, int format, double number);
-  void collectDatetimeField(unsigned id, unsigned level, int format, double timeValue);
+  void collectTextField(unsigned id, unsigned level, int nameId);
+  void collectNumericField(unsigned id, unsigned level, unsigned short format, double number);
 
   void startPage();
   void endPage();
@@ -223,8 +221,9 @@ private:
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
   WPXBinaryData m_textStream;
-  std::vector<WPXString> m_names;
-  VSDXFieldList m_fields;
+  std::vector<WPXString> m_names, m_stencilNames;
+  std::vector<WPXString> m_fields;
+  VSDXFieldList m_stencilFields;
   unsigned m_fieldIndex;
   TextFormat m_textFormat;
   std::vector<VSDXCharStyle> m_charFormats;

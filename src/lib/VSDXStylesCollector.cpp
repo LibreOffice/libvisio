@@ -344,22 +344,12 @@ void libvisio::VSDXStylesCollector::collectFillStyle(unsigned id, unsigned level
   collectFillStyle(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
-void libvisio::VSDXStylesCollector::collectFieldList(unsigned /* id */, unsigned level, const std::vector<unsigned> & /*fieldsOrder*/)
+void libvisio::VSDXStylesCollector::collectTextField(unsigned /* id */, unsigned level, int /* nameId */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectTextField(unsigned /* id */, unsigned level, int /* format */, int /* nameId */)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXStylesCollector::collectNumericField(unsigned /* id */, unsigned level, int /* format */, double /* number */)
-{
-  _handleLevelChange(level);
-}
-
-void libvisio::VSDXStylesCollector::collectDatetimeField(unsigned /* id */, unsigned level, int /* format */, double /* timeValue */)
+void libvisio::VSDXStylesCollector::collectNumericField(unsigned /* id */, unsigned level, unsigned short /* format */, double /* number */)
 {
   _handleLevelChange(level);
 }

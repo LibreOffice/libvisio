@@ -25,11 +25,9 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
 	VSDXCharacterList.cpp \
-	VSDXCollector.cpp \
 	VSDXContentCollector.cpp \
 	VSDXFieldList.cpp \
 	VSDXGeometryList.cpp \
-	VSDXNameList.cpp \
 	VSDXOutputElementList.cpp \
 	VSDXPages.cpp \
 	VSDXParagraphList.cpp \
@@ -50,7 +48,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXFieldList.h \
 	VSDXGeometryList.h \
 	VSDXOutputElementList.h \
-	VSDXNameList.h \
 	VSDXPages.h \
 	VSDXParagraphList.h \
 	VSDXParser.h \

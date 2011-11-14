@@ -121,10 +121,8 @@ public:
                              unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
   // Field list
-  void collectFieldList(unsigned id, unsigned level, const std::vector<unsigned> &fieldsOrder);
-  void collectTextField(unsigned id, unsigned level, int format, int nameId);
-  void collectNumericField(unsigned id, unsigned level, int format, double number);
-  void collectDatetimeField(unsigned id, unsigned level, int format, double timeValue);
+  void collectTextField(unsigned id, unsigned level, int nameId);
+  void collectNumericField(unsigned id, unsigned level, unsigned short format, double number);
 
   // Temporary hack
   void startPage();

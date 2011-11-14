@@ -64,8 +64,8 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
-  m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true),
-  m_NURBSData(), m_polylineData(), m_textStream(), m_names(), m_fields(), m_fieldIndex(0),
+  m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_NURBSData(), m_polylineData(),
+  m_textStream(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
   m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
@@ -1583,6 +1583,11 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_isShapeStarted = true;
   m_isFirstGeometry = true;
 
+  m_names.clear();
+  m_stencilNames.clear();
+  m_fields.clear();
+  m_stencilFields.clear();
+
   // Get stencil shape
   m_stencilShape = 0;
   if (masterPage != 0xffffffff && masterShape != 0xffffffff)
@@ -1603,15 +1608,14 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       m_textStream = m_stencilShape->m_text;
       m_textFormat = m_stencilShape->m_textFormat;
 
-      m_names.clear();
-      for (std::vector<WPXBinaryData>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
+      for (std::vector<VSDXName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
       {
         WPXString nameString;
-        _convertDataToString(nameString, *(iterData), m_stencilShape->m_textFormat);
-        m_names.push_back(nameString);
+        _convertDataToString(nameString, iterData->m_data, iterData->m_format);
+        m_stencilNames.push_back(nameString);
       }
 
-      m_fields = m_stencilShape->m_fields;
+      m_stencilFields = m_stencilShape->m_fields;
 
       if (m_stencilShape->m_lineStyleId)
         lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
@@ -1855,31 +1859,50 @@ void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle
                              style->shadowPattern, style->shadowFgColour, style->shadowOffsetX, style->shadowOffsetY);
 }
 
-void libvisio::VSDXContentCollector::collectFieldList(unsigned /* id */, unsigned level, const std::vector<unsigned> &fieldsOrder)
+void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, int nameId)
 {
   _handleLevelChange(level);
-  m_fields.clear();
-  m_fields.setElementsOrder(fieldsOrder);
+  VSDXFieldListElement *element = m_stencilFields.getElement(m_fields.size());
+  if (element)
+  {
+    if (nameId == -2)
+      m_fields.push_back(element->getString(m_stencilNames));
+    else
+    {
+      if (nameId >= 0 && (unsigned)nameId < m_names.size())
+        m_fields.push_back(m_names[nameId]);
+      else
+        m_fields.push_back(WPXString());
+    }
+  }
+  else
+  {
+    VSDXTextField tmpField(id, level, nameId);
+    m_fields.push_back(tmpField.getString(m_names));
+  }
 }
 
-void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, int format, int nameId)
+void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, unsigned short format, double number)
 {
   _handleLevelChange(level);
-  m_fields.addTextField(id, level, format, nameId);
+  VSDXFieldListElement *pElement = m_stencilFields.getElement(m_fields.size());
+  if (pElement)
+  {
+    VSDXFieldListElement *element = pElement->clone();
+    if (element)
+    {
+      element->setValue(number);
+      element->setFormat(format);
+      m_fields.push_back(element->getString(m_names));
+      delete element;
+    }
+  }
+  else
+  {
+    VSDXNumericField tmpField(id, level, format, number);
+    m_fields.push_back(tmpField.getString(m_names));
+  }
 }
-
-void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, int format, double number)
-{
-  _handleLevelChange(level);
-  m_fields.addNumericField(id, level, format, number);
-}
-
-void libvisio::VSDXContentCollector::collectDatetimeField(unsigned id, unsigned level, int format, double timeValue)
-{
-  _handleLevelChange(level);
-  m_fields.addDatetimeField(id, level, format, timeValue);
-}
-
 
 void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 {
@@ -1992,9 +2015,10 @@ void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStr
       character = readU16(input);
       if (character == 0xfffc)
       {
-        VSDXFieldListElement *element = m_fields.getElement(m_fieldIndex++);
-        if (element)
-          text.append(element->getString(m_names).cstr());
+        if (m_fieldIndex < m_fields.size())
+          text.append(m_fields[m_fieldIndex++].cstr());
+        else
+          m_fieldIndex++;
       }
       else if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
       {
