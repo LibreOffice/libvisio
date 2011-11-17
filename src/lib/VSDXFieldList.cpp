@@ -40,11 +40,11 @@ bool libvisio::VSDXFieldListElement::parseFormatId( const char* formatString, un
 
     result = 0xffff;
 
-	int_parser<unsigned short,10> short_p;
+	uint_parser<unsigned short,10,1,5> ushort_p;
     if (parse(formatString,
               // Begin grammar
               ( str_p("{<") >>
-                  short_p[assign_a(result)]
+                  ushort_p[assign_a(result)]
                   >> str_p(">}") ) >> end_p,
               // End grammar
               space_p).full )
