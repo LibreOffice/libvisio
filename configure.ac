@@ -42,6 +42,17 @@ PKG_CHECK_MODULES([LIBVISIO],[
 	libwpg-0.2
 ])
 
+# ===========================
+# Find required boost headers
+# ===========================
+
+AC_CHECK_HEADER(
+	boost/spirit/include/classic_core.hpp,
+	[],
+	[AC_MSG_ERROR(boost/spirit/include/classic_core.hpp not found. install boost >= 1.36)],
+	[]
+)
+
 # =================================
 # Libtool/Version Makefile settings
 # =================================

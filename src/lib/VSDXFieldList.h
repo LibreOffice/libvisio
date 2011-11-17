@@ -53,6 +53,8 @@ public:
   virtual void setNameId(int) = 0;
   virtual void setFormat(unsigned short) = 0;
   virtual void setValue(double) = 0;
+protected:
+  bool parseFormatId( const char* formatString, unsigned short &result );
 };
 
 class VSDXTextField : public VSDXFieldListElement
