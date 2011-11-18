@@ -132,8 +132,8 @@ public:
 
   // Field list
   void collectFieldList(unsigned id, unsigned level);
-  void collectTextField(unsigned id, unsigned level, int nameId);
-  void collectNumericField(unsigned id, unsigned level, unsigned short format, double number);
+  void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId);
+  void collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId);
 
   void startPage();
   void endPage();
@@ -174,6 +174,7 @@ private:
                                 unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
 
   void _convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format);
+  bool parseFormatId( const char *formatString, unsigned short &result );
 
   bool m_isPageStarted;
   double m_pageWidth;

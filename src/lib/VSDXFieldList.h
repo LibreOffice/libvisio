@@ -53,17 +53,16 @@ public:
   virtual void setNameId(int) = 0;
   virtual void setFormat(unsigned short) = 0;
   virtual void setValue(double) = 0;
-protected:
-  bool parseFormatId( const char *formatString, unsigned short &result );
 };
 
 class VSDXTextField : public VSDXFieldListElement
 {
 public:
-  VSDXTextField(unsigned id, unsigned level, int nameId)
+  VSDXTextField(unsigned id, unsigned level, int nameId, int formatStringId)
     : m_id(id),
       m_level(level),
-      m_nameId(nameId) {}
+      m_nameId(nameId),
+      m_formatStringId(formatStringId) {}
   ~VSDXTextField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
@@ -73,17 +72,18 @@ public:
   void setValue(double) {}
 private:
   unsigned m_id, m_level;
-  int m_nameId;
+  int m_nameId, m_formatStringId;
 };
 
 class VSDXNumericField : public VSDXFieldListElement
 {
 public:
-  VSDXNumericField(unsigned id, unsigned level, unsigned short format, double number)
+  VSDXNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
     : m_id(id),
       m_level(level),
       m_format(format),
-      m_number(number) {}
+      m_number(number),
+      m_formatStringId(formatStringId) {}
   ~VSDXNumericField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
@@ -96,6 +96,7 @@ private:
   unsigned m_id, m_level;
   unsigned short m_format;
   double m_number;
+  int m_formatStringId;
 };
 
 class VSDXFieldList
@@ -107,8 +108,8 @@ public:
   VSDXFieldList &operator=(const VSDXFieldList &fieldList);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void addFieldList(unsigned id, unsigned level);
-  void addTextField(unsigned id, unsigned level, int nameId);
-  void addNumericField(unsigned id, unsigned level, unsigned short format, double number);
+  void addTextField(unsigned id, unsigned level, int nameId, int formatStringId);
+  void addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId);
   void addClonedField(unsigned id);
   void handle(VSDXCollector *collector);
   void clear();

@@ -111,8 +111,8 @@ public:
 
   // Field list
   virtual void collectFieldList(unsigned id, unsigned level) = 0;
-  virtual void collectTextField(unsigned id, unsigned level, int nameId) = 0;
-  virtual void collectNumericField(unsigned id, unsigned level, unsigned short format, double number) = 0;
+  virtual void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId) = 0;
+  virtual void collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId) = 0;
 
   // Temporary hack
   virtual void startPage() = 0;

@@ -29,6 +29,8 @@
  */
 
 #include <stack>
+#include <boost/spirit/include/classic.hpp>
+
 #include "VSDXContentCollector.h"
 #include "VSDXParser.h"
 #include "VSDInternalStream.h"
@@ -1873,7 +1875,7 @@ void libvisio::VSDXContentCollector::collectFieldList(unsigned /* id */, unsigne
   m_fields.clear();
 }
 
-void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, int nameId)
+void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, int nameId, int formatStringId)
 {
   _handleLevelChange(level);
   VSDXFieldListElement *element = m_stencilFields.getElement(m_fields.size());
@@ -1891,12 +1893,12 @@ void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned leve
   }
   else
   {
-    VSDXTextField tmpField(id, level, nameId);
+    VSDXTextField tmpField(id, level, nameId, formatStringId);
     m_fields.push_back(tmpField.getString(m_names));
   }
 }
 
-void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, unsigned short format, double number)
+void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
 {
   _handleLevelChange(level);
   VSDXFieldListElement *pElement = m_stencilFields.getElement(m_fields.size());
@@ -1906,15 +1908,21 @@ void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned l
     if (element)
     {
       element->setValue(number);
+      if (format == 0xffff)
+      {
+        if (formatStringId >= 0 && (unsigned)formatStringId < m_names.size())
+          parseFormatId(m_names[formatStringId].cstr(), format);
+      }
       if (format != 0xffff)
         element->setFormat(format);
+
       m_fields.push_back(element->getString(m_names));
       delete element;
     }
   }
   else
   {
-    VSDXNumericField tmpField(id, level, format, number);
+    VSDXNumericField tmpField(id, level, format, number, formatStringId);
     m_fields.push_back(tmpField.getString(m_names));
   }
 }
@@ -2118,6 +2126,36 @@ void libvisio::VSDXContentCollector::_appendUCS4(WPXString &text, unsigned ucs4C
 
   for (i = 0; i < len; i++)
     text.append(outbuf[i]);
+}
+
+bool libvisio::VSDXContentCollector::parseFormatId( const char *formatString, unsigned short &result )
+{
+  using namespace ::boost::spirit::classic;
+
+  result = 0xffff;
+
+  uint_parser<unsigned short,10,1,5> ushort_p;
+  if (parse(formatString,
+            // Begin grammar
+            (
+              (
+                str_p("{<") >>
+                ushort_p[assign_a(result)]
+                >> str_p(">}")
+              )
+              |
+              (
+                str_p("esc(") >>
+                ushort_p[assign_a(result)]
+                >> ')'
+              )
+            )>> end_p,
+            // End grammar
+            space_p).full )
+  {
+    return true;
+  }
+  return false;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -32,46 +32,14 @@
 #include "VSDXCollector.h"
 #include "VSDXFieldList.h"
 
-#include <boost/spirit/include/classic.hpp>
-
-bool libvisio::VSDXFieldListElement::parseFormatId( const char *formatString, unsigned short &result )
-{
-  using namespace ::boost::spirit::classic;
-
-  result = 0xffff;
-
-  uint_parser<unsigned short,10,1,5> ushort_p;
-  if (parse(formatString,
-            // Begin grammar
-            (
-              (
-                str_p("{<") >>
-                ushort_p[assign_a(result)]
-                >> str_p(">}")
-              )
-              |
-              (
-                str_p("esc(") >>
-                ushort_p[assign_a(result)]
-                >> ')'
-              )
-            )>> end_p,
-            // End grammar
-            space_p).full )
-  {
-    return true;
-  }
-  return false;
-}
-
 void libvisio::VSDXTextField::handle(VSDXCollector *collector)
 {
-  collector->collectTextField(m_id, m_level, m_nameId);
+  collector->collectTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
 
 libvisio::VSDXFieldListElement *libvisio::VSDXTextField::clone()
 {
-  return new VSDXTextField(m_id, m_level, m_nameId);
+  return new VSDXTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
 
 WPXString libvisio::VSDXTextField::getString(const std::vector<WPXString> &strVec)
@@ -90,12 +58,12 @@ void libvisio::VSDXTextField::setNameId(int nameId)
 
 void libvisio::VSDXNumericField::handle(VSDXCollector *collector)
 {
-  collector->collectNumericField(m_id, m_level, m_format, m_number);
+  collector->collectNumericField(m_id, m_level, m_format, m_number, m_formatStringId);
 }
 
 libvisio::VSDXFieldListElement *libvisio::VSDXNumericField::clone()
 {
-  return new VSDXNumericField(m_id, m_level, m_format, m_number);
+  return new VSDXNumericField(m_id, m_level, m_format, m_number, m_formatStringId);
 }
 
 #define MAX_BUFFER 1024
@@ -259,14 +227,14 @@ void libvisio::VSDXFieldList::addFieldList(unsigned id, unsigned level)
   m_level = level;
 }
 
-void libvisio::VSDXFieldList::addTextField(unsigned id, unsigned level, int nameId)
+void libvisio::VSDXFieldList::addTextField(unsigned id, unsigned level, int nameId, int formatStringId)
 {
-  m_elements[id] = new VSDXTextField(id, level, nameId);
+  m_elements[id] = new VSDXTextField(id, level, nameId, formatStringId);
 }
 
-void libvisio::VSDXFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number)
+void libvisio::VSDXFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
 {
-  m_elements[id] = new VSDXNumericField(id, level, format, number);
+  m_elements[id] = new VSDXNumericField(id, level, format, number, formatStringId);
 }
 
 void libvisio::VSDXFieldList::handle(VSDXCollector *collector)

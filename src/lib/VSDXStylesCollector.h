@@ -122,8 +122,8 @@ public:
 
   // Field list
   void collectFieldList(unsigned id, unsigned level);
-  void collectTextField(unsigned id, unsigned level, int nameId);
-  void collectNumericField(unsigned id, unsigned level, unsigned short format, double number);
+  void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId);
+  void collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId);
 
   // Temporary hack
   void startPage();

@@ -1575,15 +1575,17 @@ void libvisio::VSDXParser::readTextField(WPXInputStream *input)
   {
     int nameId = (int)readU32(input);
     input->seek(6, WPX_SEEK_CUR);
+    int formatStringId = (int)readU32(input);
     if (m_isStencilStarted)
-      m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, nameId);
+      m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, nameId, formatStringId);
     else
-      m_fieldList.addTextField(m_header.id, m_header.level, nameId);
+      m_fieldList.addTextField(m_header.id, m_header.level, nameId, formatStringId);
   }
   else
   {
     double numericValue = readDouble(input);
     input->seek(2, WPX_SEEK_CUR);
+    int formatStringId = (int)readU32(input);
 
     unsigned blockIdx = 0;
     unsigned length = 0;
@@ -1633,9 +1635,9 @@ void libvisio::VSDXParser::readTextField(WPXInputStream *input)
     }
 
     if (m_isStencilStarted)
-      m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue);
+      m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
     else
-      m_fieldList.addNumericField(m_header.id, m_header.level, formatNumber, numericValue);
+      m_fieldList.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
   }
 }
 
