@@ -34,24 +34,34 @@
 
 #include <boost/spirit/include/classic.hpp>
 
-bool libvisio::VSDXFieldListElement::parseFormatId( const char* formatString, unsigned short &result )
+bool libvisio::VSDXFieldListElement::parseFormatId( const char *formatString, unsigned short &result )
 {
-    using namespace ::boost::spirit::classic;
+  using namespace ::boost::spirit::classic;
 
-    result = 0xffff;
+  result = 0xffff;
 
-	uint_parser<unsigned short,10,1,5> ushort_p;
-    if (parse(formatString,
-              // Begin grammar
-              ( str_p("{<") >>
-                  ushort_p[assign_a(result)]
-                  >> str_p(">}") ) >> end_p,
-              // End grammar
-              space_p).full )
-    {
-        return true;
-    }
-    return false;
+  uint_parser<unsigned short,10,1,5> ushort_p;
+  if (parse(formatString,
+            // Begin grammar
+            (
+              (
+                str_p("{<") >>
+                ushort_p[assign_a(result)]
+                >> str_p(">}")
+              )
+              |
+              (
+                str_p("esc(") >>
+                ushort_p[assign_a(result)]
+                >> ')'
+              )
+            )>> end_p,
+            // End grammar
+            space_p).full )
+  {
+    return true;
+  }
+  return false;
 }
 
 void libvisio::VSDXTextField::handle(VSDXCollector *collector)
