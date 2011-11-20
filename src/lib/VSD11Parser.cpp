@@ -234,9 +234,85 @@ void libvisio::VSD11Parser::readName(WPXInputStream *input)
     name.append(readU8(input));
 
   if (m_isStencilStarted)
-    m_stencilShape.m_names.push_back(VSDXName(name, libvisio::VSD_TEXT_UTF16));
+    m_stencilShape.m_names[m_header.id] = VSDXName(name, libvisio::VSD_TEXT_UTF16);
   else
     m_collector->collectName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_UTF16);
 }
+
+void libvisio::VSD11Parser::readTextField(WPXInputStream *input)
+{
+  unsigned long initialPosition = input->tell();
+  input->seek(7, WPX_SEEK_CUR);
+  unsigned char tmpCode = readU8(input);
+  if (tmpCode == 0xe8)
+  {
+    int nameId = (int)readU32(input);
+    input->seek(6, WPX_SEEK_CUR);
+    int formatStringId = (int)readU32(input);
+    if (m_isStencilStarted)
+      m_stencilShape.m_fields.addTextField(m_header.id, m_header.level, nameId, formatStringId);
+    else
+      m_fieldList.addTextField(m_header.id, m_header.level, nameId, formatStringId);
+  }
+  else
+  {
+    double numericValue = readDouble(input);
+    input->seek(2, WPX_SEEK_CUR);
+    int formatStringId = (int)readU32(input);
+
+    unsigned blockIdx = 0;
+    unsigned length = 0;
+    unsigned short formatNumber = 0;
+    input->seek(initialPosition+0x36, WPX_SEEK_SET);
+    while (blockIdx != 2 && !input->atEOS() && (unsigned long) input->tell() < (unsigned long)(initialPosition+m_header.dataLength+m_header.trailer))
+    {
+      unsigned long inputPos = input->tell();
+      length = readU32(input);
+      if (!length)
+        break;
+      input->seek(1, WPX_SEEK_CUR);
+      blockIdx = readU8(input);
+      if (blockIdx != 2)
+        input->seek(inputPos + length, WPX_SEEK_SET);
+      else
+      {
+        input->seek(1, WPX_SEEK_CUR);
+        formatNumber = readU16(input);
+        if (0x80 != readU8(input))
+        {
+          input->seek(inputPos + length, WPX_SEEK_SET);
+          blockIdx = 0;
+        }
+        else
+        {
+          if (0xc2 != readU8(input))
+          {
+            input->seek(inputPos + length, WPX_SEEK_SET);
+            blockIdx = 0;
+          }
+          else
+            break;
+        }
+      }
+    }
+
+    if (input->atEOS())
+      return;
+
+    if (blockIdx != 2)
+    {
+      if (tmpCode == 0x28)
+        formatNumber = 200;
+      else
+        formatNumber = 0xffff;
+    }
+
+    if (m_isStencilStarted)
+      m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
+    else
+      m_fieldList.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
+  }
+}
+
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

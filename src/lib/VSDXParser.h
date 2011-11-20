@@ -96,7 +96,7 @@ protected:
   virtual void readName(WPXInputStream *input) = 0;
 
   void readFieldList(WPXInputStream *input);
-  void readTextField(WPXInputStream *input);
+  virtual void readTextField(WPXInputStream *input) = 0;
 
   void readStyleSheet(WPXInputStream *input);
 

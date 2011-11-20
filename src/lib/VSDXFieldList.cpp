@@ -42,12 +42,13 @@ libvisio::VSDXFieldListElement *libvisio::VSDXTextField::clone()
   return new VSDXTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
 
-WPXString libvisio::VSDXTextField::getString(const std::vector<WPXString> &strVec)
+WPXString libvisio::VSDXTextField::getString(const std::map<unsigned, WPXString> &strVec)
 {
-  if (m_nameId < 0 || (unsigned)m_nameId >= strVec.size())
-    return WPXString();
+  std::map<unsigned, WPXString>::const_iterator iter = strVec.find(m_nameId);
+  if (iter != strVec.end())
+    return iter->second;
   else
-    return strVec[m_nameId];
+    return WPXString();
 }
 
 void libvisio::VSDXTextField::setNameId(int nameId)
@@ -78,7 +79,7 @@ WPXString libvisio::VSDXNumericField::datetimeToString(const char *format, doubl
   return result;
 }
 
-WPXString libvisio::VSDXNumericField::getString(const std::vector<WPXString> &)
+WPXString libvisio::VSDXNumericField::getString(const std::map<unsigned, WPXString> &)
 {
   if (m_format == 0xffff)
     return WPXString();

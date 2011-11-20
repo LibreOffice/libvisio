@@ -52,6 +52,7 @@ private:
   void readCharIX(WPXInputStream *input);
   void readFillAndShadow(WPXInputStream *input);
   void readName(WPXInputStream *input);
+  void readTextField(WPXInputStream *input);
 
   VSD6Parser();
   VSD6Parser(const VSDXParser &);

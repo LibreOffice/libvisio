@@ -49,7 +49,7 @@ public:
   virtual ~VSDXFieldListElement() {}
   virtual void handle(VSDXCollector *collector) = 0;
   virtual VSDXFieldListElement *clone() = 0;
-  virtual WPXString getString(const std::vector<WPXString>&) = 0;
+  virtual WPXString getString(const std::map<unsigned, WPXString>&) = 0;
   virtual void setNameId(int) = 0;
   virtual void setFormat(unsigned short) = 0;
   virtual void setValue(double) = 0;
@@ -66,7 +66,7 @@ public:
   ~VSDXTextField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
-  WPXString getString(const std::vector<WPXString> &strVec);
+  WPXString getString(const std::map<unsigned, WPXString> &strVec);
   void setNameId(int nameId);
   void setFormat(unsigned short) {}
   void setValue(double) {}
@@ -87,7 +87,7 @@ public:
   ~VSDXNumericField() {}
   void handle(VSDXCollector *collector);
   VSDXFieldListElement *clone();
-  WPXString getString(const std::vector<WPXString> &);
+  WPXString getString(const std::map<unsigned, WPXString> &);
   void setNameId(int) {}
   void setFormat(unsigned short format);
   void setValue(double number);

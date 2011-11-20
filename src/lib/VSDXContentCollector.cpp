@@ -638,8 +638,15 @@ void libvisio::VSDXContentCollector::_flushText()
         while (!tmpStream.atEOS())
         {
           unsigned char character = readU8(&tmpStream);
-          if (character <= 0x20)
-            _appendUCS4(text, (unsigned) 0x20);
+          if (character == 0x1e)
+          {
+            if (m_fieldIndex < m_fields.size())
+              text.append(m_fields[m_fieldIndex++].cstr());
+            else
+              m_fieldIndex++;
+          }
+          /*          if (character <= 0x20)
+                      _appendUCS4(text, (unsigned) 0x20); */
           else
             _appendUCS4(text, (unsigned) character);
         }
@@ -1610,11 +1617,11 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       m_textStream = m_stencilShape->m_text;
       m_textFormat = m_stencilShape->m_textFormat;
 
-      for (std::vector<VSDXName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
+      for (std::map< unsigned, VSDXName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
       {
         WPXString nameString;
-        _convertDataToString(nameString, iterData->m_data, iterData->m_format);
-        m_stencilNames.push_back(nameString);
+        _convertDataToString(nameString, iterData->second.m_data, iterData->second.m_format);
+        m_stencilNames[iterData->first] = nameString;
       }
 
       m_stencilFields = m_stencilShape->m_fields;
@@ -1796,13 +1803,13 @@ void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, con
   }
 }
 
-void libvisio::VSDXContentCollector::collectName(unsigned /*id*/, unsigned level, const WPXBinaryData &name, TextFormat format)
+void libvisio::VSDXContentCollector::collectName(unsigned id, unsigned level, const WPXBinaryData &name, TextFormat format)
 {
   _handleLevelChange(level);
 
   WPXString nameString;
   _convertDataToString(nameString, name, format);
-  m_names.push_back(nameString);
+  m_names[id] = nameString;
 }
 
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
@@ -1910,8 +1917,9 @@ void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned l
       element->setValue(number);
       if (format == 0xffff)
       {
-        if (formatStringId >= 0 && (unsigned)formatStringId < m_names.size())
-          parseFormatId(m_names[formatStringId].cstr(), format);
+        std::map<unsigned, WPXString>::const_iterator iter = m_names.find(formatStringId);
+        if (iter != m_names.end())
+          parseFormatId(iter->second.cstr(), format);
       }
       if (format != 0xffff)
         element->setFormat(format);
