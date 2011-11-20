@@ -645,8 +645,8 @@ void libvisio::VSDXContentCollector::_flushText()
             else
               m_fieldIndex++;
           }
-          /*          if (character <= 0x20)
-                      _appendUCS4(text, (unsigned) 0x20); */
+          else if (character <= 0x20)
+            _appendUCS4(text, (unsigned) 0x20);
           else
             _appendUCS4(text, (unsigned) character);
         }
