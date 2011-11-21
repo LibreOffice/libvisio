@@ -234,54 +234,19 @@ void libvisio::VSD6Parser::readTextField(WPXInputStream *input)
     double numericValue = readDouble(input);
     input->seek(2, WPX_SEEK_CUR);
     int formatStringId = (int)readU32(input);
-
-//    unsigned blockIdx = 0;
-//    unsigned length = 0;
-    unsigned short formatNumber = 0;
-    /*    input->seek(initialPosition+0x36, WPX_SEEK_SET);
-        while (blockIdx != 2 && !input->atEOS() && (unsigned long) input->tell() < (unsigned long)(initialPosition+m_header.dataLength+m_header.trailer))
+    input->seek(20, WPX_SEEK_CUR);
+    unsigned char tmpCode = readU8(input);
+    unsigned short formatNumber = 0xffff;
+//    ::WPXBinaryData formatString;
+    if (0x62 == tmpCode)
+      formatNumber = readU16(input);
+    /*    else if (0x60 == tmpCode)
         {
-          unsigned long inputPos = input->tell();
-          length = readU32(input);
-          if (!length)
-            break;
-          input->seek(1, WPX_SEEK_CUR);
-          blockIdx = readU8(input);
-          if (blockIdx != 2)
-            input->seek(inputPos + length, WPX_SEEK_SET);
-          else
-          {
-            input->seek(1, WPX_SEEK_CUR);
-            formatNumber = readU16(input);
-            if (0x80 != readU8(input))
-            {
-              input->seek(inputPos + length, WPX_SEEK_SET);
-              blockIdx = 0;
-            }
-            else
-            {
-              if (0xc2 != readU8(input))
-              {
-                input->seek(inputPos + length, WPX_SEEK_SET);
-                blockIdx = 0;
-              }
-              else
-                break;
-            }
-          }
+          unsigned char tmpLength = readU8(input);
+          for (; tmpLength > 0; tmpLength--)
+            formatString.append(readU8(input));
         }
-
-        if (input->atEOS())
-          return;
-
-        if (blockIdx != 2)
     */
-    {
-      if (tmpCode == 0x28)
-        formatNumber = 200;
-      else
-        formatNumber = 0;
-    }
     if (m_isStencilStarted)
       m_stencilShape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
     else
