@@ -710,15 +710,15 @@ void libvisio::VSDXContentCollector::_flushText()
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
-  m_currentForeignProps.insert("svg:width", m_scale*m_currentForeignWidth);
-  m_currentForeignProps.insert("svg:height", m_scale*m_currentForeignHeight);
-  double x = m_currentForeignOffsetX;
-  double y = m_currentForeignOffsetY;
+  m_currentForeignProps.insert("svg:width", m_scale*m_foreignWidth);
+  m_currentForeignProps.insert("svg:height", m_scale*m_foreignHeight);
+  double x = m_foreignOffsetX;
+  double y = m_foreignOffsetY;
   transformPoint(x,y);
 
   m_currentForeignProps.insert("svg:x", m_scale*x);
   // Y axis starts at the bottom not top
-  m_currentForeignProps.insert("svg:y", m_scale*(y - m_currentForeignHeight));
+  m_currentForeignProps.insert("svg:y", m_scale*(y - m_foreignHeight));
 
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
   {
