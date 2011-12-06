@@ -433,30 +433,6 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
         m_stencilShape.m_foreign->data = binaryData;
       }
     }
-    else if (ptrType == VSD_OLE_LIST)
-    {
-      {
-        m_stencilShape.m_foreign->dataId = m_header.id;
-        m_stencilShape.m_foreign->dataLevel = m_header.level;
-        m_stencilShape.m_foreign->data.clear();
-      }
-    }
-    else if (ptrType == VSD_OLE_DATA)
-    {
-      unsigned foreignLength = ptrLength - 4;
-      if (compressed)
-        foreignLength = readU32(&tmpInput);
-      else
-        tmpInput.seek(0x4, WPX_SEEK_CUR);
-
-      unsigned long tmpBytesRead = 0;
-      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
-      if (foreignLength == tmpBytesRead)
-      {
-        WPXBinaryData binaryData(buffer, tmpBytesRead);
-        m_stencilShape.m_foreign->data.append(binaryData);
-      }
-    }
   }
 }
 
