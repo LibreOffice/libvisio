@@ -32,7 +32,7 @@
 #define VSDXDOCUMENTSTRUCTURE_H
 
 #define VSD_FOREIGN_DATA 0x0c
-#define VSD_OLE_INFO 0x0d
+#define VSD_OLE_LIST 0x0d
 #define VSD_TEXT 0x0e
 
 #define VSD_PAGE 0x15

@@ -64,6 +64,11 @@ void libvisio::VSDXStylesCollector::collectForeignData(unsigned /* id */, unsign
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectOLEData(unsigned /* id */, unsigned level, const WPXBinaryData & /* oleData */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDXStylesCollector::collectEllipse(unsigned /* id */, unsigned level, double /* cx */, double /* cy */,
     double /* xleft */, double /* yleft */, double /* xtop */, double /* ytop */)
 {
@@ -189,7 +194,8 @@ void libvisio::VSDXStylesCollector::collectShapeId(unsigned /* id */, unsigned l
   m_shapeList.push_back(shapeId);
 }
 
-void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */)
+void libvisio::VSDXStylesCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */,
+    double /* offsetX */, double /* offsetY */, double /* width */, double /* height */)
 {
   _handleLevelChange(level);
 }

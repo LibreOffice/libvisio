@@ -105,6 +105,9 @@ protected:
 
   void readStencilShape(WPXInputStream *input);
 
+  void readOLEList(WPXInputStream *input);
+  void readOLEData(WPXInputStream *input);
+
   // parser of one pass
   bool parseDocument(WPXInputStream *input);
 

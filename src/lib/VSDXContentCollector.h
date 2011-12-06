@@ -66,6 +66,8 @@ public:
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
+  void collectOLEList(unsigned id, unsigned level);
+  void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
@@ -89,7 +91,7 @@ public:
   void collectXFormData(unsigned id, unsigned level, const XForm &xform);
   void collectTxtXForm(unsigned id, unsigned level, const XForm &txtxform);
   void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
-  void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat);
+  void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale);
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, unsigned currentPageID);
   void collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle);
@@ -191,10 +193,15 @@ private:
   std::vector<WPXPropertyList> m_currentGeometry;
   std::map<unsigned, XForm> &m_groupXForms;
   WPXBinaryData m_currentForeignData;
+  WPXBinaryData m_currentOLEData;
   WPXPropertyList m_currentForeignProps;
   unsigned m_currentShapeId;
   unsigned m_foreignType;
   unsigned m_foreignFormat;
+  double m_foreignOffsetX;
+  double m_foreignOffsetY;
+  double m_foreignWidth;
+  double m_foreignHeight;
   WPXPropertyList m_styleProps;
   ::WPXString m_lineColour;
   ::WPXString m_fillType;

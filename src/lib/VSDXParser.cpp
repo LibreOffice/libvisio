@@ -298,14 +298,14 @@ void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
     switch (ptrType)
     {
     case VSD_STENCIL_PAGE:
-      {
-        VSDXStencil tmpStencil;
-        m_currentStencil = &tmpStencil;
-        handleStencilPage(&tmpInput, shift2);
-        m_stencils.addStencil(i, *m_currentStencil);
-        m_currentStencil = 0;
-      }
-      break;
+    {
+      VSDXStencil tmpStencil;
+      m_currentStencil = &tmpStencil;
+      handleStencilPage(&tmpInput, shift2);
+      m_stencils.addStencil(i, *m_currentStencil);
+      m_currentStencil = 0;
+    }
+    break;
     default:
       break;
     }
@@ -433,6 +433,30 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
         m_stencilShape.m_foreign->data = binaryData;
       }
     }
+    else if (ptrType == VSD_OLE_LIST)
+    {
+      {
+        m_stencilShape.m_foreign->dataId = m_header.id;
+        m_stencilShape.m_foreign->dataLevel = m_header.level;
+        m_stencilShape.m_foreign->data.clear();
+      }
+    }
+    else if (ptrType == VSD_OLE_DATA)
+    {
+      unsigned foreignLength = ptrLength - 4;
+      if (compressed)
+        foreignLength = readU32(&tmpInput);
+      else
+        tmpInput.seek(0x4, WPX_SEEK_CUR);
+
+      unsigned long tmpBytesRead = 0;
+      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
+      if (foreignLength == tmpBytesRead)
+      {
+        WPXBinaryData binaryData(buffer, tmpBytesRead);
+        m_stencilShape.m_foreign->data.append(binaryData);
+      }
+    }
   }
 }
 
@@ -498,6 +522,12 @@ void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
         break;
       case VSD_FOREIGN_DATA:
         readForeignData(input);
+        break;
+      case VSD_OLE_LIST:
+        readOLEList(input);
+        break;
+      case VSD_OLE_DATA:
+        readOLEData(input);
         break;
       case VSD_FILL_AND_SHADOW:
         readFillAndShadow(input);
@@ -683,6 +713,12 @@ void libvisio::VSDXParser::handlePage(WPXInputStream *input)
       case VSD_FOREIGN_DATA:
         readForeignData(input);
         break;
+      case VSD_OLE_LIST:
+        readOLEList(input);
+        break;
+      case VSD_OLE_DATA:
+        readOLEData(input);
+        break;
       case VSD_PAGE_PROPS:
         readPageProps(input);
         break;
@@ -778,6 +814,22 @@ void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
   WPXBinaryData binaryData(buffer, tmpBytesRead);
 
   m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
+}
+
+void libvisio::VSDXParser::readOLEList(WPXInputStream * /* input */)
+{
+  m_collector->collectOLEList(m_header.id, m_header.level);
+}
+
+void libvisio::VSDXParser::readOLEData(WPXInputStream *input)
+{
+  unsigned long tmpBytesRead = 0;
+  const unsigned char *buffer = input->read(m_header.dataLength, tmpBytesRead);
+  if (m_header.dataLength != tmpBytesRead)
+    return;
+  WPXBinaryData oleData(buffer, tmpBytesRead);
+
+  m_collector->collectOLEData(m_header.id, m_header.level, oleData);
 }
 
 void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
@@ -1040,7 +1092,14 @@ void libvisio::VSDXParser::readShapeList(WPXInputStream *input)
 
 void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
 {
-  input->seek(0x24, WPX_SEEK_CUR);
+  input->seek(1, WPX_SEEK_CUR);
+  double imgOffsetX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double imgOffsetY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double imgWidth = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double imgHeight = readDouble(input);
   unsigned foreignType = readU16(input);
   input->seek(0xb, WPX_SEEK_CUR);
   unsigned foreignFormat = readU32(input);
@@ -1051,9 +1110,13 @@ void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
     m_stencilShape.m_foreign->typeLevel = m_header.level;
     m_stencilShape.m_foreign->type = foreignType;
     m_stencilShape.m_foreign->format = foreignFormat;
+    m_stencilShape.m_foreign->offsetX = imgOffsetX;
+    m_stencilShape.m_foreign->offsetY = imgOffsetY;
+    m_stencilShape.m_foreign->width = imgWidth;
+    m_stencilShape.m_foreign->height = imgHeight;
   }
   else
-    m_collector->collectForeignDataType(m_header.id, m_header.level, foreignType, foreignFormat);
+    m_collector->collectForeignDataType(m_header.id, m_header.level, foreignType, foreignFormat, imgOffsetX, imgOffsetY, imgWidth, imgHeight);
 }
 
 void libvisio::VSDXParser::readPageProps(WPXInputStream *input)

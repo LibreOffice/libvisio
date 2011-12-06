@@ -145,6 +145,10 @@ struct ForeignData
   unsigned dataLevel;
   unsigned type;
   unsigned format;
+  double offsetX;
+  double offsetY;
+  double width;
+  double height;
   WPXBinaryData data;
   ForeignData()
     : typeId(0),
@@ -153,6 +157,10 @@ struct ForeignData
       dataLevel(0),
       type(0),
       format(0),
+      offsetX(0.0),
+      offsetY(0.0),
+      width(0.0),
+      height(0.0),
       data() {}
   ForeignData(const ForeignData &fd)
     : typeId(fd.typeId),
@@ -161,6 +169,10 @@ struct ForeignData
       dataLevel(fd.dataLevel),
       type(fd.type),
       format(fd.format),
+      offsetX(fd.offsetX),
+      offsetY(fd.offsetY),
+      width(fd.width),
+      height(fd.height),
       data(fd.data) {}
 };
 

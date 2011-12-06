@@ -156,16 +156,16 @@ WPXString libvisio::VSDXNumericField::getString(const std::map<unsigned, WPXStri
   case VSD_FIELD_FORMAT_MsoTimeDateSecPM:
     return datetimeToString("%x %X", m_number);
   default:
+  {
+    WPXString result;
+    WPXProperty *pProp = WPXPropertyFactory::newDoubleProp(m_number);
+    if (pProp)
     {
-      WPXString result;
-      WPXProperty *pProp = WPXPropertyFactory::newDoubleProp(m_number);
-      if (pProp)
-      {
-        result = pProp->getStr();
-        delete pProp;
-      }
-      return result;
+      result = pProp->getStr();
+      delete pProp;
     }
+    return result;
+  }
   }
 }
 

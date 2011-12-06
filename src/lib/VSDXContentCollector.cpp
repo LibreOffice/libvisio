@@ -57,8 +57,9 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
   m_txtxform(0), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]),
-  m_currentForeignData(), m_currentForeignProps(),
-  m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_styleProps(),
+  m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(),
+  m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_foreignOffsetX(0.0),
+  m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0), m_styleProps(),
   m_lineColour("black"), m_fillType("none"), m_linePattern(1),
   m_fillPattern(1), m_fillFGTransparency(0), m_fillBGTransparency(0),
   m_noLine(false), m_noFill(false), m_noShow(false), m_colours(), m_fonts(),
@@ -709,15 +710,15 @@ void libvisio::VSDXContentCollector::_flushText()
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
-  m_currentForeignProps.insert("svg:width", m_scale*m_xform.width);
-  m_currentForeignProps.insert("svg:height", m_scale*m_xform.height);
-  double x = 0.0;
-  double y = 0.0;
+  m_currentForeignProps.insert("svg:width", m_scale*m_currentForeignWidth);
+  m_currentForeignProps.insert("svg:height", m_scale*m_currentForeignHeight);
+  double x = m_currentForeignOffsetX;
+  double y = m_currentForeignOffsetY;
   transformPoint(x,y);
 
   m_currentForeignProps.insert("svg:x", m_scale*x);
   // Y axis starts at the bottom not top
-  m_currentForeignProps.insert("svg:y", m_scale*(y - m_xform.height));
+  m_currentForeignProps.insert("svg:y", m_scale*(y - m_currentForeignHeight));
 
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
   {
@@ -984,6 +985,20 @@ void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsig
   _handleForeignData(binaryData);
 }
 
+void libvisio::VSDXContentCollector::collectOLEList(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+  m_currentForeignData.clear();
+  WPXBinaryData binaryData;
+  _handleForeignData(binaryData);
+}
+
+void libvisio::VSDXContentCollector::collectOLEData(unsigned /* id */, unsigned level, const WPXBinaryData &oleData)
+{
+  _handleLevelChange(level);
+  m_currentForeignData.append(oleData);
+}
+
 void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &binaryData)
 {
   if (m_foreignType == 1 || m_foreignType == 4) // Image
@@ -1082,6 +1097,10 @@ void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &bin
         m_currentForeignProps.insert("libwpg:mime-type", "image/wmf");
       }
     }
+  }
+  else if (m_foreignType == 2)
+  {
+    m_currentForeignProps.insert("libwpg:mime-type", "object/ole");
   }
 }
 
@@ -1513,11 +1532,15 @@ void libvisio::VSDXContentCollector::collectShapeId(unsigned /* id */, unsigned 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned foreignType, unsigned foreignFormat)
+void libvisio::VSDXContentCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height)
 {
   _handleLevelChange(level);
   m_foreignType = foreignType;
   m_foreignFormat = foreignFormat;
+  m_foreignOffsetX = offsetX;
+  m_foreignOffsetY = offsetY;
+  m_foreignWidth = width;
+  m_foreignHeight = height;
 }
 
 void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale)
@@ -1546,6 +1569,10 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
 
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
+  m_foreignOffsetX = 0.0;
+  m_foreignOffsetY = 0.0;
+  m_foreignWidth = 0.0;
+  m_foreignHeight = 0.0;
 
   m_originalX = 0.0;
   m_originalY = 0.0;
@@ -1611,6 +1638,10 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       {
         m_foreignType = m_stencilShape->m_foreign->type;
         m_foreignFormat = m_stencilShape->m_foreign->format;
+        m_foreignOffsetX = m_stencilShape->m_foreign->offsetX;
+        m_foreignOffsetY = m_stencilShape->m_foreign->offsetY;
+        m_foreignWidth = m_stencilShape->m_foreign->width;
+        m_foreignHeight = m_stencilShape->m_foreign->height;
         _handleForeignData(m_stencilShape->m_foreign->data);
       }
 

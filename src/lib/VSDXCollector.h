@@ -45,6 +45,8 @@ public:
 
   virtual void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) = 0;
   virtual void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData) = 0;
+  virtual void collectOLEList(unsigned id, unsigned level) = 0;
+  virtual void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData) = 0;
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
   virtual void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap) = 0;
   virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
@@ -67,7 +69,7 @@ public:
   virtual void collectXFormData(unsigned id, unsigned level, const XForm &xform) = 0;
   virtual void collectTxtXForm(unsigned id, unsigned level, const XForm &txtxform) = 0;
   virtual void collectShapeId(unsigned id, unsigned level, unsigned shapeId) = 0;
-  virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat) = 0;
+  virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height) = 0;
   virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale) = 0;
   virtual void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, unsigned currentPageID) = 0;
   virtual void collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) = 0;
