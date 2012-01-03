@@ -579,7 +579,7 @@ void libvisio::VSDXContentCollector::_flushText()
   const unsigned char *pTextBuffer = m_textStream.getDataBuffer();
 
   for (std::vector<VSDXParaStyle>::iterator paraIt = m_paraFormats.begin();
-       paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); paraIt++)
+       paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); ++paraIt)
   {
     WPXPropertyList paraProps;
 
@@ -734,7 +734,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
   if (m_pageShapeOrder.size())
   {
     std::stack<std::pair<unsigned, VSDXOutputElementList> > groupTextStack;
-    for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); iterList++)
+    for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); ++iterList)
     {
       std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships.find(*iterList);
       if (iterGroup == m_groupMemberships.end())
@@ -939,7 +939,7 @@ void libvisio::VSDXContentCollector::collectInfiniteLine(unsigned /* id */, unsi
 
     xmove = points.begin()->first;
     ymove = points.begin()->second;
-    for (std::map<double, double>::iterator iter = points.begin(); iter != points.end(); iter++)
+    for (std::map<double, double>::iterator iter = points.begin(); iter != points.end(); ++iter)
     {
       if (iter->first != xmove || iter->second != ymove)
       {
@@ -1243,7 +1243,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
 
   // Convert control points to static co-ordinates
   for (std::vector<std::pair<double, double> >::iterator it = controlPoints.begin();
-       it != controlPoints.end(); it++)
+       it != controlPoints.end(); ++it)
   {
     if (xType == 0) // Percentage
       (*it).first *= m_xform.width;

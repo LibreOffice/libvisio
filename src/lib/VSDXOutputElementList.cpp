@@ -295,18 +295,18 @@ libvisio::VSDXOutputElementList::VSDXOutputElementList(const libvisio::VSDXOutpu
   : m_elements()
 {
   std::vector<libvisio::VSDXOutputElement *>::const_iterator iter;
-  for (iter = elementList.m_elements.begin(); iter != elementList.m_elements.end(); iter++)
+  for (iter = elementList.m_elements.begin(); iter != elementList.m_elements.end(); ++iter)
     m_elements.push_back((*iter)->clone());
 }
 
 libvisio::VSDXOutputElementList &libvisio::VSDXOutputElementList::operator=(const libvisio::VSDXOutputElementList &elementList)
 {
-  for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete (*iter);
 
   m_elements.clear();
 
-  for (std::vector<VSDXOutputElement *>::const_iterator cstiter = elementList.m_elements.begin(); cstiter != elementList.m_elements.end(); cstiter++)
+  for (std::vector<VSDXOutputElement *>::const_iterator cstiter = elementList.m_elements.begin(); cstiter != elementList.m_elements.end(); ++cstiter)
     m_elements.push_back((*cstiter)->clone());
 
   return *this;
@@ -314,20 +314,20 @@ libvisio::VSDXOutputElementList &libvisio::VSDXOutputElementList::operator=(cons
 
 void libvisio::VSDXOutputElementList::append(const libvisio::VSDXOutputElementList &elementList)
 {
-  for (std::vector<VSDXOutputElement *>::const_iterator cstiter = elementList.m_elements.begin(); cstiter != elementList.m_elements.end(); cstiter++)
+  for (std::vector<VSDXOutputElement *>::const_iterator cstiter = elementList.m_elements.begin(); cstiter != elementList.m_elements.end(); ++cstiter)
     m_elements.push_back((*cstiter)->clone());
 }
 
 libvisio::VSDXOutputElementList::~VSDXOutputElementList()
 {
-  for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::vector<VSDXOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete (*iter);
   m_elements.clear();
 }
 
 void libvisio::VSDXOutputElementList::draw(libwpg::WPGPaintInterface *painter) const
 {
-  for (std::vector<VSDXOutputElement *>::const_iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::vector<VSDXOutputElement *>::const_iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     (*iter)->draw(painter);
 }
 

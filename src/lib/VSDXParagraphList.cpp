@@ -91,7 +91,7 @@ libvisio::VSDXParagraphList::VSDXParagraphList(const libvisio::VSDXParagraphList
   m_elementsOrder(paraList.m_elementsOrder)
 {
   std::map<unsigned, VSDXParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
-  for (; iter != paraList.m_elements.end(); iter++)
+  for (; iter != paraList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
@@ -99,7 +99,7 @@ libvisio::VSDXParagraphList &libvisio::VSDXParagraphList::operator=(const libvis
 {
   clear();
   std::map<unsigned, VSDXParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
-  for (; iter != paraList.m_elements.end(); iter++)
+  for (; iter != paraList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = paraList.m_elementsOrder;
   return *this;
@@ -139,14 +139,14 @@ void libvisio::VSDXParagraphList::handle(VSDXCollector *collector)
   }
   else
   {
-    for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
+    for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
       iter->second->handle(collector);
   }
 }
 
 void libvisio::VSDXParagraphList::clear()
 {
-  for (std::map<unsigned, VSDXParagraphListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::map<unsigned, VSDXParagraphListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();

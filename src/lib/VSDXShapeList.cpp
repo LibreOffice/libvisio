@@ -102,14 +102,14 @@ void libvisio::VSDXShapeList::handle(VSDXCollector *collector)
   }
   else
   {
-    for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
+    for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
       iter->second->handle(collector);
   }
 }
 
 void libvisio::VSDXShapeList::clear()
 {
-  for (std::map<unsigned, VSDXShapeListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::map<unsigned, VSDXShapeListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();

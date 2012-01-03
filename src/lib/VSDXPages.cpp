@@ -85,7 +85,7 @@ void libvisio::VSDXPages::draw(libwpg::WPGPaintInterface *painter)
   if (!painter)
     return;
 
-  for (std::map<unsigned, libvisio::VSDXPage>::iterator iter = m_pages.begin(); iter != m_pages.end(); iter++)
+  for (std::map<unsigned, libvisio::VSDXPage>::iterator iter = m_pages.begin(); iter != m_pages.end(); ++iter)
   {
     WPXPropertyList pageProps;
     pageProps.insert("svg:width", iter->second.m_pageWidth);

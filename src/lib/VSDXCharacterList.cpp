@@ -96,7 +96,7 @@ libvisio::VSDXCharacterList::VSDXCharacterList(const libvisio::VSDXCharacterList
   m_elementsOrder(charList.m_elementsOrder)
 {
   std::map<unsigned, VSDXCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
-  for (; iter != charList.m_elements.end(); iter++)
+  for (; iter != charList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
@@ -104,7 +104,7 @@ libvisio::VSDXCharacterList &libvisio::VSDXCharacterList::operator=(const libvis
 {
   clear();
   std::map<unsigned, VSDXCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
-  for (; iter != charList.m_elements.end(); iter++)
+  for (; iter != charList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = charList.m_elementsOrder;
   return *this;
@@ -146,14 +146,14 @@ void libvisio::VSDXCharacterList::handle(VSDXCollector *collector)
   }
   else
   {
-    for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
+    for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
       iter->second->handle(collector);
   }
 }
 
 void libvisio::VSDXCharacterList::clear()
 {
-  for (std::map<unsigned, VSDXCharacterListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::map<unsigned, VSDXCharacterListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();

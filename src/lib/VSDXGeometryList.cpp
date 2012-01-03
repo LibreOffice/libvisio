@@ -357,7 +357,7 @@ libvisio::VSDXGeometryList::VSDXGeometryList(const VSDXGeometryList &geomList) :
   m_elementsOrder(geomList.m_elementsOrder)
 {
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = geomList.m_elements.begin();
-  for (; iter != geomList.m_elements.end(); iter++)
+  for (; iter != geomList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
@@ -365,7 +365,7 @@ libvisio::VSDXGeometryList &libvisio::VSDXGeometryList::operator=(const VSDXGeom
 {
   clear();
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter = geomList.m_elements.begin();
-  for (; iter != geomList.m_elements.end(); iter++)
+  for (; iter != geomList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = geomList.m_elementsOrder;
   return *this;
@@ -464,7 +464,7 @@ void libvisio::VSDXGeometryList::handle(VSDXCollector *collector) const
   }
   else
   {
-    for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
+    for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
       iter->second->handle(collector);
   }
   collector->collectSplineEnd();
@@ -472,7 +472,7 @@ void libvisio::VSDXGeometryList::handle(VSDXCollector *collector) const
 
 void libvisio::VSDXGeometryList::clear()
 {
-  for (std::map<unsigned, VSDXGeometryListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::map<unsigned, VSDXGeometryListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();

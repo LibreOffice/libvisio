@@ -194,7 +194,7 @@ libvisio::VSDXFieldList::VSDXFieldList(const libvisio::VSDXFieldList &fieldList)
   m_level(fieldList.m_level)
 {
   std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
-  for (; iter != fieldList.m_elements.end(); iter++)
+  for (; iter != fieldList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
@@ -202,7 +202,7 @@ libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDX
 {
   clear();
   std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
-  for (; iter != fieldList.m_elements.end(); iter++)
+  for (; iter != fieldList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = fieldList.m_elementsOrder;
   m_id = fieldList.m_id;
@@ -256,14 +256,14 @@ void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
   }
   else
   {
-    for (iter = m_elements.begin(); iter != m_elements.end(); iter++)
+    for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
       iter->second->handle(collector);
   }
 }
 
 void libvisio::VSDXFieldList::clear()
 {
-  for (std::map<unsigned, VSDXFieldListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); iter++)
+  for (std::map<unsigned, VSDXFieldListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();

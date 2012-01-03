@@ -385,12 +385,12 @@ void libvisio::VSDXStylesCollector::endPage()
       std::map<unsigned, std::list<unsigned> >::iterator iter = m_groupShapeOrder.find(*j);
       if (m_groupShapeOrder.end() != iter)
       {
-        j++;
+        ++j;
         m_pageShapeOrder.splice(j, iter->second, iter->second.begin(), iter->second.end());
         m_groupShapeOrder.erase(iter);
       }
       else
-        j++;
+        ++j;
     }
   }
   m_documentPageShapeOrders.push_back(m_pageShapeOrder);

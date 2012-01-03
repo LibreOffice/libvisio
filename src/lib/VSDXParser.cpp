@@ -579,21 +579,21 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
   }
   if (level < 2)
   {
-    for (std::vector<VSDXGeometryList *>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); iter++)
+    for (std::vector<VSDXGeometryList *>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
     {
       (*iter)->handle(m_collector);
       (*iter)->clear();
       delete *iter;
     }
     m_geomListVector.clear();
-    for (std::vector<VSDXCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); iter2++)
+    for (std::vector<VSDXCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); ++iter2)
     {
       (*iter2)->handle(m_collector);
       (*iter2)->clear();
       delete *iter2;
     }
     m_charListVector.clear();
-    for (std::vector<VSDXParagraphList *>::iterator iter3 = m_paraListVector.begin(); iter3 != m_paraListVector.end(); iter3++)
+    for (std::vector<VSDXParagraphList *>::iterator iter3 = m_paraListVector.begin(); iter3 != m_paraListVector.end(); ++iter3)
     {
       (*iter3)->handle(m_collector);
       (*iter3)->clear();
