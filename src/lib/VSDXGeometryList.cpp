@@ -453,7 +453,7 @@ void libvisio::VSDXGeometryList::handle(VSDXCollector *collector) const
   if (empty())
     return;
   std::map<unsigned, VSDXGeometryListElement *>::const_iterator iter;
-  if (m_elementsOrder.size())
+  if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
     {

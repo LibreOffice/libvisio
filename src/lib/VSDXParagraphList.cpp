@@ -128,7 +128,7 @@ void libvisio::VSDXParagraphList::handle(VSDXCollector *collector)
   if (empty())
     return;
   std::map<unsigned, VSDXParagraphListElement *>::iterator iter;
-  if (m_elementsOrder.size())
+  if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
     {

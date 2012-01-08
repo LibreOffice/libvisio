@@ -91,7 +91,7 @@ void libvisio::VSDXShapeList::handle(VSDXCollector *collector)
   if (empty())
     return;
   std::map<unsigned, VSDXShapeListElement *>::iterator iter;
-  if (m_elementsOrder.size())
+  if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
     {

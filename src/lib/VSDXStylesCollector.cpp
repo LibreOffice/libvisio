@@ -378,7 +378,7 @@ void libvisio::VSDXStylesCollector::endPage()
   _handleLevelChange(0);
   m_groupXFormsSequence.push_back(m_groupXForms);
   m_groupMembershipsSequence.push_back(m_groupMemberships);
-  while (m_groupShapeOrder.size())
+  while (!m_groupShapeOrder.empty())
   {
     for (std::list<unsigned>::iterator j = m_pageShapeOrder.begin(); j != m_pageShapeOrder.end();)
     {
@@ -441,7 +441,7 @@ void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
 
 void libvisio::VSDXStylesCollector::_flushShapeList()
 {
-  if (!m_shapeList.size())
+  if (m_shapeList.empty())
     return;
 
   if (m_isShapeStarted)

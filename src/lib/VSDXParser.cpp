@@ -1182,7 +1182,6 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   unsigned cellRef = 0;
   unsigned length = 0;
   unsigned long inputPos = input->tell();
-  unsigned long bytesRead = 0;
   while (cellRef != 6 && !input->atEOS() &&
          m_header.dataLength - chunkBytesRead > 4)
   {
@@ -1198,12 +1197,12 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   if (input->atEOS())
     return;
 
-  unsigned degree = 3;
-  unsigned char xType = 1;
-  unsigned char yType = 1;
   // Only read formula if block is found
   if (cellRef == 6)
   {
+    unsigned char xType = 1;
+    unsigned char yType = 1;
+    unsigned degree = 3;
     // Indicates whether it's a "simple" NURBS block with a static format
     // or a complex block where parameters each have a type
     unsigned char paramType = readU8(input);
@@ -1238,7 +1237,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
     }
 
     // Read sequences of (x, y, knot, weight) until finished
-    bytesRead = input->tell() - inputPos;
+    unsigned long bytesRead = input->tell() - inputPos;
     unsigned char flag = 0;
     if (paramType != 0x8a) flag = readU8(input);
     while ((flag != 0x81 || (paramType == 0x8a && repetitions > 0)) && bytesRead < length)
@@ -1339,7 +1338,6 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   unsigned cellRef = 0;
   unsigned length = 0;
   unsigned long inputPos = input->tell();
-  unsigned long blockBytesRead = 0;
   while (cellRef != 2 && !input->atEOS() &&
          m_header.dataLength - chunkBytesRead > 4)
   {
@@ -1358,13 +1356,14 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
     return;
 
   // Default to local co-ordinates if unspecified
-  unsigned char xType = 1;
-  unsigned char yType = 1;
   std::vector<std::pair<double, double> > points;
 
   // Only formula if block is found
   if (cellRef == 2)
   {
+    unsigned char xType = 1;
+    unsigned char yType = 1;
+    unsigned long blockBytesRead = 0;
     inputPos = input->tell();
     blockBytesRead += 6;
 
