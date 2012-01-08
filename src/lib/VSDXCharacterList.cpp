@@ -135,7 +135,7 @@ void libvisio::VSDXCharacterList::handle(VSDXCollector *collector)
   if (empty())
     return;
   std::map<unsigned, VSDXCharacterListElement *>::iterator iter;
-  if (m_elementsOrder.size())
+  if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
     {

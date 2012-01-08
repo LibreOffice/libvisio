@@ -731,7 +731,7 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 
 void libvisio::VSDXContentCollector::_flushCurrentPage()
 {
-  if (m_pageShapeOrder.size())
+  if (!m_pageShapeOrder.empty())
   {
     std::stack<std::pair<unsigned, VSDXOutputElementList> > groupTextStack;
     for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); ++iterList)
@@ -1980,7 +1980,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
         m_NURBSData = m_stencilShape->m_nurbsData;
         m_polylineData = m_stencilShape->m_polylineData;
 
-        if (m_currentGeometry.size() == 0)
+        if (m_currentGeometry.empty())
         {
           for (unsigned i = 0; i < m_stencilShape->m_geometries.size(); i++)
           {
