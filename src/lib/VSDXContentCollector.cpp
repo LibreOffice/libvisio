@@ -466,6 +466,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
   double x = 0;
   double y = 0;
   bool firstPoint = true;
+  bool wasMove = false;
 
   for (unsigned i = 0; i < m_currentGeometry.size(); i++)
   {
@@ -476,10 +477,11 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
       startX = x;
       startY = y;
       firstPoint = false;
+      wasMove = true;
     }
     else if (m_currentGeometry[i]["libwpg:path-action"]->getStr() == "M")
     {
-      if (((startX == x && startY == y) || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")) && path.count())
+      if ((startX == x && startY == y) && path.count() && !wasMove)
       {
         WPXPropertyList closedPath;
         closedPath.insert("libwpg:path-action", "Z");
@@ -489,15 +491,17 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
       y = m_currentGeometry[i]["svg:y"]->getDouble();
       startX = x;
       startY = y;
+      wasMove = true;
     }
     else
     {
       x = m_currentGeometry[i]["svg:x"]->getDouble();
       y = m_currentGeometry[i]["svg:y"]->getDouble();
+      wasMove = false;
     }
     path.append(m_currentGeometry[i]);
   }
-  if (((startX == x && startY == y) || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")) && path.count())
+  if ((startX == x && startY == y) && path.count() && !wasMove)
   {
     WPXPropertyList closedPath;
     closedPath.insert("libwpg:path-action", "Z");
