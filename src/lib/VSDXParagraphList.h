@@ -48,7 +48,7 @@ public:
   ~VSDXParagraphList();
   VSDXParagraphList &operator=(const VSDXParagraphList &paraList);
   void addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                 double spLine, double spBefore, double spAfter, unsigned char align);
+                 double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
 
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDXCollector *collector);

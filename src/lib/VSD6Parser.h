@@ -50,6 +50,7 @@ private:
   bool getChunkHeader(WPXInputStream *input);
   void readText(WPXInputStream *input);
   void readCharIX(WPXInputStream *input);
+  void readParaIX(WPXInputStream *input);
   void readFillAndShadow(WPXInputStream *input);
   void readName(WPXInputStream *input);
   void readTextField(WPXInputStream *input);

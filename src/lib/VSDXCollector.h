@@ -87,7 +87,7 @@ public:
                                     double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                     bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace) = 0;
   virtual void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                                    double spLine, double spBefore, double spAfter, unsigned char align) = 0;
+                                    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
   virtual void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                                 unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
                                 unsigned char textDirection) = 0;
@@ -106,7 +106,7 @@ public:
                                   double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                   bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace) = 0;
   virtual void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                                  double spLine, double spBefore, double spAfter, unsigned char align) = 0;
+                                  double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
   virtual void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                                      unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
                                      unsigned char textDirection) = 0;

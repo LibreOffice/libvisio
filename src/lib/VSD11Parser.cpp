@@ -185,6 +185,41 @@ void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)
                           allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
+void libvisio::VSD11Parser::readParaIX(WPXInputStream *input)
+{
+  unsigned charCount = readU32(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double indFirst = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double indLeft = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double indRight = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double spLine = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double spBefore = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double spAfter = readDouble(input);
+  unsigned char align = readU8(input);
+  input->seek(26, WPX_SEEK_CUR);
+  unsigned flags = readU32(input);
+
+  if (m_isInStyles)
+    m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
+                                    spLine, spBefore, spAfter, align, flags);
+  else if (m_isStencilStarted)
+  {
+    VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
+    if (!m_stencilShape.m_paraStyle)
+      m_stencilShape.m_paraStyle= new VSDXParaStyle(charCount, indFirst, indLeft, indRight,
+          spLine, spBefore, spAfter, align, flags);
+  }
+  else
+    m_paraList->addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
+                          spLine, spBefore, spAfter, align, flags);
+}
+
+
 void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
 {
   unsigned char colourIndexFG = readU8(input);

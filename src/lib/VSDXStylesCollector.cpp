@@ -238,7 +238,7 @@ void libvisio::VSDXStylesCollector::collectText(unsigned /*id*/, unsigned level,
 }
 
 void libvisio::VSDXStylesCollector::collectVSDXParaStyle(unsigned /* id */ , unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */,
-    double /* indRight */, double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */)
+    double /* indRight */, double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */, unsigned /* flags */)
 {
   _handleLevelChange(level);
 }
@@ -316,11 +316,11 @@ void libvisio::VSDXStylesCollector::collectFillStyle(unsigned /*id*/, unsigned l
 }
 
 void libvisio::VSDXStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-    double spLine, double spBefore, double spAfter, unsigned char align)
+    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags)
 {
   _handleLevelChange(level);
   if (!m_paraStyle)
-    m_paraStyle = new VSDXParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
+    m_paraStyle = new VSDXParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
 }
 
 

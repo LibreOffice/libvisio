@@ -47,9 +47,9 @@ class VSDXParaIX : public VSDXParagraphListElement
 {
 public:
   VSDXParaIX(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-             double spLine, double spBefore, double spAfter, unsigned char align) :
+             double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) :
     m_id(id), m_level(level), m_charCount(charCount), m_indFirst(indFirst), m_indLeft(indLeft), m_indRight(indRight),
-    m_spLine(spLine), m_spBefore(spBefore), m_spAfter(spAfter), m_align(align) {}
+    m_spLine(spLine), m_spBefore(spBefore), m_spAfter(spAfter), m_align(align), m_flags(flags) {}
   ~VSDXParaIX() {}
   void handle(VSDXCollector *collector);
   VSDXParagraphListElement *clone();
@@ -63,6 +63,7 @@ private:
   double m_spBefore;
   double m_spAfter;
   unsigned char m_align;
+  unsigned m_flags;
 };
 } // namespace libvisio
 
@@ -70,13 +71,13 @@ private:
 void libvisio::VSDXParaIX::handle(VSDXCollector *collector)
 {
   collector->collectVSDXParaStyle(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
-                                  m_spLine, m_spBefore, m_spAfter, m_align);
+                                  m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
 }
 
 libvisio::VSDXParagraphListElement *libvisio::VSDXParaIX::clone()
 {
   return new VSDXParaIX(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
-                        m_spLine, m_spBefore, m_spAfter, m_align);
+                        m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
 }
 
 
@@ -111,9 +112,9 @@ libvisio::VSDXParagraphList::~VSDXParagraphList()
 }
 
 void libvisio::VSDXParagraphList::addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-    double spLine, double spBefore, double spAfter, unsigned char align)
+    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags)
 {
-  m_elements[id] = new VSDXParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
+  m_elements[id] = new VSDXParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
 }
 
 void libvisio::VSDXParagraphList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

@@ -89,7 +89,7 @@ protected:
   void readPage(WPXInputStream *input);
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
-  void readParaIX(WPXInputStream *input);
+  virtual void readParaIX(WPXInputStream *input) = 0;
   void readTextBlock(WPXInputStream *input);
 
   void readNameList(WPXInputStream *input);

@@ -151,8 +151,9 @@ struct VSDXParaStyle
     spLine(-1.2),
     spBefore(0.0),
     spAfter(0.0),
-    align(1) {}
-  VSDXParaStyle(unsigned cc, double ifst, double il, double ir, double sl, double sb, double sa, double a) :
+    align(1),
+    flags(0) {}
+  VSDXParaStyle(unsigned cc, double ifst, double il, double ir, double sl, double sb, double sa, unsigned char a, unsigned f) :
     charCount(cc),
     indFirst(ifst),
     indLeft(il),
@@ -160,7 +161,8 @@ struct VSDXParaStyle
     spLine(sl),
     spBefore(sb),
     spAfter(sa),
-    align(a) {}
+    align(a),
+    flags(f) {}
   ~VSDXParaStyle() {}
   unsigned charCount;
   double indFirst;
@@ -170,6 +172,7 @@ struct VSDXParaStyle
   double spBefore;
   double spAfter;
   unsigned char align;
+  unsigned flags;
 };
 
 struct VSDXTextBlockStyle

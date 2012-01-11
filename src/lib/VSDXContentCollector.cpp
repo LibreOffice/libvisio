@@ -600,10 +600,16 @@ void libvisio::VSDXContentCollector::_flushText()
     switch ((*paraIt).align)
     {
     case 0: // left
-      paraProps.insert("fo:text-align", "left");
+      if (!(*paraIt).flags)
+        paraProps.insert("fo:text-align", "left");
+      else
+        paraProps.insert("fo:text-align", "end");
       break;
     case 2: // right
-      paraProps.insert("fo:text-align", "end");
+      if (!(*paraIt).flags)
+        paraProps.insert("fo:text-align", "end");
+      else
+        paraProps.insert("fo:text-align", "left");
       break;
     case 3: // justify
       paraProps.insert("fo:text-align", "justify");
@@ -1791,10 +1797,10 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
 }
 
 void libvisio::VSDXContentCollector::collectVSDXParaStyle(unsigned /* id */ , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-    double spLine, double spBefore, double spAfter, unsigned char align)
+    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags)
 {
   _handleLevelChange(level);
-  VSDXParaStyle format(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align);
+  VSDXParaStyle format(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
   m_paraFormats.push_back(format);
 }
 
@@ -1882,7 +1888,7 @@ void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsign
 }
 
 void libvisio::VSDXContentCollector::collectParaIXStyle(unsigned /* id */, unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */, double /* indRight */,
-    double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */)
+    double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */, unsigned /* flags */)
 {
   _handleLevelChange(level);
 }
