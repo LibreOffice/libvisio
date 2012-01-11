@@ -170,6 +170,7 @@ private:
   void lineStyleFromStyleSheet(const VSDXLineStyle *style);
   void fillStyleFromStyleSheet(const VSDXFillStyle *style);
 
+  void _applyLinePattern();
   void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
   void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
                                 unsigned fillFGTransparency, unsigned fillBGTransparency,

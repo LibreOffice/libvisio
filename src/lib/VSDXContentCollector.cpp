@@ -243,35 +243,8 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
   m_styleProps.insert("draw:fill", m_fillType);
 }
 
-void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap)
+void libvisio::VSDXContentCollector::_applyLinePattern()
 {
-  m_linePattern = linePattern;
-
-  if (linePattern == 0) return; // No need to add style
-
-  m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
-  m_lineColour = getColourString(c);
-  m_styleProps.insert("svg:stroke-color", m_lineColour);
-  if (c.a)
-    m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
-  else
-    m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
-  switch (lineCap)
-  {
-  case 0:
-    m_styleProps.insert("svg:stroke-linecap", "round");
-    m_styleProps.insert("svg:stroke-linejoin", "round");
-    break;
-  case 2:
-    m_styleProps.insert("svg:stroke-linecap", "square");
-    m_styleProps.insert("svg:stroke-linejoin", "miter");
-    break;
-  default:
-    m_styleProps.insert("svg:stroke-linecap", "butt");
-    m_styleProps.insert("svg:stroke-linejoin", "miter");
-    break;
-  }
-
   int dots1 = 0;
   int dots2 = 0;
   double dots1len = 0.0;
@@ -279,7 +252,7 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
   double gap = 0.0;
 
   m_styleProps.remove("draw:stroke");
-  switch (linePattern)
+  switch (m_linePattern)
   {
   case 2: // "6, 3"
     dots1 = dots2 = 1;
@@ -425,11 +398,11 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
     break;
   }
 
-  if (linePattern == 0)
+  if (m_linePattern == 0)
     m_styleProps.insert("draw:stroke", "none");
-  else if (linePattern == 1)
+  else if (m_linePattern == 1)
     m_styleProps.insert("draw:stroke", "solid");
-  else if (linePattern > 1 && linePattern <= 23)
+  else if (m_linePattern > 1 && m_linePattern <= 23)
   {
     m_styleProps.insert("draw:stroke", "dash");
     m_styleProps.insert("draw:dots1", dots1);
@@ -442,6 +415,38 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
     // FIXME: later it will require special treatment for custom line patterns
     // patt ID is 0xfe, link to stencil name is in 'Line' blocks
     m_styleProps.insert("draw:stroke", "solid");
+}
+
+void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap)
+{
+  m_linePattern = linePattern;
+
+  if (linePattern == 0) return; // No need to add style
+
+  m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
+  m_lineColour = getColourString(c);
+  m_styleProps.insert("svg:stroke-color", m_lineColour);
+  if (c.a)
+    m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
+  else
+    m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
+  switch (lineCap)
+  {
+  case 0:
+    m_styleProps.insert("svg:stroke-linecap", "round");
+    m_styleProps.insert("svg:stroke-linejoin", "round");
+    break;
+  case 2:
+    m_styleProps.insert("svg:stroke-linecap", "square");
+    m_styleProps.insert("svg:stroke-linejoin", "miter");
+    break;
+  default:
+    m_styleProps.insert("svg:stroke-linecap", "butt");
+    m_styleProps.insert("svg:stroke-linejoin", "miter");
+    break;
+  }
+
+  _applyLinePattern();
 
   // Deal with line markers (arrows, etc.)
   if (startMarker > 0)
@@ -1121,6 +1126,8 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
 
   if ((m_noFill != noFill) || (m_noLine != noLine) || (m_noShow != noShow) || m_isFirstGeometry)
     _flushCurrentPath();
+
+  _applyLinePattern();
 
   m_isFirstGeometry = false;
   m_noFill = noFill;
