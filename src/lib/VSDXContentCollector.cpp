@@ -605,10 +605,10 @@ void libvisio::VSDXContentCollector::_flushText()
     case 2: // right
       paraProps.insert("fo:text-align", "end");
       break;
-    case 4: // justify
+    case 3: // justify
       paraProps.insert("fo:text-align", "justify");
       break;
-    case 5: // full
+    case 4: // full
       paraProps.insert("fo:text-align", "full");
       break;
     default: // center
