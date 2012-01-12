@@ -434,8 +434,39 @@ void libvisio::VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propL
   WPXString base64 = binaryData.getBase64Data();
   m_outputSink << "<svg:image ";
   if (propList["svg:x"] && propList["svg:y"] && propList["svg:width"] && propList["svg:height"])
-    m_outputSink << "x=\"" << doubleToString(72*(propList["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(propList["svg:y"]->getDouble())) << "\" ";
-  m_outputSink << "width=\"" << doubleToString(72*(propList["svg:width"]->getDouble())) << "\" height=\"" << doubleToString(72*(propList["svg:height"]->getDouble())) << "\" ";
+  {
+    double x = propList["svg:x"]->getDouble();
+    double y = propList["svg:y"]->getDouble();
+    double width = propList["svg:width"]->getDouble();
+    double height = propList["svg:height"]->getDouble();
+    bool mirror = (m_style["style:mirror"] && m_style["style:mirror"]->getStr() == "horizontal" ? true : false);
+    bool flipX = false;
+    bool flipY = false;
+    if (width < 0.0)
+    {
+      width = -width;
+      x = x - width;
+      flipX = true;
+    }
+    if (height < 0.0)
+    {
+      height = -height;
+      y = y - height;
+      flipY = true;
+    }
+
+    if (mirror)
+      flipX = !flipX;
+
+    if (flipX)
+      x = -(x + width);
+    if (flipY)
+      y = -(y + height);
+
+    m_outputSink << "x=\"" << doubleToString(72*x) << "\" y=\"" << doubleToString(72*y) << "\" ";
+    m_outputSink << "width=\"" << doubleToString(72*width) << "\" height=\"" << doubleToString(72*height) << "\" ";
+    m_outputSink << "transform=\"scale(" << (flipX ? "-1" : "1") << ", " << (flipY ? "-1" : "1") << ")\" ";
+  }
   m_outputSink << "xlink:href=\"data:" << propList["libwpg:mime-type"]->getStr().cstr() << ";base64,";
   m_outputSink << base64.cstr();
   m_outputSink << "\" />\n";
