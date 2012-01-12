@@ -737,7 +737,7 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
     m_currentForeignProps.insert("svg:y", m_scale*(y + m_foreignHeight));
     if (m_xform.flipX)
     {
-      m_currentForeignProps.insert("svg:x", m_scale*(x));
+      m_currentForeignProps.insert("svg:x", m_scale*x);
       styleProps.insert("style:mirror", "horizontal");
     }
     else
@@ -758,7 +758,7 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
     }
     else
     {
-      m_currentForeignProps.insert("svg:x", m_scale*(x));
+      m_currentForeignProps.insert("svg:x", m_scale*x);
       styleProps.insert("style:mirror", "horizontal");
     }
   }
