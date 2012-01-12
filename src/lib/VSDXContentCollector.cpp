@@ -725,19 +725,47 @@ void libvisio::VSDXContentCollector::_flushText()
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
-  m_currentForeignProps.insert("svg:width", m_scale*m_foreignWidth);
-  m_currentForeignProps.insert("svg:height", m_scale*m_foreignHeight);
   double x = m_foreignOffsetX;
   double y = m_foreignOffsetY;
   transformPoint(x,y);
+  WPXPropertyList styleProps(m_styleProps);
 
-  m_currentForeignProps.insert("svg:x", m_scale*x);
-  // Y axis starts at the bottom not top
-  m_currentForeignProps.insert("svg:y", m_scale*(y - m_foreignHeight));
+  if (m_xform.flipY)
+  {
+    m_currentForeignProps.insert("svg:width", -m_scale*m_foreignWidth);
+    m_currentForeignProps.insert("svg:height", -m_scale*m_foreignHeight);
+    m_currentForeignProps.insert("svg:y", m_scale*(y + m_foreignHeight));
+    if (m_xform.flipX)
+    {
+      m_currentForeignProps.insert("svg:x", m_scale*(x));
+      styleProps.insert("style:mirror", "horizontal");
+    }
+    else
+    {
+      m_currentForeignProps.insert("svg:x", m_scale*(x + m_foreignWidth));
+      styleProps.insert("style:mirror", "none");
+    }
+  }
+  else
+  {
+    m_currentForeignProps.insert("svg:width", m_scale*m_foreignWidth);
+    m_currentForeignProps.insert("svg:height", m_scale*m_foreignHeight);
+    m_currentForeignProps.insert("svg:y", m_scale*(y - m_foreignHeight));
+    if (m_xform.flipX)
+    {
+      m_currentForeignProps.insert("svg:x", m_scale*(x - m_foreignWidth));
+      styleProps.insert("style:mirror", "none");
+    }
+    else
+    {
+      m_currentForeignProps.insert("svg:x", m_scale*(x));
+      styleProps.insert("style:mirror", "horizontal");
+    }
+  }
 
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
   {
-    m_shapeOutputDrawing->addStyle(m_styleProps, WPXPropertyListVector());
+    m_shapeOutputDrawing->addStyle(styleProps, WPXPropertyListVector());
     m_shapeOutputDrawing->addGraphicObject(m_currentForeignProps, m_currentForeignData);
   }
   m_currentForeignData.clear();
