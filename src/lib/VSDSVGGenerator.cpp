@@ -435,52 +435,31 @@ void libvisio::VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propL
   m_outputSink << "<svg:image ";
   if (propList["svg:x"] && propList["svg:y"] && propList["svg:width"] && propList["svg:height"])
   {
-    double x = propList["svg:x"]->getDouble();
-    double y = propList["svg:y"]->getDouble();
-    double width = propList["svg:width"]->getDouble();
-    double height = propList["svg:height"]->getDouble();
-    bool mirror = (m_style["style:mirror"] && m_style["style:mirror"]->getStr() == "horizontal" ? true : false);
-    bool flipX = false;
-    bool flipY = false;
-    if (width < 0.0)
-    {
-      width = -width;
-      x = x - width;
-      flipX = true;
-    }
-    if (height < 0.0)
-    {
-      height = -height;
-      y = y - height;
-      flipY = true;
-    }
-
-    if (mirror)
-      flipX = !flipX;
-
-    if (flipX)
-      x = -(x + width);
-    if (flipY)
-      y = -(y + height);
+    double x(propList["svg:x"]->getDouble());
+    double y(propList["svg:y"]->getDouble());
+    double width(propList["svg:width"]->getDouble());
+    double height(propList["svg:height"]->getDouble());
+    bool flipX(propList["draw:mirror-horizontal"] && propList["draw:mirror-horizontal"]->getInt());
+    bool flipY(propList["draw:mirror-vertical"] && propList["draw:mirror-vertical"]->getInt());
 
     double xmiddle = x + width / 2.0;
     double ymiddle = y + height / 2.0;
     m_outputSink << "x=\"" << doubleToString(72*x) << "\" y=\"" << doubleToString(72*y) << "\" ";
     m_outputSink << "width=\"" << doubleToString(72*width) << "\" height=\"" << doubleToString(72*height) << "\" ";
     m_outputSink << "transform=\"";
-    // rotation is around the center of the objects bounding box
+    m_outputSink << " translate(" << doubleToString(72*xmiddle) << ", " << doubleToString (72*ymiddle) << ") ";
+    m_outputSink << " scale(" << (flipX ? "-1" : "1") << ", " << (flipY ? "-1" : "1") << ") ";
+    // rotation is around the center of the object's bounding box
     if (propList["libwpg:rotate"])
     {
-      double angle = propList["libwpg:rotate"]->getDouble();
+      double angle(propList["libwpg:rotate"]->getDouble());
       while (angle > 180.0)
         angle -= 360.0;
       while (angle < -180.0)
         angle += 360.0;
-      m_outputSink << " translate(" << doubleToString((flipX ? -1 : 1)*72*xmiddle) << ", " << doubleToString ((flipY ? -1 : 1)*72*ymiddle) << ") ";
       m_outputSink << " rotate(" << doubleToString(angle) << ") ";
-      m_outputSink << " translate(" << doubleToString((flipX ? 1 : -1)*72*xmiddle) << ", " << doubleToString ((flipY ? 1 : -1)*72*ymiddle) << ") ";
     }
-    m_outputSink << " scale(" << (flipX ? "-1" : "1") << ", " << (flipY ? "-1" : "1") << ") ";
+    m_outputSink << " translate(" << doubleToString(-72*xmiddle) << ", " << doubleToString (-72*ymiddle) << ") ";
     m_outputSink << "\" ";
   }
   m_outputSink << "xlink:href=\"data:" << propList["libwpg:mime-type"]->getStr().cstr() << ";base64,";

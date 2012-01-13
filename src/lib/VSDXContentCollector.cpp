@@ -812,31 +812,18 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
       break;
   }
 
-
   WPXPropertyList styleProps(m_styleProps);
 
+  m_currentForeignProps.insert("svg:x", m_scale*(xmiddle - (m_foreignWidth / 2.0)));
+  m_currentForeignProps.insert("svg:width", m_scale*m_foreignWidth);
+  m_currentForeignProps.insert("svg:y", m_scale*(ymiddle - (m_foreignHeight / 2.0)));
+  m_currentForeignProps.insert("svg:height", m_scale*m_foreignHeight);
+
+  if (flipX)
+    m_currentForeignProps.insert("draw:mirror-horizontal", true);
   if (flipY)
-  {
-    m_currentForeignProps.insert("svg:x", m_scale*(xmiddle + (m_foreignWidth / 2.0)));
-    m_currentForeignProps.insert("svg:width", -m_scale*m_foreignWidth);
-    m_currentForeignProps.insert("svg:y", m_scale*(ymiddle + (m_foreignHeight / 2.0)));
-    m_currentForeignProps.insert("svg:height", -m_scale*m_foreignHeight);
-    if (flipX)
-      styleProps.insert("style:mirror", "none");
-    else
-      styleProps.insert("style:mirror", "horizontal");
-  }
-  else
-  {
-    m_currentForeignProps.insert("svg:x", m_scale*(xmiddle - (m_foreignWidth / 2.0)));
-    m_currentForeignProps.insert("svg:width", m_scale*m_foreignWidth);
-    m_currentForeignProps.insert("svg:y", m_scale*(ymiddle - (m_foreignHeight / 2.0)));
-    m_currentForeignProps.insert("svg:height", m_scale*m_foreignHeight);
-    if (flipX)
-      styleProps.insert("style:mirror", "horizontal");
-    else
-      styleProps.insert("style:mirror", "none");
-  }
+    m_currentForeignProps.insert("draw:mirror-vertical", true);
+
   if (angle != 0.0)
     m_currentForeignProps.insert("libwpg:rotate", angle * 180 / M_PI, WPX_GENERIC);
 
