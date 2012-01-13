@@ -725,43 +725,120 @@ void libvisio::VSDXContentCollector::_flushText()
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
-  double x = m_foreignOffsetX;
-  double y = m_foreignOffsetY;
-  transformPoint(x,y);
-  WPXPropertyList styleProps(m_styleProps);
+  double x1 = m_foreignOffsetX;
+  double y1 = m_foreignOffsetY;
+  double x2 = m_foreignOffsetX + m_foreignWidth;
+  double y2 = m_foreignOffsetY + m_foreignHeight;
+  double x3 = x1;
+  double y3 = y2;
+  double x4 = x2;
+  double y4 = y1;
+  transformPoint(x1,y1);
+  transformPoint(x2,y2);
+  transformPoint(x3,y3);
+  transformPoint(x4,y4);
+  double angle = 0.0;
+  transformAngle(angle);
 
-  if (m_xform.flipY)
+  double xmin = x1;
+  double xmax = x1;
+
+  if (xmin > x2)
+    xmin = x2;
+  if (xmax < x2)
+    xmax = x2;
+
+  if (xmin > x3)
+    xmin = x3;
+  if (xmax < x3)
+    xmax = x3;
+
+  if (xmin > x4)
+    xmin = x4;
+  if (xmax < x4)
+    xmax = x4;
+
+  double ymin = y1;
+  double ymax = y1;
+
+  if (ymin > y2)
+    ymin = y2;
+  if (ymax < y2)
+    ymax = y2;
+
+  if (ymin > y3)
+    ymin = y3;
+  if (ymax < y3)
+    ymax = y3;
+
+  if (ymin > y4)
+    ymin = y4;
+  if (ymax < y4)
+    ymax = y4;
+
+  double xmiddle = (xmax + xmin) / 2.0;
+  double ymiddle = (ymax + ymin) / 2.0;
+
+  bool flipX = false;
+  bool flipY = false;
+
+  // If any parent group is flipped, invert flips and
+  // revert the flip information that is already incorporated
+  // in the angle.
+  unsigned shapeId = m_currentShapeId;
+  while (true)
   {
-    m_currentForeignProps.insert("svg:width", -m_scale*m_foreignWidth);
-    m_currentForeignProps.insert("svg:height", -m_scale*m_foreignHeight);
-    m_currentForeignProps.insert("svg:y", m_scale*(y + m_foreignHeight));
-    if (m_xform.flipX)
+    std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
+    if (iterX != m_groupXForms.end())
     {
-      m_currentForeignProps.insert("svg:x", m_scale*x);
-      styleProps.insert("style:mirror", "horizontal");
+      XForm xform = iterX->second;
+      if (xform.flipX)
+      {
+        flipX = !flipX;
+        angle = M_PI - angle;
+      }
+      if (xform.flipY)
+      {
+        flipY = !flipY;
+        angle *= -1.0;
+      }
     }
     else
-    {
-      m_currentForeignProps.insert("svg:x", m_scale*(x + m_foreignWidth));
+      break;
+    std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
+    if (iter != m_groupMemberships.end())
+      shapeId = iter->second;
+    else
+      break;
+  }
+
+
+  WPXPropertyList styleProps(m_styleProps);
+
+  if (flipY)
+  {
+    m_currentForeignProps.insert("svg:x", m_scale*(xmiddle + (m_foreignWidth / 2.0)));
+    m_currentForeignProps.insert("svg:width", -m_scale*m_foreignWidth);
+    m_currentForeignProps.insert("svg:y", m_scale*(ymiddle + (m_foreignHeight / 2.0)));
+    m_currentForeignProps.insert("svg:height", -m_scale*m_foreignHeight);
+    if (flipX)
       styleProps.insert("style:mirror", "none");
-    }
+    else
+      styleProps.insert("style:mirror", "horizontal");
   }
   else
   {
+    m_currentForeignProps.insert("svg:x", m_scale*(xmiddle - (m_foreignWidth / 2.0)));
     m_currentForeignProps.insert("svg:width", m_scale*m_foreignWidth);
+    m_currentForeignProps.insert("svg:y", m_scale*(ymiddle - (m_foreignHeight / 2.0)));
     m_currentForeignProps.insert("svg:height", m_scale*m_foreignHeight);
-    m_currentForeignProps.insert("svg:y", m_scale*(y - m_foreignHeight));
-    if (m_xform.flipX)
-    {
-      m_currentForeignProps.insert("svg:x", m_scale*(x - m_foreignWidth));
-      styleProps.insert("style:mirror", "none");
-    }
-    else
-    {
-      m_currentForeignProps.insert("svg:x", m_scale*x);
+    if (flipX)
       styleProps.insert("style:mirror", "horizontal");
-    }
+    else
+      styleProps.insert("style:mirror", "none");
   }
+  if (angle != 0.0)
+    m_currentForeignProps.insert("libwpg:rotate", angle * 180 / M_PI, WPX_GENERIC);
 
   if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
   {
