@@ -472,12 +472,19 @@ void libvisio::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propLis
   m_outputSink << "<svg:text ";
   if (propList["svg:x"] && propList["svg:y"])
     m_outputSink << "x=\"" << doubleToString(72*(propList["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(propList["svg:y"]->getDouble())) << "\"";
+  // rotation is around the center of the object's bounding box
+
   if (propList["libwpg:rotate"] && propList["libwpg:rotate"]->getDouble() != 0.0)
-    m_outputSink << " transform=\"translate(" << doubleToString(72*propList["svg:x"]->getDouble()) << ", " << doubleToString(72*propList["svg:y"]->getDouble())
-                 << ") rotate(" << doubleToString(-propList["libwpg:rotate"]->getDouble())
-                 << ") translate(" << doubleToString(-72*propList["svg:x"]->getDouble())
-                 << ", " << doubleToString(-72*propList["svg:y"]->getDouble())
-                 << ")\"";
+  {
+    double angle(propList["libwpg:rotate"]->getDouble());
+    while (angle > 180.0)
+      angle -= 360.0;
+    while (angle < -180.0)
+      angle += 360.0;
+    m_outputSink << " transform=\"translate(" << doubleToString(72*propList["svg:x"]->getDouble()) << ", " << doubleToString(72*propList["svg:y"]->getDouble()) << ") ";
+    m_outputSink << " rotate(" << doubleToString(angle) << ") ";
+    m_outputSink << " translate(" << doubleToString(-72*propList["svg:x"]->getDouble()) << ", " << doubleToString(-72*propList["svg:y"]->getDouble()) << ")\"";
+  }
   m_outputSink << ">\n";
 
 }

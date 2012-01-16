@@ -523,13 +523,26 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
 void libvisio::VSDXContentCollector::_flushText()
 {
   if (!m_textStream.size()) return;
+
+  double xmiddle = m_txtxform ? m_txtxform->width / 2.0 : m_xform.width / 2.0;
+  double ymiddle = m_txtxform ? m_txtxform->height / 2.0 : m_xform.height / 2.0;
+
+  transformPoint(xmiddle,ymiddle, m_txtxform);
+
+  double x = xmiddle - (m_txtxform ? m_txtxform->width / 2.0 : m_xform.width / 2.0);
+  double y = ymiddle - (m_txtxform ? m_txtxform->height / 2.0 : m_xform.height / 2.0);
+
   double angle = 0.0;
   transformAngle(angle, m_txtxform);
 
-  double x = 0.0;
-  double y = m_txtxform ? m_txtxform->height: m_xform.height;
+  bool flipX = false;
+  bool flipY = false;
+  transformFlips(flipX, flipY);
 
-  transformPoint(x,y, m_txtxform);
+  if (flipX)
+    angle = M_PI - angle;
+  if (flipY)
+    angle *= -1.0;
 
   WPXPropertyList textBlockProps;
   textBlockProps.insert("svg:x", m_scale * x);
@@ -540,7 +553,7 @@ void libvisio::VSDXContentCollector::_flushText()
   textBlockProps.insert("fo:padding-bottom", m_textBlockStyle.bottomMargin);
   textBlockProps.insert("fo:padding-left", m_textBlockStyle.leftMargin);
   textBlockProps.insert("fo:padding-right", m_textBlockStyle.rightMargin);
-  textBlockProps.insert("libwpg:rotate", -angle*180/M_PI, WPX_GENERIC);
+  textBlockProps.insert("libwpg:rotate", angle*180/M_PI, WPX_GENERIC);
 
   switch (m_textBlockStyle.verticalAlign)
   {
@@ -725,92 +738,15 @@ void libvisio::VSDXContentCollector::_flushText()
 
 void libvisio::VSDXContentCollector::_flushCurrentForeignData()
 {
-  double x1 = m_foreignOffsetX;
-  double y1 = m_foreignOffsetY;
-  double x2 = m_foreignOffsetX + m_foreignWidth;
-  double y2 = m_foreignOffsetY + m_foreignHeight;
-  double x3 = x1;
-  double y3 = y2;
-  double x4 = x2;
-  double y4 = y1;
-  transformPoint(x1,y1);
-  transformPoint(x2,y2);
-  transformPoint(x3,y3);
-  transformPoint(x4,y4);
-  double angle = 0.0;
-  transformAngle(angle);
+  double xmiddle = m_foreignOffsetX + m_foreignWidth / 2.0;
+  double ymiddle = m_foreignOffsetY + m_foreignHeight / 2.0;
 
-  double xmin = x1;
-  double xmax = x1;
-
-  if (xmin > x2)
-    xmin = x2;
-  if (xmax < x2)
-    xmax = x2;
-
-  if (xmin > x3)
-    xmin = x3;
-  if (xmax < x3)
-    xmax = x3;
-
-  if (xmin > x4)
-    xmin = x4;
-  if (xmax < x4)
-    xmax = x4;
-
-  double ymin = y1;
-  double ymax = y1;
-
-  if (ymin > y2)
-    ymin = y2;
-  if (ymax < y2)
-    ymax = y2;
-
-  if (ymin > y3)
-    ymin = y3;
-  if (ymax < y3)
-    ymax = y3;
-
-  if (ymin > y4)
-    ymin = y4;
-  if (ymax < y4)
-    ymax = y4;
-
-  double xmiddle = (xmax + xmin) / 2.0;
-  double ymiddle = (ymax + ymin) / 2.0;
+  transformPoint(xmiddle, ymiddle);
 
   bool flipX = false;
   bool flipY = false;
 
-  // If any parent group is flipped, invert flips and
-  // revert the flip information that is already incorporated
-  // in the angle.
-  unsigned shapeId = m_currentShapeId;
-  while (true)
-  {
-    std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
-    if (iterX != m_groupXForms.end())
-    {
-      XForm xform = iterX->second;
-      if (xform.flipX)
-      {
-        flipX = !flipX;
-        angle = M_PI - angle;
-      }
-      if (xform.flipY)
-      {
-        flipY = !flipY;
-        angle *= -1.0;
-      }
-    }
-    else
-      break;
-    std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
-    if (iter != m_groupMemberships.end())
-      shapeId = iter->second;
-    else
-      break;
-  }
+  transformFlips(flipX, flipY);
 
   WPXPropertyList styleProps(m_styleProps);
 
@@ -819,10 +755,19 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
   m_currentForeignProps.insert("svg:y", m_scale*(ymiddle - (m_foreignHeight / 2.0)));
   m_currentForeignProps.insert("svg:height", m_scale*m_foreignHeight);
 
+  double angle = 0.0;
+  transformAngle(angle);
+
   if (flipX)
+  {
     m_currentForeignProps.insert("draw:mirror-horizontal", true);
+    angle = M_PI - angle;
+  }
   if (flipY)
+  {
     m_currentForeignProps.insert("draw:mirror-vertical", true);
+    angle *= -1.0;
+  }
 
   if (angle != 0.0)
     m_currentForeignProps.insert("libwpg:rotate", angle * 180 / M_PI, WPX_GENERIC);
@@ -1301,27 +1246,9 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
     double chord = sqrt(pow((y2 - m_y),2) + pow((x2 - m_x),2));
     double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
     int largeArc = fabs(bow) > radius ? 1 : 0;
-    int sweep = bow < 0 ? 1 : 0;
+    bool sweep = (bow < 0);
+    transformFlips(sweep, sweep);
 
-    // If any parent group is flipped, invert sweep
-    unsigned shapeId = m_currentShapeId;
-    while (true)
-    {
-      std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
-      if (iterX != m_groupXForms.end())
-      {
-        XForm xform = iterX->second;
-        if (xform.flipX) sweep = sweep == 0 ? 1 : 0;
-        if (xform.flipY) sweep = sweep == 0 ? 1 : 0;
-      }
-      else
-        break;
-      std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
-      if (iter != m_groupMemberships.end())
-        shapeId = iter->second;
-      else
-        break;
-    }
     m_x = x2;
     m_y = y2;
     arc.insert("svg:rx", m_scale*radius);
@@ -1634,6 +1561,37 @@ void libvisio::VSDXContentCollector::transformAngle(double &angle, XForm *txtxfo
   transformPoint(x0, y0, txtxform);
   transformPoint(x1, y1, txtxform);
   angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0))), 2.0*M_PI);
+}
+
+void libvisio::VSDXContentCollector::transformFlips(bool &flipX, bool &flipY)
+{
+  if (!m_isShapeStarted)
+    return;
+
+  if (!m_currentShapeId)
+    return;
+
+  unsigned shapeId = m_currentShapeId;
+
+  while (true)
+  {
+    std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
+    if (iterX != m_groupXForms.end())
+    {
+      XForm xform = iterX->second;
+      if (xform.flipX)
+        flipX = !flipX;
+      if (xform.flipY)
+        flipY = !flipY;
+    }
+    else
+      break;
+    std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
+    if (iter != m_groupMemberships.end())
+      shapeId = iter->second;
+    else
+      break;
+  }
 }
 
 void libvisio::VSDXContentCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned /* shapeId */)
