@@ -535,16 +535,20 @@ void libvisio::VSDXContentCollector::_flushText()
   double angle = 0.0;
   transformAngle(angle, m_txtxform);
 
+  WPXPropertyList textBlockProps;
+
   bool flipX = false;
   bool flipY = false;
   transformFlips(flipX, flipY);
 
   if (flipX)
-    angle = M_PI - angle;
-  if (flipY)
-    angle *= -1.0;
+    angle -= M_PI;
 
-  WPXPropertyList textBlockProps;
+  while (angle > M_PI)
+    angle -= 2 * M_PI;
+  while (angle < -M_PI)
+    angle += 2 * M_PI;
+
   textBlockProps.insert("svg:x", m_scale * x);
   textBlockProps.insert("svg:y", m_scale * y);
   textBlockProps.insert("svg:height", m_scale * (m_txtxform ? m_txtxform->height : m_xform.height));
