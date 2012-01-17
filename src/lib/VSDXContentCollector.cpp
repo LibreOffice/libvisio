@@ -486,7 +486,10 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
     }
     else if (m_currentGeometry[i]["libwpg:path-action"]->getStr() == "M")
     {
-      if ((startX == x && startY == y) && path.count() && !wasMove)
+      if (((startX == x && startY == y)
+           || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none"
+               && m_styleProps["draw:stroke"] && m_styleProps["draw:stroke"]->getStr() == "none"))
+          && path.count() && !wasMove)
       {
         WPXPropertyList closedPath;
         closedPath.insert("libwpg:path-action", "Z");
@@ -506,7 +509,10 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
     }
     path.append(m_currentGeometry[i]);
   }
-  if ((startX == x && startY == y) && path.count() && !wasMove)
+  if (((startX == x && startY == y)
+       || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none"
+           && m_styleProps["draw:stroke"] && m_styleProps["draw:stroke"]->getStr() == "none"))
+      && path.count() && !wasMove)
   {
     WPXPropertyList closedPath;
     closedPath.insert("libwpg:path-action", "Z");
