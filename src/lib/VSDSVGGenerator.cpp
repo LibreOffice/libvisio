@@ -469,11 +469,52 @@ void libvisio::VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propL
 
 void libvisio::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector & /* path */)
 {
+  double x = 0.0;
+  double y = 0.0;
+  double width = 0.0;
+  double height = 0.0;
   m_outputSink << "<svg:text ";
   if (propList["svg:x"] && propList["svg:y"])
-    m_outputSink << "x=\"" << doubleToString(72*(propList["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(propList["svg:y"]->getDouble())) << "\"";
-  // rotation is around the center of the object's bounding box
+  {
+    x = propList["svg:x"]->getDouble();
+    y = propList["svg:y"]->getDouble();
+  }
 
+  double xmiddle = x;
+  double ymiddle = y;
+
+  if (propList["svg:width"])
+  {
+    width = propList["svg:width"]->getDouble();
+    xmiddle += width / 2.0;
+  }
+
+  if (propList["svg:height"])
+  {
+    height = propList["svg:height"]->getDouble();
+    ymiddle += height / 2.0;
+  }
+
+  if (propList["draw:textarea-vertical-align"])
+  {
+    if (propList["draw:textarea-vertical-align"]->getStr() == "middle")
+      y = ymiddle;
+    if (propList["draw:textarea-vertical-align"]->getStr() == "bottom")
+    {
+      y += height;
+      if (propList["fo:padding-bottom"])
+        y -= propList["fo:padding-bottom"]->getDouble();
+    }
+  }
+  else
+    y += height;
+
+  if (propList["fo:padding-left"])
+    x += propList["fo:padding-left"]->getDouble();
+
+  m_outputSink << "x=\"" << doubleToString(72*x) << "\" y=\"" << doubleToString(72*y) << "\"";
+
+  // rotation is around the center of the object's bounding box
   if (propList["libwpg:rotate"] && propList["libwpg:rotate"]->getDouble() != 0.0)
   {
     double angle(propList["libwpg:rotate"]->getDouble());
@@ -481,9 +522,7 @@ void libvisio::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propLis
       angle -= 360.0;
     while (angle < -180.0)
       angle += 360.0;
-    m_outputSink << " transform=\"translate(" << doubleToString(72*propList["svg:x"]->getDouble()) << ", " << doubleToString(72*propList["svg:y"]->getDouble()) << ") ";
-    m_outputSink << " rotate(" << doubleToString(angle) << ") ";
-    m_outputSink << " translate(" << doubleToString(-72*propList["svg:x"]->getDouble()) << ", " << doubleToString(-72*propList["svg:y"]->getDouble()) << ")\"";
+    m_outputSink << " transform=\"rotate(" << doubleToString(angle) << ", " << doubleToString(72*xmiddle) << ", " << doubleToString(72*ymiddle) << ")\" ";
   }
   m_outputSink << ">\n";
 
