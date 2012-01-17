@@ -330,10 +330,9 @@ void libvisio::VSDSVGGenerator::drawEllipse(const WPXPropertyList &propList)
   m_outputSink << "rx=\"" << doubleToString(72*propList["svg:rx"]->getDouble()) << "\" ry=\"" << doubleToString(72*propList["svg:ry"]->getDouble()) << "\" ";
   writeStyle();
   if (propList["libwpg:rotate"] && propList["libwpg:rotate"]->getDouble() != 0.0)
-    m_outputSink << " transform=\" translate(" << doubleToString(72*propList["svg:cx"]->getDouble()) << ", " << doubleToString(72*propList["svg:cy"]->getDouble())
-                 << ") rotate(" << doubleToString(-propList["libwpg:rotate"]->getDouble())
-                 << ") translate(" << doubleToString(-72*propList["svg:cx"]->getDouble())
-                 << ", " << doubleToString(-72*propList["svg:cy"]->getDouble())
+    m_outputSink << " transform=\" rotate(" << doubleToString(-propList["libwpg:rotate"]->getDouble())
+                 << ", " << doubleToString(72*propList["svg:cy"]->getDouble())
+                 << ", " << doubleToString(72*propList["svg:cy"]->getDouble())
                  << ")\" ";
   m_outputSink << "/>\n";
 }
