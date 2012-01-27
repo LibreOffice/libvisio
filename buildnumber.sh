@@ -5,9 +5,8 @@
 
 { perl ./createBuildNumber.pl \
 	src/lib/libvisio-build.stamp \
-	src/lib/libvisio-stream-build.stamp \
-	src/conv/raw/visio2raw-build.stamp \
-	src/conv/svg/visio2svg-build.stamp
+	src/conv/raw/vsd2raw-build.stamp \
+	src/conv/svg/vsd2xhtml-build.stamp
 #Success
 exit 0
 }
