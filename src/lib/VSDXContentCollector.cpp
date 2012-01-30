@@ -451,15 +451,55 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
   // Deal with line markers (arrows, etc.)
   if (startMarker > 0)
   {
-    m_styleProps.insert("draw:marker-start-viewbox", "0 0 20 30");
-    m_styleProps.insert("draw:marker-start-path", "m10 0-10 30h20z");
-    m_styleProps.insert("draw:marker-start-width", m_scale*(0.1/(strokeWidth*strokeWidth+1)+2.54*strokeWidth));
+    m_styleProps.insert("draw:marker-start-viewbox", _linePropertiesMarkerViewbox(startMarker));
+    m_styleProps.insert("draw:marker-start-path", _linePropertiesMarkerPath(startMarker));
+    m_styleProps.insert("draw:marker-start-width", m_scale*(0.1/(strokeWidth*strokeWidth+1)+_linePropertiesMarkerWidth(startMarker)*strokeWidth));
   }
   if (endMarker > 0)
   {
-    m_styleProps.insert("draw:marker-end-viewbox", "0 0 20 30");
-    m_styleProps.insert("draw:marker-end-path", "m10 0-10 30h20z");
-    m_styleProps.insert("draw:marker-end-width", m_scale*(0.1/(strokeWidth*strokeWidth+1)+2.54*strokeWidth));
+    m_styleProps.insert("draw:marker-end-viewbox", _linePropertiesMarkerViewbox(endMarker));
+    m_styleProps.insert("draw:marker-end-path", _linePropertiesMarkerPath(endMarker));
+    m_styleProps.insert("draw:marker-end-width", m_scale*(0.1/(strokeWidth*strokeWidth+1)+_linePropertiesMarkerWidth(endMarker)*strokeWidth));
+  }
+}
+
+const char *libvisio::VSDXContentCollector::_linePropertiesMarkerViewbox(unsigned marker)
+{
+  switch (marker)
+  {
+    case 2:
+      return "0 0 20 10";
+    case 4:
+    case 11:
+      return "0 0 20 20";
+    default:
+      return "0 0 20 30";
+  }
+}
+
+const char *libvisio::VSDXContentCollector::_linePropertiesMarkerPath(unsigned marker)
+{
+  switch (marker)
+  {
+    case 2:
+      return "m10 0-10 10h20z";
+    case 4:
+      return "m10 0-10 20h20z";
+    case 11:
+      return "m0 0l10 0l0 10l-10 0z";
+    default:
+      return "m10 0-10 30h20z";
+  }
+}
+
+double libvisio::VSDXContentCollector::_linePropertiesMarkerWidth(unsigned marker)
+{
+  switch (marker)
+  {
+    case 11:
+      return 1.27;
+    default:
+      return 2.54;
   }
 }
 
