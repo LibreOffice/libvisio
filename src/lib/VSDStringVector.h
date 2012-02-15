@@ -13,8 +13,7 @@
  * License.
  *
  * Major Contributor(s):
- * Copyright (C) 2011 Fridrich Strba <fridrich.strba@bluewin.ch>
- * Copyright (C) 2011 Eilidh McAdam <tibbylickle@gmail.com>
+ * Copyright (C) 2012 Fridrich Strba <fridrich.strba@bluewin.ch>
  *
  *
  * All Rights Reserved.
@@ -28,30 +27,35 @@
  * instead of those above.
  */
 
-#ifndef __VISIODOCUMENT_H__
-#define __VISIODOCUMENT_H__
+#ifndef __VSDSTRINGVECTOR_H__
+#define __VSDSTRINGVECTOR_H__
 
 #include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
-#include "VSDStringVector.h"
-
-class WPXInputStream;
 
 namespace libvisio
 {
+class VSDStringVectorImpl;
 
-class VisioDocument
+class VSDStringVector
 {
 public:
+  VSDStringVector();
+  VSDStringVector(const VSDStringVector &vec);
+  ~VSDStringVector();
 
-  static bool isSupported(WPXInputStream *input);
+  VSDStringVector &operator=(const VSDStringVector &vec);
 
-  static bool parse(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  unsigned size() const;
+  bool empty() const;
+  const WPXString &operator[](unsigned idx) const;
+  void append(const WPXString &str);
+  void clear();
 
-  static bool generateSVG(WPXInputStream *input, VSDStringVector &output);
+private:
+  VSDStringVectorImpl *m_pImpl;
 };
 
 } // namespace libvisio
 
-#endif //  __VISIODOCUMENT_H__
+#endif /* __VSDSTRINGVECTOR_H__ */
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

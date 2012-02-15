@@ -76,10 +76,16 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  ::WPXString output;
+  libvisio::VSDStringVector output;
   if (!libvisio::VisioDocument::generateSVG(&input, output))
   {
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;
+    return 1;
+  }
+  
+  if (output.empty())
+  {
+    std::cerr << "ERROR: No SVG document generated!" << std::endl;
     return 1;
   }
 
@@ -89,7 +95,19 @@ int main(int argc, char *argv[])
   std::cout << "<body>" << std::endl;
   std::cout << "<?import namespace=\"svg\" urn=\"http://www.w3.org/2000/svg\"?>" << std::endl;
 
-  std::cout << output.cstr() << std::endl;
+  for (unsigned k = 0; k<output.size(); ++k)
+  {
+    if (k>0)
+      std::cout << "<hr/>\n";
+
+    std::cout << "<!-- \n";
+    std::cout << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
+    std::cout << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"";
+    std::cout << " \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+    std::cout << " -->\n";
+
+    std::cout << output[k].cstr() << std::endl;
+  }
 
   std::cout << "</body>" << std::endl;
   std::cout << "</html>" << std::endl;

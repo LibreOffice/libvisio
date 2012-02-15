@@ -29,7 +29,6 @@
  */
 
 #include <libwpd-stream/libwpd-stream.h>
-#include <sstream>
 #include <string>
 #include "libvisio.h"
 #include "libvisio_utils.h"
@@ -121,15 +120,10 @@ Provided as a convenience function for applications that support SVG internally.
 \param output The output string whose content is the resulting SVG
 \return A value that indicates whether the SVG generation was successful.
 */
-bool libvisio::VisioDocument::generateSVG(::WPXInputStream *input, WPXString &output)
+bool libvisio::VisioDocument::generateSVG(::WPXInputStream *input, libvisio::VSDStringVector &output)
 {
-  std::ostringstream tmpOutputStream;
-  libvisio::VSDSVGGenerator generator(tmpOutputStream);
+  libvisio::VSDSVGGenerator generator(output);
   bool result = libvisio::VisioDocument::parse(input, &generator);
-  if (result)
-    output = WPXString(tmpOutputStream.str().c_str());
-  else
-    output = WPXString("");
   return result;
 }
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

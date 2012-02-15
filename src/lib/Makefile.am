@@ -8,6 +8,7 @@ lib_LTLIBRARIES = libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_includedir = $(includedir)/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@/libvisio
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_include_HEADERS = \
 	libvisio.h \
+	VSDStringVector.h \
 	VisioDocument.h
 
 AM_CXXFLAGS = $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
@@ -32,6 +33,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXParser.cpp \
 	VSDXShapeList.cpp \
 	VSDXStencils.cpp \
+	VSDStringVector.cpp \
 	VSDXStyles.cpp \
 	VSDXStylesCollector.cpp \
 	libvisio_utils.h \
