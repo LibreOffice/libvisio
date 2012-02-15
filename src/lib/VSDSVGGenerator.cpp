@@ -95,7 +95,7 @@ void libvisio::VSDSVGGenerator::endGraphics()
 {
   m_outputSink << "</svg:svg>\n";
   m_vec.append(m_outputSink.str().c_str());
-  m_outputSink.clear();
+  m_outputSink.str("");
 }
 
 void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient)
