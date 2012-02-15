@@ -386,7 +386,7 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
     m_input->seek(ptrOffset, WPX_SEEK_SET);
     VSDInternalStream tmpInput(m_input, ptrLength, compressed);
 
-    VSD_DEBUG_MSG(("Stencil foreign stream %x\n", ptrType));
+    shift = compressed ? 4 : 0;
 
     if (ptrType == VSD_PROP_LIST)
     {
@@ -431,6 +431,56 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
         m_stencilShape.m_foreign->dataId = m_header.id;
         m_stencilShape.m_foreign->dataLevel = m_header.level;
         m_stencilShape.m_foreign->data = binaryData;
+      }
+    }
+    else if (ptrType == VSD_OLE_LIST)
+    {
+      m_stencilShape.m_foreign->dataId = m_header.id;
+      handleStencilOle(&tmpInput, shift);
+    }
+  }
+}
+
+void libvisio::VSDXParser::handleStencilOle(WPXInputStream *input, unsigned shift)
+{ 
+  unsigned ptrType;
+  unsigned ptrOffset;
+  unsigned ptrLength;
+  unsigned ptrFormat;
+
+  input->seek(shift, WPX_SEEK_CUR);
+  unsigned offset = readU32(input);
+  input->seek(offset+shift, WPX_SEEK_SET);
+  unsigned pointerCount = readU32(input);
+  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
+
+  for (unsigned i = 0; i < pointerCount; i++)
+  {
+    ptrType = readU32(input);
+    input->seek(4, WPX_SEEK_CUR); // Skip dword
+    ptrOffset = readU32(input);
+    ptrLength = readU32(input);
+    ptrFormat = readU16(input);
+
+    bool compressed = ((ptrFormat & 2) == 2);
+    m_input->seek(ptrOffset, WPX_SEEK_SET);
+    VSDInternalStream tmpInput(m_input, ptrLength, compressed);
+
+    shift = compressed ? 4 : 0;
+    tmpInput.seek(shift, WPX_SEEK_CUR);
+
+    if (ptrType == VSD_OLE_DATA)
+    {
+      // Be sure to use internal stream size to get decompressed size
+      unsigned foreignLength = tmpInput.getSize() - shift;
+      unsigned long tmpBytesRead = 0;
+      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
+  
+      if (foreignLength == tmpBytesRead)
+      {
+        // Append data instead of setting it - allows multi-stream OLE objects
+        m_stencilShape.m_foreign->data.append(buffer, tmpBytesRead);
+        m_stencilShape.m_foreign->dataLevel = m_header.level;
       }
     }
   }

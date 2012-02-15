@@ -118,6 +118,7 @@ protected:
   void handleStencils(WPXInputStream *input, unsigned shift);
   void handleStencilPage(WPXInputStream *input, unsigned shift);
   void handleStencilForeign(WPXInputStream *input, unsigned shift);
+  void handleStencilOle(WPXInputStream *input, unsigned shift);
   void handleStencilShape(WPXInputStream *input);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;

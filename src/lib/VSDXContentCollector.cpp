@@ -1203,6 +1203,7 @@ void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &bin
   else if (m_foreignType == 2)
   {
     m_currentForeignProps.insert("libwpg:mime-type", "object/ole");
+    m_currentForeignData.append(binaryData);
   }
 }
 
@@ -1759,6 +1760,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
         m_foreignOffsetY = m_stencilShape->m_foreign->offsetY;
         m_foreignWidth = m_stencilShape->m_foreign->width;
         m_foreignHeight = m_stencilShape->m_foreign->height;
+        m_currentForeignData.clear();
         _handleForeignData(m_stencilShape->m_foreign->data);
       }
 
