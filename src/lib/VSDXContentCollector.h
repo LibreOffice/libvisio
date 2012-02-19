@@ -175,7 +175,7 @@ private:
   void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
   const char *_linePropertiesMarkerViewbox(unsigned marker);
   const char *_linePropertiesMarkerPath(unsigned marker);
-  double _linePropertiesMarkerWidth(unsigned marker);
+  double _linePropertiesMarkerScale(unsigned marker);
   void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
                                 unsigned fillFGTransparency, unsigned fillBGTransparency,
                                 unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
