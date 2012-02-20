@@ -467,35 +467,35 @@ const char *libvisio::VSDXContentCollector::_linePropertiesMarkerViewbox(unsigne
 {
   switch (marker)
   {
-    case 1:
-    case 2:
-    case 9:
-    case 15:
-      return "0 0 20 10";
-    case 8:
-      return "0 0 20 18";
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-    case 11:
-    case 16:
-    case 17:
-    case 18:
-      return "0 0 20 20";
-    case 12:
-    case 13:
-    case 14:
-      return "0 0 20 30";
-    case 22:
-    case 39:
-      return "0 0 20 40";
-    case 21:
-      return "0 0 30 30";
-    case 10:
-      return "0 0 1131 1131";
-    default:
-      return "0 0 20 30";
+  case 1:
+  case 2:
+  case 9:
+  case 15:
+    return "0 0 20 10";
+  case 8:
+    return "0 0 20 18";
+  case 3:
+  case 4:
+  case 5:
+  case 6:
+  case 11:
+  case 16:
+  case 17:
+  case 18:
+    return "0 0 20 20";
+  case 12:
+  case 13:
+  case 14:
+    return "0 0 20 30";
+  case 22:
+  case 39:
+    return "0 0 20 40";
+  case 21:
+    return "0 0 30 30";
+  case 10:
+    return "0 0 1131 1131";
+  default:
+    return "0 0 20 30";
   }
 }
 
@@ -503,48 +503,48 @@ const char *libvisio::VSDXContentCollector::_linePropertiesMarkerPath(unsigned m
 {
   switch (marker)
   {
-    case 1:
-      return "m10 -4l-14 14l4 4l10 -10l10 10l4 -4z";
-    case 2:
-      return "m10 0-10 10h20z";
-    case 3:
-      return "m10 -8l-14 28l6 3l8 -16l8 16l6 -3z";
-    case 4:
-      return "m10 0-10 20h20z";
-    case 5:
-      return "m10 0-10 20q10,-5 20,0z";
-    case 6:
-      return "m10 0-10 20q10,5 20,0z";
-    case 8:
-      return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
-    case 9:
-      return "m-2 -8l4 -4l20 20l-4 4z";
-    case 10: // Copied from what LO exports when using the "circle" marker
-      return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";
-    case 11:
-      return "m0 0v10h10v-10z";
-    case 12:
-      return "m10 -12l-14 42l9 3l5 -15l5 15l9 -3z";
-    case 13:
-      return "m10 0-10 30h20z";
-    case 14:
-      return "m10 0-10 30h20z m-10 -18l-5 15h10z";
-    case 15:
-      return "m10 0-10 10h20z m-10 -7l-5 5h10z";
-    case 16:
-      return "m10 0-10 20h20z m-10 -13l-5 10h10z";
-    case 17:
-      return "m10 0-10 20q10,-5 20,0z m-10 -13l-4 8q4,-2 8,0z";
-    case 18:
-      return "m10 0-10 20q10,5 20,0z m-10 -13l-5 10q5,2 10,0z";
-    case 21:
-      return "m0 0v30h30v-30z m-20 10v10h10v-10z";
-    case 22:
-      return "m10 0-10 20l10 20l10 -20z m-10 -12l-6 12l6 12l6 -12z";
-    case 39:
-      return "m10 0-10 20h20z m-10 0-10 20h20z";
-    default:
-      return "m10 0-10 30h20z";
+  case 1:
+    return "m10 -4l-14 14l4 4l10 -10l10 10l4 -4z";
+  case 2:
+    return "m10 0-10 10h20z";
+  case 3:
+    return "m10 -8l-14 28l6 3l8 -16l8 16l6 -3z";
+  case 4:
+    return "m10 0-10 20h20z";
+  case 5:
+    return "m10 0-10 20q10,-5 20,0z";
+  case 6:
+    return "m10 0-10 20q10,5 20,0z";
+  case 8:
+    return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
+  case 9:
+    return "m-2 -8l4 -4l20 20l-4 4z";
+  case 10: // Copied from what LO exports when using the "circle" marker
+    return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";
+  case 11:
+    return "m0 0v10h10v-10z";
+  case 12:
+    return "m10 -12l-14 42l9 3l5 -15l5 15l9 -3z";
+  case 13:
+    return "m10 0-10 30h20z";
+  case 14:
+    return "m10 0-10 30h20z m-10 -18l-5 15h10z";
+  case 15:
+    return "m10 0-10 10h20z m-10 -7l-5 5h10z";
+  case 16:
+    return "m10 0-10 20h20z m-10 -13l-5 10h10z";
+  case 17:
+    return "m10 0-10 20q10,-5 20,0z m-10 -13l-4 8q4,-2 8,0z";
+  case 18:
+    return "m10 0-10 20q10,5 20,0z m-10 -13l-5 10q5,2 10,0z";
+  case 21:
+    return "m0 0v30h30v-30z m-20 10v10h10v-10z";
+  case 22:
+    return "m10 0-10 20l10 20l10 -20z m-10 -12l-6 12l6 12l6 -12z";
+  case 39:
+    return "m10 0-10 20h20z m-10 0-10 20h20z";
+  default:
+    return "m10 0-10 30h20z";
   }
 }
 
@@ -552,18 +552,18 @@ double libvisio::VSDXContentCollector::_linePropertiesMarkerScale(unsigned marke
 {
   switch (marker)
   {
-    case 11:
-    case 10:
-      return 0.7;
-    case 14:
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-    case 22:
-      return 1.2;
-    default:
-      return 1.0;
+  case 11:
+  case 10:
+    return 0.7;
+  case 14:
+  case 15:
+  case 16:
+  case 17:
+  case 18:
+  case 22:
+    return 1.2;
+  default:
+    return 1.0;
   }
 }
 
@@ -1416,7 +1416,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
     NURBS.insert("libwpg:path-action", "L");
     double nextX = 0;
     double nextY = 0;
-    double denominator = 0.0000001;
+    double denominator = 1E-10;
 
     for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
     {
@@ -1438,6 +1438,12 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
   m_x = x2;
   m_y = y2;
   transformPoint(m_x, m_y);
+  NURBS.clear();
+  NURBS.insert("libwpg:path-action", "L");
+  NURBS.insert("svg:x", m_scale*m_x);
+  NURBS.insert("svg:y", m_scale*m_y);
+  m_currentGeometry.push_back(NURBS);
+
 }
 
 double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector)

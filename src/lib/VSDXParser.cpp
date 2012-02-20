@@ -442,7 +442,7 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
 }
 
 void libvisio::VSDXParser::handleStencilOle(WPXInputStream *input, unsigned shift)
-{ 
+{
   unsigned ptrType;
   unsigned ptrOffset;
   unsigned ptrLength;
@@ -475,7 +475,7 @@ void libvisio::VSDXParser::handleStencilOle(WPXInputStream *input, unsigned shif
       unsigned foreignLength = tmpInput.getSize() - shift;
       unsigned long tmpBytesRead = 0;
       const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
-  
+
       if (foreignLength == tmpBytesRead)
       {
         // Append data instead of setting it - allows multi-stream OLE objects

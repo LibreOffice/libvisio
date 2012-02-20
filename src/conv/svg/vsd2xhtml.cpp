@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;
     return 1;
   }
-  
+
   if (output.empty())
   {
     std::cerr << "ERROR: No SVG document generated!" << std::endl;
