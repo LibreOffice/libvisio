@@ -107,6 +107,10 @@ SOURCE=..\..\src\lib\VSDInternalStream.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDStringVector.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDSVGGenerator.cpp
 # End Source File
 # Begin Source File
@@ -184,6 +188,10 @@ SOURCE=..\..\src\lib\VSD6Parser.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDInternalStream.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDStringVector.h
 # End Source File
 # Begin Source File
 

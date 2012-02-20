@@ -45,6 +45,7 @@ SLOFILES= \
 	$(SLO)$/VSDXParser.obj \
 	$(SLO)$/VSDXShapeList.obj \
 	$(SLO)$/VSDXStencils.obj \
+	$(SLO)$/VSDStringVector.obj \
 	$(SLO)$/VSDXStylesCollector.obj \
 	$(SLO)$/VSDXStyles.obj
 
