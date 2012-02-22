@@ -63,7 +63,7 @@ public:
   void addEndTextObject();
   bool empty() const
   {
-    return !m_elements.size();
+    return m_elements.empty();
   }
 private:
   std::vector<VSDXOutputElement *> m_elements;
