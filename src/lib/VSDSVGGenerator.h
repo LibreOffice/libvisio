@@ -74,6 +74,7 @@ private:
   ::WPXPropertyListVector m_gradient;
   ::WPXPropertyList m_style;
   int m_gradientIndex;
+  int m_patternIndex;
   int m_shadowIndex;
   void writeStyle(bool isClosed=true);
   void drawPolySomething(const ::WPXPropertyListVector &vertices, bool isClosed);
