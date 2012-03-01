@@ -293,15 +293,38 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
     if (m_style["draw:fill-image"] && m_style["libwpg:mime-type"])
     {
       m_outputSink << "<svg:defs>\n";
-      m_outputSink << "  <svg:pattern id=\"img" << m_patternIndex++ << "\" patternUnits=\"userSpaceOnUse\" width=\"100\" height=\"100\">" << std::endl;
-      m_outputSink << "<svg:image ";
-      if (m_style["svg:x"] && m_style["svg:y"] && m_style["svg:width"] && m_style["svg:height"])
-      {
-        m_outputSink << "x=\"" << doubleToString(72*(m_style["svg:x"]->getDouble())) << "\" y=\"" << doubleToString(72*(m_style["svg:y"]->getDouble())) << "\" ";
-        m_outputSink << "width=\"" << doubleToString(72*(m_style["svg:width"]->getDouble())) << "\" height=\"" << doubleToString(72*(m_style["svg:height"]->getDouble())) << "\" ";
-      }
+      m_outputSink << "  <svg:pattern id=\"img" << m_patternIndex++ << "\" patternUnits=\"userSpaceOnUse\" ";
+	  if (m_style["svg:width"])
+	    m_outputSink << "width=\"" << doubleToString(72*(m_style["svg:width"]->getDouble())) << "\" ";
+	  else
+	    m_outputSink << "width=\"100\" ";
+		
+      if (m_style["svg:height"])
+        m_outputSink << "height=\"" << doubleToString(72*(m_style["svg:height"]->getDouble())) << "\">" << std::endl;
       else
-        m_outputSink << "x=\"0\" y=\"0\" width=\"100\" height=\"100\" ";
+        m_outputSink << "height=\"100\">" << std::endl;
+      m_outputSink << "<svg:image ";
+
+	  if (m_style["svg:x"])
+	    m_outputSink << "x=\"" << doubleToString(72*(m_style["svg:x"]->getDouble())) << "\" ";
+	  else
+	    m_outputSink << "x=\"0\" ";
+
+	  if (m_style["svg:y"])
+        m_outputSink << "y=\"" << doubleToString(72*(m_style["svg:y"]->getDouble())) << "\" ";
+	  else
+	    m_outputSink << "y=\"0\" ";
+
+	  if (m_style["svg:width"])
+	    m_outputSink << "width=\"" << doubleToString(72*(m_style["svg:width"]->getDouble())) << "\" ";
+	  else
+	    m_outputSink << "width=\"100\" ";
+		
+      if (m_style["svg:height"])
+        m_outputSink << "height=\"" << doubleToString(72*(m_style["svg:height"]->getDouble())) << "\" ";
+      else
+        m_outputSink << "height=\"100\" ";
+
       m_outputSink << "xlink:href=\"data:" << m_style["libwpg:mime-type"]->getStr().cstr() << ";base64,";
       m_outputSink << m_style["draw:fill-image"]->getStr().cstr();
       m_outputSink << "\" />\n";
