@@ -45,6 +45,9 @@ stream is a Visio Document that libvisio able to parse
 */
 bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
 {
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
   WPXInputStream *tmpDocStream = input->getDocumentOLEStream("VisioDocument");
   if (!tmpDocStream)
     return false;
@@ -75,6 +78,9 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 */
 bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
 {
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
   WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
   if (!docStream)
   {
