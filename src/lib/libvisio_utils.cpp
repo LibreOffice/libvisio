@@ -35,42 +35,65 @@
 uint8_t libvisio::readU8(WPXInputStream *input)
 {
   if (!input || input->atEOS())
+  {
+    VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
     throw EndOfStreamException();
+  }
   unsigned long numBytesRead;
   uint8_t const *p = input->read(sizeof(uint8_t), numBytesRead);
 
   if (p && numBytesRead == sizeof(uint8_t))
     return *(uint8_t const *)(p);
+  VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
   throw EndOfStreamException();
 }
 
 uint16_t libvisio::readU16(WPXInputStream *input)
 {
-  uint16_t p0 = (uint16_t)readU8(input);
-  uint16_t p1 = (uint16_t)readU8(input);
-  return (uint16_t)(p0|(p1<<8));
+  if (!input || input->atEOS())
+  {
+    VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
+    throw EndOfStreamException();
+  }
+  unsigned long numBytesRead;
+  uint8_t const *p = input->read(sizeof(uint16_t), numBytesRead);
+
+  if (p && numBytesRead == sizeof(uint16_t))
+    return (uint16_t)p[0]|((uint16_t)p[1]<<8);
+  VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
+  throw EndOfStreamException();
 }
 
 uint32_t libvisio::readU32(WPXInputStream *input)
 {
-  uint32_t p0 = (uint32_t)readU8(input);
-  uint32_t p1 = (uint32_t)readU8(input);
-  uint32_t p2 = (uint32_t)readU8(input);
-  uint32_t p3 = (uint32_t)readU8(input);
-  return (uint32_t)(p0|(p1<<8)|(p2<<16)|(p3<<24));
+  if (!input || input->atEOS())
+  {
+    VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
+    throw EndOfStreamException();
+  }
+  unsigned long numBytesRead;
+  uint8_t const *p = input->read(sizeof(uint32_t), numBytesRead);
+
+  if (p && numBytesRead == sizeof(uint32_t))
+    return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);
+  VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
+  throw EndOfStreamException();
 }
 
 uint64_t libvisio::readU64(WPXInputStream *input)
 {
-  uint64_t p0 = (uint64_t)readU8(input);
-  uint64_t p1 = (uint64_t)readU8(input);
-  uint64_t p2 = (uint64_t)readU8(input);
-  uint64_t p3 = (uint64_t)readU8(input);
-  uint64_t p4 = (uint64_t)readU8(input);
-  uint64_t p5 = (uint64_t)readU8(input);
-  uint64_t p6 = (uint64_t)readU8(input);
-  uint64_t p7 = (uint64_t)readU8(input);
-  return (uint64_t)(p0|(p1<<8)|(p2<<16)|(p3<<24)|(p4<<32)|(p5<<40)|(p6<<48)|(p7<<56));
+  if (!input || input->atEOS())
+  {
+    VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
+    throw EndOfStreamException();
+  }
+  unsigned long numBytesRead;
+  uint8_t const *p = input->read(sizeof(uint64_t), numBytesRead);
+
+  if (p && numBytesRead == sizeof(uint64_t))
+    return (uint64_t)p[0]|((uint64_t)p[1]<<8)|((uint64_t)p[2]<<16)|((uint64_t)p[3]<<24)|((uint64_t)p[4]<<32)|((uint64_t)p[5]<<40)|((uint64_t)p[6]<<48)|((uint64_t)p[7]<<56);
+  VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
+  throw EndOfStreamException();
 }
 
 double libvisio::readDouble(WPXInputStream *input)
