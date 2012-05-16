@@ -45,24 +45,34 @@ stream is a Visio Document that libvisio able to parse
 */
 bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
 {
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
-    return false;
-  WPXInputStream *tmpDocStream = input->getDocumentOLEStream("VisioDocument");
-  if (!tmpDocStream)
-    return false;
-
-  tmpDocStream->seek(0x1A, WPX_SEEK_SET);
-
-  unsigned char version = readU8(tmpDocStream);
-  delete tmpDocStream;
-
-  VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
-
-  // Versions 2k (6) and 2k3 (11)
-  if (version == 6 || version == 11)
+  WPXInputStream *tmpDocStream = 0;
+  try
   {
-    return true;
+    input->seek(0, WPX_SEEK_SET);
+    if (!input->isOLEStream())
+      return false;
+    tmpDocStream = input->getDocumentOLEStream("VisioDocument");
+    if (!tmpDocStream)
+      return false;
+
+    tmpDocStream->seek(0x1A, WPX_SEEK_SET);
+
+    unsigned char version = readU8(tmpDocStream);
+    delete tmpDocStream;
+
+    VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
+
+    // Versions 2k (6) and 2k3 (11)
+    if (version == 6 || version == 11)
+    {
+      return true;
+    }
+  }
+  catch (...)
+  {
+    if (tmpDocStream)
+      delete tmpDocStream;
+    return false;
   }
 
   return false;
