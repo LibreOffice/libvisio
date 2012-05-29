@@ -2241,8 +2241,9 @@ void libvisio::VSDXContentCollector::endPage()
   }
 }
 
-void libvisio::VSDXContentCollector::endPages()
+void libvisio::VSDXContentCollector::endPages(const std::vector<unsigned> &pageOrder)
 {
+  m_pages.setOrder(pageOrder);
   m_pages.draw(m_painter);
 }
 

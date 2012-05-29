@@ -181,11 +181,14 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
 
   input->seek(shift, WPX_SEEK_CUR);
   unsigned offset = readU32(input);
-  input->seek(offset+shift, WPX_SEEK_SET);
+  input->seek(offset+shift-4, WPX_SEEK_SET);
+  unsigned listSize = readU32(input);
   unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
 
-  for (unsigned i = 0; i < pointerCount; i++)
+  unsigned numPages = 0;
+  unsigned i = 0;
+  for (i = 0 ; i < pointerCount; i++)
   {
     ptrType = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
@@ -201,6 +204,7 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
     {
     case VSD_PAGE:
       m_currentPageID = i;
+      numPages++;
       handlePage(&tmpInput);
       break;
     case VSD_PAGES:             // shouldn't happen
@@ -216,7 +220,10 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
       break;
     }
   }
-  m_collector->endPages();
+  std::vector<unsigned> pageOrder;
+  for (i = 0; i < listSize; ++i)
+    pageOrder.push_back(readU32(input));
+  m_collector->endPages(pageOrder);
 }
 
 void libvisio::VSDXParser::handleStyles(WPXInputStream *input)

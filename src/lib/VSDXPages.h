@@ -56,10 +56,13 @@ public:
   VSDXPages();
   ~VSDXPages();
   void addPage(const VSDXPage &page);
+  void setOrder(const std::vector<unsigned> &pageOrder);
   void draw(libwpg::WPGPaintInterface *painter);
 private:
   void _drawWithBackground(libwpg::WPGPaintInterface *painter, const VSDXPage &page);
+  void _drawPage(libwpg::WPGPaintInterface *painter, const VSDXPage &page);
   std::map<unsigned, VSDXPage> m_pages;
+  std::vector<unsigned> m_pagesOrder;
 };
 
 

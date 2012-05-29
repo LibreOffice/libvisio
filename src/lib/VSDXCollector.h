@@ -119,7 +119,7 @@ public:
   // Temporary hack
   virtual void startPage() = 0;
   virtual void endPage() = 0;
-  virtual void endPages() = 0;
+  virtual void endPages(const std::vector<unsigned> &pageOrder) = 0;
 
 protected:
   const ::WPXString getColourString(const Colour &c) const
