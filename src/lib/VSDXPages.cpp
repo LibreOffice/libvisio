@@ -97,14 +97,14 @@ void libvisio::VSDXPages::draw(libwpg::WPGPaintInterface *painter)
     {
       iter = m_pages.find(m_pagesOrder[i]);
       if (iter != m_pages.end())
+      {
         _drawPage(painter, iter->second);
+        m_pages.erase(iter);
+      }
     }
   }
-  else
-  {
-    for (iter = m_pages.begin(); iter != m_pages.end(); ++iter)
-      _drawPage(painter, iter->second);
-  }
+  for (iter = m_pages.begin(); iter != m_pages.end(); ++iter)
+    _drawPage(painter, iter->second);
 }
 
 void libvisio::VSDXPages::_drawPage(libwpg::WPGPaintInterface *painter, const libvisio::VSDXPage &page)
