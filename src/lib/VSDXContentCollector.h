@@ -195,7 +195,8 @@ private:
   double m_originalY;
   XForm m_xform;
   XForm *m_txtxform;
-  std::vector<WPXPropertyList> m_currentGeometry;
+  std::vector<WPXPropertyList> m_currentFillGeometry;
+  std::vector<WPXPropertyList> m_currentLineGeometry;
   std::map<unsigned, XForm> &m_groupXForms;
   WPXBinaryData m_currentForeignData;
   WPXBinaryData m_currentOLEData;

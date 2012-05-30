@@ -56,7 +56,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
-  m_txtxform(0), m_currentGeometry(), m_groupXForms(groupXFormsSequence[0]),
+  m_txtxform(0), m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence[0]),
   m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(),
   m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_foreignOffsetX(0.0),
   m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0), m_styleProps(),
@@ -570,64 +570,62 @@ double libvisio::VSDXContentCollector::_linePropertiesMarkerScale(unsigned marke
 void libvisio::VSDXContentCollector::_flushCurrentPath()
 {
   WPXPropertyListVector path;
-  double startX = 0;
-  double startY = 0;
-  double x = 0;
-  double y = 0;
+  WPXPropertyList fillPathProps(m_styleProps);
+  fillPathProps.insert("draw:stroke", "none");
+  WPXPropertyList linePathProps(m_styleProps);
+  linePathProps.insert("draw:fill", "none");
   bool firstPoint = true;
   bool wasMove = false;
 
-  for (unsigned i = 0; i < m_currentGeometry.size(); i++)
+  if (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")
   {
-    if (firstPoint)
+    for (unsigned i = 0; i < m_currentFillGeometry.size(); i++)
     {
-      x = m_currentGeometry[i]["svg:x"]->getDouble();
-      y = m_currentGeometry[i]["svg:y"]->getDouble();
-      startX = x;
-      startY = y;
-      firstPoint = false;
-      wasMove = true;
-    }
-    else if (m_currentGeometry[i]["libwpg:path-action"]->getStr() == "M")
-    {
-      if (((startX == x && startY == y)
-           || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none"
-               && m_styleProps["draw:stroke"] && m_styleProps["draw:stroke"]->getStr() == "none"))
-          && path.count() && !wasMove)
+      if (firstPoint)
       {
-        WPXPropertyList closedPath;
-        closedPath.insert("libwpg:path-action", "Z");
-        path.append(closedPath);
+        firstPoint = false;
+        wasMove = true;
       }
-      x = m_currentGeometry[i]["svg:x"]->getDouble();
-      y = m_currentGeometry[i]["svg:y"]->getDouble();
-      startX = x;
-      startY = y;
-      wasMove = true;
+      else if (m_currentFillGeometry[i]["libwpg:path-action"]->getStr() == "M")
+      {
+        if (path.count() && !wasMove)
+        {
+          WPXPropertyList closedPath;
+          closedPath.insert("libwpg:path-action", "Z");
+          path.append(closedPath);
+        }
+        wasMove = true;
+      }
+      else
+        wasMove = false;
+      path.append(m_currentFillGeometry[i]);
     }
-    else
+    if (path.count() && !wasMove)
     {
-      x = m_currentGeometry[i]["svg:x"]->getDouble();
-      y = m_currentGeometry[i]["svg:y"]->getDouble();
-      wasMove = false;
+      WPXPropertyList closedPath;
+      closedPath.insert("libwpg:path-action", "Z");
+      path.append(closedPath);
     }
-    path.append(m_currentGeometry[i]);
+    if (path.count())
+    {
+      m_shapeOutputDrawing->addStyle(fillPathProps, WPXPropertyListVector());
+      m_shapeOutputDrawing->addPath(path);
+    }
   }
-  if (((startX == x && startY == y)
-       || (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none"
-           && m_styleProps["draw:stroke"] && m_styleProps["draw:stroke"]->getStr() == "none"))
-      && path.count() && !wasMove)
+  m_currentFillGeometry.clear();
+  path = WPXPropertyListVector();
+
+  if (m_styleProps["draw:stroke"] && m_styleProps["draw:stroke"]->getStr() != "none")
   {
-    WPXPropertyList closedPath;
-    closedPath.insert("libwpg:path-action", "Z");
-    path.append(closedPath);
+    for (unsigned i = 0; i < m_currentLineGeometry.size(); i++)
+      path.append(m_currentLineGeometry[i]);
+    if (path.count())
+    {
+      m_shapeOutputDrawing->addStyle(linePathProps, WPXPropertyListVector());
+      m_shapeOutputDrawing->addPath(path);
+    }
   }
-  if (path.count() && !m_noShow)
-  {
-    m_shapeOutputDrawing->addStyle(m_styleProps, WPXPropertyListVector());
-    m_shapeOutputDrawing->addPath(path);
-  }
-  m_currentGeometry.clear();
+  m_currentLineGeometry.clear();
 }
 
 void libvisio::VSDXContentCollector::_flushText()
@@ -968,7 +966,10 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
     end.insert("svg:x", m_scale*m_x);
     end.insert("svg:y", m_scale*m_y);
     end.insert("libwpg:path-action", "L");
-    m_currentGeometry.push_back(end);
+    if (!m_noFill && !m_noShow)
+      m_currentFillGeometry.push_back(end);
+    if (!m_noLine && !m_noShow)
+      m_currentLineGeometry.push_back(end);
     return;
   }
 
@@ -1005,7 +1006,10 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
   arc.insert("svg:x", m_scale*m_x);
   arc.insert("svg:y", m_scale*m_y);
   arc.insert("libwpg:path-action", "A");
-  m_currentGeometry.push_back(arc);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(arc);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(arc);
 }
 
 void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)
@@ -1030,7 +1034,10 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   ellipse.insert("svg:x",m_scale*xleft);
   ellipse.insert("svg:y",m_scale*yleft);
   ellipse.insert("libwpg:path-action", "M");
-  m_currentGeometry.push_back(ellipse);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(ellipse);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(ellipse);
   ellipse.insert("svg:rx",m_scale*rx);
   ellipse.insert("svg:ry",m_scale*ry);
   ellipse.insert("svg:x",m_scale*xtop);
@@ -1038,12 +1045,17 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
   ellipse.insert("libwpg:large-arc", largeArc?1:0);
   ellipse.insert("libwpg:path-action", "A");
   ellipse.insert("libwpg:rotate", angle * 180/M_PI, WPX_GENERIC);
-  m_currentGeometry.push_back(ellipse);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(ellipse);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(ellipse);
   ellipse.insert("svg:x",m_scale*xleft);
   ellipse.insert("svg:y",m_scale*yleft);
   ellipse.insert("libwpg:large-arc", largeArc?0:1);
-  m_currentGeometry.push_back(ellipse);
-
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(ellipse);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(ellipse);
 }
 
 void libvisio::VSDXContentCollector::collectInfiniteLine(unsigned /* id */, unsigned level, double x1, double y1, double x2, double y2)
@@ -1119,11 +1131,17 @@ void libvisio::VSDXContentCollector::collectInfiniteLine(unsigned /* id */, unsi
   infLine.insert("svg:x",m_scale*xmove);
   infLine.insert("svg:y",m_scale*ymove);
   infLine.insert("libwpg:path-action", "M");
-  m_currentGeometry.push_back(infLine);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(infLine);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(infLine);
   infLine.insert("svg:x",m_scale*xline);
   infLine.insert("svg:y",m_scale*yline);
   infLine.insert("libwpg:path-action", "L");
-  m_currentGeometry.push_back(infLine);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(infLine);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(infLine);
 }
 
 void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap)
@@ -1278,24 +1296,17 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   m_y = 0.0;
   m_originalX = 0.0;
   m_originalY = 0.0;
-  bool noFill = ((geomFlags & 1) == 1);
-  bool noLine = ((geomFlags & 2) == 2);
-  bool noShow = ((geomFlags & 4) == 4);
-
-  if ((m_noFill != noFill) || (m_noLine != noLine) || (m_noShow != noShow) || m_isFirstGeometry)
-    _flushCurrentPath();
+  m_noFill = ((geomFlags & 1) == 1);
+  m_noLine = ((geomFlags & 2) == 2);
+  m_noShow = ((geomFlags & 4) == 4);
 
   _applyLinePattern();
 
-  m_isFirstGeometry = false;
-  m_noFill = noFill;
-  m_noLine = noLine;
-  m_noShow = noShow;
-  if (m_noLine || m_linePattern == 0)
+  if (m_linePattern == 0)
     m_styleProps.insert("draw:stroke", "none");
   else
     m_styleProps.insert("svg:stroke-color", m_lineColour);
-  if (m_noFill || m_fillPattern == 0)
+  if (m_fillPattern == 0)
     m_styleProps.insert("draw:fill", "none");
   else
   {
@@ -1318,7 +1329,10 @@ void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned l
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("libwpg:path-action", "M");
-  m_currentGeometry.push_back(end);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(end);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(end);
 }
 
 void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned level, double x, double y)
@@ -1333,7 +1347,10 @@ void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned l
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("libwpg:path-action", "L");
-  m_currentGeometry.push_back(end);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(end);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(end);
 }
 
 void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned level, double x2, double y2, double bow)
@@ -1353,7 +1370,10 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
     end.insert("svg:x", m_scale*m_x);
     end.insert("svg:y", m_scale*m_y);
     end.insert("libwpg:path-action", "L");
-    m_currentGeometry.push_back(end);
+    if (!m_noFill && !m_noShow)
+      m_currentFillGeometry.push_back(end);
+    if (!m_noLine && !m_noShow)
+      m_currentLineGeometry.push_back(end);
   }
   else
   {
@@ -1374,7 +1394,10 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
     arc.insert("svg:x", m_scale*m_x);
     arc.insert("svg:y", m_scale*m_y);
     arc.insert("libwpg:path-action", "A");
-    m_currentGeometry.push_back(arc);
+    if (!m_noFill && !m_noShow)
+      m_currentFillGeometry.push_back(arc);
+    if (!m_noLine && !m_noShow)
+      m_currentLineGeometry.push_back(arc);
   }
 }
 
@@ -1430,7 +1453,10 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
     transformPoint(nextX, nextY);
     NURBS.insert("svg:x", m_scale*nextX);
     NURBS.insert("svg:y", m_scale*nextY);
-    m_currentGeometry.push_back(NURBS);
+    if (!m_noFill && !m_noShow)
+      m_currentFillGeometry.push_back(NURBS);
+    if (!m_noLine && !m_noShow)
+      m_currentLineGeometry.push_back(NURBS);
   }
 
   m_originalX = x2;
@@ -1442,8 +1468,10 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
   NURBS.insert("libwpg:path-action", "L");
   NURBS.insert("svg:x", m_scale*m_x);
   NURBS.insert("svg:y", m_scale*m_y);
-  m_currentGeometry.push_back(NURBS);
-
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(NURBS);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(NURBS);
 }
 
 double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector)
@@ -1527,7 +1555,10 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
     polyline.insert("libwpg:path-action", "L");
     polyline.insert("svg:x", m_scale*points[i].first);
     polyline.insert("svg:y", m_scale*points[i].second);
-    m_currentGeometry.push_back(polyline);
+    if (!m_noFill && !m_noShow)
+      m_currentFillGeometry.push_back(polyline);
+    if (!m_noLine && !m_noShow)
+      m_currentLineGeometry.push_back(polyline);
   }
 
   m_originalX = x;
@@ -1538,7 +1569,10 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
   polyline.insert("libwpg:path-action", "L");
   polyline.insert("svg:x", m_scale*m_x);
   polyline.insert("svg:y", m_scale*m_y);
-  m_currentGeometry.push_back(polyline);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(polyline);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(polyline);
 }
 
 /* Polyline with incomplete data */
@@ -1771,6 +1805,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_noLine = false;
   m_noFill = false;
   m_noShow = false;
+  m_isFirstGeometry = true;
 
   // Save line colour and pattern, fill type and pattern
   m_fillType = "none";
@@ -2169,7 +2204,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
         m_NURBSData = m_stencilShape->m_nurbsData;
         m_polylineData = m_stencilShape->m_polylineData;
 
-        if (m_currentGeometry.empty())
+        if (m_currentFillGeometry.empty() && m_currentLineGeometry.empty() && !m_noShow)
         {
           for (unsigned i = 0; i < m_stencilShape->m_geometries.size(); i++)
           {
