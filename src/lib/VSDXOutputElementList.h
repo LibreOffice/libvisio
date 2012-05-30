@@ -61,6 +61,8 @@ public:
   void addEndTextSpan();
   void addEndTextLine();
   void addEndTextObject();
+  void addStartLayer(const WPXPropertyList &propList);
+  void addEndLayer();
   bool empty() const
   {
     return m_elements.empty();

@@ -576,6 +576,19 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
   linePathProps.insert("draw:fill", "none");
   bool firstPoint = true;
   bool wasMove = false;
+  bool needsGroup = true;
+
+  if (!m_styleProps["draw:fill"] || m_styleProps["draw:fill"]->getStr() == "none")
+    needsGroup = false;
+  if (m_currentFillGeometry.empty())
+    needsGroup = false;
+  if (!m_styleProps["draw:stroke"] || m_styleProps["draw:stroke"]->getStr() == "none")
+    needsGroup = false;
+  if (m_currentLineGeometry.empty())
+    needsGroup = false;
+
+  if (needsGroup)
+    m_shapeOutputDrawing->addStartLayer(WPXPropertyList());
 
   if (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")
   {
@@ -626,6 +639,9 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
     }
   }
   m_currentLineGeometry.clear();
+
+  if (needsGroup)
+    m_shapeOutputDrawing->addEndLayer();
 }
 
 void libvisio::VSDXContentCollector::_flushText()

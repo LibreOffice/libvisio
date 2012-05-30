@@ -121,6 +121,34 @@ private:
 };
 
 
+class VSDXStartLayerOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXStartLayerOutputElement(const WPXPropertyList &propList);
+  virtual ~VSDXStartLayerOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXStartLayerOutputElement(m_propList);
+  }
+private:
+  WPXPropertyList m_propList;
+};
+
+
+class VSDXEndLayerOutputElement : public VSDXOutputElement
+{
+public:
+  VSDXEndLayerOutputElement();
+  virtual ~VSDXEndLayerOutputElement() {}
+  virtual void draw(libwpg::WPGPaintInterface *painter);
+  virtual VSDXOutputElement *clone()
+  {
+    return new VSDXEndLayerOutputElement();
+  }
+};
+
+
 class VSDXStartTextSpanOutputElement : public VSDXOutputElement
 {
 public:
@@ -237,6 +265,25 @@ void libvisio::VSDXStartTextSpanOutputElement::draw(libwpg::WPGPaintInterface *p
 {
   if (painter)
     painter->startTextSpan(m_propList);
+}
+
+
+libvisio::VSDXStartLayerOutputElement::VSDXStartLayerOutputElement(const WPXPropertyList &propList) :
+  m_propList(propList) {}
+
+void libvisio::VSDXStartLayerOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->startLayer(m_propList);
+}
+
+
+libvisio::VSDXEndLayerOutputElement::VSDXEndLayerOutputElement() {}
+
+void libvisio::VSDXEndLayerOutputElement::draw(libwpg::WPGPaintInterface *painter)
+{
+  if (painter)
+    painter->endLayer();
 }
 
 
@@ -379,6 +426,16 @@ void libvisio::VSDXOutputElementList::addEndTextLine()
 void libvisio::VSDXOutputElementList::addEndTextObject()
 {
   m_elements.push_back(new VSDXEndTextObjectOutputElement());
+}
+
+void libvisio::VSDXOutputElementList::addStartLayer(const WPXPropertyList &propList)
+{
+  m_elements.push_back(new VSDXStartLayerOutputElement(propList));
+}
+
+void libvisio::VSDXOutputElementList::addEndLayer()
+{
+  m_elements.push_back(new VSDXEndLayerOutputElement());
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
