@@ -133,7 +133,7 @@ public:
   // Temporary hack
   void startPage();
   void endPage();
-  void endPages(const std::vector<unsigned> &pageOrder) {}
+  void endPages(const std::vector<unsigned> &) {}
 
   VSDXStyles getStyleSheets() const
   {
