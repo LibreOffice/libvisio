@@ -1515,6 +1515,7 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degre
 void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
 {
   std::map<unsigned, NURBSData>::const_iterator iter;
+  std::map<unsigned, NURBSData>::const_iterator iterEnd;
   NURBSData data;
   if (dataID == 0xFFFFFFFE) // Use stencil NURBS data
   {
@@ -1534,13 +1535,15 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     }
     dataID = tmpElement->m_dataID;
     iter = m_stencilShape->m_nurbsData.find(dataID);
+    iterEnd =  m_stencilShape->m_nurbsData.end();
   }
   else // No stencils involved, directly get dataID and fill in missing parts
   {
     iter = m_NURBSData.find(dataID);
+    iterEnd = m_NURBSData.end();
   }
 
-  if (iter != m_NURBSData.end())
+  if (iter != iterEnd)
   {
     data = iter->second;
     data.knots.push_back(knot);
