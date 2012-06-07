@@ -1,1 +1,1 @@
-SUBDIRS = raw svg
+SUBDIRS = raw svg text
