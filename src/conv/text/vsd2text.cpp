@@ -73,7 +73,7 @@ void TextPainter::insertText(const ::WPXString &str)
   printf("%s", str.cstr());
 }
 
-void TextPainter::endTextLine();
+void TextPainter::endTextLine()
 {
   printf("\n");
 }
