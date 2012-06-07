@@ -58,7 +58,7 @@ public:
   void startTextObject(const ::WPXPropertyList &, const ::WPXPropertyListVector &) {}
   void endTextObject() {}
   void startTextLine(const ::WPXPropertyList &) {}
-  void endTextLine() {}
+  void endTextLine();
   void startTextSpan(const ::WPXPropertyList &) {}
   void endTextSpan() {}
   void insertText(const ::WPXString &str);
@@ -70,9 +70,13 @@ TextPainter::TextPainter(): libwpg::WPGPaintInterface()
 
 void TextPainter::insertText(const ::WPXString &str)
 {
-  printf("%s\n", str.cstr());
+  printf("%s", str.cstr());
 }
 
+void TextPainter::endTextLine();
+{
+  printf("\n");
+}
 
 namespace
 {
