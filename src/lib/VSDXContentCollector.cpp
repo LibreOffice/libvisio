@@ -2059,7 +2059,11 @@ void libvisio::VSDXContentCollector::collectNameList(unsigned /*id*/, unsigned l
 
 void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format)
 {
+  if (!data.size())
+    return;
   WPXInputStream *pStream = const_cast<WPXInputStream *>(data.getDataStream());
+  if (!pStream)
+    return;
   if (format == VSD_TEXT_ANSI)
   {
     while (!pStream->atEOS())
