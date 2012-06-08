@@ -336,7 +336,8 @@ void libvisio::VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, cons
 
 void libvisio::VSDSVGGenerator::startLayer(const ::WPXPropertyList &propList)
 {
-  m_outputSink << "<svg:g id=\"Layer" << propList["svg:id"]->getInt() << "\"";
+  if (propList["svg:id"])
+    m_outputSink << "<svg:g id=\"Layer" << propList["svg:id"]->getInt() << "\"";
   if (propList["svg:fill-rule"])
     m_outputSink << " fill-rule=\"" << propList["svg:fill-rule"]->getStr().cstr() << "\"";
   m_outputSink << " >\n";
