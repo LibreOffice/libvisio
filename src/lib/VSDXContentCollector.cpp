@@ -1429,7 +1429,9 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
 
   // Fill in end knots
   while (knotVector.size() < (controlPoints.size() + degree + 2))
-    knotVector.push_back(knotVector.back());
+  {
+    double tmpBack = knotVector.back();
+    knotVector.push_back(tmpBack);
 
   // Convert control points to static co-ordinates
   for (std::vector<std::pair<double, double> >::iterator it = controlPoints.begin();
