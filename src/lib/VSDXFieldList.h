@@ -119,7 +119,7 @@ public:
   }
   bool empty() const
   {
-    return (!m_elements.size());
+    return (m_elements.empty());
   }
   VSDXFieldListElement *getElement(unsigned index);
 private:

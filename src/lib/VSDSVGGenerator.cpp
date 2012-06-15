@@ -507,7 +507,6 @@ void libvisio::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propLis
 {
   double x = 0.0;
   double y = 0.0;
-  double width = 0.0;
   double height = 0.0;
   m_outputSink << "<svg:text ";
   if (propList["svg:x"] && propList["svg:y"])
@@ -521,7 +520,7 @@ void libvisio::VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propLis
 
   if (propList["svg:width"])
   {
-    width = propList["svg:width"]->getDouble();
+    double width = propList["svg:width"]->getDouble();
     xmiddle += width / 2.0;
   }
 

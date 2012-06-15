@@ -66,7 +66,7 @@ public:
   void clear();
   bool empty() const
   {
-    return (!m_elements.size());
+    return (m_elements.empty());
   }
   VSDXGeometryListElement *getElement(unsigned index) const;
   std::vector<unsigned> getElementsOrder() const

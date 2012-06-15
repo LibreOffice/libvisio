@@ -55,7 +55,7 @@ public:
   void clear();
   bool empty() const
   {
-    return (!m_elements.size());
+    return (m_elements.empty());
   }
 private:
   std::map<unsigned, VSDXParagraphListElement *> m_elements;

@@ -574,8 +574,6 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
   fillPathProps.insert("draw:stroke", "none");
   WPXPropertyList linePathProps(m_styleProps);
   linePathProps.insert("draw:fill", "none");
-  bool firstPoint = true;
-  bool wasMove = false;
   bool needsGroup = true;
 
   if (!m_styleProps["draw:fill"] || m_styleProps["draw:fill"]->getStr() == "none")
@@ -592,6 +590,8 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
 
   if (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")
   {
+    bool firstPoint = true;
+    bool wasMove = false;
     for (unsigned i = 0; i < m_currentFillGeometry.size(); i++)
     {
       if (firstPoint)
@@ -2004,7 +2004,7 @@ void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsign
 
 void libvisio::VSDXContentCollector::collectSplineEnd()
 {
-  if (!m_splineKnotVector.size() || !m_splineControlPoints.size())
+  if (m_splineKnotVector.empty() || m_splineControlPoints.empty())
   {
     m_splineKnotVector.clear();
     m_splineControlPoints.clear();

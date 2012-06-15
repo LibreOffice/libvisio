@@ -59,6 +59,9 @@ libvisio::VSDStringVector::~VSDStringVector()
 
 libvisio::VSDStringVector &libvisio::VSDStringVector::operator=(const VSDStringVector &vec)
 {
+  // Check for self-assignment
+  if (this == &vec)
+    return *this;
   if (m_pImpl)
     delete m_pImpl;
   m_pImpl = new VSDStringVectorImpl(*(vec.m_pImpl));
