@@ -1601,6 +1601,7 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
 void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
   std::map<unsigned, PolylineData>::const_iterator iter;
+  std::map<unsigned, PolylineData>::const_iterator iterEnd;
   if (dataID == 0xFFFFFFFE) // Use stencil polyline data
   {
     if (!m_stencilShape || m_stencilShape->m_geometries.size() < m_currentGeometryCount)
@@ -1613,13 +1614,15 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned lev
     VSDXGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
     dataID = dynamic_cast<VSDXPolylineTo2 *>(element)->m_dataID;
     iter = m_stencilShape->m_polylineData.find(dataID);
+    iterEnd = m_stencilShape->m_polylineData.end();
   }
   else // No stencils involved, directly get dataID
   {
     iter = m_polylineData.find(dataID);
+    iterEnd = m_polylineData.end();
   }
 
-  if (iter != m_polylineData.end())
+  if (iter != iterEnd)
   {
     PolylineData data = iter->second;
     collectPolylineTo(id, level, x, y, data.xType, data.yType, data.points);
