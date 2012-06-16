@@ -1131,14 +1131,17 @@ void libvisio::VSDXContentCollector::collectInfiniteLine(unsigned /* id */, unsi
     if (x <= m_pageWidth && x >= 0)
       points[x] = y;
 
-    xmove = points.begin()->first;
-    ymove = points.begin()->second;
-    for (std::map<double, double>::iterator iter = points.begin(); iter != points.end(); ++iter)
+    if (!points.empty())
     {
-      if (iter->first != xmove || iter->second != ymove)
+      xmove = points.begin()->first;
+      ymove = points.begin()->second;
+      for (std::map<double, double>::iterator iter = points.begin(); iter != points.end(); ++iter)
       {
-        xline = iter->first;
-        yline = iter->second;
+        if (iter->first != xmove || iter->second != ymove)
+        {
+          xline = iter->first;
+          yline = iter->second;
+        }
       }
     }
   }
