@@ -34,6 +34,7 @@
 #include <vector>
 #include <stdio.h>
 #include <libwpd/libwpd.h>
+#include "VSDXTypes.h"
 
 #ifdef _MSC_VER
 
@@ -94,7 +95,7 @@ uint64_t readU64(WPXInputStream *input);
 
 double readDouble(WPXInputStream *input);
 
-void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, unsigned short charset);
+void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
 void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
 
 class EndOfStreamException

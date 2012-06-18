@@ -164,8 +164,11 @@ double libvisio::readDouble(WPXInputStream *input)
   return tmpUnion.d;
 }
 
-void libvisio::appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, unsigned short charset)
+void libvisio::appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format)
 {
+  if (format == VSD_TEXT_UTF16)
+    return appendCharacters(text, characters);
+
   static const unsigned short cp874map[] =
   {
     0x20AC, 0x0020, 0x0020, 0x0020, 0x0020, 0x2026, 0x0020, 0x0020,
@@ -365,6 +368,7 @@ void libvisio::appendCharacters(WPXString &text, const std::vector<unsigned char
     0x0111, 0x00F1, 0x0323, 0x00F3, 0x00F4, 0x01A1, 0x00F6, 0x00F7,
     0x00F8, 0x00F9, 0x00FA, 0x00FB, 0x00FC, 0x01B0, 0x20AB, 0x00FF
   };
+
   std::vector<unsigned char>::const_iterator iter = characters.begin();
   while (iter != characters.end())
   {
@@ -383,36 +387,36 @@ void libvisio::appendCharacters(WPXString &text, const std::vector<unsigned char
     }
     else
     {
-      switch (charset)
+      switch (format)
       {
-      case 0: // ANSI
+      case VSD_TEXT_ANSI:
         ucs4Character = cp1252map[*iter++ - 0x80];
         break;
-      case 0xa1: // GREEEK
+      case VSD_TEXT_GREEK:
         ucs4Character = cp1253map[*iter++ - 0x80];
         break;
-      case 0xa2: // TURKISH
+      case VSD_TEXT_TURKISH:
         ucs4Character = cp1254map[*iter++ - 0x80];
         break;
-      case 0xa3: // VIETNAMESE
+      case VSD_TEXT_VIETNAMESE:
         ucs4Character = cp1258map[*iter++ - 0x80];
         break;
-      case 0xb1: // HEBREW
+      case VSD_TEXT_HEBREW:
         ucs4Character = cp1255map[*iter++ - 0x80];
         break;
-      case 0xb2: // ARABIC
+      case VSD_TEXT_ARABIC:
         ucs4Character = cp1256map[*iter++ - 0x80];
         break;
-      case 0xba: // BALTIC
+      case VSD_TEXT_BALTIC:
         ucs4Character = cp1257map[*iter++ - 0x80];
         break;
-      case 0xcc: // RUSSIAN
+      case VSD_TEXT_RUSSIAN:
         ucs4Character = cp1251map[*iter++ - 0x80];
         break;
-      case 0xde: // THAI
+      case VSD_TEXT_THAI:
         ucs4Character = cp874map[*iter++ - 0x80];
         break;
-      case 0xee: // CENTRAL EUROPE
+      case VSD_TEXT_CENTRAL_EUROPE:
         ucs4Character = cp1250map[*iter++ - 0x80];
         break;
       default:

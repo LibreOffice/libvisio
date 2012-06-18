@@ -176,7 +176,20 @@ struct ForeignData
       data(fd.data) {}
 };
 
-enum TextFormat { VSD_TEXT_ANSI, VSD_TEXT_UTF16 };
+enum TextFormat
+{
+  VSD_TEXT_ANSI = 0,
+  VSD_TEXT_GREEK,
+  VSD_TEXT_TURKISH,
+  VSD_TEXT_VIETNAMESE,
+  VSD_TEXT_HEBREW,
+  VSD_TEXT_ARABIC,
+  VSD_TEXT_BALTIC,
+  VSD_TEXT_RUSSIAN,
+  VSD_TEXT_THAI,
+  VSD_TEXT_CENTRAL_EUROPE,
+  VSD_TEXT_UTF16
+};
 
 class VSDXName
 {

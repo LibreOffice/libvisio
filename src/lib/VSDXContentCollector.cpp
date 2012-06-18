@@ -845,7 +845,7 @@ void libvisio::VSDXContentCollector::_flushText()
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
         std::vector<unsigned char> tmpBuffer(max);
         memcpy(&tmpBuffer[0], &pTextBuffer[textBufferPosition], max);
-        appendCharacters(text, tmpBuffer, 0);
+        appendCharacters(text, tmpBuffer, m_textFormat);
         textBufferPosition += max;
       }
       WPXPropertyList textProps;
@@ -2111,10 +2111,7 @@ void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, con
     return;
   std::vector<unsigned char> tmpData(data.size());
   memcpy(&tmpData[0], data.getDataBuffer(), data.size());
-  if (format == VSD_TEXT_ANSI)
-    appendCharacters(result, tmpData, 0);
-  else if (format == VSD_TEXT_UTF16)
-    appendCharacters(result, tmpData);
+  appendCharacters(result, tmpData, format);
 }
 
 void libvisio::VSDXContentCollector::collectName(unsigned id, unsigned level, const WPXBinaryData &name, TextFormat format)
