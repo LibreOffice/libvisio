@@ -28,6 +28,7 @@
  * instead of those above.
  */
 
+#include <string.h> // for memcpy
 #include <stack>
 #include <boost/spirit/include/classic.hpp>
 
@@ -93,6 +94,10 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
     m_fillType = "solid";
     if (colourIndexFG < m_colours.size())
       m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
+#endif
     if (m_fillFGTransparency > 0)
       m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
@@ -104,8 +109,16 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
     m_styleProps.insert("draw:style", "axial");
     if (colourIndexFG < m_colours.size())
       m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
+#endif
     if (colourIndexBG < m_colours.size())
       m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
+#endif
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
@@ -128,8 +141,16 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
     m_styleProps.insert("draw:style", "linear");
     if (colourIndexBG < m_colours.size())
       m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
+#endif
     if (colourIndexFG < m_colours.size())
       m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
+#endif
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
@@ -177,8 +198,16 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
     m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
     if (colourIndexBG < m_colours.size())
       m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
+#endif
     if (colourIndexFG < m_colours.size())
       m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
+#endif
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
@@ -197,8 +226,16 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
     m_styleProps.insert("draw:style", "radial");
     if (colourIndexBG < m_colours.size())
       m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
+#endif
     if (colourIndexFG < m_colours.size())
       m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
+#endif
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
@@ -238,7 +275,12 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
     // fill types we don't handle right, but let us approximate with solid fill
   {
     m_fillType = "solid";
-    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
+    if (colourIndexBG < m_colours.size())
+      m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
+#ifdef DEBUG
+    else
+      VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
+#endif
   }
 
   if (shadowPattern != 0)
@@ -792,30 +834,18 @@ void libvisio::VSDXContentCollector::_flushText()
         VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
         VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
-        VSDInternalStream tmpStream(&pTextBuffer[textBufferPosition], max*2);
-        _appendUTF16LE(text, &tmpStream);
+        std::vector<unsigned char> tmpBuffer(max*2);
+        memcpy(&tmpBuffer[0], &pTextBuffer[textBufferPosition], max*2);
+        appendCharacters(text, tmpBuffer);
         textBufferPosition += max*2;
       }
       else
       {
         unsigned long max = m_charFormats[charIndex].charCount <= m_textStream.size() ? m_charFormats[charIndex].charCount : m_textStream.size();
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
-        VSDInternalStream tmpStream(&pTextBuffer[textBufferPosition], max);
-        while (!tmpStream.atEOS())
-        {
-          unsigned char character = readU8(&tmpStream);
-          if (character == 0x1e)
-          {
-            if (m_fieldIndex < m_fields.size())
-              text.append(m_fields[m_fieldIndex++].cstr());
-            else
-              m_fieldIndex++;
-          }
-          else if (character <= 0x20)
-            _appendUCS4(text, (unsigned) 0x20);
-          else
-            _appendUCS4(text, (unsigned) character);
-        }
+        std::vector<unsigned char> tmpBuffer(max);
+        memcpy(&tmpBuffer[0], &pTextBuffer[textBufferPosition], max);
+        appendCharacters(text, tmpBuffer, 0);
         textBufferPosition += max;
       }
       WPXPropertyList textProps;
@@ -2079,24 +2109,12 @@ void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, con
 {
   if (!data.size())
     return;
-  WPXInputStream *pStream = const_cast<WPXInputStream *>(data.getDataStream());
-  if (!pStream)
-    return;
+  std::vector<unsigned char> tmpData(data.size());
+  memcpy(&tmpData[0], data.getDataBuffer(), data.size());
   if (format == VSD_TEXT_ANSI)
-  {
-    while (!pStream->atEOS())
-    {
-      unsigned char character = readU8(pStream);
-      if (character <= 0x20)
-        _appendUCS4(result, (unsigned) 0x20);
-      else
-        _appendUCS4(result, (unsigned) character);
-    }
-  }
+    appendCharacters(result, tmpData, 0);
   else if (format == VSD_TEXT_UTF16)
-  {
-    _appendUTF16LE(result, pStream);
-  }
+    appendCharacters(result, tmpData);
 }
 
 void libvisio::VSDXContentCollector::collectName(unsigned id, unsigned level, const WPXBinaryData &name, TextFormat format)
@@ -2278,7 +2296,6 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
   m_currentLevel = level;
 }
 
-
 void libvisio::VSDXContentCollector::startPage()
 {
   if (m_isShapeStarted)
@@ -2321,118 +2338,6 @@ void libvisio::VSDXContentCollector::endPages(const std::vector<unsigned> &pageO
 {
   m_pages.setOrder(pageOrder);
   m_pages.draw(m_painter);
-}
-
-#define SURROGATE_VALUE(h,l) (((h) - 0xd800) * 0x400 + (l) - 0xdc00 + 0x10000)
-
-void libvisio::VSDXContentCollector::_appendUTF16LE(WPXString &text, WPXInputStream *input)
-{
-  if (!input)
-    return;
-  while (!input->atEOS())
-  {
-    uint16_t high_surrogate = 0;
-    bool fail = false;
-    uint32_t ucs4Character = 0;
-    uint16_t character = 0;
-    while (true)
-    {
-      if (input->atEOS())
-      {
-        fail = true;
-        break;
-      }
-      character = readU16(input);
-      if (character == 0xfffc)
-      {
-        if (m_fieldIndex < m_fields.size())
-          text.append(m_fields[m_fieldIndex++].cstr());
-        else
-          m_fieldIndex++;
-      }
-      else if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
-      {
-        if (high_surrogate)
-        {
-          ucs4Character = SURROGATE_VALUE(high_surrogate, character);
-          high_surrogate = 0;
-          break;
-        }
-        else
-        {
-          fail = true;
-          break;
-        }
-      }
-      else
-      {
-        if (high_surrogate)
-        {
-          fail = true;
-          break;
-        }
-        if (character >= 0xd800 && character < 0xdc00) /* high surrogate */
-          high_surrogate = character;
-        else
-        {
-          ucs4Character = character;
-          break;
-        }
-      }
-    }
-    if (fail)
-      throw GenericException();
-
-    _appendUCS4(text, ucs4Character);
-  }
-}
-
-void libvisio::VSDXContentCollector::_appendUCS4(WPXString &text, unsigned ucs4Character)
-{
-  unsigned char first;
-  int len;
-  if (ucs4Character < 0x80)
-  {
-    first = 0;
-    len = 1;
-  }
-  else if (ucs4Character < 0x800)
-  {
-    first = 0xc0;
-    len = 2;
-  }
-  else if (ucs4Character < 0x10000)
-  {
-    first = 0xe0;
-    len = 3;
-  }
-  else if (ucs4Character < 0x200000)
-  {
-    first = 0xf0;
-    len = 4;
-  }
-  else if (ucs4Character < 0x4000000)
-  {
-    first = 0xf8;
-    len = 5;
-  }
-  else
-  {
-    first = 0xfc;
-    len = 6;
-  }
-
-  unsigned char outbuf[6] = { 0, 0, 0, 0, 0, 0 };
-  int i;
-  for (i = len - 1; i > 0; --i)
-  {
-    outbuf[i] = (ucs4Character & 0x3f) | 0x80;
-    ucs4Character >>= 6;
-  }
-  outbuf[0] = (ucs4Character & 0xff) | first;
-
-  for (i = 0; i < len; i++)
-    text.append(outbuf[i]);
 }
 
 bool libvisio::VSDXContentCollector::parseFormatId( const char *formatString, unsigned short &result )

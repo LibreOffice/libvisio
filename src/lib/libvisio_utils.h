@@ -31,7 +31,9 @@
 #ifndef __LIBVISIO_UTILS_H__
 #define __LIBVISIO_UTILS_H__
 
+#include <vector>
 #include <stdio.h>
+#include <libwpd/libwpd.h>
 
 #ifdef _MSC_VER
 
@@ -91,6 +93,9 @@ uint32_t readU32(WPXInputStream *input);
 uint64_t readU64(WPXInputStream *input);
 
 double readDouble(WPXInputStream *input);
+
+void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, unsigned short charset);
+void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
 
 class EndOfStreamException
 {

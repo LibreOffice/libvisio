@@ -161,8 +161,6 @@ private:
   void _flushCurrentPage();
 
   void _handleLevelChange(unsigned level);
-  void _appendUTF16LE(WPXString &text, WPXInputStream *input);
-  void _appendUCS4(WPXString &text, unsigned ucs4Character);
 
   void _handleForeignData(const WPXBinaryData &data);
 
