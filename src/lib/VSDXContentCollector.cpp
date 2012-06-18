@@ -91,7 +91,8 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
   else if (m_fillPattern == 1)
   {
     m_fillType = "solid";
-    m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+    if (colourIndexFG < m_colours.size())
+      m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
     if (m_fillFGTransparency > 0)
       m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
     else
@@ -101,8 +102,10 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
   {
     m_fillType = "gradient";
     m_styleProps.insert("draw:style", "axial");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
+    if (colourIndexFG < m_colours.size())
+      m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
+    if (colourIndexBG < m_colours.size())
+      m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
@@ -123,8 +126,10 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
   {
     m_fillType = "gradient";
     m_styleProps.insert("draw:style", "linear");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    if (colourIndexBG < m_colours.size())
+      m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    if (colourIndexFG < m_colours.size())
+      m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
@@ -170,8 +175,10 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
     m_styleProps.insert("draw:style", "rectangular");
     m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
     m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    if (colourIndexBG < m_colours.size())
+      m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    if (colourIndexFG < m_colours.size())
+      m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
@@ -188,8 +195,10 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
   {
     m_fillType = "gradient";
     m_styleProps.insert("draw:style", "radial");
-    m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
-    m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    if (colourIndexBG < m_colours.size())
+      m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    if (colourIndexFG < m_colours.size())
+      m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
       m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
