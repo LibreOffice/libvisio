@@ -445,7 +445,7 @@ void libvisio::appendCharacters(WPXString &text, const std::vector<unsigned char
         break;
       }
       character = *iter++;
-      character = (uint16_t)(*iter++) << 8;
+      character |= (uint16_t)(*iter++) << 8;
       if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
       {
         if (high_surrogate)
