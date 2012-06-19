@@ -95,9 +95,6 @@ uint64_t readU64(WPXInputStream *input);
 
 double readDouble(WPXInputStream *input);
 
-void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
-void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
-
 class EndOfStreamException
 {
 };

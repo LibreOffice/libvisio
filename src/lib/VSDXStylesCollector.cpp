@@ -246,7 +246,7 @@ void libvisio::VSDXStylesCollector::collectVSDXParaStyle(unsigned /* id */ , uns
 void libvisio::VSDXStylesCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/,
     unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/,
     bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */, bool /* allcaps */,
-    bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, WPXString /*fontFace*/)
+    bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, VSDXFont /*fontFace*/)
 {
   _handleLevelChange(level);
 }
@@ -327,7 +327,7 @@ void libvisio::VSDXStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned
 void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
     unsigned langID, double fontSize, bool bold, bool italic, bool underline, bool doubleunderline,
     bool strikeout, bool doublestrikeout, bool allcaps, bool initcaps, bool smallcaps,
-    bool superscript, bool subscript, WPXString fontFace)
+    bool superscript, bool subscript, VSDXFont fontFace)
 {
   _handleLevelChange(level);
   if (!m_charStyle)

@@ -102,8 +102,8 @@ struct VSDXCharStyle
     smallcaps(false),
     superscript(false),
     subscript(false),
-    face("Arial") {}
-  VSDXCharStyle(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, WPXString f) :
+    face() {}
+  VSDXCharStyle(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, VSDXFont f) :
     charCount(cc),
     faceID(id),
     colour(c),
@@ -138,7 +138,7 @@ struct VSDXCharStyle
   bool smallcaps;
   bool superscript;
   bool subscript;
-  WPXString face;
+  VSDXFont face;
 };
 
 struct VSDXParaStyle

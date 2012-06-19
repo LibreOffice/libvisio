@@ -104,7 +104,7 @@ void libvisio::VSD6Parser::readText(WPXInputStream *input)
 
 void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
 {
-  WPXString fontFace = "Arial";
+  VSDXFont fontFace;
   unsigned charCount = readU32(input);
   unsigned short fontID = readU16(input);
   input->seek(1, WPX_SEEK_CUR);  // Color ID

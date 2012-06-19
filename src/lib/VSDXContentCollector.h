@@ -107,7 +107,7 @@ public:
   void collectText(unsigned id, unsigned level, const WPXBinaryData &textStream, TextFormat format);
   void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                             double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
+                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
   void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                             double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
@@ -126,7 +126,7 @@ public:
                         unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc);
   void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                           double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
+                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
   void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                           double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
   void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
@@ -178,6 +178,8 @@ private:
                                 unsigned fillFGTransparency, unsigned fillBGTransparency,
                                 unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
 
+  void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
+  void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
   void _convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format);
   bool parseFormatId( const char *formatString, unsigned short &result );
 
@@ -217,7 +219,7 @@ private:
   bool m_noFill;
   bool m_noShow;
   std::vector<Colour> m_colours;
-  std::map<unsigned short, WPXString> m_fonts;
+  std::map<unsigned short, VSDXFont> m_fonts;
   unsigned m_currentLevel;
   bool m_isShapeStarted;
   std::map<unsigned, unsigned> &m_groupMemberships;

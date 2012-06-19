@@ -211,6 +211,13 @@ public:
   TextFormat m_format;
 };
 
+struct VSDXFont
+{
+  WPXString name;
+  TextFormat encoding;
+  VSDXFont() : name("Arial"), encoding(libvisio::VSD_TEXT_ANSI) {}
+};
+
 } // namespace libvisio
 
 #endif /* VSDXTYPES_H */

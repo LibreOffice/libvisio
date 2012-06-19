@@ -48,7 +48,7 @@ class VSDXCharIX : public VSDXCharacterListElement
 public:
   VSDXCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
              double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace) :
+             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace) :
     m_id(id), m_level(level), m_charCount(charCount), m_fontID(fontID), m_fontColour(fontColour), m_langId(langId),
     m_fontSize(fontSize), m_bold(bold), m_italic(italic), m_underline(underline), m_doubleunderline(doubleunderline),
     m_strikeout(strikeout), m_doublestrikeout(doublestrikeout), m_allcaps(allcaps), m_initcaps(initcaps), m_smallcaps(smallcaps),
@@ -65,7 +65,7 @@ private:
   double m_fontSize;
   bool m_bold, m_italic, m_underline, m_doubleunderline, m_strikeout, m_doublestrikeout;
   bool m_allcaps, m_initcaps, m_smallcaps, m_superscript, m_subscript;
-  WPXString m_fontFace;
+  VSDXFont m_fontFace;
 };
 } // namespace libvisio
 
@@ -117,7 +117,7 @@ libvisio::VSDXCharacterList::~VSDXCharacterList()
 
 void libvisio::VSDXCharacterList::addCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
     double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace)
+    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace)
 {
   m_elements[id] = new VSDXCharIX(id, level, charCount, fontID, fontColour, langId, fontSize, bold, italic, underline, doubleunderline,
                                   strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);

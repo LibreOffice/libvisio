@@ -98,7 +98,7 @@ public:
   void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
   void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                             double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
+                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
   void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                             double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
@@ -119,7 +119,7 @@ public:
                         unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc);
   void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
                           double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, WPXString fontFace);
+                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
   void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                           double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
   void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,

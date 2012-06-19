@@ -134,7 +134,6 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 
     if (ptr.Type == VSD_FONTFACES)
       PtrList.insert(PtrList.begin(),ptr);
-//      PtrList.push_back(ptr);
     else if (ptr.Type != 0)
       PtrList.push_back(ptr);
   }
@@ -1669,7 +1668,9 @@ void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned fontID)
 
 void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
 {
-  input->seek(6, WPX_SEEK_CUR);
+  input->seek(2, WPX_SEEK_CUR);
+  unsigned char codePage = readU8(input);
+  input->seek(3, WPX_SEEK_CUR);
   ::WPXBinaryData textStream;
 
   for (unsigned i = 0; i < m_header.dataLength - 6; i++)
@@ -1679,7 +1680,43 @@ void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
       break;
     textStream.append(curchar);
   }
-  m_collector->collectFont((unsigned short) m_header.id, textStream, libvisio::VSD_TEXT_ANSI);
+  TextFormat format = libvisio::VSD_TEXT_ANSI;
+  switch (codePage)
+  {
+  case 0: // ANSI
+    format = libvisio::VSD_TEXT_ANSI;
+    break;
+  case 0xa1: // GREEK
+    format = libvisio::VSD_TEXT_GREEK;
+    break;
+  case 0xa2: // TURKISH
+    format = libvisio::VSD_TEXT_TURKISH;
+    break;
+  case 0xa3: // VIETNAMESE
+    format = libvisio::VSD_TEXT_VIETNAMESE;
+    break;
+  case 0xb1: // HEBREW
+    format = libvisio::VSD_TEXT_HEBREW;
+    break;
+  case 0xb2: // ARABIC
+    format = libvisio::VSD_TEXT_ARABIC;
+    break;
+  case 0xba: // BALTIC
+    format = libvisio::VSD_TEXT_BALTIC;
+    break;
+  case 0xcc: // RUSSIAN
+    format = libvisio::VSD_TEXT_RUSSIAN;
+    break;
+  case 0xde: // THAI
+    format = libvisio::VSD_TEXT_THAI;
+    break;
+  case 0xee: // CENTRAL EUROPE
+    format = libvisio::VSD_TEXT_CENTRAL_EUROPE;
+    break;
+  default:
+    break;
+  }
+  m_collector->collectFont((unsigned short) m_header.id, textStream, format);
 }
 
 /* StyleSheet readers */
