@@ -164,23 +164,20 @@ void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)
   if (fontMod & 4) strikeout = true;
   if (fontMod & 0x20) doublestrikeout = true;
 
-  input->seek(42, WPX_SEEK_CUR);
-  unsigned langId = readU32(input);
-
   if (m_isInStyles)
-    m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize,
+    m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
                                     bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                     allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   else if (m_isStencilStarted)
   {
     VSD_DEBUG_MSG(("Found stencil character style\n"));
     if (!m_stencilShape.m_charStyle)
-      m_stencilShape.m_charStyle= new VSDXCharStyle(charCount, fontID, fontColour, langId, fontSize,
+      m_stencilShape.m_charStyle= new VSDXCharStyle(charCount, fontID, fontColour, fontSize,
           bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
           allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   }
   else
-    m_charList->addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, langId, fontSize,
+    m_charList->addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
                           bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                           allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }

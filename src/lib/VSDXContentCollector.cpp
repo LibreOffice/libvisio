@@ -2144,13 +2144,13 @@ void libvisio::VSDXContentCollector::collectVSDXParaStyle(unsigned /* id */ , un
   m_paraFormats.push_back(format);
 }
 
-void libvisio::VSDXContentCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID,
-    Colour fontColour, unsigned langId, double fontSize, bool bold, bool italic,
+void libvisio::VSDXContentCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned charCount,
+    unsigned short fontID, Colour fontColour, double fontSize, bool bold, bool italic,
     bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
     bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace)
 {
   _handleLevelChange(level);
-  VSDXCharStyle format(charCount, fontID, fontColour, langId, fontSize, bold, italic,
+  VSDXCharStyle format(charCount, fontID, fontColour, fontSize, bold, italic,
                        underline, doubleunderline, strikeout, doublestrikeout,
                        allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   m_charFormats.push_back(format);
@@ -2209,7 +2209,7 @@ void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, unsigned /*langId*/, double /*fontSize*/,
+void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, double /*fontSize*/,
     bool /*bold*/, bool /*italic*/, bool /*underline*/, bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */,
     bool /* allcaps */, bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, VSDXFont /*fontFace*/)
 {

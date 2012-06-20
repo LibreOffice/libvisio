@@ -89,7 +89,6 @@ struct VSDXCharStyle
     charCount(0),
     faceID(0),
     colour(),
-    langID(0),
     size(12.0/72.0),
     bold(false),
     italic(false),
@@ -103,11 +102,10 @@ struct VSDXCharStyle
     superscript(false),
     subscript(false),
     face() {}
-  VSDXCharStyle(unsigned cc, unsigned short id, Colour c, unsigned lang, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, VSDXFont f) :
+  VSDXCharStyle(unsigned cc, unsigned short id, Colour c, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, VSDXFont f) :
     charCount(cc),
     faceID(id),
     colour(c),
-    langID(lang),
     size(s),
     bold(b),
     italic(i),
@@ -125,7 +123,6 @@ struct VSDXCharStyle
   unsigned charCount;
   unsigned short faceID;
   Colour colour;
-  unsigned langID;
   double size;
   bool bold;
   bool italic;

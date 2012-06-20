@@ -96,7 +96,7 @@ public:
   void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format);
 
   void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
-  void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
+  void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
                             double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
   void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
@@ -117,7 +117,7 @@ public:
                         double shadowOffsetX, double shadowOffsetY);
   void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern,
                         unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc);
-  void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId,
+  void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
                           double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                           bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
   void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,

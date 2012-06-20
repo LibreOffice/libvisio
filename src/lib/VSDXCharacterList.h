@@ -48,7 +48,7 @@ public:
   VSDXCharacterList(const VSDXCharacterList &charList);
   ~VSDXCharacterList();
   VSDXCharacterList &operator=(const VSDXCharacterList &charList);
-  void addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, unsigned langId, double fontSize,
+  void addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
                  bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                  bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);

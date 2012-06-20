@@ -243,8 +243,8 @@ void libvisio::VSDXStylesCollector::collectVSDXParaStyle(unsigned /* id */ , uns
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/,
-    unsigned /*langId*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/,
+void libvisio::VSDXStylesCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/,
+    Colour /*fontColour*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/,
     bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */, bool /* allcaps */,
     bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, VSDXFont /*fontFace*/)
 {
@@ -324,14 +324,14 @@ void libvisio::VSDXStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned
 }
 
 
-void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
-    unsigned langID, double fontSize, bool bold, bool italic, bool underline, bool doubleunderline,
+void libvisio::VSDXStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID,
+    Colour fontColour, double fontSize, bool bold, bool italic, bool underline, bool doubleunderline,
     bool strikeout, bool doublestrikeout, bool allcaps, bool initcaps, bool smallcaps,
     bool superscript, bool subscript, VSDXFont fontFace)
 {
   _handleLevelChange(level);
   if (!m_charStyle)
-    m_charStyle = new VSDXCharStyle(charCount, fontID, fontColour, langID, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+    m_charStyle = new VSDXCharStyle(charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                     allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
