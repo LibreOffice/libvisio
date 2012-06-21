@@ -2652,14 +2652,14 @@ void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std
     else if (*iter < 0x20)
     {
       ucs4Character = 0x20;
-      iter++;
+      ++iter;
     }
     else if (*iter >= 0x20 && *iter < 0x7f)
       ucs4Character = *iter++;
     else if (*iter == 0x7f)
     {
       ucs4Character = 0x20;
-      iter++;
+      ++iter;
     }
     else
     {
