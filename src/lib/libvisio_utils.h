@@ -31,10 +31,7 @@
 #ifndef __LIBVISIO_UTILS_H__
 #define __LIBVISIO_UTILS_H__
 
-#include <vector>
 #include <stdio.h>
-#include <libwpd/libwpd.h>
-#include "VSDXTypes.h"
 
 #ifdef _MSC_VER
 
