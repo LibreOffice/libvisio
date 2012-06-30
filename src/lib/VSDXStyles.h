@@ -46,8 +46,6 @@ struct VSDXLineStyle
   VSDXLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
                 unsigned char em, unsigned char c)
     : width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
-  VSDXLineStyle(const VSDXLineStyle &lineStyle)
-    : width(lineStyle.width), colour(lineStyle.colour), pattern(lineStyle.pattern), startMarker(lineStyle.startMarker), endMarker(lineStyle.endMarker), cap(lineStyle.cap) {}
   ~VSDXLineStyle() {}
   double width;
   Colour colour;
@@ -63,10 +61,6 @@ struct VSDXFillStyle
     : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
   VSDXFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga, Colour sfgc, unsigned char shp, double shX, double shY)
     : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
-  VSDXFillStyle(const VSDXFillStyle &fillStyle)
-    : fgColourId(fillStyle.fgColourId), bgColourId(fillStyle.bgColourId), pattern(fillStyle.pattern),
-      fgTransparency(fillStyle.fgTransparency), bgTransparency(fillStyle.bgTransparency), shadowFgColour(fillStyle.shadowFgColour),
-      shadowPattern(fillStyle.shadowPattern), shadowOffsetX(fillStyle.shadowOffsetX), shadowOffsetY(fillStyle.shadowOffsetY) {}
   ~VSDXFillStyle() {}
   unsigned char fgColourId;
   //  Colour fgColour;
