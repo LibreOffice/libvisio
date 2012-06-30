@@ -200,13 +200,16 @@ libvisio::VSDXFieldList::VSDXFieldList(const libvisio::VSDXFieldList &fieldList)
 
 libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDXFieldList &fieldList)
 {
-  clear();
-  std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
-  for (; iter != fieldList.m_elements.end(); ++iter)
-    m_elements[iter->first] = iter->second->clone();
-  m_elementsOrder = fieldList.m_elementsOrder;
-  m_id = fieldList.m_id;
-  m_level = fieldList.m_level;
+  if (this != &fieldList)
+  {
+    clear();
+    std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
+    for (; iter != fieldList.m_elements.end(); ++iter)
+      m_elements[iter->first] = iter->second->clone();
+    m_elementsOrder = fieldList.m_elementsOrder;
+    m_id = fieldList.m_id;
+    m_level = fieldList.m_level;
+  }
   return *this;
 }
 
