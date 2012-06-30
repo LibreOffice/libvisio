@@ -93,25 +93,6 @@ struct NURBSData
       knots(),
       weights(),
       points() {}
-  NURBSData(const NURBSData &data)
-    : lastKnot(data.lastKnot),
-      degree(data.degree),
-      xType(data.xType),
-      yType(data.yType),
-      knots(data.knots),
-      weights(data.weights),
-      points(data.points) {}
-  NURBSData &operator=(const NURBSData &data)
-  {
-    lastKnot = data.lastKnot;
-    degree = data.degree;
-    xType = data.xType;
-    yType = data.yType;
-    knots = data.knots;
-    weights = data.weights;
-    points = data.points;
-    return *this;
-  }
 };
 
 struct PolylineData
@@ -123,17 +104,6 @@ struct PolylineData
     : xType(0x00),
       yType(0x00),
       points() {}
-  PolylineData(const PolylineData &data)
-    : xType(data.xType),
-      yType(data.yType),
-      points(data.points) {}
-  PolylineData &operator=(const PolylineData &data)
-  {
-    xType = data.xType;
-    yType = data.yType;
-    points = data.points;
-    return *this;
-  }
 };
 
 
@@ -162,18 +132,6 @@ struct ForeignData
       width(0.0),
       height(0.0),
       data() {}
-  ForeignData(const ForeignData &fd)
-    : typeId(fd.typeId),
-      dataId(fd.dataId),
-      typeLevel(fd.typeLevel),
-      dataLevel(fd.dataLevel),
-      type(fd.type),
-      format(fd.format),
-      offsetX(fd.offsetX),
-      offsetY(fd.offsetY),
-      width(fd.width),
-      height(fd.height),
-      data(fd.data) {}
 };
 
 enum TextFormat
@@ -198,15 +156,6 @@ public:
     : m_data(data),
       m_format(format) {}
   VSDXName() : m_data(), m_format(VSD_TEXT_ANSI) {}
-  VSDXName(const VSDXName &element)
-    : m_data(element.m_data),
-      m_format(element.m_format) {}
-  VSDXName &operator=(const VSDXName &element)
-  {
-    m_data = element.m_data;
-    m_format = element.m_format;
-    return *this;
-  }
   WPXBinaryData m_data;
   TextFormat m_format;
 };
