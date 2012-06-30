@@ -36,7 +36,6 @@ class VSDStringVectorImpl
 {
 public:
   VSDStringVectorImpl() : m_strings() {}
-  VSDStringVectorImpl(const VSDStringVectorImpl &impl) : m_strings(impl.m_strings) {}
   ~VSDStringVectorImpl() {}
   std::vector<WPXString> m_strings;
 };
