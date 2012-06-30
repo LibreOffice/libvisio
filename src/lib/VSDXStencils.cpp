@@ -69,34 +69,37 @@ libvisio::VSDXStencilShape::~VSDXStencilShape()
 
 libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio::VSDXStencilShape &shape)
 {
-  m_geometries = shape.m_geometries;
-  m_fields = shape.m_fields;
-  if (m_foreign)
-    delete m_foreign;
-  m_foreign = shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0;
-  m_lineStyleId = shape.m_lineStyleId;
-  m_fillStyleId = shape.m_fillStyleId;
-  m_textStyleId = shape.m_textStyleId;
-  if (m_lineStyle)
-    delete m_lineStyle;
-  m_lineStyle = shape.m_lineStyle ? new VSDXLineStyle(*(shape.m_lineStyle)) : 0;
-  if (m_fillStyle)
-    delete m_fillStyle;
-  m_fillStyle = shape.m_fillStyle ? new VSDXFillStyle(*(shape.m_fillStyle)) : 0;
-  if (m_textBlockStyle)
-    delete m_textBlockStyle;
-  m_textBlockStyle = shape.m_textBlockStyle ? new VSDXTextBlockStyle(*(shape.m_textBlockStyle)) : 0;
-  if (m_charStyle)
-    delete m_charStyle;
-  m_charStyle = shape.m_charStyle ? new VSDXCharStyle(*(shape.m_charStyle)) : 0;
-  if (m_paraStyle)
-    delete m_paraStyle;
-  m_paraStyle = shape.m_paraStyle ? new VSDXParaStyle(*(shape.m_paraStyle)) : 0;
-  m_text = shape.m_text;
-  m_names = shape.m_names;
-  m_textFormat = shape.m_textFormat;
-  m_nurbsData = shape.m_nurbsData;
-  m_polylineData = shape.m_polylineData;
+  if (this != &shape)
+  {
+    m_geometries = shape.m_geometries;
+    m_fields = shape.m_fields;
+    if (m_foreign)
+      delete m_foreign;
+    m_foreign = shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0;
+    m_lineStyleId = shape.m_lineStyleId;
+    m_fillStyleId = shape.m_fillStyleId;
+    m_textStyleId = shape.m_textStyleId;
+    if (m_lineStyle)
+      delete m_lineStyle;
+    m_lineStyle = shape.m_lineStyle ? new VSDXLineStyle(*(shape.m_lineStyle)) : 0;
+    if (m_fillStyle)
+      delete m_fillStyle;
+    m_fillStyle = shape.m_fillStyle ? new VSDXFillStyle(*(shape.m_fillStyle)) : 0;
+    if (m_textBlockStyle)
+      delete m_textBlockStyle;
+    m_textBlockStyle = shape.m_textBlockStyle ? new VSDXTextBlockStyle(*(shape.m_textBlockStyle)) : 0;
+    if (m_charStyle)
+      delete m_charStyle;
+    m_charStyle = shape.m_charStyle ? new VSDXCharStyle(*(shape.m_charStyle)) : 0;
+    if (m_paraStyle)
+      delete m_paraStyle;
+    m_paraStyle = shape.m_paraStyle ? new VSDXParaStyle(*(shape.m_paraStyle)) : 0;
+    m_text = shape.m_text;
+    m_names = shape.m_names;
+    m_textFormat = shape.m_textFormat;
+    m_nurbsData = shape.m_nurbsData;
+    m_polylineData = shape.m_polylineData;
+  }
   return *this;
 }
 
@@ -117,9 +120,12 @@ libvisio::VSDXStencil::~VSDXStencil()
 
 libvisio::VSDXStencil &libvisio::VSDXStencil::operator=(const libvisio::VSDXStencil &stencil)
 {
-  m_shapes = stencil.m_shapes;
-  m_shadowOffsetX = stencil.m_shadowOffsetX;
-  m_shadowOffsetY = stencil.m_shadowOffsetY;
+  if (this != &stencil)
+  {
+    m_shapes = stencil.m_shapes;
+    m_shadowOffsetX = stencil.m_shadowOffsetX;
+    m_shadowOffsetY = stencil.m_shadowOffsetY;
+  }
   return *this;
 }
 
