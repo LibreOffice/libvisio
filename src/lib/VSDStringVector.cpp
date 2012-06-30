@@ -54,6 +54,7 @@ libvisio::VSDStringVector::VSDStringVector(const VSDStringVector &vec)
 
 libvisio::VSDStringVector::~VSDStringVector()
 {
+  delete m_pImpl;
 }
 
 libvisio::VSDStringVector &libvisio::VSDStringVector::operator=(const VSDStringVector &vec)
