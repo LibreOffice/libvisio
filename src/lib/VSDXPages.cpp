@@ -51,11 +51,14 @@ libvisio::VSDXPage::~VSDXPage()
 
 libvisio::VSDXPage &libvisio::VSDXPage::operator=(const libvisio::VSDXPage &page)
 {
-  m_pageWidth = page.m_pageWidth;
-  m_pageHeight = page.m_pageHeight;
-  m_currentPageID = page.m_currentPageID;
-  m_backgroundPageID = page.m_backgroundPageID;
-  m_pageElements = page.m_pageElements;
+  if (this == &page)
+  {
+    m_pageWidth = page.m_pageWidth;
+    m_pageHeight = page.m_pageHeight;
+    m_currentPageID = page.m_currentPageID;
+    m_backgroundPageID = page.m_backgroundPageID;
+    m_pageElements = page.m_pageElements;
+  }
   return *this;
 }
 
