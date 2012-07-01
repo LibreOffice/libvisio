@@ -51,7 +51,7 @@ libvisio::VSDXPage::~VSDXPage()
 
 libvisio::VSDXPage &libvisio::VSDXPage::operator=(const libvisio::VSDXPage &page)
 {
-  if (this == &page)
+  if (this != &page)
   {
     m_pageWidth = page.m_pageWidth;
     m_pageHeight = page.m_pageHeight;
