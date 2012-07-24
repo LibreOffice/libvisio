@@ -149,38 +149,39 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift)
                    ptr.Type, ptr.Offset, ptr.Length, ptr.Format));
 
     ptr = PtrList[j];
-    bool compressed = ((ptr.Format & 2) == 2);
-    m_input->seek(ptr.Offset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
-    shift = compressed ? 4 : 0;
-    switch (ptr.Type)
-    {
-    case VSD_PAGE:           // shouldn't happen
-    case VSD_FONT_LIST:      // ver6 stream contains chunk 0x18 (FontList) and chunks 0x19 (Font)
-      handlePage(&tmpInput);
-      break;
-    case VSD_PAGES:
-    case VSD_FONTFACES:      // ver11 stream contains streams 0xd7 (FontFace)
-      handlePages(&tmpInput, shift);
-      break;
-    case VSD_COLORS:
-      readColours(&tmpInput);
-      break;
-    case VSD_STYLES:
-      handleStyles(&tmpInput);
-      break;
-    case VSD_STENCILS:
-      handleStencils(&tmpInput, shift);
-      break;
-    default:
-      break;
-    }
+    handleStream(ptr);
   }
 }
 
 
-void libvisio::VSDXParser::handleStream(WPXInputStream * /* input */, unsigned /* shift */)
+void libvisio::VSDXParser::handleStream(const Pointer &ptr)
 {
+  bool compressed = ((ptr.Format & 2) == 2);
+  m_input->seek(ptr.Offset, WPX_SEEK_SET);
+  VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
+  unsigned shift = compressed ? 4 : 0;
+  switch (ptr.Type)
+  {
+  case VSD_PAGE:           // shouldn't happen
+  case VSD_FONT_LIST:      // ver6 stream contains chunk 0x18 (FontList) and chunks 0x19 (Font)
+    handlePage(&tmpInput);
+    break;
+  case VSD_PAGES:
+  case VSD_FONTFACES:      // ver11 stream contains streams 0xd7 (FontFace)
+    handlePages(&tmpInput, shift);
+    break;
+  case VSD_COLORS:
+    readColours(&tmpInput);
+    break;
+  case VSD_STYLES:
+    handleStyles(&tmpInput);
+    break;
+  case VSD_STENCILS:
+    handleStencils(&tmpInput, shift);
+    break;
+  default:
+    break;
+  }
 }
 
 void libvisio::VSDXParser::handleChunks(WPXInputStream * /* input */, unsigned /* shift */)

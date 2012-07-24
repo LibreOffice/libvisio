@@ -51,6 +51,14 @@ namespace libvisio
 
 class VSDXCollector;
 
+struct Pointer
+{
+  unsigned Type;
+  unsigned Offset;
+  unsigned Length;
+  unsigned short Format;
+};
+
 class VSDXParser
 {
 public:
@@ -113,7 +121,7 @@ protected:
 
   // Stream handlers
   void handleStreams(WPXInputStream *input, unsigned shift=0);
-  void handleStream(WPXInputStream *input, unsigned shift=0);
+  void handleStream(const Pointer &ptr);
   void handleChunks(WPXInputStream *input, unsigned shift=0);
 
   void handlePages(WPXInputStream *input, unsigned shift);
@@ -154,14 +162,6 @@ private:
   VSDXParser(const VSDXParser &);
   VSDXParser &operator=(const VSDXParser &);
 
-};
-
-struct Pointer
-{
-  unsigned Type;
-  unsigned Offset;
-  unsigned Length;
-  unsigned short Format;
 };
 
 } // namespace libvisio
