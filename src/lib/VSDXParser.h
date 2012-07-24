@@ -122,10 +122,9 @@ protected:
   // Stream handlers
   void handleStreams(WPXInputStream *input, unsigned shift=0);
   void handleStream(const Pointer &ptr);
-  void handleChunks(WPXInputStream *input, unsigned shift=0);
+  void handleChunks(WPXInputStream *input);
 
   void handlePages(WPXInputStream *input, unsigned shift);
-  void handlePage(WPXInputStream *input);
   void handleStyles(WPXInputStream *input);
   void handleStencils(WPXInputStream *input, unsigned shift);
   void handleStencilPage(WPXInputStream *input, unsigned shift);
