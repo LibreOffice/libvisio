@@ -112,6 +112,10 @@ protected:
   bool parseDocument(WPXInputStream *input);
 
   // Stream handlers
+  void handleStreams(WPXInputStream *input, unsigned shift=0);
+  void handleStream(WPXInputStream *input, unsigned shift=0);
+  void handleChunks(WPXInputStream *input, unsigned shift=0);
+
   void handlePages(WPXInputStream *input, unsigned shift);
   void handlePage(WPXInputStream *input);
   void handleStyles(WPXInputStream *input);

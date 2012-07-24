@@ -109,21 +109,28 @@ bool libvisio::VSDXParser::parseMain()
 
 bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 {
-  const unsigned SHIFT = 4;
+  try
+  {
+    handleStreams(input, 4);
+    return true;
+  }
+  catch (...)
+  {
+    return false;
+  }
+}
 
-//  unsigned ptrType;
-// unsigned ptrOffset;
-//  unsigned ptrLength;
-//  unsigned ptrFormat;
+void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift)
+{
   std::vector<libvisio::Pointer> PtrList;
   Pointer ptr;
 
   // Parse out pointers to other streams from trailer
-  input->seek(SHIFT, WPX_SEEK_SET);
+  input->seek(shift, WPX_SEEK_SET);
   unsigned offset = readU32(input);
-  input->seek(offset+SHIFT, WPX_SEEK_SET);
+  input->seek(offset+shift, WPX_SEEK_SET);
   unsigned pointerCount = readU32(input);
-  input->seek(SHIFT, WPX_SEEK_CUR);
+  input->seek(shift, WPX_SEEK_CUR);
   for (unsigned i = 0; i < pointerCount; i++)
   {
     ptr.Type = readU32(input);
@@ -131,7 +138,6 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
     ptr.Offset = readU32(input);
     ptr.Length = readU32(input);
     ptr.Format = readU16(input);
-
     if (ptr.Type == VSD_FONTFACES)
       PtrList.insert(PtrList.begin(),ptr);
     else if (ptr.Type != 0)
@@ -139,11 +145,14 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
   }
   for (unsigned j = 0; j < PtrList.size(); j++)
   {
+    VSD_DEBUG_MSG(("VSDXParser::parseDocument: ptr.Type 0x%.8x, ptr.Offset 0x%.8x, ptr.Length 0x%.8x, ptr.Format 0x%.4x\n",
+                   ptr.Type, ptr.Offset, ptr.Length, ptr.Format));
+
     ptr = PtrList[j];
     bool compressed = ((ptr.Format & 2) == 2);
     m_input->seek(ptr.Offset, WPX_SEEK_SET);
     VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
-    unsigned shift = compressed ? 4 : 0;
+    shift = compressed ? 4 : 0;
     switch (ptr.Type)
     {
     case VSD_PAGE:           // shouldn't happen
@@ -167,8 +176,15 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
       break;
     }
   }
+}
 
-  return true;
+
+void libvisio::VSDXParser::handleStream(WPXInputStream * /* input */, unsigned /* shift */)
+{
+}
+
+void libvisio::VSDXParser::handleChunks(WPXInputStream * /* input */, unsigned /* shift */)
+{
 }
 
 void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
