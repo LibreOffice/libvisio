@@ -130,7 +130,7 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift)
   unsigned offset = readU32(input);
   input->seek(offset+shift, WPX_SEEK_SET);
   unsigned pointerCount = readU32(input);
-  input->seek(shift, WPX_SEEK_CUR);
+  input->seek(4, WPX_SEEK_CUR);
   for (unsigned i = 0; i < pointerCount; i++)
   {
     ptr.Type = readU32(input);
