@@ -2648,7 +2648,7 @@ void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std
         text.append(m_fields[m_fieldIndex++].cstr());
       else
         m_fieldIndex++;
-	  ++iter;
+      ++iter;
     }
     else if (*iter < 0x20)
     {
