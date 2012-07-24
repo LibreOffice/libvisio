@@ -353,18 +353,16 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
     case VSD_PAGE:
       m_currentPageID = i;
       numPages++;
+      m_collector->startPage();
       try
       {
-        m_collector->startPage();
         handleChunks(&tmpInput);
-        _handleLevelChange(0);
-        m_collector->endPage();
       }
-      catch (EndOfStreamException)
+      catch (EndOfStreamException &)
       {
-        _handleLevelChange(0);
-        m_collector->endPage();
       }
+      _handleLevelChange(0);
+      m_collector->endPage();
       break;
     case VSD_PAGES:             // shouldn't happen
       handlePages(&tmpInput, shift);
@@ -518,7 +516,14 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
     case VSD_SHAPE_GUIDE:
     case VSD_SHAPE_SHAPE:
       m_stencilShape = VSDXStencilShape();
-      handleStencilShape(&tmpInput);
+      try
+      {
+        handleChunks(&tmpInput);
+      }
+      catch (EndOfStreamException &)
+      {
+      }
+      _handleLevelChange(0);
       m_currentStencil->addStencilShape(i, m_stencilShape);
       break;
     default:
@@ -649,131 +654,6 @@ void libvisio::VSDXParser::handleStencilOle(WPXInputStream *input, unsigned shif
         m_stencilShape.m_foreign->dataLevel = m_header.level;
       }
     }
-  }
-}
-
-void libvisio::VSDXParser::handleStencilShape(WPXInputStream *input)
-{
-  try
-  {
-    long endPos = 0;
-
-    while (!input->atEOS())
-    {
-      getChunkHeader(input);
-      endPos = m_header.dataLength+m_header.trailer+input->tell();
-
-      _handleLevelChange(m_header.level);
-      VSD_DEBUG_MSG(("Stencil: parsing chunk type %x\n", m_header.chunkType));
-      switch (m_header.chunkType)
-      {
-      case VSD_SHAPE_GROUP:
-      case VSD_SHAPE_GUIDE:
-      case VSD_SHAPE_SHAPE:
-        readShape(input);
-        break;
-      case VSD_GEOM_LIST:
-        m_stencilShape.m_geometries.push_back(VSDXGeometryList());
-        readGeomList(input);
-        break;
-      case VSD_GEOMETRY:
-        readGeometry(input);
-        break;
-      case VSD_MOVE_TO:
-        readMoveTo(input);
-        break;
-      case VSD_LINE_TO:
-        readLineTo(input);
-        break;
-      case VSD_ARC_TO:
-        readArcTo(input);
-        break;
-      case VSD_ELLIPSE:
-        readEllipse(input);
-        break;
-      case VSD_ELLIPTICAL_ARC_TO:
-        readEllipticalArcTo(input);
-        break;
-      case VSD_LINE:
-        readLine(input);
-        break;
-      case VSD_NURBS_TO:
-        readNURBSTo(input);
-        break;
-      case VSD_POLYLINE_TO:
-        readPolylineTo(input);
-        break;
-      case VSD_INFINITE_LINE:
-        readInfiniteLine(input);
-        break;
-      case VSD_SHAPE_DATA:
-        readShapeData(input);
-        break;
-      case VSD_FOREIGN_DATA_TYPE:
-        readForeignDataType(input);
-        break;
-      case VSD_FOREIGN_DATA:
-        readForeignData(input);
-        break;
-      case VSD_OLE_LIST:
-        readOLEList(input);
-        break;
-      case VSD_OLE_DATA:
-        readOLEData(input);
-        break;
-      case VSD_FILL_AND_SHADOW:
-        readFillAndShadow(input);
-        break;
-      case VSD_PAGE_PROPS:
-        readPageProps(input);
-        break;
-      case VSD_CHAR_LIST:
-        readCharList(input);
-        break;
-      case VSD_PARA_LIST:
-        readParaList(input);
-        break;
-      case VSD_TEXT:
-        readText(input);
-        break;
-      case VSD_CHAR_IX:
-        readCharIX(input);
-        break;
-      case VSD_PARA_IX:
-        readParaIX(input);
-        break;
-      case VSD_TEXT_BLOCK:
-        readTextBlock(input);
-        break;
-      case VSD_SPLINE_START:
-        readSplineStart(input);
-        break;
-      case VSD_SPLINE_KNOT:
-        readSplineKnot(input);
-        break;
-      case VSD_NAME_LIST:
-        readNameList(input);
-        break;
-      case VSD_NAME:
-        readName(input);
-        break;
-      case VSD_FIELD_LIST:
-        readFieldList(input);
-        break;
-      case VSD_TEXT_FIELD:
-        readTextField(input);
-        break;
-      default:
-        m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-      }
-
-      input->seek(endPos, WPX_SEEK_SET);
-    }
-    _handleLevelChange(0);
-  }
-  catch (EndOfStreamException)
-  {
-    _handleLevelChange(0);
   }
 }
 
@@ -962,6 +842,8 @@ void libvisio::VSDXParser::readTextBlock(WPXInputStream *input)
 
 void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
 {
+  if (m_isStencilStarted)
+    m_stencilShape.m_geometries.push_back(VSDXGeometryList());
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
   input->seek(subHeaderLength, WPX_SEEK_CUR);
