@@ -130,7 +130,7 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, 
   readU32(input);
   unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR);
-  std::vector<libvisio::Pointer> PtrList;
+  std::vector<std::pair<unsigned, libvisio::Pointer> > PtrList;
   for (unsigned i = 0; i < pointerCount; i++)
   {
     Pointer ptr;
@@ -140,12 +140,12 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, 
     ptr.Length = readU32(input);
     ptr.Format = readU16(input);
     if (ptr.Type == VSD_FONTFACES)
-      PtrList.insert(PtrList.begin(),ptr);
+      PtrList.insert(PtrList.begin(),std::make_pair(i, ptr));
     else if (ptr.Type != 0)
-      PtrList.push_back(ptr);
+      PtrList.push_back(std::make_pair(i, ptr));
   }
   for (unsigned j = 0; j < PtrList.size(); j++)
-    handleStream(PtrList[j], j, level+1);
+    handleStream(PtrList[j].second, PtrList[j].first, level+1);
 }
 
 
