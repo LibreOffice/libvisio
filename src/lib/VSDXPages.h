@@ -60,6 +60,7 @@ public:
 private:
   void _drawWithBackground(libwpg::WPGPaintInterface *painter, const VSDXPage &page);
   std::map<unsigned, VSDXPage> m_pages;
+  std::vector<unsigned> m_pagesOrder;
 };
 
 
