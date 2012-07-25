@@ -233,11 +233,8 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     m_collector->endPage();
     break;
   case VSD_PAGES:
-  {
-    std::vector<unsigned> pageOrder;
-    m_collector->endPages(pageOrder);
+    m_collector->endPages();
     break;
-  }
   case VSD_STENCILS:
     m_isStencilStarted = false;
     break;

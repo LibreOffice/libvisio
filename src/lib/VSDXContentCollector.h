@@ -139,7 +139,7 @@ public:
 
   void startPage(unsigned pageId);
   void endPage();
-  void endPages(const std::vector<unsigned> &pageOrder);
+  void endPages();
 
 
 private:
