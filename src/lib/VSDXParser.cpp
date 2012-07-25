@@ -194,7 +194,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     break;
   }
 
-  if ((ptr.Format >> 4) == 0xd)
+  if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0x8)
     handleChunks(&tmpInput, level+1);
   else if ((ptr.Format >> 4) == 0x5)
     handleStreams(&tmpInput, shift, level+1);
