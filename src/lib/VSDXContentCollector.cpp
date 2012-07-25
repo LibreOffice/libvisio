@@ -2083,6 +2083,7 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
 void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format)
 {
   VSDXFont font;
+  font.name.clear();
   _convertDataToString(font.name, textStream, format);
   font.encoding = format;
   m_fonts[fontID] = font;
