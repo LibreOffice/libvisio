@@ -111,7 +111,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
 {
   try
   {
-    handleStreams(input, 4);
+    handleStreams(input, 4, 0);
     return true;
   }
   catch (...)
@@ -120,19 +120,18 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift)
+void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, unsigned level)
 {
-  std::vector<libvisio::Pointer> PtrList;
-  Pointer ptr;
-
-  // Parse out pointers to other streams from trailer
+  // Parse out pointers to streams
   input->seek(shift, WPX_SEEK_SET);
   unsigned offset = readU32(input);
   input->seek(offset+shift, WPX_SEEK_SET);
   unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR);
+  std::vector<libvisio::Pointer> PtrList;
   for (unsigned i = 0; i < pointerCount; i++)
   {
+    Pointer ptr;
     ptr.Type = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
     ptr.Offset = readU32(input);
@@ -144,44 +143,36 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift)
       PtrList.push_back(ptr);
   }
   for (unsigned j = 0; j < PtrList.size(); j++)
-  {
-    VSD_DEBUG_MSG(("VSDXParser::parseDocument: ptr.Type 0x%.8x, ptr.Offset 0x%.8x, ptr.Length 0x%.8x, ptr.Format 0x%.4x\n",
-                   ptr.Type, ptr.Offset, ptr.Length, ptr.Format));
-
-    ptr = PtrList[j];
-    handleStream(ptr);
-  }
+    handleStream(PtrList[j], level+1);
 }
 
 
-void libvisio::VSDXParser::handleStream(const Pointer &ptr)
+void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned level)
 {
   bool compressed = ((ptr.Format & 2) == 2);
   m_input->seek(ptr.Offset, WPX_SEEK_SET);
   VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
   unsigned shift = compressed ? 4 : 0;
+
+  VSD_DEBUG_MSG(("VSDXParser::handleStream: level %i, ptr.Type 0x%.8x, ptr.Offset 0x%.8x, ptr.Length 0x%.8x, ptr.Format 0x%.4x\n",
+                 level, ptr.Type, ptr.Offset, ptr.Length, ptr.Format));
+
   switch (ptr.Type)
   {
-  case VSD_PAGE:           // shouldn't happen
-  case VSD_FONT_LIST:      // ver6 stream contains chunk 0x18 (FontList) and chunks 0x19 (Font)
-    handleChunks(&tmpInput);
-    break;
-  case VSD_PAGES:
-  case VSD_FONTFACES:      // ver11 stream contains streams 0xd7 (FontFace)
-    handlePages(&tmpInput, shift);
-    break;
   case VSD_COLORS:
     readColours(&tmpInput);
-    break;
+    return;
   case VSD_STYLES:
     handleStyles(&tmpInput);
-    break;
-  case VSD_STENCILS:
-    handleStencils(&tmpInput, shift);
-    break;
+    return;
   default:
     break;
   }
+
+  if ((ptr.Format >> 4) == 0xd)
+    handleChunks(&tmpInput);
+  else if ((ptr.Format >> 4) == 0x5)
+    handleStreams(&tmpInput, shift, level+1);
 }
 
 void libvisio::VSDXParser::handleChunks(WPXInputStream *input)
@@ -365,7 +356,7 @@ void libvisio::VSDXParser::handlePages(WPXInputStream *input, unsigned shift)
       m_collector->endPage();
       break;
     case VSD_PAGES:             // shouldn't happen
-      handlePages(&tmpInput, shift);
+      handleStreams(&tmpInput, shift, 0);
       break;
     case VSD_COLORS:            // shouldn't happen
       readColours(&tmpInput);

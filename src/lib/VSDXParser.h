@@ -120,8 +120,8 @@ protected:
   bool parseDocument(WPXInputStream *input);
 
   // Stream handlers
-  void handleStreams(WPXInputStream *input, unsigned shift=0);
-  void handleStream(const Pointer &ptr);
+  void handleStreams(WPXInputStream *input, unsigned shift, unsigned level);
+  void handleStream(const Pointer &ptr, unsigned level);
   void handleChunks(WPXInputStream *input);
 
   void handlePages(WPXInputStream *input, unsigned shift);
