@@ -126,7 +126,8 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, 
   input->seek(shift, WPX_SEEK_SET);
   unsigned offset = readU32(input);
   input->seek(offset+shift-4, WPX_SEEK_SET);
-  /* unsigned listSize = */ readU32(input);
+  /* unsigned listSize = */
+  readU32(input);
   unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR);
   std::vector<libvisio::Pointer> PtrList;
@@ -150,6 +151,7 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, 
 
 void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsigned level)
 {
+  VSDXStencil tmpStencil;
   bool compressed = ((ptr.Format & 2) == 2);
   m_input->seek(ptr.Offset, WPX_SEEK_SET);
   VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
@@ -168,11 +170,27 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     return;
   case VSD_STYLES:
     m_isInStyles = true;
-    return;
+    break;
   case VSD_PAGE:
     m_currentPageID = idx;
     m_collector->startPage();
     break;
+  case VSD_STENCILS:
+    if (m_stencils.count())
+      return;
+    m_isStencilStarted = true;
+    break;
+  case VSD_STENCIL_PAGE:
+#if 0
+    m_currentStencil = &tmpStencil;
+    break;
+#else
+    m_currentStencil = &tmpStencil;
+    handleStencilPage(&tmpInput, shift);
+    m_stencils.addStencil(idx, *m_currentStencil);
+    m_currentStencil = 0;
+    return;
+#endif
   default:
     break;
   }
@@ -186,7 +204,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   {
   case VSD_STYLES:
     m_isInStyles = false;
-    return;
+    break;
   case VSD_PAGE:
     m_collector->endPage();
     break;
@@ -196,6 +214,13 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     m_collector->endPages(pageOrder);
     break;
   }
+  case VSD_STENCILS:
+    m_isStencilStarted = false;
+    break;
+  case VSD_STENCIL_PAGE:
+    m_stencils.addStencil(idx, *m_currentStencil);
+    m_currentStencil = 0;
+    break;
   default:
     break;
   }
@@ -339,50 +364,6 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input)
 
     input->seek(endPos, WPX_SEEK_SET);
   }
-}
-
-void libvisio::VSDXParser::handleStencils(WPXInputStream *input, unsigned shift)
-{
-  if (m_stencils.count() > 0) return;
-  m_isStencilStarted = true;
-  unsigned ptrType;
-  unsigned ptrOffset;
-  unsigned ptrLength;
-  unsigned ptrFormat;
-
-  input->seek(shift, WPX_SEEK_CUR);
-  unsigned offset = readU32(input);
-  input->seek(offset+shift, WPX_SEEK_SET);
-  unsigned pointerCount = readU32(input);
-  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
-  for (unsigned i = 0; i < pointerCount; i++)
-  {
-    ptrType = readU32(input);
-    input->seek(4, WPX_SEEK_CUR); // Skip dword
-    ptrOffset = readU32(input);
-    ptrLength = readU32(input);
-    ptrFormat = readU16(input);
-
-    bool compressed = ((ptrFormat & 2) == 2);
-    m_input->seek(ptrOffset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptrLength, compressed);
-    unsigned shift2 = compressed ? 4 : 0;
-    switch (ptrType)
-    {
-    case VSD_STENCIL_PAGE:
-    {
-      VSDXStencil tmpStencil;
-      m_currentStencil = &tmpStencil;
-      handleStencilPage(&tmpInput, shift2);
-      m_stencils.addStencil(i, *m_currentStencil);
-      m_currentStencil = 0;
-    }
-    break;
-    default:
-      break;
-    }
-  }
-  m_isStencilStarted = false;
 }
 
 void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shift)
