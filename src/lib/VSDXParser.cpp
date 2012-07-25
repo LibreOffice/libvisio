@@ -126,12 +126,13 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, 
   input->seek(shift, WPX_SEEK_SET);
   unsigned offset = readU32(input);
   input->seek(offset+shift-4, WPX_SEEK_SET);
-  /* unsigned listSize = */
-  readU32(input);
+  unsigned listSize = readU32(input);
   unsigned pointerCount = readU32(input);
   input->seek(4, WPX_SEEK_CUR);
-  std::vector<std::pair<unsigned, libvisio::Pointer> > PtrList;
-  for (unsigned i = 0; i < pointerCount; i++)
+  std::map<unsigned, libvisio::Pointer> PtrList;
+  std::map<unsigned, libvisio::Pointer> FontFaces;
+  unsigned i = 0;
+  for (i = 0; i < pointerCount; i++)
   {
     Pointer ptr;
     ptr.Type = readU32(input);
@@ -140,12 +141,34 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, 
     ptr.Length = readU32(input);
     ptr.Format = readU16(input);
     if (ptr.Type == VSD_FONTFACES)
-      PtrList.insert(PtrList.begin(),std::make_pair(i, ptr));
+      FontFaces[i] = ptr;
     else if (ptr.Type != 0)
-      PtrList.push_back(std::make_pair(i, ptr));
+      PtrList[i] = ptr;
   }
-  for (unsigned j = 0; j < PtrList.size(); j++)
-    handleStream(PtrList[j].second, PtrList[j].first, level+1);
+  std::vector<unsigned> pointerOrder;
+  for (i = 0; i < listSize; ++i)
+    pointerOrder.push_back(readU32(input));
+
+  std::map<unsigned, libvisio::Pointer>::iterator iter;
+
+  for (iter = FontFaces.begin(); iter != FontFaces.end(); ++iter)
+    handleStream(iter->second, iter->first, level+1);
+
+  if (!pointerOrder.empty())
+  {
+    for (i=0; i < pointerOrder.size(); ++i)
+    {
+      iter = PtrList.find(pointerOrder[i]);
+      if (iter != PtrList.end())
+      {
+        handleStream(iter->second, iter->first, level+1);
+        PtrList.erase(iter);
+      }
+    }
+  }
+  for (iter = PtrList.begin(); iter != PtrList.end(); ++iter)
+    handleStream(iter->second, iter->first, level+1);
+
 }
 
 
