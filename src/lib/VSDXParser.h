@@ -57,6 +57,7 @@ struct Pointer
   unsigned Offset;
   unsigned Length;
   unsigned short Format;
+  unsigned ListSize;
 };
 
 class VSDXParser
@@ -121,11 +122,9 @@ protected:
 
   // Stream handlers
   void handleStreams(WPXInputStream *input, unsigned shift, unsigned level);
-  void handleStream(const Pointer &ptr, unsigned level);
+  void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
   void handleChunks(WPXInputStream *input);
 
-  void handlePages(WPXInputStream *input, unsigned shift);
-  void handleStyles(WPXInputStream *input);
   void handleStencils(WPXInputStream *input, unsigned shift);
   void handleStencilPage(WPXInputStream *input, unsigned shift);
   void handleStencilForeign(WPXInputStream *input, unsigned shift);
