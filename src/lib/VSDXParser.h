@@ -123,7 +123,7 @@ protected:
   // Stream handlers
   void handleStreams(WPXInputStream *input, unsigned shift, unsigned level);
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
-  void handleChunks(WPXInputStream *input);
+  void handleChunks(WPXInputStream *input, unsigned level);
 
   void handleStencils(WPXInputStream *input, unsigned shift);
   void handleStencilPage(WPXInputStream *input, unsigned shift);
@@ -153,7 +153,6 @@ protected:
   VSDXStencilShape m_stencilShape;
   bool m_isStencilStarted;
   bool m_isInStyles;
-  unsigned m_currentPageID;
 
 private:
   VSDXParser();

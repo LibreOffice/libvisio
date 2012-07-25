@@ -115,6 +115,9 @@ void libvisio::VSDXPages::_drawPage(libwpg::WPGPaintInterface *painter, const li
   if (!painter)
     return;
 
+  if (page.m_pageWidth == 0.0 || page.m_pageHeight == 0.0)
+    return;
+
   WPXPropertyList pageProps;
   pageProps.insert("svg:width", page.m_pageWidth);
   pageProps.insert("svg:height", page.m_pageHeight);

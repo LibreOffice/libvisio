@@ -46,7 +46,7 @@ libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterfac
     m_geomListVector(), m_fieldList(), m_charList(new VSDXCharacterList()),
     m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
     m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
-    m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentPageID(0)
+    m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
@@ -172,8 +172,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     m_isInStyles = true;
     break;
   case VSD_PAGE:
-    m_currentPageID = idx;
-    m_collector->startPage();
+    m_collector->startPage(idx);
     break;
   case VSD_STENCILS:
     if (m_stencils.count())
@@ -196,16 +195,18 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   }
 
   if ((ptr.Format >> 4) == 0xd)
-    handleChunks(&tmpInput);
+    handleChunks(&tmpInput, level+1);
   else if ((ptr.Format >> 4) == 0x5)
     handleStreams(&tmpInput, shift, level+1);
 
   switch (ptr.Type)
   {
   case VSD_STYLES:
+    _handleLevelChange(0);
     m_isInStyles = false;
     break;
   case VSD_PAGE:
+    _handleLevelChange(0);
     m_collector->endPage();
     break;
   case VSD_PAGES:
@@ -217,17 +218,19 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   case VSD_STENCILS:
     m_isStencilStarted = false;
     break;
+#if 0
   case VSD_STENCIL_PAGE:
     m_stencils.addStencil(idx, *m_currentStencil);
     m_currentStencil = 0;
     break;
+#endif
   default:
     break;
   }
 
 }
 
-void libvisio::VSDXParser::handleChunks(WPXInputStream *input)
+void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned /* level */)
 {
   long endPos = 0;
 
@@ -407,7 +410,7 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
       m_stencilShape = VSDXStencilShape();
       try
       {
-        handleChunks(&tmpInput);
+        handleChunks(&tmpInput, 0);
       }
       catch (EndOfStreamException &)
       {
@@ -785,7 +788,7 @@ void libvisio::VSDXParser::readPage(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR); //sub header length and children list length
   uint32_t backgroundPageID = readU32(input);
-  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_currentPageID);
+  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID);
 }
 
 void libvisio::VSDXParser::readGeometry(WPXInputStream *input)

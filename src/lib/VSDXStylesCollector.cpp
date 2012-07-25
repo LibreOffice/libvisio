@@ -206,7 +206,7 @@ void libvisio::VSDXStylesCollector::collectPageProps(unsigned /* id */, unsigned
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::collectPage(unsigned /* id */, unsigned level, unsigned /* backgroundPageID */, unsigned /* currentPageID */)
+void libvisio::VSDXStylesCollector::collectPage(unsigned /* id */, unsigned level, unsigned /* backgroundPageID */)
 {
   _handleLevelChange(level);
 }
@@ -365,7 +365,7 @@ void libvisio::VSDXStylesCollector::collectNumericField(unsigned /* id */, unsig
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXStylesCollector::startPage()
+void libvisio::VSDXStylesCollector::startPage(unsigned /* pageId */)
 {
   m_groupXForms.clear();
   m_groupMemberships.clear();
