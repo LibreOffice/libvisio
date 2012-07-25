@@ -40,7 +40,6 @@ class VSDInternalStream : public WPXInputStream
 {
 public:
   VSDInternalStream(WPXInputStream *input, unsigned long size, bool compressed);
-  VSDInternalStream(const unsigned char *buffer, unsigned long size);
   ~VSDInternalStream() {}
 
   bool isOLEStream()
