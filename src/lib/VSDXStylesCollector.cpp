@@ -267,6 +267,8 @@ void libvisio::VSDXStylesCollector::collectName(unsigned /*id*/, unsigned level,
 void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned level, unsigned lineStyleParent, unsigned fillStyleParent, unsigned textStyleParent)
 {
   _handleLevelChange(level);
+  // reusing the shape level for style sheet to avoid another variable
+  m_currentShapeLevel = level;
   m_lineStyle = 0;
   m_fillStyle = 0;
   m_textBlockStyle = 0;
@@ -401,11 +403,9 @@ void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)
     return;
-  // if (level <= m_currentShapeLevel+1)
-  if (level < 3)
+  if (level <= m_currentShapeLevel+1)
     _flushShapeList();
-  // if (level <= m_currentShapeLevel)
-  if (level < 2)
+  if (level <= m_currentShapeLevel)
   {
     m_isShapeStarted = false;
     if (m_isStyleStarted)
