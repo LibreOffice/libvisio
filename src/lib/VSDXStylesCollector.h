@@ -176,6 +176,7 @@ private:
   unsigned m_fillStyleMaster;
   unsigned m_textStyleMaster;
   bool m_isStyleStarted;
+  unsigned m_currentShapeLevel;
 };
 
 }

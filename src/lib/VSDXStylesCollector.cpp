@@ -46,7 +46,7 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   m_groupShapeOrder(), m_shapeList(), m_currentStyleSheet(0), m_styles(),
   m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
   m_lineStyleMaster(0xffffffff), m_fillStyleMaster(0xffffffff), m_textStyleMaster(0xffffffff),
-  m_isStyleStarted(false)
+  m_isStyleStarted(false), m_currentShapeLevel(0)
 {
   m_groupXFormsSequence.clear();
   m_groupMembershipsSequence.clear();
@@ -215,6 +215,7 @@ void libvisio::VSDXStylesCollector::collectShape(unsigned id, unsigned level, un
     unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
 {
   _handleLevelChange(level);
+  m_currentShapeLevel = level;
   m_currentShapeId = id;
   m_isShapeStarted = true;
 }
@@ -400,8 +401,10 @@ void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)
     return;
+  // if (level <= m_currentShapeLevel+1)
   if (level < 3)
     _flushShapeList();
+  // if (level <= m_currentShapeLevel)
   if (level < 2)
   {
     m_isShapeStarted = false;
