@@ -154,6 +154,7 @@ protected:
   bool m_isStencilStarted;
   bool m_isInStyles;
   unsigned m_currentShapeLevel;
+  unsigned m_currentShapeID;
 
 private:
   VSDXParser();
