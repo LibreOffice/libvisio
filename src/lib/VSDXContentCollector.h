@@ -268,6 +268,7 @@ private:
   double m_splineLastKnot;
   unsigned m_splineDegree;
   unsigned m_splineLevel;
+  unsigned m_currentShapeLevel;
 };
 
 } // namespace libvisio

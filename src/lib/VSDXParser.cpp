@@ -46,7 +46,7 @@ libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterfac
     m_geomListVector(), m_fieldList(), m_charList(new VSDXCharacterList()),
     m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
     m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
-    m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false)
+    m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentShapeLevel(0)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
@@ -573,7 +573,7 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
 {
   if (level == m_currentLevel)
     return;
-  if (level < 3)
+  if (level <= m_currentShapeLevel+1)
   {
     m_geomListVector.push_back(m_geomList);
     m_charListVector.push_back(m_charList);
@@ -585,7 +585,7 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
     m_shapeList.handle(m_collector);
     m_shapeList.clear();
   }
-  if (level < 2)
+  if (level <= m_currentShapeLevel)
   {
     for (std::vector<VSDXGeometryList *>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
     {
@@ -984,6 +984,7 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
 
 void libvisio::VSDXParser::readShape(WPXInputStream *input)
 {
+  m_currentShapeLevel = m_header.level;
   input->seek(0x12, WPX_SEEK_CUR);
   unsigned masterPage = readU32(input);
   input->seek(4, WPX_SEEK_CUR);

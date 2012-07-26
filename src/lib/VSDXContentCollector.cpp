@@ -131,7 +131,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
   m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
-  m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0)
+  m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0)
 {
 }
 
@@ -1919,6 +1919,7 @@ void libvisio::VSDXContentCollector::collectPage(unsigned /* id */, unsigned lev
 void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
 {
   _handleLevelChange(level);
+  m_currentShapeLevel = level;
 
   m_foreignType = 0; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
@@ -2316,7 +2317,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)
     return;
-  if (level < 2)
+  if (level <= m_currentShapeLevel)
   {
     if (m_isShapeStarted)
     {

@@ -153,6 +153,7 @@ protected:
   VSDXStencilShape m_stencilShape;
   bool m_isStencilStarted;
   bool m_isInStyles;
+  unsigned m_currentShapeLevel;
 
 private:
   VSDXParser();
