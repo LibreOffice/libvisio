@@ -204,21 +204,25 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     m_isStencilStarted = true;
     break;
   case VSD_STENCIL_PAGE:
-#if 0
     m_currentStencil = &tmpStencil;
     break;
-#else
-    m_currentStencil = &tmpStencil;
-    handleStencilPage(&tmpInput, shift);
-    m_stencils.addStencil(idx, *m_currentStencil);
-    m_currentStencil = 0;
-    return;
-#endif
   case VSD_SHAPE_GROUP:
   case VSD_SHAPE_GUIDE:
   case VSD_SHAPE_SHAPE:
+    m_currentShapeID = idx;
+    if (m_isStencilStarted)
+      m_stencilShape = VSDXStencilShape();
+    break;
   case VSD_SHAPE_FOREIGN:
     m_currentShapeID = idx;
+    if (m_isStencilStarted)
+    {
+      m_stencilShape = VSDXStencilShape();
+      m_stencilShape.m_foreign = new ForeignData();
+      handleStencilForeign(&tmpInput, shift);
+      m_currentStencil->addStencilShape(idx, m_stencilShape);
+      return;
+    }
     break;
   default:
     break;
@@ -245,12 +249,19 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   case VSD_STENCILS:
     m_isStencilStarted = false;
     break;
-#if 0
   case VSD_STENCIL_PAGE:
     m_stencils.addStencil(idx, *m_currentStencil);
     m_currentStencil = 0;
     break;
-#endif
+  case VSD_SHAPE_GROUP:
+  case VSD_SHAPE_GUIDE:
+  case VSD_SHAPE_SHAPE:
+    if (m_isStencilStarted)
+    {
+      _handleLevelChange(0);
+      m_currentStencil->addStencilShape(idx, m_stencilShape);
+    }
+    break;
   default:
     break;
   }
@@ -393,58 +404,6 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned /* level
     }
 
     input->seek(endPos, WPX_SEEK_SET);
-  }
-}
-
-void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shift)
-{
-  Pointer ptr;
-
-  input->seek(shift, WPX_SEEK_CUR);
-  unsigned offset = readU32(input);
-  input->seek(offset+shift, WPX_SEEK_SET);
-  unsigned pointerCount = readU32(input);
-  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
-
-  for (unsigned i = 0; i < pointerCount; i++)
-  {
-    ptr.Type = readU32(input);
-    input->seek(4, WPX_SEEK_CUR); // Skip dword
-    ptr.Offset = readU32(input);
-    ptr.Length = readU32(input);
-    ptr.Format = readU16(input);
-
-    bool compressed = ((ptr.Format & 2) == 2);
-    m_input->seek(ptr.Offset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
-
-    shift = compressed ? 4 : 0;
-
-    switch (ptr.Type)
-    {
-    case VSD_SHAPE_FOREIGN:
-      m_stencilShape = VSDXStencilShape();
-      m_stencilShape.m_foreign = new ForeignData();
-      handleStencilForeign(&tmpInput, shift);
-      m_currentStencil->addStencilShape(i, m_stencilShape);
-      break;
-    case VSD_SHAPE_GROUP:
-    case VSD_SHAPE_GUIDE:
-    case VSD_SHAPE_SHAPE:
-      m_stencilShape = VSDXStencilShape();
-      try
-      {
-        handleChunks(&tmpInput, 0);
-      }
-      catch (EndOfStreamException &)
-      {
-      }
-      _handleLevelChange(0);
-      m_currentStencil->addStencilShape(i, m_stencilShape);
-      break;
-    default:
-      break;
-    }
   }
 }
 
