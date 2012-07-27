@@ -192,6 +192,49 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   case VSD_FONTFACE: // substreams of FONTAFACES stream, ver 11 only
     readFont(&tmpInput, idx);
     return;
+  case VSD_FOREIGN_DATA_TYPE:
+    if (m_isStencilStarted)
+    {
+      tmpInput.seek(0x4, WPX_SEEK_CUR);
+      readForeignDataType(&tmpInput);
+    }
+    return;
+  case VSD_FOREIGN_DATA:
+    if (m_isStencilStarted)
+    {
+      unsigned foreignLength = ptr.Length - 4;
+      if (compressed)
+        foreignLength = readU32(&tmpInput);
+      else
+        tmpInput.seek(0x4, WPX_SEEK_CUR);
+
+      unsigned long tmpBytesRead = 0;
+      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
+      if (foreignLength == tmpBytesRead)
+      {
+        WPXBinaryData binaryData(buffer, tmpBytesRead);
+        m_stencilShape.m_foreign->dataId = m_header.id;
+        m_stencilShape.m_foreign->dataLevel = m_header.level;
+        m_stencilShape.m_foreign->data = binaryData;
+      }
+    }
+    return;
+  case VSD_OLE_DATA:
+    if (m_isStencilStarted)
+    {
+      // Be sure to use internal stream size to get decompressed size
+      unsigned foreignLength = tmpInput.getSize() - shift;
+      unsigned long tmpBytesRead = 0;
+      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
+
+      if (foreignLength == tmpBytesRead)
+      {
+        // Append data instead of setting it - allows multi-stream OLE objects
+        m_stencilShape.m_foreign->data.append(buffer, tmpBytesRead);
+        m_stencilShape.m_foreign->dataLevel = m_header.level;
+      }
+    }
+    return;
   case VSD_STYLES:
     m_isInStyles = true;
     break;
@@ -221,37 +264,10 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
       m_stencilShape.m_foreign = new ForeignData();
     }
     break;
-  case VSD_FOREIGN_DATA_TYPE:
-    tmpInput.seek(0x4, WPX_SEEK_CUR);
-    readForeignDataType(&tmpInput);
-    return;
-  case VSD_FOREIGN_DATA:
-    if (m_isStencilStarted)
-    {
-      unsigned foreignLength = ptr.Length - 4;
-      if (compressed)
-        foreignLength = readU32(&tmpInput);
-      else
-        tmpInput.seek(0x4, WPX_SEEK_CUR);
-
-      unsigned long tmpBytesRead = 0;
-      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
-      if (foreignLength == tmpBytesRead)
-      {
-        WPXBinaryData binaryData(buffer, tmpBytesRead);
-        m_stencilShape.m_foreign->dataId = m_header.id;
-        m_stencilShape.m_foreign->dataLevel = m_header.level;
-        m_stencilShape.m_foreign->data = binaryData;
-      }
-    }
-    return;
   case VSD_OLE_LIST:
     if (m_isStencilStarted)
-    {
       m_stencilShape.m_foreign->dataId = m_header.id;
-      handleStencilOle(&tmpInput, shift);
-    }
-    return;
+    break;
   default:
     break;
   }
@@ -433,48 +449,6 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned /* level
     }
 
     input->seek(endPos, WPX_SEEK_SET);
-  }
-}
-
-void libvisio::VSDXParser::handleStencilOle(WPXInputStream *input, unsigned shift)
-{
-  Pointer ptr;
-
-  input->seek(shift, WPX_SEEK_CUR);
-  unsigned offset = readU32(input);
-  input->seek(offset+shift, WPX_SEEK_SET);
-  unsigned pointerCount = readU32(input);
-  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
-
-  for (unsigned i = 0; i < pointerCount; i++)
-  {
-    ptr.Type = readU32(input);
-    input->seek(4, WPX_SEEK_CUR); // Skip dword
-    ptr.Offset = readU32(input);
-    ptr.Length = readU32(input);
-    ptr.Format = readU16(input);
-
-    bool compressed = ((ptr.Format & 2) == 2);
-    m_input->seek(ptr.Offset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
-
-    shift = compressed ? 4 : 0;
-    tmpInput.seek(shift, WPX_SEEK_CUR);
-
-    if (ptr.Type == VSD_OLE_DATA)
-    {
-      // Be sure to use internal stream size to get decompressed size
-      unsigned foreignLength = tmpInput.getSize() - shift;
-      unsigned long tmpBytesRead = 0;
-      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
-
-      if (foreignLength == tmpBytesRead)
-      {
-        // Append data instead of setting it - allows multi-stream OLE objects
-        m_stencilShape.m_foreign->data.append(buffer, tmpBytesRead);
-        m_stencilShape.m_foreign->dataLevel = m_header.level;
-      }
-    }
   }
 }
 
