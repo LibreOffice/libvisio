@@ -198,7 +198,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
       tmpInput.seek(0x4, WPX_SEEK_CUR);
       readForeignDataType(&tmpInput);
     }
-    return;
+    break;
   case VSD_FOREIGN_DATA:
     if (m_isStencilStarted)
     {
@@ -218,7 +218,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
         m_stencilShape.m_foreign->data = binaryData;
       }
     }
-    return;
+    break;
   case VSD_OLE_DATA:
     if (m_isStencilStarted)
     {
@@ -234,7 +234,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
         m_stencilShape.m_foreign->dataLevel = m_header.level;
       }
     }
-    return;
+    break;
   case VSD_STYLES:
     m_isInStyles = true;
     break;
