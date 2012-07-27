@@ -398,10 +398,7 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned /* level
 
 void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shift)
 {
-  unsigned ptrType;
-  unsigned ptrOffset;
-  unsigned ptrLength;
-  unsigned ptrFormat;
+  Pointer ptr;
 
   input->seek(shift, WPX_SEEK_CUR);
   unsigned offset = readU32(input);
@@ -411,19 +408,19 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
 
   for (unsigned i = 0; i < pointerCount; i++)
   {
-    ptrType = readU32(input);
+    ptr.Type = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
-    ptrOffset = readU32(input);
-    ptrLength = readU32(input);
-    ptrFormat = readU16(input);
+    ptr.Offset = readU32(input);
+    ptr.Length = readU32(input);
+    ptr.Format = readU16(input);
 
-    bool compressed = ((ptrFormat & 2) == 2);
-    m_input->seek(ptrOffset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptrLength, compressed);
+    bool compressed = ((ptr.Format & 2) == 2);
+    m_input->seek(ptr.Offset, WPX_SEEK_SET);
+    VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
 
     shift = compressed ? 4 : 0;
 
-    switch (ptrType)
+    switch (ptr.Type)
     {
     case VSD_SHAPE_FOREIGN:
       m_stencilShape = VSDXStencilShape();
@@ -453,10 +450,7 @@ void libvisio::VSDXParser::handleStencilPage(WPXInputStream *input, unsigned shi
 
 void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned shift)
 {
-  unsigned ptrType;
-  unsigned ptrOffset;
-  unsigned ptrLength;
-  unsigned ptrFormat;
+  Pointer ptr;
 
   input->seek(shift, WPX_SEEK_CUR);
   unsigned offset = readU32(input);
@@ -466,19 +460,19 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
 
   for (unsigned i = 0; i < pointerCount; i++)
   {
-    ptrType = readU32(input);
+    ptr.Type = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
-    ptrOffset = readU32(input);
-    ptrLength = readU32(input);
-    ptrFormat = readU16(input);
+    ptr.Offset = readU32(input);
+    ptr.Length = readU32(input);
+    ptr.Format = readU16(input);
 
-    bool compressed = ((ptrFormat & 2) == 2);
-    m_input->seek(ptrOffset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptrLength, compressed);
+    bool compressed = ((ptr.Format & 2) == 2);
+    m_input->seek(ptr.Offset, WPX_SEEK_SET);
+    VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
 
     shift = compressed ? 4 : 0;
 
-    if (ptrType == VSD_PROP_LIST)
+    if (ptr.Type == VSD_PROP_LIST)
     {
       shift = compressed ? 4 : 0;
       tmpInput.seek(shift, WPX_SEEK_CUR);
@@ -489,25 +483,25 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
 
       for (unsigned j = 0; j < pointerCount2; j++)
       {
-        ptrType = readU32(&tmpInput);
+        ptr.Type = readU32(&tmpInput);
         tmpInput.seek(4, WPX_SEEK_CUR); // Skip dword
-        ptrOffset = readU32(&tmpInput);
-        ptrLength = readU32(&tmpInput);
-        ptrFormat = readU16(&tmpInput);
+        ptr.Offset = readU32(&tmpInput);
+        ptr.Length = readU32(&tmpInput);
+        ptr.Format = readU16(&tmpInput);
 
-        compressed = ((ptrFormat & 2) == 2);
-        m_input->seek(ptrOffset, WPX_SEEK_SET);
-        VSDInternalStream tmpInput2(m_input, ptrLength, compressed);
-        if (ptrType == VSD_FOREIGN_DATA_TYPE)
+        compressed = ((ptr.Format & 2) == 2);
+        m_input->seek(ptr.Offset, WPX_SEEK_SET);
+        VSDInternalStream tmpInput2(m_input, ptr.Length, compressed);
+        if (ptr.Type == VSD_FOREIGN_DATA_TYPE)
         {
           tmpInput2.seek(0x4, WPX_SEEK_CUR);
           readForeignDataType(&tmpInput2);
         }
       }
     }
-    else if (ptrType == VSD_FOREIGN_DATA)
+    else if (ptr.Type == VSD_FOREIGN_DATA)
     {
-      unsigned foreignLength = ptrLength - 4;
+      unsigned foreignLength = ptr.Length - 4;
       if (compressed)
         foreignLength = readU32(&tmpInput);
       else
@@ -523,7 +517,7 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
         m_stencilShape.m_foreign->data = binaryData;
       }
     }
-    else if (ptrType == VSD_OLE_LIST)
+    else if (ptr.Type == VSD_OLE_LIST)
     {
       m_stencilShape.m_foreign->dataId = m_header.id;
       handleStencilOle(&tmpInput, shift);
@@ -533,10 +527,7 @@ void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned 
 
 void libvisio::VSDXParser::handleStencilOle(WPXInputStream *input, unsigned shift)
 {
-  unsigned ptrType;
-  unsigned ptrOffset;
-  unsigned ptrLength;
-  unsigned ptrFormat;
+  Pointer ptr;
 
   input->seek(shift, WPX_SEEK_CUR);
   unsigned offset = readU32(input);
@@ -546,20 +537,20 @@ void libvisio::VSDXParser::handleStencilOle(WPXInputStream *input, unsigned shif
 
   for (unsigned i = 0; i < pointerCount; i++)
   {
-    ptrType = readU32(input);
+    ptr.Type = readU32(input);
     input->seek(4, WPX_SEEK_CUR); // Skip dword
-    ptrOffset = readU32(input);
-    ptrLength = readU32(input);
-    ptrFormat = readU16(input);
+    ptr.Offset = readU32(input);
+    ptr.Length = readU32(input);
+    ptr.Format = readU16(input);
 
-    bool compressed = ((ptrFormat & 2) == 2);
-    m_input->seek(ptrOffset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptrLength, compressed);
+    bool compressed = ((ptr.Format & 2) == 2);
+    m_input->seek(ptr.Offset, WPX_SEEK_SET);
+    VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
 
     shift = compressed ? 4 : 0;
     tmpInput.seek(shift, WPX_SEEK_CUR);
 
-    if (ptrType == VSD_OLE_DATA)
+    if (ptr.Type == VSD_OLE_DATA)
     {
       // Be sure to use internal stream size to get decompressed size
       unsigned foreignLength = tmpInput.getSize() - shift;
