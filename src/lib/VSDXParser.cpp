@@ -219,11 +219,39 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     {
       m_stencilShape = VSDXStencilShape();
       m_stencilShape.m_foreign = new ForeignData();
-      handleStencilForeign(&tmpInput, shift);
-      m_currentStencil->addStencilShape(idx, m_stencilShape);
-      return;
     }
     break;
+  case VSD_FOREIGN_DATA_TYPE:
+    tmpInput.seek(0x4, WPX_SEEK_CUR);
+    readForeignDataType(&tmpInput);
+    return;
+  case VSD_FOREIGN_DATA:
+    if (m_isStencilStarted)
+    {
+      unsigned foreignLength = ptr.Length - 4;
+      if (compressed)
+        foreignLength = readU32(&tmpInput);
+      else
+        tmpInput.seek(0x4, WPX_SEEK_CUR);
+
+      unsigned long tmpBytesRead = 0;
+      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
+      if (foreignLength == tmpBytesRead)
+      {
+        WPXBinaryData binaryData(buffer, tmpBytesRead);
+        m_stencilShape.m_foreign->dataId = m_header.id;
+        m_stencilShape.m_foreign->dataLevel = m_header.level;
+        m_stencilShape.m_foreign->data = binaryData;
+      }
+    }
+    return;
+  case VSD_OLE_LIST:
+    if (m_isStencilStarted)
+    {
+      m_stencilShape.m_foreign->dataId = m_header.id;
+      handleStencilOle(&tmpInput, shift);
+    }
+    return;
   default:
     break;
   }
@@ -256,6 +284,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   case VSD_SHAPE_GROUP:
   case VSD_SHAPE_GUIDE:
   case VSD_SHAPE_SHAPE:
+  case VSD_SHAPE_FOREIGN:
     if (m_isStencilStarted)
     {
       _handleLevelChange(0);
@@ -404,83 +433,6 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned /* level
     }
 
     input->seek(endPos, WPX_SEEK_SET);
-  }
-}
-
-void libvisio::VSDXParser::handleStencilForeign(WPXInputStream *input, unsigned shift)
-{
-  Pointer ptr;
-
-  input->seek(shift, WPX_SEEK_CUR);
-  unsigned offset = readU32(input);
-  input->seek(offset+shift, WPX_SEEK_SET);
-  unsigned pointerCount = readU32(input);
-  input->seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
-
-  for (unsigned i = 0; i < pointerCount; i++)
-  {
-    ptr.Type = readU32(input);
-    input->seek(4, WPX_SEEK_CUR); // Skip dword
-    ptr.Offset = readU32(input);
-    ptr.Length = readU32(input);
-    ptr.Format = readU16(input);
-
-    bool compressed = ((ptr.Format & 2) == 2);
-    m_input->seek(ptr.Offset, WPX_SEEK_SET);
-    VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
-
-    shift = compressed ? 4 : 0;
-
-    if (ptr.Type == VSD_PROP_LIST)
-    {
-      shift = compressed ? 4 : 0;
-      tmpInput.seek(shift, WPX_SEEK_CUR);
-      offset = readU32(&tmpInput);
-      tmpInput.seek(offset+shift, WPX_SEEK_SET);
-      unsigned pointerCount2 = readU32(&tmpInput);
-      tmpInput.seek(4, WPX_SEEK_CUR); // Ignore 0x0 dword
-
-      for (unsigned j = 0; j < pointerCount2; j++)
-      {
-        ptr.Type = readU32(&tmpInput);
-        tmpInput.seek(4, WPX_SEEK_CUR); // Skip dword
-        ptr.Offset = readU32(&tmpInput);
-        ptr.Length = readU32(&tmpInput);
-        ptr.Format = readU16(&tmpInput);
-
-        compressed = ((ptr.Format & 2) == 2);
-        m_input->seek(ptr.Offset, WPX_SEEK_SET);
-        VSDInternalStream tmpInput2(m_input, ptr.Length, compressed);
-        if (ptr.Type == VSD_FOREIGN_DATA_TYPE)
-        {
-          tmpInput2.seek(0x4, WPX_SEEK_CUR);
-          readForeignDataType(&tmpInput2);
-        }
-      }
-    }
-    else if (ptr.Type == VSD_FOREIGN_DATA)
-    {
-      unsigned foreignLength = ptr.Length - 4;
-      if (compressed)
-        foreignLength = readU32(&tmpInput);
-      else
-        tmpInput.seek(0x4, WPX_SEEK_CUR);
-
-      unsigned long tmpBytesRead = 0;
-      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
-      if (foreignLength == tmpBytesRead)
-      {
-        WPXBinaryData binaryData(buffer, tmpBytesRead);
-        m_stencilShape.m_foreign->dataId = m_header.id;
-        m_stencilShape.m_foreign->dataLevel = m_header.level;
-        m_stencilShape.m_foreign->data = binaryData;
-      }
-    }
-    else if (ptr.Type == VSD_OLE_LIST)
-    {
-      m_stencilShape.m_foreign->dataId = m_header.id;
-      handleStencilOle(&tmpInput, shift);
-    }
   }
 }
 
