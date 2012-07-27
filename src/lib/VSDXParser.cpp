@@ -416,7 +416,6 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned /* level
     case VSD_TEXT_BLOCK:
       readTextBlock(input);
       break;
-//    case VSD_FONT_LIST: // ver 6 only, don't need to handle that
     case VSD_FONT_IX: // ver 6 only
       readFontIX(input);
       break;
