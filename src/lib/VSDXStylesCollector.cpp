@@ -37,7 +37,7 @@ libvisio::VSDXStylesCollector::VSDXStylesCollector(
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
   std::vector<std::list<unsigned> > &documentPageShapeOrders
 ) :
-  m_currentLevel(0), m_isShapeStarted(false), m_isPageStarted(false),
+  m_currentLevel(0), m_isShapeStarted(false),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_currentShapeId(0), m_groupXForms(), m_groupMemberships(),
   m_groupXFormsSequence(groupXFormsSequence),
@@ -370,9 +370,6 @@ void libvisio::VSDXStylesCollector::collectNumericField(unsigned /* id */, unsig
 
 void libvisio::VSDXStylesCollector::startPage(unsigned /* pageId */)
 {
-  if (m_isPageStarted)
-    endPage();
-  m_isPageStarted = true;
   m_groupXForms.clear();
   m_groupMemberships.clear();
   m_pageShapeOrder.clear();
@@ -382,28 +379,24 @@ void libvisio::VSDXStylesCollector::startPage(unsigned /* pageId */)
 void libvisio::VSDXStylesCollector::endPage()
 {
   _handleLevelChange(0);
-  if (m_isPageStarted)
+  m_groupXFormsSequence.push_back(m_groupXForms);
+  m_groupMembershipsSequence.push_back(m_groupMemberships);
+  while (!m_groupShapeOrder.empty())
   {
-    m_groupXFormsSequence.push_back(m_groupXForms);
-    m_groupMembershipsSequence.push_back(m_groupMemberships);
-    while (!m_groupShapeOrder.empty())
+    for (std::list<unsigned>::iterator j = m_pageShapeOrder.begin(); j != m_pageShapeOrder.end();)
     {
-      for (std::list<unsigned>::iterator j = m_pageShapeOrder.begin(); j != m_pageShapeOrder.end();)
+      std::map<unsigned, std::list<unsigned> >::iterator iter = m_groupShapeOrder.find(*j);
+      if (m_groupShapeOrder.end() != iter)
       {
-        std::map<unsigned, std::list<unsigned> >::iterator iter = m_groupShapeOrder.find(*j);
-        if (m_groupShapeOrder.end() != iter)
-        {
-          ++j;
-          m_pageShapeOrder.splice(j, iter->second, iter->second.begin(), iter->second.end());
-          m_groupShapeOrder.erase(iter);
-        }
-        else
-          ++j;
+        ++j;
+        m_pageShapeOrder.splice(j, iter->second, iter->second.begin(), iter->second.end());
+        m_groupShapeOrder.erase(iter);
       }
+      else
+        ++j;
     }
-    m_documentPageShapeOrders.push_back(m_pageShapeOrder);
   }
-  m_isPageStarted = false;
+  m_documentPageShapeOrders.push_back(m_pageShapeOrder);
 }
 
 void libvisio::VSDXStylesCollector::_handleLevelChange(unsigned level)
