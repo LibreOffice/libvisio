@@ -125,6 +125,7 @@ protected:
   void handleStreams(WPXInputStream *input, unsigned shift, unsigned level);
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
   void handleChunks(WPXInputStream *input, unsigned level);
+  void handleChunk(WPXInputStream *input);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);

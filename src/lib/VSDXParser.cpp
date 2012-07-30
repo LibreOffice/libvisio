@@ -175,6 +175,9 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, 
 
 void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsigned level)
 {
+  m_header.level = level;
+  m_header.id = idx;
+  _handleLevelChange(level);
   VSDXStencil tmpStencil;
   bool compressed = ((ptr.Format & 2) == 2);
   m_input->seek(ptr.Offset, WPX_SEEK_SET);
@@ -325,133 +328,137 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned level)
 
     _handleLevelChange(m_header.level);
     VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
-    switch (m_header.chunkType)
-    {
-    case VSD_SHAPE_GROUP:
-    case VSD_SHAPE_GUIDE:
-    case VSD_SHAPE_SHAPE:
-    case VSD_SHAPE_FOREIGN:
-      readShape(input);
-      break;
-    case VSD_XFORM_DATA:
-      readXFormData(input);
-      break;
-    case VSD_TEXT_XFORM:
-      readTxtXForm(input);
-      break;
-    case VSD_SHAPE_LIST:
-      readShapeList(input);
-      break;
-    case VSD_SHAPE_ID:
-      readShapeId(input);
-      break;
-    case VSD_LINE:
-      readLine(input);
-      break;
-    case VSD_FILL_AND_SHADOW:
-      readFillAndShadow(input);
-      break;
-    case VSD_GEOM_LIST:
-      readGeomList(input);
-      break;
-    case VSD_GEOMETRY:
-      readGeometry(input);
-      break;
-    case VSD_MOVE_TO:
-      readMoveTo(input);
-      break;
-    case VSD_LINE_TO:
-      readLineTo(input);
-      break;
-    case VSD_ARC_TO:
-      readArcTo(input);
-      break;
-    case VSD_ELLIPSE:
-      readEllipse(input);
-      break;
-    case VSD_ELLIPTICAL_ARC_TO:
-      readEllipticalArcTo(input);
-      break;
-    case VSD_NURBS_TO:
-      readNURBSTo(input);
-      break;
-    case VSD_POLYLINE_TO:
-      readPolylineTo(input);
-      break;
-    case VSD_INFINITE_LINE:
-      readInfiniteLine(input);
-      break;
-    case VSD_SHAPE_DATA:
-      readShapeData(input);
-      break;
-    case VSD_FOREIGN_DATA_TYPE:
-      readForeignDataType(input);
-      break;
-    case VSD_FOREIGN_DATA:
-      readForeignData(input);
-      break;
-    case VSD_OLE_LIST:
-      readOLEList(input);
-      break;
-    case VSD_OLE_DATA:
-      readOLEData(input);
-      break;
-    case VSD_PAGE_PROPS:
-      readPageProps(input);
-      break;
-    case VSD_CHAR_LIST:
-      readCharList(input);
-      break;
-    case VSD_PARA_LIST:
-      readParaList(input);
-      break;
-    case VSD_TEXT:
-      readText(input);
-      break;
-    case VSD_CHAR_IX:
-      readCharIX(input);
-      break;
-    case VSD_PARA_IX:
-      readParaIX(input);
-      break;
-    case VSD_TEXT_BLOCK:
-      readTextBlock(input);
-      break;
-    case VSD_FONT_IX: // ver 6 only
-      readFontIX(input);
-      break;
-    case VSD_PAGE:
-      readPage(input);
-      break;
-    case VSD_SPLINE_START:
-      readSplineStart(input);
-      break;
-    case VSD_SPLINE_KNOT:
-      readSplineKnot(input);
-      break;
-    case VSD_NAME_LIST:
-      readNameList(input);
-      break;
-    case VSD_NAME:
-      readName(input);
-      break;
-    case VSD_FIELD_LIST:
-      readFieldList(input);
-      break;
-    case VSD_TEXT_FIELD:
-      readTextField(input);
-      break;
-    case VSD_STYLE_SHEET:
-      readStyleSheet(input);
-      break;
-    case VSD_PAGE_SHEET:
-      readPageSheet(input);
-      break;
-    default:
-      m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-    }
-
+    handleChunk(input);
     input->seek(endPos, WPX_SEEK_SET);
+  }
+}
+
+void libvisio::VSDXParser::handleChunk(WPXInputStream *input)
+{
+  switch (m_header.chunkType)
+  {
+  case VSD_SHAPE_GROUP:
+  case VSD_SHAPE_GUIDE:
+  case VSD_SHAPE_SHAPE:
+  case VSD_SHAPE_FOREIGN:
+    readShape(input);
+    break;
+  case VSD_XFORM_DATA:
+    readXFormData(input);
+    break;
+  case VSD_TEXT_XFORM:
+    readTxtXForm(input);
+    break;
+  case VSD_SHAPE_LIST:
+    readShapeList(input);
+    break;
+  case VSD_SHAPE_ID:
+    readShapeId(input);
+    break;
+  case VSD_LINE:
+    readLine(input);
+    break;
+  case VSD_FILL_AND_SHADOW:
+    readFillAndShadow(input);
+    break;
+  case VSD_GEOM_LIST:
+    readGeomList(input);
+    break;
+  case VSD_GEOMETRY:
+    readGeometry(input);
+    break;
+  case VSD_MOVE_TO:
+    readMoveTo(input);
+    break;
+  case VSD_LINE_TO:
+    readLineTo(input);
+    break;
+  case VSD_ARC_TO:
+    readArcTo(input);
+    break;
+  case VSD_ELLIPSE:
+    readEllipse(input);
+    break;
+  case VSD_ELLIPTICAL_ARC_TO:
+    readEllipticalArcTo(input);
+    break;
+  case VSD_NURBS_TO:
+    readNURBSTo(input);
+    break;
+  case VSD_POLYLINE_TO:
+    readPolylineTo(input);
+    break;
+  case VSD_INFINITE_LINE:
+    readInfiniteLine(input);
+    break;
+  case VSD_SHAPE_DATA:
+    readShapeData(input);
+    break;
+  case VSD_FOREIGN_DATA_TYPE:
+    readForeignDataType(input);
+    break;
+  case VSD_FOREIGN_DATA:
+    readForeignData(input);
+    break;
+  case VSD_OLE_LIST:
+    readOLEList(input);
+    break;
+  case VSD_OLE_DATA:
+    readOLEData(input);
+    break;
+  case VSD_PAGE_PROPS:
+    readPageProps(input);
+    break;
+  case VSD_CHAR_LIST:
+    readCharList(input);
+    break;
+  case VSD_PARA_LIST:
+    readParaList(input);
+    break;
+  case VSD_TEXT:
+    readText(input);
+    break;
+  case VSD_CHAR_IX:
+    readCharIX(input);
+    break;
+  case VSD_PARA_IX:
+    readParaIX(input);
+    break;
+  case VSD_TEXT_BLOCK:
+    readTextBlock(input);
+    break;
+  case VSD_FONT_IX: // ver 6 only
+    readFontIX(input);
+    break;
+  case VSD_PAGE:
+    readPage(input);
+    break;
+  case VSD_SPLINE_START:
+    readSplineStart(input);
+    break;
+  case VSD_SPLINE_KNOT:
+    readSplineKnot(input);
+    break;
+  case VSD_NAME_LIST:
+    readNameList(input);
+    break;
+  case VSD_NAME:
+    readName(input);
+    break;
+  case VSD_FIELD_LIST:
+    readFieldList(input);
+    break;
+  case VSD_TEXT_FIELD:
+    readTextField(input);
+    break;
+  case VSD_STYLE_SHEET:
+    readStyleSheet(input);
+    break;
+  case VSD_PAGE_SHEET:
+    readPageSheet(input);
+    break;
+  default:
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
 }
 
