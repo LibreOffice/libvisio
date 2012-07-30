@@ -91,7 +91,7 @@ protected:
   void readPageProps(WPXInputStream *input);
   void readShape(WPXInputStream *input);
   void readColours(WPXInputStream *input);
-  void readFont(WPXInputStream *input, unsigned id);
+  void readFont(WPXInputStream *input);
   void readFontIX(WPXInputStream *input);
   void readCharList(WPXInputStream *input);
   void readParaList(WPXInputStream *input);
@@ -126,6 +126,7 @@ protected:
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
   void handleChunks(WPXInputStream *input, unsigned level);
   void handleChunk(WPXInputStream *input);
+  void handleBlob(WPXInputStream *input, unsigned level);
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);

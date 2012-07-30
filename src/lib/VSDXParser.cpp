@@ -67,8 +67,6 @@ libvisio::VSDXParser::~VSDXParser()
     m_paraList->clear();
     delete m_paraList;
   }
-  if (m_currentStencil)
-    delete m_currentStencil;
 }
 
 bool libvisio::VSDXParser::parseMain()
@@ -177,6 +175,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
 {
   m_header.level = level;
   m_header.id = idx;
+  m_header.chunkType = ptr.Type;
   _handleLevelChange(level);
   VSDXStencil tmpStencil;
   bool compressed = ((ptr.Format & 2) == 2);
@@ -189,55 +188,6 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
 
   switch (ptr.Type)
   {
-  case VSD_COLORS:
-    readColours(&tmpInput);
-    return;
-  case VSD_FONTFACE: // substreams of FONTAFACES stream, ver 11 only
-    readFont(&tmpInput, idx);
-    return;
-  case VSD_FOREIGN_DATA_TYPE:
-    if (m_isStencilStarted)
-    {
-      tmpInput.seek(0x4, WPX_SEEK_CUR);
-      readForeignDataType(&tmpInput);
-    }
-    break;
-  case VSD_FOREIGN_DATA:
-    if (m_isStencilStarted)
-    {
-      unsigned foreignLength = ptr.Length - 4;
-      if (compressed)
-        foreignLength = readU32(&tmpInput);
-      else
-        tmpInput.seek(0x4, WPX_SEEK_CUR);
-
-      unsigned long tmpBytesRead = 0;
-      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
-      if (foreignLength == tmpBytesRead)
-      {
-        WPXBinaryData binaryData(buffer, tmpBytesRead);
-        m_stencilShape.m_foreign->dataId = m_header.id;
-        m_stencilShape.m_foreign->dataLevel = m_header.level;
-        m_stencilShape.m_foreign->data = binaryData;
-      }
-    }
-    break;
-  case VSD_OLE_DATA:
-    if (m_isStencilStarted)
-    {
-      // Be sure to use internal stream size to get decompressed size
-      unsigned foreignLength = tmpInput.getSize() - shift;
-      unsigned long tmpBytesRead = 0;
-      const unsigned char *buffer = tmpInput.read(foreignLength, tmpBytesRead);
-
-      if (foreignLength == tmpBytesRead)
-      {
-        // Append data instead of setting it - allows multi-stream OLE objects
-        m_stencilShape.m_foreign->data.append(buffer, tmpBytesRead);
-        m_stencilShape.m_foreign->dataLevel = m_header.level;
-      }
-    }
-    break;
   case VSD_STYLES:
     m_isInStyles = true;
     break;
@@ -269,16 +219,21 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     break;
   case VSD_OLE_LIST:
     if (m_isStencilStarted)
-      m_stencilShape.m_foreign->dataId = m_header.id;
+      m_stencilShape.m_foreign->dataId = idx;
     break;
   default:
     break;
   }
 
-  if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0x8)
+  if ((ptr.Format >> 4) == 0x4 || (ptr.Format >> 4) == 0x5)
+  {
+    if (ptr.Length > 4)
+      handleBlob(&tmpInput, level+1);
+    if ((ptr.Format >> 4) == 0x5)
+      handleStreams(&tmpInput, shift, level+1);
+  }
+  else if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0x8)
     handleChunks(&tmpInput, level+1);
-  else if ((ptr.Format >> 4) == 0x5)
-    handleStreams(&tmpInput, shift, level+1);
 
   switch (ptr.Type)
   {
@@ -315,6 +270,23 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   }
 
 }
+
+void libvisio::VSDXParser::handleBlob(WPXInputStream *input, unsigned level)
+{
+  try
+  {
+    m_header.level = level;
+    m_header.trailer = 0;
+    m_header.dataLength = readU32(input);
+    _handleLevelChange(m_header.level);
+    handleChunk(input);
+  }
+  catch (EndOfStreamException &)
+  {
+    VSD_DEBUG_MSG(("VSDXParser::handleBlob - catching EndOfStreamException\n"));
+  }
+}
+
 
 void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned level)
 {
@@ -457,6 +429,12 @@ void libvisio::VSDXParser::handleChunk(WPXInputStream *input)
   case VSD_PAGE_SHEET:
     readPageSheet(input);
     break;
+  case VSD_COLORS:
+    readColours(input);
+    break;
+  case VSD_FONTFACE: // substreams of FONTAFACES stream, ver 11 only
+    readFont(input);
+    break;
   default:
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
@@ -542,7 +520,14 @@ void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
     return;
   WPXBinaryData binaryData(buffer, tmpBytesRead);
 
-  m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
+  if (m_isStencilStarted)
+  {
+    m_stencilShape.m_foreign->dataId = m_header.id;
+    m_stencilShape.m_foreign->dataLevel = m_header.level;
+    m_stencilShape.m_foreign->data = binaryData;
+  }
+  else
+    m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
 }
 
 void libvisio::VSDXParser::readOLEList(WPXInputStream * /* input */)
@@ -558,7 +543,14 @@ void libvisio::VSDXParser::readOLEData(WPXInputStream *input)
     return;
   WPXBinaryData oleData(buffer, tmpBytesRead);
 
-  m_collector->collectOLEData(m_header.id, m_header.level, oleData);
+  if (m_isStencilStarted)
+  {
+    // Append data instead of setting it - allows multi-stream OLE objects
+    m_stencilShape.m_foreign->data.append(oleData);
+    m_stencilShape.m_foreign->dataLevel = m_header.level;
+  }
+  else
+    m_collector->collectOLEData(m_header.id, m_header.level, oleData);
 }
 
 void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
@@ -1352,9 +1344,9 @@ void libvisio::VSDXParser::readColours(WPXInputStream *input)
   m_collector->collectColours(colours);
 }
 
-void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned fontID)
+void libvisio::VSDXParser::readFont(WPXInputStream *input)
 {
-  input->seek(8, WPX_SEEK_CUR);
+  input->seek(4, WPX_SEEK_CUR);
   ::WPXBinaryData textStream;
 
   for (unsigned i = 0; i < 32; i++)
@@ -1366,7 +1358,7 @@ void libvisio::VSDXParser::readFont(WPXInputStream *input, unsigned fontID)
     textStream.append(curchar);
     textStream.append(nextchar);
   }
-  m_collector->collectFont((unsigned short) fontID, textStream, libvisio::VSD_TEXT_UTF16);
+  m_collector->collectFont(m_header.id, textStream, libvisio::VSD_TEXT_UTF16);
 }
 
 void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
