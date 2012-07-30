@@ -264,6 +264,12 @@ void libvisio::VSDXStylesCollector::collectName(unsigned /*id*/, unsigned level,
   _handleLevelChange(level);
 }
 
+void libvisio::VSDXStylesCollector::collectPageSheet(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+  m_currentShapeLevel = level;
+}
+
 void libvisio::VSDXStylesCollector::collectStyleSheet(unsigned id, unsigned level, unsigned lineStyleParent, unsigned fillStyleParent, unsigned textStyleParent)
 {
   _handleLevelChange(level);

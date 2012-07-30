@@ -114,6 +114,7 @@ public:
                         unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
   void collectNameList(unsigned id, unsigned level);
   void collectName(unsigned id, unsigned level,  const WPXBinaryData &name, TextFormat format);
+  void collectPageSheet(unsigned id, unsigned level);
 
 
   // Style collectors

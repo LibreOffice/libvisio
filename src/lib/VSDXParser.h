@@ -108,6 +108,7 @@ protected:
   virtual void readTextField(WPXInputStream *input) = 0;
 
   void readStyleSheet(WPXInputStream *input);
+  void readPageSheet(WPXInputStream *input);
 
   void readSplineStart(WPXInputStream *input);
   void readSplineKnot(WPXInputStream *input);

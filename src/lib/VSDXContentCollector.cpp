@@ -2190,6 +2190,12 @@ void libvisio::VSDXContentCollector::collectName(unsigned id, unsigned level, co
   m_names[id] = nameString;
 }
 
+void libvisio::VSDXContentCollector::collectPageSheet(unsigned /* id */, unsigned level)
+{
+  _handleLevelChange(level);
+  m_currentShapeLevel = level;
+}
+
 void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
 {
   _handleLevelChange(level);

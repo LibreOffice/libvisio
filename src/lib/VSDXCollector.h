@@ -93,6 +93,7 @@ public:
                                 unsigned char textDirection) = 0;
   virtual void collectNameList(unsigned id, unsigned level) = 0;
   virtual void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format) = 0;
+  virtual void collectPageSheet(unsigned id, unsigned level) = 0;
 
   // Style collectors
   virtual void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;

@@ -108,6 +108,7 @@ public:
     collectUnhandledChunk(id, level);
   }
   void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format);
+  void collectPageSheet(unsigned id, unsigned level);
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);

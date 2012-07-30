@@ -313,13 +313,14 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
 
 }
 
-void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned /* level */)
+void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned level)
 {
   long endPos = 0;
 
   while (!input->atEOS())
   {
     getChunkHeader(input);
+    m_header.level += level;
     endPos = m_header.dataLength+m_header.trailer+input->tell();
 
     _handleLevelChange(m_header.level);
@@ -442,6 +443,9 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned /* level
       break;
     case VSD_STYLE_SHEET:
       readStyleSheet(input);
+      break;
+    case VSD_PAGE_SHEET:
+      readPageSheet(input);
       break;
     default:
       m_collector->collectUnhandledChunk(m_header.id, m_header.level);
@@ -1423,6 +1427,12 @@ void libvisio::VSDXParser::readStyleSheet(WPXInputStream *input)
   unsigned textStyle = readU32(input);
 
   m_collector->collectStyleSheet(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
+}
+
+void libvisio::VSDXParser::readPageSheet(WPXInputStream * /* input */)
+{
+  m_currentShapeLevel = m_header.level;
+  m_collector->collectPageSheet(m_header.id, m_header.level);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
