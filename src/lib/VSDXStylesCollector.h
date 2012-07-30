@@ -150,6 +150,7 @@ private:
 
   unsigned m_currentLevel;
   bool m_isShapeStarted;
+  bool m_isPageStarted;
 
   double m_shadowOffsetX;
   double m_shadowOffsetY;
