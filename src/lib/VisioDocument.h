@@ -47,8 +47,12 @@ public:
   static bool isSupported(WPXInputStream *input);
 
   static bool parse(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  
+  static bool parseStencils(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
 
   static bool generateSVG(WPXInputStream *input, VSDStringVector &output);
+  
+  static bool generateSVGStencils(WPXInputStream *input, VSDStringVector &output);
 };
 
 } // namespace libvisio

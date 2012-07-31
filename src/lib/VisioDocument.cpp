@@ -91,11 +91,11 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
   input->seek(0, WPX_SEEK_SET);
   if (!input->isOLEStream())
     return false;
+
   WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
+
   if (!docStream)
-  {
     return false;
-  }
 
   docStream->seek(0x1A, WPX_SEEK_SET);
 
@@ -114,9 +114,56 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
   }
 
   if (parser)
-  {
     parser->parseMain();
+  else
+  {
+    delete docStream;
+    return false;
   }
+
+  delete parser;
+  delete docStream;
+
+  return true;
+}
+
+/**
+Parses the input stream content and extracts stencil pages, one stencil page per output page.
+It will make callbacks to the functions provided by a WPGPaintInterface class implementation
+when needed.
+\param input The input stream
+\param painter A WPGPainterInterface implementation
+\return A value that indicates whether the parsing was successful
+*/
+bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+{
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
+
+  WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
+
+  if (!docStream)
+    return false;
+
+  docStream->seek(0x1A, WPX_SEEK_SET);
+
+  unsigned char version = readU8(docStream);
+  VSDXParser *parser;
+  switch(version)
+  {
+  case 6:
+    parser = new VSD6Parser(docStream, painter);
+    break;
+  case 11:
+    parser = new VSD11Parser(docStream, painter);
+    break;
+  default:
+    return false;
+  }
+
+  if (parser)
+    parser->extractStencils();
   else
   {
     delete docStream;
@@ -140,6 +187,21 @@ bool libvisio::VisioDocument::generateSVG(::WPXInputStream *input, libvisio::VSD
 {
   libvisio::VSDSVGGenerator generator(output);
   bool result = libvisio::VisioDocument::parse(input, &generator);
+  return result;
+}
+
+/**
+Parses the input stream content and extracts stencil pages. It generates a valid
+Scalable Vector Graphics document per stencil.
+Provided as a convenience function for applications that support SVG internally.
+\param input The input stream
+\param output The output string whose content is the resulting SVG
+\return A value that indicates whether the SVG generation was successful.
+*/
+bool libvisio::VisioDocument::generateSVGStencils(::WPXInputStream *input, libvisio::VSDStringVector &output)
+{
+  libvisio::VSDSVGGenerator generator(output);
+  bool result = libvisio::VisioDocument::parseStencils(input, &generator);
   return result;
 }
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

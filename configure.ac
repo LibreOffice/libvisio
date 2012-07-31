@@ -79,13 +79,19 @@ AS_CASE([$host],
 		native_win32=yes
 		LIBVISIO_WIN32_RESOURCE=libvisio-win32res.lo
 		VSD2RAW_WIN32_RESOURCE=vsd2raw-win32res.lo
-		VSD2TEXT_WIN32_RESOURCE=vsd2raw-win32res.lo
+		VSS2RAW_WIN32_RESOURCE=vss2raw-win32res.lo
+		VSD2TEXT_WIN32_RESOURCE=vsd2text-win32res.lo
+		VSS2TEXT_WIN32_RESOURCE=vss2text-win32res.lo
 		VSD2XHTML_WIN32_RESOURCE=vsd2xhtml-win32res.lo
+		VSS2XHTML_WIN32_RESOURCE=vss2xhtml-win32res.lo
 	], [
 		native_win32=no
 		LIBVISIO_WIN32_RESOURCE=
 		VSD2RAW_WIN32_RESOURCE=
+		VSS2RAW_WIN32_RESOURCE=
 		VSD2TEXT_WIN32_RESOURCE=
+		VSS2TEXT_WIN32_RESOURCE=
+		VSD2XHTML_WIN32_RESOURCE=
 		VSD2XHTML_WIN32_RESOURCE=
 	]
 )
@@ -93,8 +99,12 @@ AC_MSG_RESULT([$native_win32])
 AM_CONDITIONAL(OS_WIN32, [test "x$native_win32" = "xyes"])
 AC_SUBST(LIBVISIO_WIN32_RESOURCE)
 AC_SUBST(VSD2RAW_WIN32_RESOURCE)
+AC_SUBST(VSS2RAW_WIN32_RESOURCE)
 AC_SUBST(VSD2TEXT_WIN32_RESOURCE)
+AC_SUBST(VSS2TEXT_WIN32_RESOURCE)
 AC_SUBST(VSD2XHTML_WIN32_RESOURCE)
+AC_SUBST(VSS2XHTML_WIN32_RESOURCE)
+
 AC_MSG_CHECKING([for Win32 platform in general])
 AS_CASE([$host],
 	[*-*-mingw*|*-*-cygwin*], [platform_win32=yes],
@@ -207,10 +217,13 @@ src/Makefile
 src/conv/Makefile
 src/conv/raw/Makefile
 src/conv/raw/vsd2raw.rc
+src/conv/raw/vss2raw.rc
 src/conv/svg/Makefile
 src/conv/svg/vsd2xhtml.rc
+src/conv/svg/vss2xhtml.rc
 src/conv/text/Makefile
 src/conv/text/vsd2text.rc
+src/conv/text/vss2text.rc
 src/lib/Makefile
 src/lib/libvisio.rc
 build/Makefile

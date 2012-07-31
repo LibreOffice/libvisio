@@ -6,4 +6,5 @@
 Makefile
 Makefile.in
 vsd2xhtml
+vss2xhtml
 *.rc

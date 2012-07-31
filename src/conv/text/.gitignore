@@ -6,4 +6,5 @@
 Makefile
 Makefile.in
 vsd2text
+vss2text
 *.rc
