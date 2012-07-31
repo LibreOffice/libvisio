@@ -66,6 +66,7 @@ public:
   explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   virtual ~VSDXParser();
   bool parseMain();
+  bool extractStencils();
 
 protected:
   // reader functions
@@ -152,6 +153,8 @@ protected:
   bool m_isInStyles;
   unsigned m_currentShapeLevel;
   unsigned m_currentShapeID;
+
+  bool m_extractStencils;
 
 private:
   VSDXParser();

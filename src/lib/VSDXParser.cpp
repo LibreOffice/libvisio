@@ -47,7 +47,8 @@ libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterfac
     m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
     m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentShapeLevel(0),
-    m_currentShapeID((unsigned)-1)
+    m_currentShapeID((unsigned)-1),
+    m_extractStencils(false)
 {}
 
 libvisio::VSDXParser::~VSDXParser()
@@ -117,6 +118,12 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
   {
     return false;
   }
+}
+
+bool libvisio::VSDXParser::extractStencils()
+{
+  m_extractStencils = true;
+  return parseMain();
 }
 
 void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, unsigned level)
@@ -191,16 +198,27 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   case VSD_STYLES:
     m_isInStyles = true;
     break;
+  case VSD_PAGES:
+    if (m_extractStencils)
+      return;
+    break;
   case VSD_PAGE:
+    if (m_extractStencils)
+      return;
     m_collector->startPage(idx);
     break;
   case VSD_STENCILS:
+    if (m_extractStencils)
+      break;
     if (m_stencils.count())
       return;
     m_isStencilStarted = true;
     break;
   case VSD_STENCIL_PAGE:
-    m_currentStencil = &tmpStencil;
+    if (m_extractStencils)
+      m_collector->startPage(idx);
+    else
+      m_currentStencil = &tmpStencil;
     break;
   case VSD_SHAPE_GROUP:
   case VSD_SHAPE_GUIDE:
@@ -249,11 +267,22 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     m_collector->endPages();
     break;
   case VSD_STENCILS:
-    m_isStencilStarted = false;
+    if (m_extractStencils)
+      m_collector->endPages();
+    else
+      m_isStencilStarted = false;
     break;
   case VSD_STENCIL_PAGE:
-    m_stencils.addStencil(idx, *m_currentStencil);
-    m_currentStencil = 0;
+    if (m_extractStencils)
+    {
+      _handleLevelChange(0);
+      m_collector->endPage();
+    }
+    else
+    {
+      m_stencils.addStencil(idx, *m_currentStencil);
+      m_currentStencil = 0;
+    }
     break;
   case VSD_SHAPE_GROUP:
   case VSD_SHAPE_GUIDE:
@@ -404,6 +433,10 @@ void libvisio::VSDXParser::handleChunk(WPXInputStream *input)
     break;
   case VSD_PAGE:
     readPage(input);
+    break;
+  case VSD_STENCIL_PAGE:
+    if (m_extractStencils)
+      readPage(input);
     break;
   case VSD_SPLINE_START:
     readSplineStart(input);

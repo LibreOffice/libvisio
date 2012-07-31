@@ -113,7 +113,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
-  m_txtxform(0), m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence[0]),
+  m_txtxform(0), m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? 0 : &groupXFormsSequence[0]),
   m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(),
   m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_foreignOffsetX(0.0),
   m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0), m_styleProps(),
@@ -1813,10 +1813,10 @@ void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm 
   if (txtxform)
     applyXForm(x, y, *txtxform);
 
-  while (true)
+  while (true && m_groupXForms)
   {
-    std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
-    if (iterX != m_groupXForms.end())
+    std::map<unsigned, XForm>::iterator iterX = m_groupXForms->find(shapeId);
+    if (iterX != m_groupXForms->end())
     {
       XForm xform = iterX->second;
       applyXForm(x, y, xform);
@@ -1860,10 +1860,10 @@ void libvisio::VSDXContentCollector::transformFlips(bool &flipX, bool &flipY)
 
   unsigned shapeId = m_currentShapeId;
 
-  while (true)
+  while (true && m_groupXForms)
   {
-    std::map<unsigned, XForm>::iterator iterX = m_groupXForms.find(shapeId);
-    if (iterX != m_groupXForms.end())
+    std::map<unsigned, XForm>::iterator iterX = m_groupXForms->find(shapeId);
+    if (iterX != m_groupXForms->end())
     {
       XForm xform = iterX->second;
       if (xform.flipX)
@@ -2384,7 +2384,7 @@ void libvisio::VSDXContentCollector::startPage(unsigned pageId)
   m_y = 0;
   m_currentPageNumber++;
   if (m_groupXFormsSequence.size() >= m_currentPageNumber)
-    m_groupXForms = m_groupXFormsSequence[m_currentPageNumber-1];
+    m_groupXForms = m_groupXFormsSequence.size() > m_currentPageNumber-1 ? &m_groupXFormsSequence[m_currentPageNumber-1] : 0;
   if (m_groupMembershipsSequence.size() >= m_currentPageNumber)
     m_groupMemberships = m_groupMembershipsSequence[m_currentPageNumber-1];
   if (m_documentPageShapeOrders.size() >= m_currentPageNumber)
