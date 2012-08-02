@@ -41,12 +41,12 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
 
   const unsigned char *tmpBuffer = input->read(size, tmpNumBytesRead);
 
-  if (size != tmpNumBytesRead)
+  if (tmpNumBytesRead < 2)
     return;
 
   if (!compressed)
   {
-    for (unsigned long i=0; i<size; i++)
+    for (unsigned long i=0; i<tmpNumBytesRead; i++)
       m_buffer.push_back(tmpBuffer[i]);
   }
   else
@@ -55,14 +55,14 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
     unsigned pos = 0;
     unsigned offset = 0;
 
-    while (offset < size)
+    while (offset < tmpNumBytesRead)
     {
       unsigned flag = tmpBuffer[offset++];
-      if (offset > size-1)
+      if (offset > tmpNumBytesRead-1)
         break;
 
       unsigned mask = 1;
-      for (unsigned bit = 0; bit < 8 && offset < size; ++bit)
+      for (unsigned bit = 0; bit < 8 && offset < tmpNumBytesRead; ++bit)
       {
         if (flag & mask)
         {
@@ -72,7 +72,7 @@ VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, 
         }
         else
         {
-          if (offset > size-2)
+          if (offset > tmpNumBytesRead-2)
             break;
           unsigned char addr1 = tmpBuffer[offset++];
           unsigned char addr2 = tmpBuffer[offset++];

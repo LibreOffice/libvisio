@@ -243,11 +243,11 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
     break;
   }
 
-  if ((ptr.Format >> 4) == 0x4 || (ptr.Format >> 4) == 0x5)
+  if ((ptr.Format >> 4) == 0x4 || (ptr.Format >> 4) == 0x5 || (ptr.Format >> 4) == 0x0)
   {
     if (ptr.Length > 4)
       handleBlob(&tmpInput, level+1);
-    if ((ptr.Format >> 4) == 0x5)
+    if ((ptr.Format >> 4) == 0x5 && ptr.Type != VSD_COLORS)
       handleStreams(&tmpInput, shift, level+1);
   }
   else if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0x8)
