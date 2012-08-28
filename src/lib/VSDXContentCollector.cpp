@@ -2657,6 +2657,17 @@ void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std
         m_fieldIndex++;
       ++iter;
     }
+    else if (*iter == 0x0e)
+    {
+      ++iter;
+      if (iter != characters.end())
+        ucs4Character = '\n';
+    }
+    else if (*iter == 0x09)
+    {
+      ucs4Character = '\t';
+      ++iter;
+    }
     else if (*iter < 0x20)
     {
       ucs4Character = 0x20;
@@ -2714,8 +2725,8 @@ void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std
 
 void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std::vector<unsigned char> &characters)
 {
-  for (std::vector<unsigned char>::const_iterator iter = characters.begin();
-       iter != characters.end();)
+  std::vector<unsigned char>::const_iterator iter = characters.begin();
+  while (iter != characters.end())
   {
     uint16_t high_surrogate = 0;
     bool fail = false;
@@ -2769,7 +2780,10 @@ void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std
     if (fail)
       throw libvisio::GenericException();
 
-    _appendUCS4(text, ucs4Character);
+    if (ucs4Character == 0xa)
+      _appendUCS4(text, (uint32_t)'\n');
+    else
+      _appendUCS4(text, ucs4Character);
   }
 }
 
