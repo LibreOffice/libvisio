@@ -1145,17 +1145,15 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   // Only formula if block is found
   if (cellRef == 2)
   {
-    unsigned char xType = 1;
-    unsigned char yType = 1;
     unsigned long blockBytesRead = 0;
     inputPos = input->tell();
     blockBytesRead += 6;
 
     // Parse static first two parameters to function
     input->seek(1, WPX_SEEK_CUR);
-    xType = readU16(input);
+    unsigned char xType = readU16(input);
     input->seek(1, WPX_SEEK_CUR);
-    yType = readU16(input);
+    unsigned char yType = readU16(input);
 
     // Parse pairs of x,y co-ordinates
     unsigned flag = readU8(input);
@@ -1223,18 +1221,15 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
   // Polyline data
   if (dataType == 0x80)
   {
-    unsigned pointCount = 0;
     std::vector<std::pair<double, double> > points;
     unsigned char xType = readU8(input);
     unsigned char yType = readU8(input);
-    pointCount = readU32(input);
+    unsigned pointCount = readU32(input);
 
     for (unsigned i = 0; i < pointCount; i++)
     {
-      double x = 0;
-      double y = 0;
-      x = readDouble(input);
-      y = readDouble(input);
+      double x = readDouble(input);
+      double y = readDouble(input);
       points.push_back(std::pair<double, double>(x, y));
     }
 
