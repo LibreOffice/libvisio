@@ -23,6 +23,7 @@ AC_LANG([C++])
 # ===========================
 # Find required base packages
 # ===========================
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
@@ -32,7 +33,6 @@ AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_LIBTOOL_WIN32_DLL
 PKG_PROG_PKG_CONFIG([0.20])
-m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # ====================
 # Find additional apps
