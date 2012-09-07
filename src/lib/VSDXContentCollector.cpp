@@ -932,18 +932,45 @@ void libvisio::VSDXContentCollector::_flushText()
         VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
         VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
-        std::vector<unsigned char> tmpBuffer(max*2);
-        memcpy(&tmpBuffer[0], &pTextBuffer[textBufferPosition], max*2);
-        appendCharacters(text, tmpBuffer);
+        std::vector<unsigned char> tmpBuffer;
+        for (unsigned i = 0; i < max*2; ++i)
+          tmpBuffer.push_back(pTextBuffer[textBufferPosition+i]);
+        if (!paraCharCount && tmpBuffer.size() >= 2)
+        {
+          while (tmpBuffer.size() >= 2 && tmpBuffer[tmpBuffer.size() - 2] == 0 && tmpBuffer[tmpBuffer.size() - 1] == 0)
+          {
+            tmpBuffer.pop_back();
+            tmpBuffer.pop_back();
+          }
+          if (tmpBuffer.size() >= 2)
+          {
+            tmpBuffer[tmpBuffer.size() - 2] = 0;
+            tmpBuffer[tmpBuffer.size() - 1] = 0;
+          }
+          else
+            tmpBuffer.clear();
+        }
+
+        if (!tmpBuffer.empty())
+          appendCharacters(text, tmpBuffer);
         textBufferPosition += max*2;
       }
       else
       {
         unsigned long max = m_charFormats[charIndex].charCount <= m_textStream.size() ? m_charFormats[charIndex].charCount : m_textStream.size();
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
-        std::vector<unsigned char> tmpBuffer(max);
-        memcpy(&tmpBuffer[0], &pTextBuffer[textBufferPosition], max);
-        appendCharacters(text, tmpBuffer, encoding);
+        std::vector<unsigned char> tmpBuffer;
+        for (unsigned i = 0; i < max; ++i)
+          tmpBuffer.push_back(pTextBuffer[textBufferPosition+i]);
+        if (!paraCharCount && !tmpBuffer.empty())
+        {
+          while (!tmpBuffer.empty() && tmpBuffer.back() == 0)
+            tmpBuffer.pop_back();
+          if (!tmpBuffer.empty() && tmpBuffer.back() == '\n')
+            tmpBuffer.back() = 0;
+        }
+        if (!tmpBuffer.empty())
+          appendCharacters(text, tmpBuffer, encoding);
         textBufferPosition += max;
       }
 
