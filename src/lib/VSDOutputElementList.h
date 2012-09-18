@@ -28,36 +28,51 @@
  * instead of those above.
  */
 
-#ifndef __VSDXSHAPELIST_H__
-#define __VSDXSHAPELIST_H__
+#ifndef __VSDOUTPUTELEMENTLIST_H__
+#define __VSDOUTPUTELEMENTLIST_H__
 
-#include <vector>
 #include <map>
+#include <list>
+#include <vector>
+#include <libwpd/libwpd.h>
+#include <libwpg/libwpg.h>
 
 namespace libvisio
 {
 
-class VSDXShapeListElement;
+class VSDOutputElement;
 
-class VSDXShapeList
+class VSDOutputElementList
 {
 public:
-  VSDXShapeList();
-  ~VSDXShapeList();
-  void addShapeId(unsigned id, unsigned level, unsigned shapeId);
-  void setElementsOrder(const std::vector<unsigned> &elementsOrder);
-  void handle(VSDXCollector *collector);
-  void clear();
+  VSDOutputElementList();
+  VSDOutputElementList(const VSDOutputElementList &elementList);
+  VSDOutputElementList &operator=(const VSDOutputElementList &elementList);
+  virtual ~VSDOutputElementList();
+  void append(const VSDOutputElementList &elementList);
+  void draw(libwpg::WPGPaintInterface *painter) const;
+  void addStyle(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
+  void addPath(const WPXPropertyListVector &propListVec);
+  void addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
+  void addStartTextObject(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
+  void addStartTextLine(const WPXPropertyList &propList);
+  void addStartTextSpan(const WPXPropertyList &propList);
+  void addInsertText(const WPXString &text);
+  void addEndTextSpan();
+  void addEndTextLine();
+  void addEndTextObject();
+  void addStartLayer(const WPXPropertyList &propList);
+  void addEndLayer();
   bool empty() const
   {
-    return (m_elements.empty());
+    return m_elements.empty();
   }
 private:
-  std::map<unsigned, VSDXShapeListElement *> m_elements;
-  std::vector<unsigned> m_elementsOrder;
+  std::vector<VSDOutputElement *> m_elements;
 };
+
 
 } // namespace libvisio
 
-#endif // __VSDXSHAPELIST_H__
+#endif // __VSDOUTPUTELEMENTLIST_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

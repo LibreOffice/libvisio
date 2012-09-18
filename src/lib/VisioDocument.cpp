@@ -33,7 +33,7 @@
 #include "libvisio.h"
 #include "libvisio_utils.h"
 #include "VSDSVGGenerator.h"
-#include "VSDXParser.h"
+#include "VSDParser.h"
 #include "VSD6Parser.h"
 #include "VSD11Parser.h"
 
@@ -100,7 +100,7 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
   docStream->seek(0x1A, WPX_SEEK_SET);
 
   unsigned char version = readU8(docStream);
-  VSDXParser *parser;
+  VSDParser *parser;
   switch(version)
   {
   case 6:
@@ -149,7 +149,7 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
   docStream->seek(0x1A, WPX_SEEK_SET);
 
   unsigned char version = readU8(docStream);
-  VSDXParser *parser;
+  VSDParser *parser;
   switch(version)
   {
   case 6:

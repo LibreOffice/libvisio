@@ -23,39 +23,41 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSD6Parser.cpp \
 	VSDInternalStream.cpp \
 	VSDSVGGenerator.cpp \
-	VSDXCharacterList.cpp \
-	VSDXContentCollector.cpp \
-	VSDXFieldList.cpp \
-	VSDXGeometryList.cpp \
-	VSDXOutputElementList.cpp \
-	VSDXPages.cpp \
-	VSDXParagraphList.cpp \
-	VSDXParser.cpp \
-	VSDXShapeList.cpp \
-	VSDXStencils.cpp \
+	VSDCharacterList.cpp \
+	VSDContentCollector.cpp \
+	VSDFieldList.cpp \
+	VSDGeometryList.cpp \
+	VSDOutputElementList.cpp \
+	VSDPages.cpp \
+	VSDParagraphList.cpp \
+	VSDParser.cpp \
+	VSDShapeList.cpp \
+	VSDStencils.cpp \
 	VSDStringVector.cpp \
-	VSDXStyles.cpp \
-	VSDXStylesCollector.cpp \
+	VSDStyles.cpp \
+	VSDStylesCollector.cpp \
+	VSDZipStream.cpp \
 	libvisio_utils.h \
 	VSD11Parser.h \
 	VSD6Parser.h \
 	VSDInternalStream.h \
 	VSDSVGGenerator.h \
-	VSDXCharacterList.h \
-	VSDXCollector.h \
-	VSDXContentCollector.h \
-	VSDXDocumentStructure.h \
-	VSDXFieldList.h \
-	VSDXGeometryList.h \
-	VSDXOutputElementList.h \
-	VSDXPages.h \
-	VSDXParagraphList.h \
-	VSDXParser.h \
-	VSDXShapeList.h \
-	VSDXStencils.h \
-	VSDXStyles.h \
-	VSDXStylesCollector.h \
-	VSDXTypes.h
+	VSDCharacterList.h \
+	VSDCollector.h \
+	VSDContentCollector.h \
+	VSDDocumentStructure.h \
+	VSDFieldList.h \
+	VSDGeometryList.h \
+	VSDOutputElementList.h \
+	VSDPages.h \
+	VSDParagraphList.h \
+	VSDParser.h \
+	VSDShapeList.h \
+	VSDStencils.h \
+	VSDStyles.h \
+	VSDStylesCollector.h \
+	VSDTypes.h \
+	VSDZipStream.h
 
 if OS_WIN32
 

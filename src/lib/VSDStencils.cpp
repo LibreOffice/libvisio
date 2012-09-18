@@ -28,10 +28,10 @@
  * instead of those above.
  */
 
-#include "VSDXStencils.h"
+#include "VSDStencils.h"
 #include "libvisio_utils.h"
 
-libvisio::VSDXStencilShape::VSDXStencilShape()
+libvisio::VSDStencilShape::VSDStencilShape()
   : m_geometries(), m_fields(), m_foreign(0),
     m_lineStyleId(0xffffffff), m_fillStyleId(0xffffffff), m_textStyleId(0xffffffff),
     m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
@@ -39,19 +39,19 @@ libvisio::VSDXStencilShape::VSDXStencilShape()
 {
 }
 
-libvisio::VSDXStencilShape::VSDXStencilShape(const libvisio::VSDXStencilShape &shape)
+libvisio::VSDStencilShape::VSDStencilShape(const libvisio::VSDStencilShape &shape)
   : m_geometries(shape.m_geometries), m_fields(shape.m_fields),
     m_foreign(shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0),
     m_lineStyleId(shape.m_lineStyleId), m_fillStyleId(shape.m_fillStyleId), m_textStyleId(shape.m_textStyleId),
-    m_lineStyle(shape.m_lineStyle ? new VSDXLineStyle(*(shape.m_lineStyle)) : 0),
-    m_fillStyle(shape.m_fillStyle ? new VSDXFillStyle(*(shape.m_fillStyle)) : 0),
-    m_textBlockStyle(shape.m_textBlockStyle ? new VSDXTextBlockStyle(*(shape.m_textBlockStyle)) : 0),
-    m_charStyle(shape.m_charStyle ? new VSDXCharStyle(*(shape.m_charStyle)) : 0),
-    m_paraStyle(shape.m_paraStyle ? new VSDXParaStyle(*(shape.m_paraStyle)) : 0),
+    m_lineStyle(shape.m_lineStyle ? new VSDLineStyle(*(shape.m_lineStyle)) : 0),
+    m_fillStyle(shape.m_fillStyle ? new VSDFillStyle(*(shape.m_fillStyle)) : 0),
+    m_textBlockStyle(shape.m_textBlockStyle ? new VSDTextBlockStyle(*(shape.m_textBlockStyle)) : 0),
+    m_charStyle(shape.m_charStyle ? new VSDCharStyle(*(shape.m_charStyle)) : 0),
+    m_paraStyle(shape.m_paraStyle ? new VSDParaStyle(*(shape.m_paraStyle)) : 0),
     m_text(shape.m_text), m_names(shape.m_names), m_textFormat(shape.m_textFormat),
     m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData) {}
 
-libvisio::VSDXStencilShape::~VSDXStencilShape()
+libvisio::VSDStencilShape::~VSDStencilShape()
 {
   if (m_foreign)
     delete m_foreign;
@@ -67,7 +67,7 @@ libvisio::VSDXStencilShape::~VSDXStencilShape()
     delete m_paraStyle;
 }
 
-libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio::VSDXStencilShape &shape)
+libvisio::VSDStencilShape &libvisio::VSDStencilShape::operator=(const libvisio::VSDStencilShape &shape)
 {
   if (this != &shape)
   {
@@ -81,19 +81,19 @@ libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio
     m_textStyleId = shape.m_textStyleId;
     if (m_lineStyle)
       delete m_lineStyle;
-    m_lineStyle = shape.m_lineStyle ? new VSDXLineStyle(*(shape.m_lineStyle)) : 0;
+    m_lineStyle = shape.m_lineStyle ? new VSDLineStyle(*(shape.m_lineStyle)) : 0;
     if (m_fillStyle)
       delete m_fillStyle;
-    m_fillStyle = shape.m_fillStyle ? new VSDXFillStyle(*(shape.m_fillStyle)) : 0;
+    m_fillStyle = shape.m_fillStyle ? new VSDFillStyle(*(shape.m_fillStyle)) : 0;
     if (m_textBlockStyle)
       delete m_textBlockStyle;
-    m_textBlockStyle = shape.m_textBlockStyle ? new VSDXTextBlockStyle(*(shape.m_textBlockStyle)) : 0;
+    m_textBlockStyle = shape.m_textBlockStyle ? new VSDTextBlockStyle(*(shape.m_textBlockStyle)) : 0;
     if (m_charStyle)
       delete m_charStyle;
-    m_charStyle = shape.m_charStyle ? new VSDXCharStyle(*(shape.m_charStyle)) : 0;
+    m_charStyle = shape.m_charStyle ? new VSDCharStyle(*(shape.m_charStyle)) : 0;
     if (m_paraStyle)
       delete m_paraStyle;
-    m_paraStyle = shape.m_paraStyle ? new VSDXParaStyle(*(shape.m_paraStyle)) : 0;
+    m_paraStyle = shape.m_paraStyle ? new VSDParaStyle(*(shape.m_paraStyle)) : 0;
     m_text = shape.m_text;
     m_names = shape.m_names;
     m_textFormat = shape.m_textFormat;
@@ -104,21 +104,21 @@ libvisio::VSDXStencilShape &libvisio::VSDXStencilShape::operator=(const libvisio
 }
 
 
-libvisio::VSDXStencil::VSDXStencil()
+libvisio::VSDStencil::VSDStencil()
   : m_shapes(), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0)
 {
 }
 
-libvisio::VSDXStencil::VSDXStencil(const libvisio::VSDXStencil &stencil)
+libvisio::VSDStencil::VSDStencil(const libvisio::VSDStencil &stencil)
   : m_shapes(stencil.m_shapes), m_shadowOffsetX(stencil.m_shadowOffsetX), m_shadowOffsetY(stencil.m_shadowOffsetY)
 {
 }
 
-libvisio::VSDXStencil::~VSDXStencil()
+libvisio::VSDStencil::~VSDStencil()
 {
 }
 
-libvisio::VSDXStencil &libvisio::VSDXStencil::operator=(const libvisio::VSDXStencil &stencil)
+libvisio::VSDStencil &libvisio::VSDStencil::operator=(const libvisio::VSDStencil &stencil)
 {
   if (this != &stencil)
   {
@@ -129,14 +129,14 @@ libvisio::VSDXStencil &libvisio::VSDXStencil::operator=(const libvisio::VSDXSten
   return *this;
 }
 
-void libvisio::VSDXStencil::addStencilShape(unsigned id, const VSDXStencilShape &shape)
+void libvisio::VSDStencil::addStencilShape(unsigned id, const VSDStencilShape &shape)
 {
   m_shapes[id] = shape;
 }
 
-const libvisio::VSDXStencilShape *libvisio::VSDXStencil::getStencilShape(unsigned id) const
+const libvisio::VSDStencilShape *libvisio::VSDStencil::getStencilShape(unsigned id) const
 {
-  std::map<unsigned, VSDXStencilShape>::const_iterator iter = m_shapes.find(id);
+  std::map<unsigned, VSDStencilShape>::const_iterator iter = m_shapes.find(id);
   if (iter != m_shapes.end())
     return &(iter->second);
   else
@@ -145,23 +145,23 @@ const libvisio::VSDXStencilShape *libvisio::VSDXStencil::getStencilShape(unsigne
 
 
 
-libvisio::VSDXStencils::VSDXStencils() :
+libvisio::VSDStencils::VSDStencils() :
   m_stencils()
 {
 }
 
-libvisio::VSDXStencils::~VSDXStencils()
+libvisio::VSDStencils::~VSDStencils()
 {
 }
 
-void libvisio::VSDXStencils::addStencil(unsigned idx, const libvisio::VSDXStencil &stencil)
+void libvisio::VSDStencils::addStencil(unsigned idx, const libvisio::VSDStencil &stencil)
 {
   m_stencils[idx] = stencil;
 }
 
-const libvisio::VSDXStencil *libvisio::VSDXStencils::getStencil(unsigned idx) const
+const libvisio::VSDStencil *libvisio::VSDStencils::getStencil(unsigned idx) const
 {
-  std::map<unsigned, VSDXStencil>::const_iterator iter = m_stencils.find(idx);
+  std::map<unsigned, VSDStencil>::const_iterator iter = m_stencils.find(idx);
   if (iter != m_stencils.end())
     return &(iter->second);
   else

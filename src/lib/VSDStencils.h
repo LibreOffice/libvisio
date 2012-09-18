@@ -28,74 +28,74 @@
  * instead of those above.
  */
 
-#ifndef __VSDXSTENCILS_H__
-#define __VSDXSTENCILS_H__
+#ifndef __VSDSTENCILS_H__
+#define __VSDSTENCILS_H__
 
 #include <map>
 #include <vector>
-#include "VSDXStyles.h"
-#include "VSDXGeometryList.h"
-#include "VSDXFieldList.h"
-#include "VSDXTypes.h"
+#include "VSDStyles.h"
+#include "VSDGeometryList.h"
+#include "VSDFieldList.h"
+#include "VSDTypes.h"
 
 namespace libvisio
 {
 
-class VSDXStencilShape
+class VSDStencilShape
 {
 public:
-  VSDXStencilShape();
-  VSDXStencilShape(const VSDXStencilShape &shape);
-  ~VSDXStencilShape();
-  VSDXStencilShape &operator=(const VSDXStencilShape &shape);
+  VSDStencilShape();
+  VSDStencilShape(const VSDStencilShape &shape);
+  ~VSDStencilShape();
+  VSDStencilShape &operator=(const VSDStencilShape &shape);
 
-  std::vector<VSDXGeometryList> m_geometries;
-  VSDXFieldList m_fields;
+  std::vector<VSDGeometryList> m_geometries;
+  VSDFieldList m_fields;
   ForeignData *m_foreign;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
-  VSDXLineStyle *m_lineStyle;
-  VSDXFillStyle *m_fillStyle;
-  VSDXTextBlockStyle *m_textBlockStyle;
-  VSDXCharStyle *m_charStyle;
-  VSDXParaStyle *m_paraStyle;
+  VSDLineStyle *m_lineStyle;
+  VSDFillStyle *m_fillStyle;
+  VSDTextBlockStyle *m_textBlockStyle;
+  VSDCharStyle *m_charStyle;
+  VSDParaStyle *m_paraStyle;
   WPXBinaryData m_text;
-  std::map< unsigned, VSDXName > m_names;
+  std::map< unsigned, VSDName > m_names;
   TextFormat m_textFormat;
   std::map<unsigned, NURBSData> m_nurbsData;
   std::map<unsigned, PolylineData> m_polylineData;
 };
 
-class VSDXStencil
+class VSDStencil
 {
 public:
-  VSDXStencil();
-  VSDXStencil(const VSDXStencil &stencil);
-  ~VSDXStencil();
-  VSDXStencil &operator=(const VSDXStencil &stencil);
-  void addStencilShape(unsigned id, const VSDXStencilShape &shape);
-  const VSDXStencilShape *getStencilShape(unsigned id) const;
-  std::map<unsigned, VSDXStencilShape> m_shapes;
+  VSDStencil();
+  VSDStencil(const VSDStencil &stencil);
+  ~VSDStencil();
+  VSDStencil &operator=(const VSDStencil &stencil);
+  void addStencilShape(unsigned id, const VSDStencilShape &shape);
+  const VSDStencilShape *getStencilShape(unsigned id) const;
+  std::map<unsigned, VSDStencilShape> m_shapes;
   double m_shadowOffsetX;
   double m_shadowOffsetY;
 };
 
-class VSDXStencils
+class VSDStencils
 {
 public:
-  VSDXStencils();
-  ~VSDXStencils();
-  void addStencil(unsigned idx, const VSDXStencil &stencil);
-  const VSDXStencil *getStencil(unsigned idx) const;
+  VSDStencils();
+  ~VSDStencils();
+  void addStencil(unsigned idx, const VSDStencil &stencil);
+  const VSDStencil *getStencil(unsigned idx) const;
   unsigned count() const
   {
     return m_stencils.size();
   }
 private:
-  std::map<unsigned, VSDXStencil> m_stencils;
+  std::map<unsigned, VSDStencil> m_stencils;
 };
 
 
 } // namespace libvisio
 
-#endif // __VSDXSTENCILS_H__
+#endif // __VSDSTENCILS_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

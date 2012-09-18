@@ -28,31 +28,31 @@
  * instead of those above.
  */
 
-#include "VSDXCollector.h"
-#include "VSDXParagraphList.h"
+#include "VSDCollector.h"
+#include "VSDParagraphList.h"
 
 namespace libvisio
 {
 
-class VSDXParagraphListElement
+class VSDParagraphListElement
 {
 public:
-  VSDXParagraphListElement() {}
-  virtual ~VSDXParagraphListElement() {}
-  virtual void handle(VSDXCollector *collector) = 0;
-  virtual VSDXParagraphListElement *clone() = 0;
+  VSDParagraphListElement() {}
+  virtual ~VSDParagraphListElement() {}
+  virtual void handle(VSDCollector *collector) = 0;
+  virtual VSDParagraphListElement *clone() = 0;
 };
 
-class VSDXParaIX : public VSDXParagraphListElement
+class VSDParaIX : public VSDParagraphListElement
 {
 public:
-  VSDXParaIX(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+  VSDParaIX(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
              double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) :
     m_id(id), m_level(level), m_charCount(charCount), m_indFirst(indFirst), m_indLeft(indLeft), m_indRight(indRight),
     m_spLine(spLine), m_spBefore(spBefore), m_spAfter(spAfter), m_align(align), m_flags(flags) {}
-  ~VSDXParaIX() {}
-  void handle(VSDXCollector *collector);
-  VSDXParagraphListElement *clone();
+  ~VSDParaIX() {}
+  void handle(VSDCollector *collector);
+  VSDParagraphListElement *clone();
 private:
   unsigned m_id, m_level;
   unsigned m_charCount;
@@ -68,67 +68,67 @@ private:
 } // namespace libvisio
 
 
-void libvisio::VSDXParaIX::handle(VSDXCollector *collector)
+void libvisio::VSDParaIX::handle(VSDCollector *collector)
 {
-  collector->collectVSDXParaStyle(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
+  collector->collectVSDParaStyle(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
                                   m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
 }
 
-libvisio::VSDXParagraphListElement *libvisio::VSDXParaIX::clone()
+libvisio::VSDParagraphListElement *libvisio::VSDParaIX::clone()
 {
-  return new VSDXParaIX(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
+  return new VSDParaIX(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
                         m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
 }
 
 
-libvisio::VSDXParagraphList::VSDXParagraphList() :
+libvisio::VSDParagraphList::VSDParagraphList() :
   m_elements(),
   m_elementsOrder()
 {
 }
 
-libvisio::VSDXParagraphList::VSDXParagraphList(const libvisio::VSDXParagraphList &paraList) :
+libvisio::VSDParagraphList::VSDParagraphList(const libvisio::VSDParagraphList &paraList) :
   m_elements(),
   m_elementsOrder(paraList.m_elementsOrder)
 {
-  std::map<unsigned, VSDXParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
+  std::map<unsigned, VSDParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
   for (; iter != paraList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
-libvisio::VSDXParagraphList &libvisio::VSDXParagraphList::operator=(const libvisio::VSDXParagraphList &paraList)
+libvisio::VSDParagraphList &libvisio::VSDParagraphList::operator=(const libvisio::VSDParagraphList &paraList)
 {
   clear();
-  std::map<unsigned, VSDXParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
+  std::map<unsigned, VSDParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
   for (; iter != paraList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = paraList.m_elementsOrder;
   return *this;
 }
 
-libvisio::VSDXParagraphList::~VSDXParagraphList()
+libvisio::VSDParagraphList::~VSDParagraphList()
 {
   clear();
 }
 
-void libvisio::VSDXParagraphList::addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
     double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags)
 {
-  m_elements[id] = new VSDXParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
+  m_elements[id] = new VSDParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
 }
 
-void libvisio::VSDXParagraphList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
+void libvisio::VSDParagraphList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
   for (unsigned i = 0; i<elementsOrder.size(); i++)
     m_elementsOrder.push_back(elementsOrder[i]);
 }
 
-void libvisio::VSDXParagraphList::handle(VSDXCollector *collector)
+void libvisio::VSDParagraphList::handle(VSDCollector *collector)
 {
   if (empty())
     return;
-  std::map<unsigned, VSDXParagraphListElement *>::iterator iter;
+  std::map<unsigned, VSDParagraphListElement *>::iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
@@ -145,9 +145,9 @@ void libvisio::VSDXParagraphList::handle(VSDXCollector *collector)
   }
 }
 
-void libvisio::VSDXParagraphList::clear()
+void libvisio::VSDParagraphList::clear()
 {
-  for (std::map<unsigned, VSDXParagraphListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
+  for (std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();

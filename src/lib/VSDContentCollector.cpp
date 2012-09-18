@@ -32,8 +32,8 @@
 #include <stack>
 #include <boost/spirit/include/classic.hpp>
 
-#include "VSDXContentCollector.h"
-#include "VSDXParser.h"
+#include "VSDContentCollector.h"
+#include "VSDParser.h"
 #include "VSDInternalStream.h"
 
 #define DUMP_BITMAP 0
@@ -103,12 +103,12 @@ static void _appendUCS4(WPXString &text, unsigned ucs4Character)
 } // anonymous namespace
 
 
-libvisio::VSDXContentCollector::VSDXContentCollector(
+libvisio::VSDContentCollector::VSDContentCollector(
   libwpg::WPGPaintInterface *painter,
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
   std::vector<std::list<unsigned> > &documentPageShapeOrders,
-  VSDXStyles &styles, VSDXStencils &stencils
+  VSDStyles &styles, VSDStencils &stencils
 ) :
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
@@ -135,7 +135,7 @@ libvisio::VSDXContentCollector::VSDXContentCollector(
 {
 }
 
-void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
+void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
     unsigned fillFGTransparency, unsigned fillBGTransparency,
     unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
@@ -350,7 +350,7 @@ void libvisio::VSDXContentCollector::_fillAndShadowProperties(unsigned colourInd
   m_styleProps.insert("draw:fill", m_fillType);
 }
 
-void libvisio::VSDXContentCollector::_applyLinePattern()
+void libvisio::VSDContentCollector::_applyLinePattern()
 {
   int dots1 = 0;
   int dots2 = 0;
@@ -524,7 +524,7 @@ void libvisio::VSDXContentCollector::_applyLinePattern()
     m_styleProps.insert("draw:stroke", "solid");
 }
 
-void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap)
+void libvisio::VSDContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap)
 {
   m_linePattern = linePattern;
 
@@ -570,7 +570,7 @@ void libvisio::VSDXContentCollector::_lineProperties(double strokeWidth, Colour 
   }
 }
 
-const char *libvisio::VSDXContentCollector::_linePropertiesMarkerViewbox(unsigned marker)
+const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned marker)
 {
   switch (marker)
   {
@@ -606,7 +606,7 @@ const char *libvisio::VSDXContentCollector::_linePropertiesMarkerViewbox(unsigne
   }
 }
 
-const char *libvisio::VSDXContentCollector::_linePropertiesMarkerPath(unsigned marker)
+const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned marker)
 {
   switch (marker)
   {
@@ -655,7 +655,7 @@ const char *libvisio::VSDXContentCollector::_linePropertiesMarkerPath(unsigned m
   }
 }
 
-double libvisio::VSDXContentCollector::_linePropertiesMarkerScale(unsigned marker)
+double libvisio::VSDContentCollector::_linePropertiesMarkerScale(unsigned marker)
 {
   switch (marker)
   {
@@ -674,7 +674,7 @@ double libvisio::VSDXContentCollector::_linePropertiesMarkerScale(unsigned marke
   }
 }
 
-void libvisio::VSDXContentCollector::_flushCurrentPath()
+void libvisio::VSDContentCollector::_flushCurrentPath()
 {
   WPXPropertyListVector path;
   WPXPropertyList fillPathProps(m_styleProps);
@@ -751,7 +751,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPath()
     m_shapeOutputDrawing->addEndLayer();
 }
 
-void libvisio::VSDXContentCollector::_flushText()
+void libvisio::VSDContentCollector::_flushText()
 {
   if (!m_textStream.size()) return;
 
@@ -835,7 +835,7 @@ void libvisio::VSDXContentCollector::_flushText()
   unsigned long textBufferPosition = 0;
   const unsigned char *pTextBuffer = m_textStream.getDataBuffer();
 
-  for (std::vector<VSDXParaStyle>::iterator paraIt = m_paraFormats.begin();
+  for (std::vector<VSDParaStyle>::iterator paraIt = m_paraFormats.begin();
        paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); ++paraIt)
   {
     WPXPropertyList paraProps;
@@ -983,7 +983,7 @@ void libvisio::VSDXContentCollector::_flushText()
       if (charIndex < m_charFormats.size() && paraCharCount && m_charFormats[charIndex].charCount > paraCharCount)
       {
         // Insert duplicate
-        std::vector<VSDXCharStyle>::iterator charIt = m_charFormats.begin() + charIndex;
+        std::vector<VSDCharStyle>::iterator charIt = m_charFormats.begin() + charIndex;
         m_charFormats.insert(charIt, m_charFormats[charIndex]);
         m_charFormats[charIndex].charCount = paraCharCount;
         m_charFormats[charIndex+1].charCount -= paraCharCount;
@@ -995,7 +995,7 @@ void libvisio::VSDXContentCollector::_flushText()
   m_shapeOutputText->addEndTextObject();
 }
 
-void libvisio::VSDXContentCollector::_flushCurrentForeignData()
+void libvisio::VSDContentCollector::_flushCurrentForeignData()
 {
   double xmiddle = m_foreignOffsetX + m_foreignWidth / 2.0;
   double ymiddle = m_foreignOffsetY + m_foreignHeight / 2.0;
@@ -1040,11 +1040,11 @@ void libvisio::VSDXContentCollector::_flushCurrentForeignData()
   m_currentForeignProps.clear();
 }
 
-void libvisio::VSDXContentCollector::_flushCurrentPage()
+void libvisio::VSDContentCollector::_flushCurrentPage()
 {
   if (!m_pageShapeOrder.empty())
   {
-    std::stack<std::pair<unsigned, VSDXOutputElementList> > groupTextStack;
+    std::stack<std::pair<unsigned, VSDOutputElementList> > groupTextStack;
     for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); ++iterList)
     {
       std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships.find(*iterList);
@@ -1065,7 +1065,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
         }
       }
 
-      std::map<unsigned, VSDXOutputElementList>::iterator iter;
+      std::map<unsigned, VSDOutputElementList>::iterator iter;
       iter = m_pageOutputDrawing.find(*iterList);
       if (iter != m_pageOutputDrawing.end())
         m_currentPage.append(iter->second);
@@ -1073,7 +1073,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
       if (iter != m_pageOutputText.end())
         groupTextStack.push(std::make_pair(*iterList, iter->second));
       else
-        groupTextStack.push(std::make_pair(*iterList, VSDXOutputElementList()));
+        groupTextStack.push(std::make_pair(*iterList, VSDOutputElementList()));
     }
     while (!groupTextStack.empty())
     {
@@ -1086,7 +1086,7 @@ void libvisio::VSDXContentCollector::_flushCurrentPage()
 }
 
 #define LIBVISIO_EPSILON 1E-10
-void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
+void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
   _handleLevelChange(level);
 
@@ -1159,7 +1159,7 @@ void libvisio::VSDXContentCollector::collectEllipticalArcTo(unsigned /* id */, u
     m_currentLineGeometry.push_back(arc);
 }
 
-void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)
+void libvisio::VSDContentCollector::collectEllipse(unsigned /* id */, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)
 {
   _handleLevelChange(level);
   WPXPropertyList ellipse;
@@ -1205,7 +1205,7 @@ void libvisio::VSDXContentCollector::collectEllipse(unsigned /* id */, unsigned 
     m_currentLineGeometry.push_back(ellipse);
 }
 
-void libvisio::VSDXContentCollector::collectInfiniteLine(unsigned /* id */, unsigned level, double x1, double y1, double x2, double y2)
+void libvisio::VSDContentCollector::collectInfiniteLine(unsigned /* id */, unsigned level, double x1, double y1, double x2, double y2)
 {
   _handleLevelChange(level);
   transformPoint(x1, y1);
@@ -1294,13 +1294,13 @@ void libvisio::VSDXContentCollector::collectInfiniteLine(unsigned /* id */, unsi
     m_currentLineGeometry.push_back(infLine);
 }
 
-void libvisio::VSDXContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap)
+void libvisio::VSDContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap)
 {
   _handleLevelChange(level);
   _lineProperties(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
 }
 
-void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
+void libvisio::VSDContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
     unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency,
     unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
 {
@@ -1308,18 +1308,18 @@ void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned /* id */, uns
   _fillAndShadowProperties(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
 }
 
-void libvisio::VSDXContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc)
+void libvisio::VSDContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc)
 {
   collectFillAndShadow(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
-void libvisio::VSDXContentCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData &binaryData)
+void libvisio::VSDContentCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData &binaryData)
 {
   _handleLevelChange(level);
   _handleForeignData(binaryData);
 }
 
-void libvisio::VSDXContentCollector::collectOLEList(unsigned /* id */, unsigned level)
+void libvisio::VSDContentCollector::collectOLEList(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
   m_currentForeignData.clear();
@@ -1327,13 +1327,13 @@ void libvisio::VSDXContentCollector::collectOLEList(unsigned /* id */, unsigned 
   _handleForeignData(binaryData);
 }
 
-void libvisio::VSDXContentCollector::collectOLEData(unsigned /* id */, unsigned level, const WPXBinaryData &oleData)
+void libvisio::VSDContentCollector::collectOLEData(unsigned /* id */, unsigned level, const WPXBinaryData &oleData)
 {
   _handleLevelChange(level);
   m_currentForeignData.append(oleData);
 }
 
-void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &binaryData)
+void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &binaryData)
 {
   if (m_foreignType == 1 || m_foreignType == 4) // Image
   {
@@ -1439,7 +1439,7 @@ void libvisio::VSDXContentCollector::_handleForeignData(const WPXBinaryData &bin
   }
 }
 
-void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char geomFlags)
+void libvisio::VSDContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char geomFlags)
 {
   _handleLevelChange(level);
   m_x = 0.0;
@@ -1467,7 +1467,7 @@ void libvisio::VSDXContentCollector::collectGeometry(unsigned /* id */, unsigned
   m_currentGeometryCount++;
 }
 
-void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned level, double x, double y)
+void libvisio::VSDContentCollector::collectMoveTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
   m_originalX = x;
@@ -1485,7 +1485,7 @@ void libvisio::VSDXContentCollector::collectMoveTo(unsigned /* id */, unsigned l
     m_currentLineGeometry.push_back(end);
 }
 
-void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned level, double x, double y)
+void libvisio::VSDContentCollector::collectLineTo(unsigned /* id */, unsigned level, double x, double y)
 {
   _handleLevelChange(level);
   m_originalX = x;
@@ -1503,7 +1503,7 @@ void libvisio::VSDXContentCollector::collectLineTo(unsigned /* id */, unsigned l
     m_currentLineGeometry.push_back(end);
 }
 
-void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned level, double x2, double y2, double bow)
+void libvisio::VSDContentCollector::collectArcTo(unsigned /* id */, unsigned level, double x2, double y2, double bow)
 {
   _handleLevelChange(level);
   m_originalX = x2;
@@ -1553,7 +1553,7 @@ void libvisio::VSDXContentCollector::collectArcTo(unsigned /* id */, unsigned le
 
 #define VSD_NUM_POLYLINES_PER_NURBS 200
 
-void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
 
@@ -1627,7 +1627,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned /* id */, unsigned 
     m_currentLineGeometry.push_back(NURBS);
 }
 
-double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector)
+double libvisio::VSDContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector)
 {
   double basis = 0;
   if (!knotVector.size())
@@ -1649,7 +1649,7 @@ double libvisio::VSDXContentCollector::_NURBSBasis(unsigned knot, unsigned degre
 }
 
 /* NURBS with incomplete data */
-void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
+void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
 {
   std::map<unsigned, NURBSData>::const_iterator iter;
   std::map<unsigned, NURBSData>::const_iterator iterEnd;
@@ -1663,8 +1663,8 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     }
 
     // Get stencil geometry so as to find stencil NURBS data ID
-    VSDXGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
-    VSDXNURBSTo2 *tmpElement = dynamic_cast<VSDXNURBSTo2 *>(element);
+    VSDGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
+    VSDNURBSTo2 *tmpElement = dynamic_cast<VSDNURBSTo2 *>(element);
     if (!tmpElement)
     {
       _handleLevelChange(level);
@@ -1694,7 +1694,7 @@ void libvisio::VSDXContentCollector::collectNURBSTo(unsigned id, unsigned level,
     _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > &points)
+void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > &points)
 {
   _handleLevelChange(level);
 
@@ -1732,7 +1732,7 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned /* id */ , unsig
 }
 
 /* Polyline with incomplete data */
-void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
+void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
   std::map<unsigned, PolylineData>::const_iterator iter;
   std::map<unsigned, PolylineData>::const_iterator iterEnd;
@@ -1745,8 +1745,8 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned lev
     }
 
     // Get stencil geometry so as to find stencil polyline data ID
-    VSDXGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
-    dataID = dynamic_cast<VSDXPolylineTo2 *>(element)->m_dataID;
+    VSDGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
+    dataID = dynamic_cast<VSDPolylineTo2 *>(element)->m_dataID;
     iter = m_stencilShape->m_polylineData.find(dataID);
     iterEnd = m_stencilShape->m_polylineData.end();
   }
@@ -1766,7 +1766,7 @@ void libvisio::VSDXContentCollector::collectPolylineTo(unsigned id, unsigned lev
 }
 
 /* NURBS shape data */
-void libvisio::VSDXContentCollector::collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, unsigned degree, double lastKnot, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+void libvisio::VSDContentCollector::collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, unsigned degree, double lastKnot, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
   NURBSData data;
@@ -1781,7 +1781,7 @@ void libvisio::VSDXContentCollector::collectShapeData(unsigned id, unsigned leve
 }
 
 /* Polyline shape data */
-void libvisio::VSDXContentCollector::collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points)
+void libvisio::VSDContentCollector::collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points)
 {
   _handleLevelChange(level);
   PolylineData data;
@@ -1791,13 +1791,13 @@ void libvisio::VSDXContentCollector::collectShapeData(unsigned id, unsigned leve
   m_polylineData[id] = data;
 }
 
-void libvisio::VSDXContentCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
+void libvisio::VSDContentCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);
   m_xform = xform;
 }
 
-void libvisio::VSDXContentCollector::collectTxtXForm(unsigned /* id */, unsigned level, const XForm &txtxform)
+void libvisio::VSDContentCollector::collectTxtXForm(unsigned /* id */, unsigned level, const XForm &txtxform)
 {
   _handleLevelChange(level);
   if (m_txtxform)
@@ -1807,7 +1807,7 @@ void libvisio::VSDXContentCollector::collectTxtXForm(unsigned /* id */, unsigned
   m_txtxform->y = m_txtxform->pinY - m_txtxform->pinLocY;
 }
 
-void libvisio::VSDXContentCollector::applyXForm(double &x, double &y, const XForm &xform)
+void libvisio::VSDContentCollector::applyXForm(double &x, double &y, const XForm &xform)
 {
   x -= xform.pinLocX;
   y -= xform.pinLocY;
@@ -1826,7 +1826,7 @@ void libvisio::VSDXContentCollector::applyXForm(double &x, double &y, const XFor
   y += xform.pinY;
 }
 
-void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm *txtxform)
+void libvisio::VSDContentCollector::transformPoint(double &x, double &y, XForm *txtxform)
 {
   // We are interested for the while in shapes xforms only
   if (!m_isShapeStarted)
@@ -1859,7 +1859,7 @@ void libvisio::VSDXContentCollector::transformPoint(double &x, double &y, XForm 
   y = m_pageHeight - y;
 }
 
-void libvisio::VSDXContentCollector::transformAngle(double &angle, XForm *txtxform)
+void libvisio::VSDContentCollector::transformAngle(double &angle, XForm *txtxform)
 {
   // We are interested for the while in shape xforms only
   if (!m_isShapeStarted)
@@ -1877,7 +1877,7 @@ void libvisio::VSDXContentCollector::transformAngle(double &angle, XForm *txtxfo
   angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0))), 2.0*M_PI);
 }
 
-void libvisio::VSDXContentCollector::transformFlips(bool &flipX, bool &flipY)
+void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
 {
   if (!m_isShapeStarted)
     return;
@@ -1908,12 +1908,12 @@ void libvisio::VSDXContentCollector::transformFlips(bool &flipX, bool &flipY)
   }
 }
 
-void libvisio::VSDXContentCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned /* shapeId */)
+void libvisio::VSDContentCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned /* shapeId */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height)
+void libvisio::VSDContentCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height)
 {
   _handleLevelChange(level);
   m_foreignType = foreignType;
@@ -1924,7 +1924,7 @@ void libvisio::VSDXContentCollector::collectForeignDataType(unsigned /* id */, u
   m_foreignHeight = height;
 }
 
-void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale)
+void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale)
 {
   _handleLevelChange(level);
   m_pageWidth = pageWidth;
@@ -1937,13 +1937,13 @@ void libvisio::VSDXContentCollector::collectPageProps(unsigned /* id */, unsigne
   m_currentPage.m_pageHeight = m_scale*m_pageHeight;
 }
 
-void libvisio::VSDXContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID)
+void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID)
 {
   _handleLevelChange(level);
   m_currentPage.m_backgroundPageID = backgroundPageID;
 }
 
-void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
+void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
 {
   _handleLevelChange(level);
   m_currentShapeLevel = level;
@@ -1981,21 +1981,21 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_charFormats.clear();
   m_paraFormats.clear();
 
-  m_defaultCharStyle = VSDXCharStyle();
+  m_defaultCharStyle = VSDCharStyle();
   if (m_styles.getCharStyle(0))
     m_defaultCharStyle = *(m_styles.getCharStyle(0));
 
-  m_defaultParaStyle = VSDXParaStyle();
+  m_defaultParaStyle = VSDParaStyle();
   if (m_styles.getParaStyle(0))
     m_defaultParaStyle = *(m_styles.getParaStyle(0));
 
-  m_textBlockStyle = VSDXTextBlockStyle();
+  m_textBlockStyle = VSDTextBlockStyle();
   if (m_styles.getTextBlockStyle(0))
     m_textBlockStyle = *(m_styles.getTextBlockStyle(0));
 
   m_currentShapeId = id;
-  m_pageOutputDrawing[m_currentShapeId] = VSDXOutputElementList();
-  m_pageOutputText[m_currentShapeId] = VSDXOutputElementList();
+  m_pageOutputDrawing[m_currentShapeId] = VSDOutputElementList();
+  m_pageOutputText[m_currentShapeId] = VSDOutputElementList();
   m_shapeOutputDrawing = &m_pageOutputDrawing[m_currentShapeId];
   m_shapeOutputText = &m_pageOutputText[m_currentShapeId];
   m_isShapeStarted = true;
@@ -2010,7 +2010,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_stencilShape = 0;
   if (masterPage != 0xffffffff && masterShape != 0xffffffff)
   {
-    const VSDXStencil *stencil = m_stencils.getStencil(masterPage);
+    const VSDStencil *stencil = m_stencils.getStencil(masterPage);
     if (stencil)
       m_stencilShape = stencil->getStencilShape(masterShape);
     // Initialize the shape from stencil content
@@ -2031,7 +2031,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       m_textStream = m_stencilShape->m_text;
       m_textFormat = m_stencilShape->m_textFormat;
 
-      for (std::map< unsigned, VSDXName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
+      for (std::map< unsigned, VSDName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
       {
         WPXString nameString;
         _convertDataToString(nameString, iterData->second.m_data, iterData->second.m_format);
@@ -2041,7 +2041,7 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
       m_stencilFields = m_stencilShape->m_fields;
       for (unsigned i = 0; i < m_stencilFields.size(); i++)
       {
-        VSDXFieldListElement *elem = m_stencilFields.getElement(i);
+        VSDFieldListElement *elem = m_stencilFields.getElement(i);
         if (elem)
           m_fields.push_back(elem->getString(m_stencilNames));
         else
@@ -2094,12 +2094,12 @@ void libvisio::VSDXContentCollector::collectShape(unsigned id, unsigned level, u
   m_fieldIndex = 0;
 }
 
-void libvisio::VSDXContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
+void libvisio::VSDContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &colours)
+void libvisio::VSDContentCollector::collectColours(const std::vector<Colour> &colours)
 {
   m_colours.clear();
   m_colours.reserve(colours.size());
@@ -2107,9 +2107,9 @@ void libvisio::VSDXContentCollector::collectColours(const std::vector<Colour> &c
     m_colours.push_back(colours[i]);
 }
 
-void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format)
+void libvisio::VSDContentCollector::collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format)
 {
-  VSDXFont font;
+  VSDFont font;
   font.name.clear();
   _convertDataToString(font.name, textStream, format);
   font.encoding = format;
@@ -2117,7 +2117,7 @@ void libvisio::VSDXContentCollector::collectFont(unsigned short fontID, const WP
 }
 
 
-void libvisio::VSDXContentCollector::collectSplineStart(unsigned /* id */, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree)
+void libvisio::VSDContentCollector::collectSplineStart(unsigned /* id */, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree)
 {
   m_splineLevel = level;
   m_splineKnotVector.push_back(firstKnot);
@@ -2129,7 +2129,7 @@ void libvisio::VSDXContentCollector::collectSplineStart(unsigned /* id */, unsig
 }
 
 
-void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsigned /* level */, double x, double y, double knot)
+void libvisio::VSDContentCollector::collectSplineKnot(unsigned /* id */, unsigned /* level */, double x, double y, double knot)
 {
   m_splineKnotVector.push_back(knot);
   m_splineControlPoints.push_back(std::pair<double,double>(m_splineX,m_splineY));
@@ -2138,7 +2138,7 @@ void libvisio::VSDXContentCollector::collectSplineKnot(unsigned /* id */, unsign
 }
 
 
-void libvisio::VSDXContentCollector::collectSplineEnd()
+void libvisio::VSDContentCollector::collectSplineEnd()
 {
   if (m_splineKnotVector.empty() || m_splineControlPoints.empty())
   {
@@ -2156,7 +2156,7 @@ void libvisio::VSDXContentCollector::collectSplineEnd()
 }
 
 
-void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level, const WPXBinaryData &textStream, TextFormat format)
+void libvisio::VSDContentCollector::collectText(unsigned /*id*/, unsigned level, const WPXBinaryData &textStream, TextFormat format)
 {
   _handleLevelChange(level);
 
@@ -2164,42 +2164,42 @@ void libvisio::VSDXContentCollector::collectText(unsigned /*id*/, unsigned level
   m_textFormat = format;
 }
 
-void libvisio::VSDXContentCollector::collectVSDXParaStyle(unsigned /* id */ , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+void libvisio::VSDContentCollector::collectVSDParaStyle(unsigned /* id */ , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
     double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags)
 {
   _handleLevelChange(level);
-  VSDXParaStyle format(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
+  VSDParaStyle format(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
   m_paraFormats.push_back(format);
 }
 
-void libvisio::VSDXContentCollector::collectVSDXCharStyle(unsigned /*id*/ , unsigned level, unsigned charCount,
+void libvisio::VSDContentCollector::collectVSDCharStyle(unsigned /*id*/ , unsigned level, unsigned charCount,
     unsigned short fontID, Colour fontColour, double fontSize, bool bold, bool italic,
     bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace)
+    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace)
 {
   _handleLevelChange(level);
-  VSDXCharStyle format(charCount, fontID, fontColour, fontSize, bold, italic,
+  VSDCharStyle format(charCount, fontID, fontColour, fontSize, bold, italic,
                        underline, doubleunderline, strikeout, doublestrikeout,
                        allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   m_charFormats.push_back(format);
 }
 
-void libvisio::VSDXContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double leftMargin, double rightMargin,
+void libvisio::VSDContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double leftMargin, double rightMargin,
     double topMargin, double bottomMargin,  unsigned char verticalAlign, unsigned char bgClrId,
     const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
 {
   _handleLevelChange(level);
-  m_textBlockStyle = VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
+  m_textBlockStyle = VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
 }
 
-void libvisio::VSDXContentCollector::collectNameList(unsigned /*id*/, unsigned level)
+void libvisio::VSDContentCollector::collectNameList(unsigned /*id*/, unsigned level)
 {
   _handleLevelChange(level);
 
   m_names.clear();
 }
 
-void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format)
+void libvisio::VSDContentCollector::_convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format)
 {
   if (!data.size())
     return;
@@ -2208,7 +2208,7 @@ void libvisio::VSDXContentCollector::_convertDataToString(WPXString &result, con
   appendCharacters(result, tmpData, format);
 }
 
-void libvisio::VSDXContentCollector::collectName(unsigned id, unsigned level, const WPXBinaryData &name, TextFormat format)
+void libvisio::VSDContentCollector::collectName(unsigned id, unsigned level, const WPXBinaryData &name, TextFormat format)
 {
   _handleLevelChange(level);
 
@@ -2217,86 +2217,86 @@ void libvisio::VSDXContentCollector::collectName(unsigned id, unsigned level, co
   m_names[id] = nameString;
 }
 
-void libvisio::VSDXContentCollector::collectPageSheet(unsigned /* id */, unsigned level)
+void libvisio::VSDContentCollector::collectPageSheet(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
   m_currentShapeLevel = level;
 }
 
-void libvisio::VSDXContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
+void libvisio::VSDContentCollector::collectStyleSheet(unsigned /* id */, unsigned level, unsigned /* parentLineStyle */, unsigned /* parentFillStyle */, unsigned /* parentTextStyle */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned char /* linePattern */,  unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char /* lineCap */)
+void libvisio::VSDContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned char /* linePattern */,  unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char /* lineCap */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/, double /*shadowOffsetX*/, double /*shadowOffsetY*/)
+void libvisio::VSDContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/, double /*shadowOffsetX*/, double /*shadowOffsetY*/)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/)
+void libvisio::VSDContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, double /*fontSize*/,
+void libvisio::VSDContentCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/, Colour /*fontColour*/, double /*fontSize*/,
     bool /*bold*/, bool /*italic*/, bool /*underline*/, bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */,
-    bool /* allcaps */, bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, VSDXFont /*fontFace*/)
+    bool /* allcaps */, bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, VSDFont /*fontFace*/)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::collectParaIXStyle(unsigned /* id */, unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */, double /* indRight */,
+void libvisio::VSDContentCollector::collectParaIXStyle(unsigned /* id */, unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */, double /* indRight */,
     double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */, unsigned /* flags */)
 {
   _handleLevelChange(level);
 }
 
 
-void libvisio::VSDXContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
+void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
     double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */,
     const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(unsigned styleId)
+void libvisio::VSDContentCollector::lineStyleFromStyleSheet(unsigned styleId)
 {
   lineStyleFromStyleSheet(m_styles.getLineStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::lineStyleFromStyleSheet(const VSDXLineStyle *style)
+void libvisio::VSDContentCollector::lineStyleFromStyleSheet(const VSDLineStyle *style)
 {
   if (style)
     _lineProperties(style->width, style->colour, style->pattern, style->startMarker, style->endMarker, style->cap);
 }
 
-void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(unsigned styleId)
+void libvisio::VSDContentCollector::fillStyleFromStyleSheet(unsigned styleId)
 {
   fillStyleFromStyleSheet(m_styles.getFillStyle(styleId));
 }
 
-void libvisio::VSDXContentCollector::fillStyleFromStyleSheet(const VSDXFillStyle *style)
+void libvisio::VSDContentCollector::fillStyleFromStyleSheet(const VSDFillStyle *style)
 {
   if (style)
     _fillAndShadowProperties(style->fgColourId, style->bgColourId, style->pattern, style->fgTransparency, style->bgTransparency,
                              style->shadowPattern, style->shadowFgColour, style->shadowOffsetX, style->shadowOffsetY);
 }
 
-void libvisio::VSDXContentCollector::collectFieldList(unsigned /* id */, unsigned level)
+void libvisio::VSDContentCollector::collectFieldList(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
   m_fields.clear();
 }
 
-void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned level, int nameId, int formatStringId)
+void libvisio::VSDContentCollector::collectTextField(unsigned id, unsigned level, int nameId, int formatStringId)
 {
   _handleLevelChange(level);
-  VSDXFieldListElement *element = m_stencilFields.getElement(m_fields.size());
+  VSDFieldListElement *element = m_stencilFields.getElement(m_fields.size());
   if (element)
   {
     if (nameId == -2)
@@ -2311,18 +2311,18 @@ void libvisio::VSDXContentCollector::collectTextField(unsigned id, unsigned leve
   }
   else
   {
-    VSDXTextField tmpField(id, level, nameId, formatStringId);
+    VSDTextField tmpField(id, level, nameId, formatStringId);
     m_fields.push_back(tmpField.getString(m_names));
   }
 }
 
-void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
+void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
 {
   _handleLevelChange(level);
-  VSDXFieldListElement *pElement = m_stencilFields.getElement(m_fields.size());
+  VSDFieldListElement *pElement = m_stencilFields.getElement(m_fields.size());
   if (pElement)
   {
-    VSDXFieldListElement *element = pElement->clone();
+    VSDFieldListElement *element = pElement->clone();
     if (element)
     {
       element->setValue(number);
@@ -2341,12 +2341,12 @@ void libvisio::VSDXContentCollector::collectNumericField(unsigned id, unsigned l
   }
   else
   {
-    VSDXNumericField tmpField(id, level, format, number, formatStringId);
+    VSDNumericField tmpField(id, level, format, number, formatStringId);
     m_fields.push_back(tmpField.getString(m_names));
   }
 }
 
-void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
+void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)
     return;
@@ -2393,7 +2393,7 @@ void libvisio::VSDXContentCollector::_handleLevelChange(unsigned level)
   m_currentLevel = level;
 }
 
-void libvisio::VSDXContentCollector::startPage(unsigned pageId)
+void libvisio::VSDContentCollector::startPage(unsigned pageId)
 {
   if (m_isShapeStarted)
   {
@@ -2416,12 +2416,12 @@ void libvisio::VSDXContentCollector::startPage(unsigned pageId)
     m_groupMemberships = m_groupMembershipsSequence[m_currentPageNumber-1];
   if (m_documentPageShapeOrders.size() >= m_currentPageNumber)
     m_pageShapeOrder = m_documentPageShapeOrders[m_currentPageNumber-1];
-  m_currentPage = libvisio::VSDXPage();
+  m_currentPage = libvisio::VSDPage();
   m_currentPage.m_currentPageID = pageId;
   m_isPageStarted = true;
 }
 
-void libvisio::VSDXContentCollector::endPage()
+void libvisio::VSDContentCollector::endPage()
 {
   if (m_isPageStarted)
   {
@@ -2432,12 +2432,12 @@ void libvisio::VSDXContentCollector::endPage()
   }
 }
 
-void libvisio::VSDXContentCollector::endPages()
+void libvisio::VSDContentCollector::endPages()
 {
   m_pages.draw(m_painter);
 }
 
-bool libvisio::VSDXContentCollector::parseFormatId( const char *formatString, unsigned short &result )
+bool libvisio::VSDContentCollector::parseFormatId( const char *formatString, unsigned short &result )
 {
   using namespace ::boost::spirit::classic;
 
@@ -2467,7 +2467,7 @@ bool libvisio::VSDXContentCollector::parseFormatId( const char *formatString, un
   return false;
 }
 
-void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format)
+void libvisio::VSDContentCollector::appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format)
 {
   if (format == VSD_TEXT_UTF16)
     return appendCharacters(text, characters);
@@ -2750,7 +2750,7 @@ void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std
   }
 }
 
-void libvisio::VSDXContentCollector::appendCharacters(WPXString &text, const std::vector<unsigned char> &characters)
+void libvisio::VSDContentCollector::appendCharacters(WPXString &text, const std::vector<unsigned char> &characters)
 {
   std::vector<unsigned char>::const_iterator iter = characters.begin();
   while (iter != characters.end())

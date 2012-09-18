@@ -35,12 +35,12 @@
 #include "libvisio_utils.h"
 #include "VSD6Parser.h"
 #include "VSDInternalStream.h"
-#include "VSDXDocumentStructure.h"
-#include "VSDXContentCollector.h"
-#include "VSDXStylesCollector.h"
+#include "VSDDocumentStructure.h"
+#include "VSDContentCollector.h"
+#include "VSDStylesCollector.h"
 
 libvisio::VSD6Parser::VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : VSDXParser(input, painter)
+  : VSDParser(input, painter)
 {}
 
 libvisio::VSD6Parser::~VSD6Parser()
@@ -104,7 +104,7 @@ void libvisio::VSD6Parser::readText(WPXInputStream *input)
 
 void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
 {
-  VSDXFont fontFace;
+  VSDFont fontFace;
   unsigned charCount = readU32(input);
   unsigned short fontID = readU16(input);
   input->seek(1, WPX_SEEK_CUR);  // Color ID
@@ -153,7 +153,7 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
   {
     VSD_DEBUG_MSG(("Found stencil character style\n"));
     if (!m_stencilShape.m_charStyle)
-      m_stencilShape.m_charStyle= new VSDXCharStyle(charCount, fontID, fontColour, fontSize,
+      m_stencilShape.m_charStyle= new VSDCharStyle(charCount, fontID, fontColour, fontSize,
           bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
           allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   }
@@ -187,7 +187,7 @@ void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
   {
     VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
     if (!m_stencilShape.m_paraStyle)
-      m_stencilShape.m_paraStyle= new VSDXParaStyle(charCount, indFirst, indLeft, indRight,
+      m_stencilShape.m_paraStyle= new VSDParaStyle(charCount, indFirst, indLeft, indRight,
           spLine, spBefore, spAfter, align, 0);
   }
   else
@@ -220,7 +220,7 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_fillStyle)
-      m_stencilShape.m_fillStyle = new VSDXFillStyle(colourIndexFG, colourIndexBG, fillPattern,
+      m_stencilShape.m_fillStyle = new VSDFillStyle(colourIndexFG, colourIndexBG, fillPattern,
           fillFGTransparency, fillBGTransparency, shfgc, shadowPattern,
           m_currentStencil->m_shadowOffsetX, m_currentStencil->m_shadowOffsetY);
   }
@@ -238,7 +238,7 @@ void libvisio::VSD6Parser::readName(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
-    m_stencilShape.m_names[m_header.id] = VSDXName(name, libvisio::VSD_TEXT_ANSI);
+    m_stencilShape.m_names[m_header.id] = VSDName(name, libvisio::VSD_TEXT_ANSI);
   }
   else
     m_collector->collectName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_ANSI);

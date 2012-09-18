@@ -28,44 +28,44 @@
  * instead of those above.
  */
 
-#ifndef __VSDXFIELDLIST_H__
-#define __VSDXFIELDLIST_H__
+#ifndef __VSDFIELDLIST_H__
+#define __VSDFIELDLIST_H__
 
 #include <vector>
 #include <map>
 #include <libwpd/libwpd.h>
-#include "VSDXDocumentStructure.h"
-#include "VSDXTypes.h"
+#include "VSDDocumentStructure.h"
+#include "VSDTypes.h"
 
 namespace libvisio
 {
 
-class VSDXCollector;
+class VSDCollector;
 
-class VSDXFieldListElement
+class VSDFieldListElement
 {
 public:
-  VSDXFieldListElement() {}
-  virtual ~VSDXFieldListElement() {}
-  virtual void handle(VSDXCollector *collector) = 0;
-  virtual VSDXFieldListElement *clone() = 0;
+  VSDFieldListElement() {}
+  virtual ~VSDFieldListElement() {}
+  virtual void handle(VSDCollector *collector) = 0;
+  virtual VSDFieldListElement *clone() = 0;
   virtual WPXString getString(const std::map<unsigned, WPXString>&) = 0;
   virtual void setNameId(int) = 0;
   virtual void setFormat(unsigned short) = 0;
   virtual void setValue(double) = 0;
 };
 
-class VSDXTextField : public VSDXFieldListElement
+class VSDTextField : public VSDFieldListElement
 {
 public:
-  VSDXTextField(unsigned id, unsigned level, int nameId, int formatStringId)
+  VSDTextField(unsigned id, unsigned level, int nameId, int formatStringId)
     : m_id(id),
       m_level(level),
       m_nameId(nameId),
       m_formatStringId(formatStringId) {}
-  ~VSDXTextField() {}
-  void handle(VSDXCollector *collector);
-  VSDXFieldListElement *clone();
+  ~VSDTextField() {}
+  void handle(VSDCollector *collector);
+  VSDFieldListElement *clone();
   WPXString getString(const std::map<unsigned, WPXString> &strVec);
   void setNameId(int nameId);
   void setFormat(unsigned short) {}
@@ -75,18 +75,18 @@ private:
   int m_nameId, m_formatStringId;
 };
 
-class VSDXNumericField : public VSDXFieldListElement
+class VSDNumericField : public VSDFieldListElement
 {
 public:
-  VSDXNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
+  VSDNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
     : m_id(id),
       m_level(level),
       m_format(format),
       m_number(number),
       m_formatStringId(formatStringId) {}
-  ~VSDXNumericField() {}
-  void handle(VSDXCollector *collector);
-  VSDXFieldListElement *clone();
+  ~VSDNumericField() {}
+  void handle(VSDCollector *collector);
+  VSDFieldListElement *clone();
   WPXString getString(const std::map<unsigned, WPXString> &);
   void setNameId(int) {}
   void setFormat(unsigned short format);
@@ -99,19 +99,19 @@ private:
   int m_formatStringId;
 };
 
-class VSDXFieldList
+class VSDFieldList
 {
 public:
-  VSDXFieldList();
-  VSDXFieldList(const VSDXFieldList &fieldList);
-  ~VSDXFieldList();
-  VSDXFieldList &operator=(const VSDXFieldList &fieldList);
+  VSDFieldList();
+  VSDFieldList(const VSDFieldList &fieldList);
+  ~VSDFieldList();
+  VSDFieldList &operator=(const VSDFieldList &fieldList);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void addFieldList(unsigned id, unsigned level);
   void addTextField(unsigned id, unsigned level, int nameId, int formatStringId);
   void addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId);
   void addClonedField(unsigned id);
-  void handle(VSDXCollector *collector);
+  void handle(VSDCollector *collector);
   void clear();
   unsigned long size() const
   {
@@ -121,14 +121,14 @@ public:
   {
     return (m_elements.empty());
   }
-  VSDXFieldListElement *getElement(unsigned index);
+  VSDFieldListElement *getElement(unsigned index);
 private:
-  std::map<unsigned, VSDXFieldListElement *> m_elements;
+  std::map<unsigned, VSDFieldListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;
   unsigned m_id, m_level;
 };
 
 } // namespace libvisio
 
-#endif // __VSDXFIELDLIST_H__
+#endif // __VSDFIELDLIST_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

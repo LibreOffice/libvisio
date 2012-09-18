@@ -28,8 +28,8 @@
  * instead of those above.
  */
 
-#ifndef VSDXDOCUMENTSTRUCTURE_H
-#define VSDXDOCUMENTSTRUCTURE_H
+#ifndef VSDDOCUMENTSTRUCTURE_H
+#define VSDDOCUMENTSTRUCTURE_H
 
 #define VSD_FOREIGN_DATA 0x0c
 #define VSD_OLE_LIST 0x0d
@@ -235,5 +235,5 @@
 
 #define VSD_FIELD_FORMAT_Unknown 0xffff
 
-#endif /* VSDXDOCUMENTSTRUCTURE_H */
+#endif /* VSDDOCUMENTSTRUCTURE_H */
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

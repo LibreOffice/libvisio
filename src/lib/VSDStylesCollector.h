@@ -28,45 +28,36 @@
  * instead of those above.
  */
 
-#ifndef VSDXCONTENTCOLLECTOR_H
-#define VSDXCONTENTCOLLECTOR_H
+#ifndef VSDSTYLESCOLLECTOR_H
+#define VSDSTYLESCOLLECTOR_H
 
-#include <locale.h>
-#include <sstream>
-#include <string>
-#include <cmath>
 #include <map>
-#include <list>
 #include <vector>
-#include <libwpg/libwpg.h>
+#include <list>
+#include "VSDCollector.h"
+#include "VSDParser.h"
 #include "libvisio_utils.h"
-#include "VSDXCollector.h"
-#include "VSDXParser.h"
-#include "VSDXOutputElementList.h"
-#include "VSDXStyles.h"
-#include "VSDXPages.h"
+#include "VSDStyles.h"
 
 namespace libvisio
 {
 
-class VSDXContentCollector : public VSDXCollector
+class VSDStylesCollector : public VSDCollector
 {
 public:
-  VSDXContentCollector(
-    libwpg::WPGPaintInterface *painter,
+  VSDStylesCollector(
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
     std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
-    std::vector<std::list<unsigned> > &documentPageShapeOrders,
-    VSDXStyles &styles, VSDXStencils &stencils
+    std::vector<std::list<unsigned> > &documentPageShapeOrders
   );
-  virtual ~VSDXContentCollector()
-  {
-    if (m_txtxform) delete(m_txtxform);
-  };
+  virtual ~VSDStylesCollector() {};
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
-  void collectOLEList(unsigned id, unsigned level);
+  void collectOLEList(unsigned id, unsigned level)
+  {
+    collectUnhandledChunk(id, level);
+  }
   void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap);
@@ -79,11 +70,11 @@ public:
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
   void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
-  void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
-                      std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);
+  void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType,
+                      unsigned degree, std::vector<std::pair<double, double> > controlPoints,
+                      std::vector<double> knotVector, std::vector<double> weights);
   void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID);
-  void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
-                         std::vector<std::pair<double, double> > &points);
+  void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > &points);
   void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID);
   void collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, unsigned degree, double lastKnot,
                         std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);
@@ -99,23 +90,25 @@ public:
   void collectSplineKnot(unsigned id, unsigned level, double x, double y, double knot);
   void collectSplineEnd();
   void collectInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2);
-
   void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectColours(const std::vector<Colour> &colours);
-  void collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format);
-  void collectText(unsigned id, unsigned level, const WPXBinaryData &textStream, TextFormat format);
-  void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-                            bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
-  void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+  void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format);
+
+  void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
+  void collectVSDCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
+                            double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
+  void collectVSDParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                             double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
   void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
                         unsigned char bgClrId, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
-  void collectNameList(unsigned id, unsigned level);
-  void collectName(unsigned id, unsigned level,  const WPXBinaryData &name, TextFormat format);
+  void collectNameList(unsigned id, unsigned level)
+  {
+    collectUnhandledChunk(id, level);
+  }
+  void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format);
   void collectPageSheet(unsigned id, unsigned level);
-
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
@@ -125,9 +118,9 @@ public:
                         double shadowOffsetX, double shadowOffsetY);
   void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern,
                         unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc);
-  void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-                          bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
+  void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
+                          double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+                          bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
   void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                           double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
   void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin, unsigned char verticalAlign,
@@ -138,141 +131,56 @@ public:
   void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId);
   void collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId);
 
-  void startPage(unsigned pageId);
+  // Temporary hack
+  void startPage(unsigned pageID);
   void endPage();
-  void endPages();
+  void endPages() {}
+
+  VSDStyles getStyleSheets() const
+  {
+    return m_styles;
+  }
 
 
 private:
-  VSDXContentCollector(const VSDXContentCollector &);
-  VSDXContentCollector &operator=(const VSDXContentCollector &);
-  libwpg::WPGPaintInterface *m_painter;
-
-  void applyXForm(double &x, double &y, const XForm &xform);
-
-  void transformPoint(double &x, double &y, XForm *txtxform = 0);
-  void transformAngle(double &angle, XForm *txtxform = 0);
-  void transformFlips(bool &flipX, bool &flipY);
-
-  double _NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector);
-
-  void _flushCurrentPath();
-  void _flushText();
-  void _flushCurrentForeignData();
-  void _flushCurrentPage();
+  VSDStylesCollector(const VSDStylesCollector &);
+  VSDStylesCollector &operator=(const VSDStylesCollector &);
 
   void _handleLevelChange(unsigned level);
+  void _flushShapeList();
 
-  void _handleForeignData(const WPXBinaryData &data);
-
-  void lineStyleFromStyleSheet(unsigned styleId);
-  void fillStyleFromStyleSheet(unsigned styleId);
-  void lineStyleFromStyleSheet(const VSDXLineStyle *style);
-  void fillStyleFromStyleSheet(const VSDXFillStyle *style);
-
-  void _applyLinePattern();
-  void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
-  const char *_linePropertiesMarkerViewbox(unsigned marker);
-  const char *_linePropertiesMarkerPath(unsigned marker);
-  double _linePropertiesMarkerScale(unsigned marker);
-  void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
-                                unsigned fillFGTransparency, unsigned fillBGTransparency,
-                                unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
-
-  void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
-  void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
-  void _convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format);
-  bool parseFormatId( const char *formatString, unsigned short &result );
-
-  bool m_isPageStarted;
-  double m_pageWidth;
-  double m_pageHeight;
-  double m_shadowOffsetX;
-  double m_shadowOffsetY;
-  double m_scale;
-  double m_x;
-  double m_y;
-  double m_originalX;
-  double m_originalY;
-  XForm m_xform;
-  XForm *m_txtxform;
-  std::vector<WPXPropertyList> m_currentFillGeometry;
-  std::vector<WPXPropertyList> m_currentLineGeometry;
-  std::map<unsigned, XForm> *m_groupXForms;
-  WPXBinaryData m_currentForeignData;
-  WPXBinaryData m_currentOLEData;
-  WPXPropertyList m_currentForeignProps;
-  unsigned m_currentShapeId;
-  unsigned m_foreignType;
-  unsigned m_foreignFormat;
-  double m_foreignOffsetX;
-  double m_foreignOffsetY;
-  double m_foreignWidth;
-  double m_foreignHeight;
-  WPXPropertyList m_styleProps;
-  ::WPXString m_lineColour;
-  ::WPXString m_fillType;
-  unsigned m_linePattern;
-  unsigned m_fillPattern;
-  unsigned m_fillFGTransparency;
-  unsigned m_fillBGTransparency;
-  bool m_noLine;
-  bool m_noFill;
-  bool m_noShow;
-  std::vector<Colour> m_colours;
-  std::map<unsigned short, VSDXFont> m_fonts;
   unsigned m_currentLevel;
   bool m_isShapeStarted;
-  std::map<unsigned, unsigned> &m_groupMemberships;
+
+  double m_shadowOffsetX;
+  double m_shadowOffsetY;
+
+  unsigned m_currentShapeId;
+  std::map<unsigned, XForm> m_groupXForms;
+  std::map<unsigned, unsigned> m_groupMemberships;
   std::vector<std::map<unsigned, XForm> > &m_groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
-  unsigned m_currentPageNumber;
-  VSDXOutputElementList *m_shapeOutputDrawing, *m_shapeOutputText;
-  std::map<unsigned, VSDXOutputElementList> m_pageOutputDrawing;
-  std::map<unsigned, VSDXOutputElementList> m_pageOutputText;
+  std::list<unsigned> m_pageShapeOrder;
   std::vector<std::list<unsigned> > &m_documentPageShapeOrders;
-  std::list<unsigned> &m_pageShapeOrder;
-  bool m_isFirstGeometry;
+  std::map<unsigned, std::list<unsigned> > m_groupShapeOrder;
+  std::list<unsigned> m_shapeList;
 
-  std::map<unsigned, NURBSData> m_NURBSData;
-  std::map<unsigned, PolylineData> m_polylineData;
-  WPXBinaryData m_textStream;
-  std::map<unsigned, WPXString> m_names, m_stencilNames;
-  std::vector<WPXString> m_fields;
-  VSDXFieldList m_stencilFields;
-  unsigned m_fieldIndex;
-  TextFormat m_textFormat;
-  std::vector<VSDXCharStyle> m_charFormats;
-  std::vector<VSDXParaStyle> m_paraFormats;
+  unsigned m_currentStyleSheet;
+  VSDStyles m_styles;
+  VSDLineStyle *m_lineStyle;
+  VSDFillStyle *m_fillStyle;
+  VSDTextBlockStyle *m_textBlockStyle;
+  VSDCharStyle *m_charStyle;
+  VSDParaStyle *m_paraStyle;
 
-  VSDXTextBlockStyle m_textBlockStyle;
-
-  VSDXCharStyle m_defaultCharStyle;
-  VSDXParaStyle m_defaultParaStyle;
-
-  VSDXStyles m_styles;
-
-  VSDXStencils m_stencils;
-  const VSDXStencilShape *m_stencilShape;
-  bool m_isStencilStarted;
-
-  unsigned m_currentGeometryCount;
-
-  unsigned m_backgroundPageID;
-  unsigned m_currentPageID;
-  VSDXPage m_currentPage;
-  VSDXPages m_pages;
-
-  std::vector<std::pair<double, double> > m_splineControlPoints;
-  std::vector<double> m_splineKnotVector;
-  double m_splineX, m_splineY;
-  double m_splineLastKnot;
-  unsigned m_splineDegree;
-  unsigned m_splineLevel;
+  unsigned m_lineStyleMaster;
+  unsigned m_fillStyleMaster;
+  unsigned m_textStyleMaster;
+  bool m_isStyleStarted;
   unsigned m_currentShapeLevel;
 };
 
-} // namespace libvisio
+}
 
-#endif /* VSDXCONTENTCOLLECTOR_H */
+#endif /* VSDSTYLESCOLLECTOR_H */
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

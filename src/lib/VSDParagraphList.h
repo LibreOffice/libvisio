@@ -28,51 +28,41 @@
  * instead of those above.
  */
 
-#ifndef __VSDXOUTPUTELEMENTLIST_H__
-#define __VSDXOUTPUTELEMENTLIST_H__
+#ifndef __VSDPARAGRAPHLIST_H__
+#define __VSDPARAGRAPHLIST_H__
 
-#include <map>
-#include <list>
 #include <vector>
-#include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
+#include <map>
 
 namespace libvisio
 {
 
-class VSDXOutputElement;
+class VSDParagraphListElement;
+class VSDCollector;
 
-class VSDXOutputElementList
+class VSDParagraphList
 {
 public:
-  VSDXOutputElementList();
-  VSDXOutputElementList(const VSDXOutputElementList &elementList);
-  VSDXOutputElementList &operator=(const VSDXOutputElementList &elementList);
-  virtual ~VSDXOutputElementList();
-  void append(const VSDXOutputElementList &elementList);
-  void draw(libwpg::WPGPaintInterface *painter) const;
-  void addStyle(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
-  void addPath(const WPXPropertyListVector &propListVec);
-  void addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-  void addStartTextObject(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
-  void addStartTextLine(const WPXPropertyList &propList);
-  void addStartTextSpan(const WPXPropertyList &propList);
-  void addInsertText(const WPXString &text);
-  void addEndTextSpan();
-  void addEndTextLine();
-  void addEndTextObject();
-  void addStartLayer(const WPXPropertyList &propList);
-  void addEndLayer();
+  VSDParagraphList();
+  VSDParagraphList(const VSDParagraphList &paraList);
+  ~VSDParagraphList();
+  VSDParagraphList &operator=(const VSDParagraphList &paraList);
+  void addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+                 double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
+
+  void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
+  void handle(VSDCollector *collector);
+  void clear();
   bool empty() const
   {
-    return m_elements.empty();
+    return (m_elements.empty());
   }
 private:
-  std::vector<VSDXOutputElement *> m_elements;
+  std::map<unsigned, VSDParagraphListElement *> m_elements;
+  std::vector<unsigned> m_elementsOrder;
 };
-
 
 } // namespace libvisio
 
-#endif // __VSDXOUTPUTELEMENTLIST_H__
+#endif // __VSDPARAGRAPHLIST_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

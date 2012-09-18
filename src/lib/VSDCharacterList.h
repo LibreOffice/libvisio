@@ -28,39 +28,42 @@
  * instead of those above.
  */
 
-#ifndef __VSD11PARSER_H__
-#define __VSD11PARSER_H__
+#ifndef __VSDCHARACTERLIST_H__
+#define __VSDCHARACTERLIST_H__
 
-#include <stdio.h>
-#include <iostream>
-#include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
-#include "VSDParser.h"
-#include "VSDInternalStream.h"
+#include <vector>
+#include <map>
+#include "VSDTypes.h"
 
 namespace libvisio
 {
 
-class VSD11Parser : public VSDParser
+class VSDCharacterListElement;
+class VSDCollector;
+
+class VSDCharacterList
 {
 public:
-  explicit VSD11Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
-  ~VSD11Parser();
+  VSDCharacterList();
+  VSDCharacterList(const VSDCharacterList &charList);
+  ~VSDCharacterList();
+  VSDCharacterList &operator=(const VSDCharacterList &charList);
+  void addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
+                 bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+                 bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
+  void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
+  void handle(VSDCollector *collector);
+  void clear();
+  bool empty() const
+  {
+    return (m_elements.empty());
+  }
 private:
-  bool getChunkHeader(WPXInputStream *input);
-  void readText(WPXInputStream *input);
-  void readCharIX(WPXInputStream *input);
-  void readParaIX(WPXInputStream *input);
-  void readFillAndShadow(WPXInputStream *input);
-  void readName(WPXInputStream *input);
-  void readTextField(WPXInputStream *input);
-
-  VSD11Parser();
-  VSD11Parser(const VSDParser &);
-  VSD11Parser &operator=(const VSDParser &);
+  std::map<unsigned, VSDCharacterListElement *> m_elements;
+  std::vector<unsigned> m_elementsOrder;
 };
 
 } // namespace libvisio
 
-#endif // __VSD11PARSER_H__
+#endif // __VSDCHARACTERLIST_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

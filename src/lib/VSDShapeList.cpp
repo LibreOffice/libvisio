@@ -28,27 +28,27 @@
  * instead of those above.
  */
 
-#include "VSDXCollector.h"
-#include "VSDXShapeList.h"
+#include "VSDCollector.h"
+#include "VSDShapeList.h"
 
 namespace libvisio
 {
 
-class VSDXShapeListElement
+class VSDShapeListElement
 {
 public:
-  VSDXShapeListElement() {}
-  virtual ~VSDXShapeListElement() {}
-  virtual void handle(VSDXCollector *collector) = 0;
+  VSDShapeListElement() {}
+  virtual ~VSDShapeListElement() {}
+  virtual void handle(VSDCollector *collector) = 0;
 };
 
-class VSDXShapeId : public VSDXShapeListElement
+class VSDShapeId : public VSDShapeListElement
 {
 public:
-  VSDXShapeId(unsigned id, unsigned level, unsigned shapeId) :
+  VSDShapeId(unsigned id, unsigned level, unsigned shapeId) :
     m_id(id), m_level(level), m_shapeId(shapeId) {}
-  ~VSDXShapeId() {}
-  void handle(VSDXCollector *collector);
+  ~VSDShapeId() {}
+  void handle(VSDCollector *collector);
 private:
   unsigned m_id;
   unsigned m_level;
@@ -58,39 +58,39 @@ private:
 } // namespace libvisio
 
 
-void libvisio::VSDXShapeId::handle(VSDXCollector *collector)
+void libvisio::VSDShapeId::handle(VSDCollector *collector)
 {
   collector->collectShapeId(m_id, m_level, m_shapeId);
 }
 
-libvisio::VSDXShapeList::VSDXShapeList() :
+libvisio::VSDShapeList::VSDShapeList() :
   m_elements(),
   m_elementsOrder()
 {
 }
 
-libvisio::VSDXShapeList::~VSDXShapeList()
+libvisio::VSDShapeList::~VSDShapeList()
 {
   clear();
 }
 
-void libvisio::VSDXShapeList::addShapeId(unsigned id, unsigned level, unsigned shapeId)
+void libvisio::VSDShapeList::addShapeId(unsigned id, unsigned level, unsigned shapeId)
 {
-  m_elements[id] = new VSDXShapeId(id, level, shapeId);
+  m_elements[id] = new VSDShapeId(id, level, shapeId);
 }
 
-void libvisio::VSDXShapeList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
+void libvisio::VSDShapeList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
   for (unsigned i = 0; i<elementsOrder.size(); i++)
     m_elementsOrder.push_back(elementsOrder[i]);
 }
 
-void libvisio::VSDXShapeList::handle(VSDXCollector *collector)
+void libvisio::VSDShapeList::handle(VSDCollector *collector)
 {
   if (empty())
     return;
-  std::map<unsigned, VSDXShapeListElement *>::iterator iter;
+  std::map<unsigned, VSDShapeListElement *>::iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
@@ -107,9 +107,9 @@ void libvisio::VSDXShapeList::handle(VSDXCollector *collector)
   }
 }
 
-void libvisio::VSDXShapeList::clear()
+void libvisio::VSDShapeList::clear()
 {
-  for (std::map<unsigned, VSDXShapeListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
+  for (std::map<unsigned, VSDShapeListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();

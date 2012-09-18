@@ -28,25 +28,25 @@
  * instead of those above.
  */
 
-#ifndef __VSDXSTYLES_H__
-#define __VSDXSTYLES_H__
+#ifndef __VSDSTYLES_H__
+#define __VSDSTYLES_H__
 
 #include <map>
 #include <vector>
 #include <libwpg/libwpg.h>
-#include "VSDXTypes.h"
+#include "VSDTypes.h"
 
 namespace libvisio
 {
 
-struct VSDXLineStyle
+struct VSDLineStyle
 {
-  VSDXLineStyle()
+  VSDLineStyle()
     : width(0.01), colour(), pattern(0), startMarker(0), endMarker(0), cap(0) {}
-  VSDXLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
+  VSDLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
                 unsigned char em, unsigned char c)
     : width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
-  ~VSDXLineStyle() {}
+  ~VSDLineStyle() {}
   double width;
   Colour colour;
   unsigned char pattern;
@@ -55,13 +55,13 @@ struct VSDXLineStyle
   unsigned char cap;
 };
 
-struct VSDXFillStyle
+struct VSDFillStyle
 {
-  VSDXFillStyle()
+  VSDFillStyle()
     : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
-  VSDXFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga, Colour sfgc, unsigned char shp, double shX, double shY)
+  VSDFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga, Colour sfgc, unsigned char shp, double shX, double shY)
     : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
-  ~VSDXFillStyle() {}
+  ~VSDFillStyle() {}
   unsigned char fgColourId;
   //  Colour fgColour;
   unsigned char bgColourId;
@@ -77,9 +77,9 @@ struct VSDXFillStyle
   double shadowOffsetY;
 };
 
-struct VSDXCharStyle
+struct VSDCharStyle
 {
-  VSDXCharStyle() :
+  VSDCharStyle() :
     charCount(0),
     faceID(0),
     colour(),
@@ -96,7 +96,7 @@ struct VSDXCharStyle
     superscript(false),
     subscript(false),
     face() {}
-  VSDXCharStyle(unsigned cc, unsigned short id, Colour c, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, VSDXFont f) :
+  VSDCharStyle(unsigned cc, unsigned short id, Colour c, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, VSDFont f) :
     charCount(cc),
     faceID(id),
     colour(c),
@@ -113,7 +113,7 @@ struct VSDXCharStyle
     superscript(super),
     subscript(sub),
     face(f) {}
-  ~VSDXCharStyle() {}
+  ~VSDCharStyle() {}
   unsigned charCount;
   unsigned short faceID;
   Colour colour;
@@ -129,12 +129,12 @@ struct VSDXCharStyle
   bool smallcaps;
   bool superscript;
   bool subscript;
-  VSDXFont face;
+  VSDFont face;
 };
 
-struct VSDXParaStyle
+struct VSDParaStyle
 {
-  VSDXParaStyle() :
+  VSDParaStyle() :
     charCount(0),
     indFirst(0.0),
     indLeft(0.0),
@@ -144,7 +144,7 @@ struct VSDXParaStyle
     spAfter(0.0),
     align(1),
     flags(0) {}
-  VSDXParaStyle(unsigned cc, double ifst, double il, double ir, double sl, double sb, double sa, unsigned char a, unsigned f) :
+  VSDParaStyle(unsigned cc, double ifst, double il, double ir, double sl, double sb, double sa, unsigned char a, unsigned f) :
     charCount(cc),
     indFirst(ifst),
     indLeft(il),
@@ -154,7 +154,7 @@ struct VSDXParaStyle
     spAfter(sa),
     align(a),
     flags(f) {}
-  ~VSDXParaStyle() {}
+  ~VSDParaStyle() {}
   unsigned charCount;
   double indFirst;
   double indLeft;
@@ -166,9 +166,9 @@ struct VSDXParaStyle
   unsigned flags;
 };
 
-struct VSDXTextBlockStyle
+struct VSDTextBlockStyle
 {
-  VSDXTextBlockStyle() :
+  VSDTextBlockStyle() :
     leftMargin(0.0),
     rightMargin(0.0),
     topMargin(0.0),
@@ -178,7 +178,7 @@ struct VSDXTextBlockStyle
     textBkgndColour(0xff,0xff,0xff,0),
     defaultTabStop(0.5),
     textDirection(0) {}
-  VSDXTextBlockStyle(double lm, double rm, double tm, double bm, unsigned char va, unsigned char bgClrId, Colour bgClr, double defTab, unsigned char td) :
+  VSDTextBlockStyle(double lm, double rm, double tm, double bm, unsigned char va, unsigned char bgClrId, Colour bgClr, double defTab, unsigned char td) :
     leftMargin(lm),
     rightMargin(rm),
     topMargin(tm),
@@ -188,7 +188,7 @@ struct VSDXTextBlockStyle
     textBkgndColour(bgClr),
     defaultTabStop(defTab),
     textDirection(td) {}
-  ~VSDXTextBlockStyle() {}
+  ~VSDTextBlockStyle() {}
   double leftMargin;
   double rightMargin;
   double topMargin;
@@ -200,35 +200,35 @@ struct VSDXTextBlockStyle
   unsigned char textDirection;
 };
 
-class VSDXStyles
+class VSDStyles
 {
 public:
-  VSDXStyles();
-  VSDXStyles(const VSDXStyles &styles);
-  ~VSDXStyles();
-  VSDXStyles &operator=(const VSDXStyles &styles);
-  void addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle);
-  void addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle);
-  void addTextBlockStyle(unsigned textStyleIndex, VSDXTextBlockStyle *textBlockStyle);
-  void addCharStyle(unsigned textStyleIndex, VSDXCharStyle *charStyle);
-  void addParaStyle(unsigned textStyleIndex, VSDXParaStyle *paraStyle);
+  VSDStyles();
+  VSDStyles(const VSDStyles &styles);
+  ~VSDStyles();
+  VSDStyles &operator=(const VSDStyles &styles);
+  void addLineStyle(unsigned lineStyleIndex, VSDLineStyle *lineStyle);
+  void addFillStyle(unsigned fillStyleIndex, VSDFillStyle *fillStyle);
+  void addTextBlockStyle(unsigned textStyleIndex, VSDTextBlockStyle *textBlockStyle);
+  void addCharStyle(unsigned textStyleIndex, VSDCharStyle *charStyle);
+  void addParaStyle(unsigned textStyleIndex, VSDParaStyle *paraStyle);
 
   void addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster);
   void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
   void addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster);
 
-  const VSDXLineStyle *getLineStyle(unsigned lineStyleIndex) const;
-  const VSDXFillStyle *getFillStyle(unsigned fillStyleIndex) const;
-  const VSDXTextBlockStyle *getTextBlockStyle(unsigned textStyleIndex) const;
-  const VSDXCharStyle *getCharStyle(unsigned textStyleIndex) const;
-  const VSDXParaStyle *getParaStyle(unsigned textStyleIndex) const;
+  const VSDLineStyle *getLineStyle(unsigned lineStyleIndex) const;
+  const VSDFillStyle *getFillStyle(unsigned fillStyleIndex) const;
+  const VSDTextBlockStyle *getTextBlockStyle(unsigned textStyleIndex) const;
+  const VSDCharStyle *getCharStyle(unsigned textStyleIndex) const;
+  const VSDParaStyle *getParaStyle(unsigned textStyleIndex) const;
 
 private:
-  std::map<unsigned, VSDXLineStyle *> m_lineStyles;
-  std::map<unsigned, VSDXFillStyle *> m_fillStyles;
-  std::map<unsigned, VSDXTextBlockStyle *> m_textBlockStyles;
-  std::map<unsigned, VSDXCharStyle *> m_charStyles;
-  std::map<unsigned, VSDXParaStyle *> m_paraStyles;
+  std::map<unsigned, VSDLineStyle *> m_lineStyles;
+  std::map<unsigned, VSDFillStyle *> m_fillStyles;
+  std::map<unsigned, VSDTextBlockStyle *> m_textBlockStyles;
+  std::map<unsigned, VSDCharStyle *> m_charStyles;
+  std::map<unsigned, VSDParaStyle *> m_paraStyles;
   std::map<unsigned, unsigned> m_lineStyleMasters;
   std::map<unsigned, unsigned> m_fillStyleMasters;
   std::map<unsigned, unsigned> m_textStyleMasters;
@@ -237,5 +237,5 @@ private:
 
 } // namespace libvisio
 
-#endif // __VSDXSTYLES_H__
+#endif // __VSDSTYLES_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

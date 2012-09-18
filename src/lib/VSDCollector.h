@@ -28,20 +28,20 @@
  * instead of those above.
  */
 
-#ifndef VSDXCOLLECTOR_H
-#define VSDXCOLLECTOR_H
+#ifndef VSDCOLLECTOR_H
+#define VSDCOLLECTOR_H
 
 #include <vector>
-#include "VSDXParser.h"
+#include "VSDParser.h"
 
 namespace libvisio
 {
 
-class VSDXCollector
+class VSDCollector
 {
 public:
-  VSDXCollector() {};
-  virtual ~VSDXCollector() {}
+  VSDCollector() {};
+  virtual ~VSDCollector() {}
 
   virtual void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) = 0;
   virtual void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData) = 0;
@@ -83,10 +83,10 @@ public:
   virtual void collectColours(const std::vector<Colour> &colours) = 0;
   virtual void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format) = 0;
   virtual void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format) = 0;
-  virtual void collectVSDXCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
+  virtual void collectVSDCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
                                     bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                                    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace) = 0;
-  virtual void collectVSDXParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+                                    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;
+  virtual void collectVSDParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                     double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
   virtual void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                                 unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
@@ -105,7 +105,7 @@ public:
                                 unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc) = 0;
   virtual void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
                                   bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                                  bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace) = 0;
+                                  bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;
   virtual void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                   double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
   virtual void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
@@ -131,11 +131,11 @@ protected:
   }
 
 private:
-  VSDXCollector(const VSDXCollector &);
-  VSDXCollector &operator=(const VSDXCollector &);
+  VSDCollector(const VSDCollector &);
+  VSDCollector &operator=(const VSDCollector &);
 };
 
 } // namespace libvisio
 
-#endif /* VSDXCOLLECTOR_H */
+#endif /* VSDCOLLECTOR_H */
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -41,7 +41,20 @@ PKG_CHECK_MODULES([LIBVISIO],[
 	libwpd-0.9
 	libwpd-stream-0.9
 	libwpg-0.2
+	libxml-2.0
 ])
+
+# =========
+# Find zlib
+# =========
+PKG_CHECK_MODULES([ZLIB],[zlib],[],[
+    AC_CHECK_HEADER(zlib.h, [ZLIB_CFLAGS=],
+        [AC_MSG_ERROR(zlib.h not found. install zlib)], [])
+    AC_CHECK_LIB(z, inflate, [ ZLIB_LIBS=-lz ],
+        [AC_MSG_ERROR(zlib not found or functional)], [])
+])
+AC_SUBST(ZLIB_CFLAGS)
+AC_SUBST(ZLIB_LIBS)
 
 # ===========================
 # Find required boost headers

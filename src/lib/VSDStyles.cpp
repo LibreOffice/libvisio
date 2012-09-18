@@ -28,80 +28,80 @@
  * instead of those above.
  */
 
-#include "VSDXStyles.h"
+#include "VSDStyles.h"
 
 #define NOMASTER 0xffffffff
 
-libvisio::VSDXStyles::VSDXStyles() :
+libvisio::VSDStyles::VSDStyles() :
   m_lineStyles(), m_fillStyles(), m_textBlockStyles(), m_charStyles(), m_paraStyles(),
   m_lineStyleMasters(), m_fillStyleMasters(), m_textStyleMasters()
 {
 }
 
-libvisio::VSDXStyles::VSDXStyles(const libvisio::VSDXStyles &styles) :
+libvisio::VSDStyles::VSDStyles(const libvisio::VSDStyles &styles) :
   m_lineStyles(), m_fillStyles(), m_textBlockStyles(), m_charStyles(), m_paraStyles(),
   m_lineStyleMasters(styles.m_lineStyleMasters), m_fillStyleMasters(styles.m_fillStyleMasters),
   m_textStyleMasters(styles.m_textStyleMasters)
 {
-  for (std::map<unsigned, VSDXFillStyle *>::const_iterator iterFillStyle = styles.m_fillStyles.begin();
+  for (std::map<unsigned, VSDFillStyle *>::const_iterator iterFillStyle = styles.m_fillStyles.begin();
        iterFillStyle != styles.m_fillStyles.end(); ++iterFillStyle)
   {
     if (iterFillStyle->second)
-      m_fillStyles[iterFillStyle->first] = new VSDXFillStyle(*(iterFillStyle->second));
+      m_fillStyles[iterFillStyle->first] = new VSDFillStyle(*(iterFillStyle->second));
   }
-  for (std::map<unsigned, VSDXLineStyle *>::const_iterator iterLineStyle = styles.m_lineStyles.begin();
+  for (std::map<unsigned, VSDLineStyle *>::const_iterator iterLineStyle = styles.m_lineStyles.begin();
        iterLineStyle != styles.m_lineStyles.end(); ++iterLineStyle)
   {
     if (iterLineStyle->second)
-      m_lineStyles[iterLineStyle->first] = new VSDXLineStyle(*(iterLineStyle->second));
+      m_lineStyles[iterLineStyle->first] = new VSDLineStyle(*(iterLineStyle->second));
   }
-  for (std::map<unsigned, VSDXTextBlockStyle *>::const_iterator iterTextBlockStyle = styles.m_textBlockStyles.begin();
+  for (std::map<unsigned, VSDTextBlockStyle *>::const_iterator iterTextBlockStyle = styles.m_textBlockStyles.begin();
        iterTextBlockStyle != styles.m_textBlockStyles.end(); ++iterTextBlockStyle)
   {
     if (iterTextBlockStyle->second)
-      m_textBlockStyles[iterTextBlockStyle->first] = new VSDXTextBlockStyle(*(iterTextBlockStyle->second));
+      m_textBlockStyles[iterTextBlockStyle->first] = new VSDTextBlockStyle(*(iterTextBlockStyle->second));
   }
-  for (std::map<unsigned, VSDXCharStyle *>::const_iterator iterCharStyle = styles.m_charStyles.begin();
+  for (std::map<unsigned, VSDCharStyle *>::const_iterator iterCharStyle = styles.m_charStyles.begin();
        iterCharStyle != styles.m_charStyles.end(); ++iterCharStyle)
   {
     if (iterCharStyle->second)
-      m_charStyles[iterCharStyle->first] = new VSDXCharStyle(*(iterCharStyle->second));
+      m_charStyles[iterCharStyle->first] = new VSDCharStyle(*(iterCharStyle->second));
   }
-  for (std::map<unsigned, VSDXParaStyle *>::const_iterator iterParaStyle = styles.m_paraStyles.begin();
+  for (std::map<unsigned, VSDParaStyle *>::const_iterator iterParaStyle = styles.m_paraStyles.begin();
        iterParaStyle != styles.m_paraStyles.end(); ++iterParaStyle)
   {
     if (iterParaStyle->second)
-      m_paraStyles[iterParaStyle->first] = new VSDXParaStyle(*(iterParaStyle->second));
+      m_paraStyles[iterParaStyle->first] = new VSDParaStyle(*(iterParaStyle->second));
   }
 }
 
-libvisio::VSDXStyles::~VSDXStyles()
+libvisio::VSDStyles::~VSDStyles()
 {
-  for (std::map<unsigned, VSDXFillStyle *>::iterator iterFillStyle = m_fillStyles.begin();
+  for (std::map<unsigned, VSDFillStyle *>::iterator iterFillStyle = m_fillStyles.begin();
        iterFillStyle != m_fillStyles.end(); ++iterFillStyle)
   {
     if (iterFillStyle->second)
       delete iterFillStyle->second;
   }
-  for (std::map<unsigned, VSDXLineStyle *>::iterator iterLineStyle = m_lineStyles.begin();
+  for (std::map<unsigned, VSDLineStyle *>::iterator iterLineStyle = m_lineStyles.begin();
        iterLineStyle != m_lineStyles.end(); ++iterLineStyle)
   {
     if (iterLineStyle->second)
       delete iterLineStyle->second;
   }
-  for (std::map<unsigned, VSDXTextBlockStyle *>::iterator iterTextBlockStyle = m_textBlockStyles.begin();
+  for (std::map<unsigned, VSDTextBlockStyle *>::iterator iterTextBlockStyle = m_textBlockStyles.begin();
        iterTextBlockStyle != m_textBlockStyles.end(); ++iterTextBlockStyle)
   {
     if (iterTextBlockStyle->second)
       delete (iterTextBlockStyle->second);
   }
-  for (std::map<unsigned, VSDXCharStyle *>::iterator iterCharStyle = m_charStyles.begin();
+  for (std::map<unsigned, VSDCharStyle *>::iterator iterCharStyle = m_charStyles.begin();
        iterCharStyle != m_charStyles.end(); ++iterCharStyle)
   {
     if (iterCharStyle->second)
       delete (iterCharStyle->second);
   }
-  for (std::map<unsigned, VSDXParaStyle *>::iterator iterParaStyle = m_paraStyles.begin();
+  for (std::map<unsigned, VSDParaStyle *>::iterator iterParaStyle = m_paraStyles.begin();
        iterParaStyle != m_paraStyles.end(); ++iterParaStyle)
   {
     if (iterParaStyle->second)
@@ -109,37 +109,37 @@ libvisio::VSDXStyles::~VSDXStyles()
   }
 }
 
-libvisio::VSDXStyles &libvisio::VSDXStyles::operator=(const libvisio::VSDXStyles &styles)
+libvisio::VSDStyles &libvisio::VSDStyles::operator=(const libvisio::VSDStyles &styles)
 {
-  for (std::map<unsigned, VSDXFillStyle *>::iterator iterFillStyle = m_fillStyles.begin();
+  for (std::map<unsigned, VSDFillStyle *>::iterator iterFillStyle = m_fillStyles.begin();
        iterFillStyle != m_fillStyles.end(); ++iterFillStyle)
   {
     if (iterFillStyle->second)
       delete iterFillStyle->second;
   }
   m_fillStyles.clear();
-  for (std::map<unsigned, VSDXLineStyle *>::iterator iterLineStyle = m_lineStyles.begin();
+  for (std::map<unsigned, VSDLineStyle *>::iterator iterLineStyle = m_lineStyles.begin();
        iterLineStyle != m_lineStyles.end(); ++iterLineStyle)
   {
     if (iterLineStyle->second)
       delete iterLineStyle->second;
   }
   m_lineStyles.clear();
-  for (std::map<unsigned, VSDXTextBlockStyle *>::iterator iterTextBlockStyle = m_textBlockStyles.begin();
+  for (std::map<unsigned, VSDTextBlockStyle *>::iterator iterTextBlockStyle = m_textBlockStyles.begin();
        iterTextBlockStyle != m_textBlockStyles.end(); ++iterTextBlockStyle)
   {
     if (iterTextBlockStyle->second)
       delete (iterTextBlockStyle->second);
   }
   m_textBlockStyles.clear();
-  for (std::map<unsigned, VSDXCharStyle *>::iterator iterCharStyle = m_charStyles.begin();
+  for (std::map<unsigned, VSDCharStyle *>::iterator iterCharStyle = m_charStyles.begin();
        iterCharStyle != m_charStyles.end(); ++iterCharStyle)
   {
     if (iterCharStyle->second)
       delete (iterCharStyle->second);
   }
   m_charStyles.clear();
-  for (std::map<unsigned, VSDXParaStyle *>::iterator iterParaStyle = m_paraStyles.begin();
+  for (std::map<unsigned, VSDParaStyle *>::iterator iterParaStyle = m_paraStyles.begin();
        iterParaStyle != m_paraStyles.end(); ++iterParaStyle)
   {
     if (iterParaStyle->second)
@@ -147,35 +147,35 @@ libvisio::VSDXStyles &libvisio::VSDXStyles::operator=(const libvisio::VSDXStyles
   }
   m_paraStyles.clear();
 
-  for (std::map<unsigned, VSDXFillStyle *>::const_iterator cstIterFillStyle = styles.m_fillStyles.begin();
+  for (std::map<unsigned, VSDFillStyle *>::const_iterator cstIterFillStyle = styles.m_fillStyles.begin();
        cstIterFillStyle != styles.m_fillStyles.end(); ++cstIterFillStyle)
   {
     if (cstIterFillStyle->second)
-      m_fillStyles[cstIterFillStyle->first] = new VSDXFillStyle(*(cstIterFillStyle->second));
+      m_fillStyles[cstIterFillStyle->first] = new VSDFillStyle(*(cstIterFillStyle->second));
   }
-  for (std::map<unsigned, VSDXLineStyle *>::const_iterator cstIterLineStyle = styles.m_lineStyles.begin();
+  for (std::map<unsigned, VSDLineStyle *>::const_iterator cstIterLineStyle = styles.m_lineStyles.begin();
        cstIterLineStyle != styles.m_lineStyles.end(); ++cstIterLineStyle)
   {
     if (cstIterLineStyle->second)
-      m_lineStyles[cstIterLineStyle->first] = new VSDXLineStyle(*(cstIterLineStyle->second));
+      m_lineStyles[cstIterLineStyle->first] = new VSDLineStyle(*(cstIterLineStyle->second));
   }
-  for (std::map<unsigned, VSDXTextBlockStyle *>::const_iterator cstIterTextBlockStyle = styles.m_textBlockStyles.begin();
+  for (std::map<unsigned, VSDTextBlockStyle *>::const_iterator cstIterTextBlockStyle = styles.m_textBlockStyles.begin();
        cstIterTextBlockStyle != styles.m_textBlockStyles.end(); ++cstIterTextBlockStyle)
   {
     if (cstIterTextBlockStyle->second)
-      m_textBlockStyles[cstIterTextBlockStyle->first] = new VSDXTextBlockStyle(*(cstIterTextBlockStyle->second));
+      m_textBlockStyles[cstIterTextBlockStyle->first] = new VSDTextBlockStyle(*(cstIterTextBlockStyle->second));
   }
-  for (std::map<unsigned, VSDXCharStyle *>::const_iterator cstIterCharStyle = styles.m_charStyles.begin();
+  for (std::map<unsigned, VSDCharStyle *>::const_iterator cstIterCharStyle = styles.m_charStyles.begin();
        cstIterCharStyle != styles.m_charStyles.end(); ++cstIterCharStyle)
   {
     if (cstIterCharStyle->second)
-      m_charStyles[cstIterCharStyle->first] = new VSDXCharStyle(*(cstIterCharStyle->second));
+      m_charStyles[cstIterCharStyle->first] = new VSDCharStyle(*(cstIterCharStyle->second));
   }
-  for (std::map<unsigned, VSDXParaStyle *>::const_iterator cstIterParaStyle = styles.m_paraStyles.begin();
+  for (std::map<unsigned, VSDParaStyle *>::const_iterator cstIterParaStyle = styles.m_paraStyles.begin();
        cstIterParaStyle != styles.m_paraStyles.end(); ++cstIterParaStyle)
   {
     if (cstIterParaStyle->second)
-      m_paraStyles[cstIterParaStyle->first] = new VSDXParaStyle(*(cstIterParaStyle->second));
+      m_paraStyles[cstIterParaStyle->first] = new VSDParaStyle(*(cstIterParaStyle->second));
   }
 
   m_lineStyleMasters = styles.m_lineStyleMasters;
@@ -185,80 +185,80 @@ libvisio::VSDXStyles &libvisio::VSDXStyles::operator=(const libvisio::VSDXStyles
   return *this;
 }
 
-void libvisio::VSDXStyles::addLineStyle(unsigned lineStyleIndex, VSDXLineStyle *lineStyle)
+void libvisio::VSDStyles::addLineStyle(unsigned lineStyleIndex, VSDLineStyle *lineStyle)
 {
   if (lineStyle)
   {
-    std::map<unsigned, VSDXLineStyle *>::iterator iter = m_lineStyles.lower_bound(lineStyleIndex);
+    std::map<unsigned, VSDLineStyle *>::iterator iter = m_lineStyles.lower_bound(lineStyleIndex);
     if (iter != m_lineStyles.end() && !(m_lineStyles.key_comp()(lineStyleIndex, iter->first)) && iter->second)
       delete iter->second;
-    m_lineStyles.insert(iter, std::map<unsigned, VSDXLineStyle *>::value_type(lineStyleIndex, new VSDXLineStyle(*lineStyle)));
+    m_lineStyles.insert(iter, std::map<unsigned, VSDLineStyle *>::value_type(lineStyleIndex, new VSDLineStyle(*lineStyle)));
   }
 }
 
-void libvisio::VSDXStyles::addFillStyle(unsigned fillStyleIndex, VSDXFillStyle *fillStyle)
+void libvisio::VSDStyles::addFillStyle(unsigned fillStyleIndex, VSDFillStyle *fillStyle)
 {
   if (fillStyle)
   {
-    std::map<unsigned, VSDXFillStyle *>::iterator iter = m_fillStyles.lower_bound(fillStyleIndex);
+    std::map<unsigned, VSDFillStyle *>::iterator iter = m_fillStyles.lower_bound(fillStyleIndex);
     if (iter != m_fillStyles.end() && !(m_fillStyles.key_comp()(fillStyleIndex, iter->first))&& iter->second)
       delete iter->second;
-    m_fillStyles.insert(iter, std::map<unsigned, VSDXFillStyle *>::value_type(fillStyleIndex, new VSDXFillStyle(*fillStyle)));
+    m_fillStyles.insert(iter, std::map<unsigned, VSDFillStyle *>::value_type(fillStyleIndex, new VSDFillStyle(*fillStyle)));
   }
 }
 
-void libvisio::VSDXStyles::addTextBlockStyle(unsigned textStyleIndex, VSDXTextBlockStyle *textBlockStyle)
+void libvisio::VSDStyles::addTextBlockStyle(unsigned textStyleIndex, VSDTextBlockStyle *textBlockStyle)
 {
   if (textBlockStyle)
   {
-    std::map<unsigned, VSDXTextBlockStyle *>::iterator iter = m_textBlockStyles.lower_bound(textStyleIndex);
+    std::map<unsigned, VSDTextBlockStyle *>::iterator iter = m_textBlockStyles.lower_bound(textStyleIndex);
     if (iter != m_textBlockStyles.end() && !(m_textBlockStyles.key_comp()(textStyleIndex, iter->first)) && iter->second)
       delete iter->second;
-    m_textBlockStyles.insert(iter, std::map<unsigned, VSDXTextBlockStyle *>::value_type(textStyleIndex, new VSDXTextBlockStyle(*textBlockStyle)));
+    m_textBlockStyles.insert(iter, std::map<unsigned, VSDTextBlockStyle *>::value_type(textStyleIndex, new VSDTextBlockStyle(*textBlockStyle)));
   }
 }
 
-void libvisio::VSDXStyles::addCharStyle(unsigned textStyleIndex, VSDXCharStyle *charStyle)
+void libvisio::VSDStyles::addCharStyle(unsigned textStyleIndex, VSDCharStyle *charStyle)
 {
   if (charStyle)
   {
-    std::map<unsigned, VSDXCharStyle *>::iterator iter = m_charStyles.lower_bound(textStyleIndex);
+    std::map<unsigned, VSDCharStyle *>::iterator iter = m_charStyles.lower_bound(textStyleIndex);
     if (iter != m_charStyles.end() && !(m_charStyles.key_comp()(textStyleIndex, iter->first)) && iter->second)
       delete iter->second;
-    m_charStyles.insert(iter, std::map<unsigned, VSDXCharStyle *>::value_type(textStyleIndex, new VSDXCharStyle(*charStyle)));
+    m_charStyles.insert(iter, std::map<unsigned, VSDCharStyle *>::value_type(textStyleIndex, new VSDCharStyle(*charStyle)));
   }
 }
 
-void libvisio::VSDXStyles::addParaStyle(unsigned textStyleIndex, VSDXParaStyle *paraStyle)
+void libvisio::VSDStyles::addParaStyle(unsigned textStyleIndex, VSDParaStyle *paraStyle)
 {
   if (paraStyle)
   {
-    std::map<unsigned, VSDXParaStyle *>::iterator iter = m_paraStyles.lower_bound(textStyleIndex);
+    std::map<unsigned, VSDParaStyle *>::iterator iter = m_paraStyles.lower_bound(textStyleIndex);
     if (iter != m_paraStyles.end() && !(m_paraStyles.key_comp()(textStyleIndex, iter->first)) && iter->second)
       delete iter->second;
-    m_paraStyles.insert(iter, std::map<unsigned, VSDXParaStyle *>::value_type(textStyleIndex, new VSDXParaStyle(*paraStyle)));
+    m_paraStyles.insert(iter, std::map<unsigned, VSDParaStyle *>::value_type(textStyleIndex, new VSDParaStyle(*paraStyle)));
   }
 }
 
-void libvisio::VSDXStyles::addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster)
+void libvisio::VSDStyles::addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster)
 {
   m_lineStyleMasters[lineStyleIndex] = lineStyleMaster;
 }
 
-void libvisio::VSDXStyles::addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster)
+void libvisio::VSDStyles::addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster)
 {
   m_fillStyleMasters[fillStyleIndex] = fillStyleMaster;
 }
 
-void libvisio::VSDXStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster)
+void libvisio::VSDStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster)
 {
   m_textStyleMasters[textStyleIndex] = textStyleMaster;
 }
 
-const libvisio::VSDXLineStyle *libvisio::VSDXStyles::getLineStyle(unsigned lineStyleIndex) const
+const libvisio::VSDLineStyle *libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex) const
 {
   unsigned tmpIndex = lineStyleIndex;
-  std::map<unsigned, VSDXLineStyle *>::const_iterator iterStyle;
+  std::map<unsigned, VSDLineStyle *>::const_iterator iterStyle;
   while (true)
   {
     iterStyle = m_lineStyles.find(tmpIndex);
@@ -274,10 +274,10 @@ const libvisio::VSDXLineStyle *libvisio::VSDXStyles::getLineStyle(unsigned lineS
   return 0;
 }
 
-const libvisio::VSDXFillStyle *libvisio::VSDXStyles::getFillStyle(unsigned fillStyleIndex) const
+const libvisio::VSDFillStyle *libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
 {
   unsigned tmpIndex = fillStyleIndex;
-  std::map<unsigned, VSDXFillStyle *>::const_iterator iterStyle;
+  std::map<unsigned, VSDFillStyle *>::const_iterator iterStyle;
   while (true)
   {
     iterStyle = m_fillStyles.find(tmpIndex);
@@ -293,10 +293,10 @@ const libvisio::VSDXFillStyle *libvisio::VSDXStyles::getFillStyle(unsigned fillS
   return 0;
 }
 
-const libvisio::VSDXTextBlockStyle *libvisio::VSDXStyles::getTextBlockStyle(unsigned textStyleIndex) const
+const libvisio::VSDTextBlockStyle *libvisio::VSDStyles::getTextBlockStyle(unsigned textStyleIndex) const
 {
   unsigned tmpIndex = textStyleIndex;
-  std::map<unsigned, VSDXTextBlockStyle *>::const_iterator iterStyle;
+  std::map<unsigned, VSDTextBlockStyle *>::const_iterator iterStyle;
   while (true)
   {
     iterStyle = m_textBlockStyles.find(tmpIndex);
@@ -312,10 +312,10 @@ const libvisio::VSDXTextBlockStyle *libvisio::VSDXStyles::getTextBlockStyle(unsi
   return 0;
 }
 
-const libvisio::VSDXCharStyle *libvisio::VSDXStyles::getCharStyle(unsigned textStyleIndex) const
+const libvisio::VSDCharStyle *libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex) const
 {
   unsigned tmpIndex = textStyleIndex;
-  std::map<unsigned, VSDXCharStyle *>::const_iterator iterStyle;
+  std::map<unsigned, VSDCharStyle *>::const_iterator iterStyle;
   while (true)
   {
     iterStyle = m_charStyles.find(tmpIndex);
@@ -331,10 +331,10 @@ const libvisio::VSDXCharStyle *libvisio::VSDXStyles::getCharStyle(unsigned textS
   return 0;
 }
 
-const libvisio::VSDXParaStyle *libvisio::VSDXStyles::getParaStyle(unsigned textStyleIndex) const
+const libvisio::VSDParaStyle *libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex) const
 {
   unsigned tmpIndex = textStyleIndex;
-  std::map<unsigned, VSDXParaStyle *>::const_iterator iterStyle;
+  std::map<unsigned, VSDParaStyle *>::const_iterator iterStyle;
   while (true)
   {
     iterStyle = m_paraStyles.find(tmpIndex);

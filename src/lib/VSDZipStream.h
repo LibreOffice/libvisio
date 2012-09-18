@@ -13,9 +13,7 @@
  * License.
  *
  * Major Contributor(s):
- * Copyright (C) 2011 Fridrich Strba <fridrich.strba@bluewin.ch>
- * Copyright (C) 2011 Eilidh McAdam <tibbylickle@gmail.com>
- *
+ * Copyright (C) 2012 Fridrich Strba <fridrich.strba@bluewin.ch>
  *
  * All Rights Reserved.
  *
@@ -28,42 +26,39 @@
  * instead of those above.
  */
 
-#ifndef __VSDXCHARACTERLIST_H__
-#define __VSDXCHARACTERLIST_H__
+
+#ifndef __VSDZIPSTREAM_H__
+#define __VSDZIPSTREAM_H__
 
 #include <vector>
-#include <map>
-#include "VSDXTypes.h"
+
+#include <libwpd-stream/libwpd-stream.h>
 
 namespace libvisio
 {
+struct VSDZipStreamImpl;
 
-class VSDXCharacterListElement;
-class VSDXCollector;
-
-class VSDXCharacterList
+class VSDZipStream : public WPXInputStream
 {
 public:
-  VSDXCharacterList();
-  VSDXCharacterList(const VSDXCharacterList &charList);
-  ~VSDXCharacterList();
-  VSDXCharacterList &operator=(const VSDXCharacterList &charList);
-  void addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-                 bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                 bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace);
-  void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
-  void handle(VSDXCollector *collector);
-  void clear();
-  bool empty() const
-  {
-    return (m_elements.empty());
-  }
+  VSDZipStream(WPXInputStream *input);
+  ~VSDZipStream();
+
+  bool isOLEStream();
+  WPXInputStream *getDocumentOLEStream(const char *);
+
+  const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
+  int seek(long offset, WPX_SEEK_TYPE seekType);
+  long tell();
+  bool atEOS();
+
 private:
-  std::map<unsigned, VSDXCharacterListElement *> m_elements;
-  std::vector<unsigned> m_elementsOrder;
+  VSDZipStream(const VSDZipStream &);
+  VSDZipStream &operator=(const VSDZipStream &);
+  VSDZipStreamImpl *m_pImpl;
 };
 
 } // namespace libvisio
 
-#endif // __VSDXCHARACTERLIST_H__
+#endif
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

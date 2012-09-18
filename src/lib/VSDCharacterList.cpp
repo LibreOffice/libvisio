@@ -28,34 +28,34 @@
  * instead of those above.
  */
 
-#include "VSDXCollector.h"
-#include "VSDXCharacterList.h"
+#include "VSDCollector.h"
+#include "VSDCharacterList.h"
 
 namespace libvisio
 {
 
-class VSDXCharacterListElement
+class VSDCharacterListElement
 {
 public:
-  VSDXCharacterListElement() {}
-  virtual ~VSDXCharacterListElement() {}
-  virtual void handle(VSDXCollector *collector) = 0;
-  virtual VSDXCharacterListElement *clone() = 0;
+  VSDCharacterListElement() {}
+  virtual ~VSDCharacterListElement() {}
+  virtual void handle(VSDCollector *collector) = 0;
+  virtual VSDCharacterListElement *clone() = 0;
 };
 
-class VSDXCharIX : public VSDXCharacterListElement
+class VSDCharIX : public VSDCharacterListElement
 {
 public:
-  VSDXCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
+  VSDCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
              bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace) :
+             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) :
     m_id(id), m_level(level), m_charCount(charCount), m_fontID(fontID), m_fontColour(fontColour), m_fontSize(fontSize),
     m_bold(bold), m_italic(italic), m_underline(underline), m_doubleunderline(doubleunderline), m_strikeout(strikeout),
     m_doublestrikeout(doublestrikeout), m_allcaps(allcaps), m_initcaps(initcaps), m_smallcaps(smallcaps),
     m_superscript(superscript), m_subscript(subscript), m_fontFace(fontFace) {}
-  ~VSDXCharIX() {}
-  void handle(VSDXCollector *collector);
-  VSDXCharacterListElement *clone();
+  ~VSDCharIX() {}
+  void handle(VSDCollector *collector);
+  VSDCharacterListElement *clone();
 private:
   unsigned m_id, m_level;
   unsigned m_charCount;
@@ -64,76 +64,76 @@ private:
   double m_fontSize;
   bool m_bold, m_italic, m_underline, m_doubleunderline, m_strikeout, m_doublestrikeout;
   bool m_allcaps, m_initcaps, m_smallcaps, m_superscript, m_subscript;
-  VSDXFont m_fontFace;
+  VSDFont m_fontFace;
 };
 } // namespace libvisio
 
 
-void libvisio::VSDXCharIX::handle(VSDXCollector *collector)
+void libvisio::VSDCharIX::handle(VSDCollector *collector)
 {
-  collector->collectVSDXCharStyle(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
+  collector->collectVSDCharStyle(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
                                   m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
                                   m_superscript, m_subscript, m_fontFace);
 }
 
-libvisio::VSDXCharacterListElement *libvisio::VSDXCharIX::clone()
+libvisio::VSDCharacterListElement *libvisio::VSDCharIX::clone()
 {
-  return new VSDXCharIX(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
+  return new VSDCharIX(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
                         m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
                         m_superscript, m_subscript, m_fontFace);
 }
 
 
-libvisio::VSDXCharacterList::VSDXCharacterList() :
+libvisio::VSDCharacterList::VSDCharacterList() :
   m_elements(),
   m_elementsOrder()
 {
 }
 
-libvisio::VSDXCharacterList::VSDXCharacterList(const libvisio::VSDXCharacterList &charList) :
+libvisio::VSDCharacterList::VSDCharacterList(const libvisio::VSDCharacterList &charList) :
   m_elements(),
   m_elementsOrder(charList.m_elementsOrder)
 {
-  std::map<unsigned, VSDXCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
+  std::map<unsigned, VSDCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
   for (; iter != charList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
-libvisio::VSDXCharacterList &libvisio::VSDXCharacterList::operator=(const libvisio::VSDXCharacterList &charList)
+libvisio::VSDCharacterList &libvisio::VSDCharacterList::operator=(const libvisio::VSDCharacterList &charList)
 {
   clear();
-  std::map<unsigned, VSDXCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
+  std::map<unsigned, VSDCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
   for (; iter != charList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = charList.m_elementsOrder;
   return *this;
 }
 
-libvisio::VSDXCharacterList::~VSDXCharacterList()
+libvisio::VSDCharacterList::~VSDCharacterList()
 {
   clear();
 }
 
-void libvisio::VSDXCharacterList::addCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
+void libvisio::VSDCharacterList::addCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
     double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDXFont fontFace)
+    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace)
 {
-  m_elements[id] = new VSDXCharIX(id, level, charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline,
+  m_elements[id] = new VSDCharIX(id, level, charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline,
                                   strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
-void libvisio::VSDXCharacterList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
+void libvisio::VSDCharacterList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
   for (unsigned i = 0; i<elementsOrder.size(); i++)
     m_elementsOrder.push_back(elementsOrder[i]);
 }
 
-void libvisio::VSDXCharacterList::handle(VSDXCollector *collector)
+void libvisio::VSDCharacterList::handle(VSDCollector *collector)
 {
   if (empty())
     return;
-  std::map<unsigned, VSDXCharacterListElement *>::iterator iter;
+  std::map<unsigned, VSDCharacterListElement *>::iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
@@ -150,9 +150,9 @@ void libvisio::VSDXCharacterList::handle(VSDXCollector *collector)
   }
 }
 
-void libvisio::VSDXCharacterList::clear()
+void libvisio::VSDCharacterList::clear()
 {
-  for (std::map<unsigned, VSDXCharacterListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
+  for (std::map<unsigned, VSDCharacterListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();

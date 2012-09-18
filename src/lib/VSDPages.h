@@ -28,43 +28,43 @@
  * instead of those above.
  */
 
-#ifndef __VSDXPAGES_H__
-#define __VSDXPAGES_H__
+#ifndef __VSDPAGES_H__
+#define __VSDPAGES_H__
 
-#include "VSDXOutputElementList.h"
+#include "VSDOutputElementList.h"
 
 namespace libvisio
 {
 
-class VSDXPage
+class VSDPage
 {
 public:
-  VSDXPage();
-  VSDXPage(const VSDXPage &page);
-  ~VSDXPage();
-  VSDXPage &operator=(const VSDXPage &page);
-  void append(const VSDXOutputElementList &outputElements);
+  VSDPage();
+  VSDPage(const VSDPage &page);
+  ~VSDPage();
+  VSDPage &operator=(const VSDPage &page);
+  void append(const VSDOutputElementList &outputElements);
   void draw(libwpg::WPGPaintInterface *painter) const;
   double m_pageWidth, m_pageHeight;
   unsigned m_currentPageID, m_backgroundPageID;
-  VSDXOutputElementList m_pageElements;
+  VSDOutputElementList m_pageElements;
 };
 
-class VSDXPages
+class VSDPages
 {
 public:
-  VSDXPages();
-  ~VSDXPages();
-  void addPage(const VSDXPage &page);
+  VSDPages();
+  ~VSDPages();
+  void addPage(const VSDPage &page);
   void draw(libwpg::WPGPaintInterface *painter);
 private:
-  void _drawWithBackground(libwpg::WPGPaintInterface *painter, const VSDXPage &page);
-  std::map<unsigned, VSDXPage> m_pages;
+  void _drawWithBackground(libwpg::WPGPaintInterface *painter, const VSDPage &page);
+  std::map<unsigned, VSDPage> m_pages;
   std::vector<unsigned> m_pagesOrder;
 };
 
 
 } // namespace libvisio
 
-#endif // __VSDXPAGES_H__
+#endif // __VSDPAGES_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

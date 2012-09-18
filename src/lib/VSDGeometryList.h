@@ -28,8 +28,8 @@
  * instead of those above.
  */
 
-#ifndef __VSDXGEOMETRYLIST_H__
-#define __VSDXGEOMETRYLIST_H__
+#ifndef __VSDGEOMETRYLIST_H__
+#define __VSDGEOMETRYLIST_H__
 
 #include <vector>
 #include <map>
@@ -37,16 +37,16 @@
 namespace libvisio
 {
 
-class VSDXGeometryListElement;
-class VSDXCollector;
+class VSDGeometryListElement;
+class VSDCollector;
 
-class VSDXGeometryList
+class VSDGeometryList
 {
 public:
-  VSDXGeometryList();
-  VSDXGeometryList(const VSDXGeometryList &geomList);
-  ~VSDXGeometryList();
-  VSDXGeometryList &operator=(const VSDXGeometryList &geomList);
+  VSDGeometryList();
+  VSDGeometryList(const VSDGeometryList &geomList);
+  ~VSDGeometryList();
+  VSDGeometryList &operator=(const VSDGeometryList &geomList);
 
   void addGeometry(unsigned id, unsigned level, unsigned char geomFlags);
   void addMoveTo(unsigned id, unsigned level, double x, double y);
@@ -62,13 +62,13 @@ public:
   void addSplineKnot(unsigned id, unsigned level, double x, double y, double knot);
   void addInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
-  void handle(VSDXCollector *collector) const;
+  void handle(VSDCollector *collector) const;
   void clear();
   bool empty() const
   {
     return (m_elements.empty());
   }
-  VSDXGeometryListElement *getElement(unsigned index) const;
+  VSDGeometryListElement *getElement(unsigned index) const;
   std::vector<unsigned> getElementsOrder() const
   {
     return m_elementsOrder;
@@ -78,41 +78,41 @@ public:
     return m_elements.size();
   }
 private:
-  std::map<unsigned, VSDXGeometryListElement *> m_elements;
+  std::map<unsigned, VSDGeometryListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;
 };
 
-class VSDXGeometryListElement
+class VSDGeometryListElement
 {
 public:
-  VSDXGeometryListElement() {}
-  virtual ~VSDXGeometryListElement() {}
-  virtual void handle(VSDXCollector *collector) = 0;
-  virtual VSDXGeometryListElement *clone() = 0;
+  VSDGeometryListElement() {}
+  virtual ~VSDGeometryListElement() {}
+  virtual void handle(VSDCollector *collector) = 0;
+  virtual VSDGeometryListElement *clone() = 0;
 };
 
-class VSDXPolylineTo2 : public VSDXGeometryListElement
+class VSDPolylineTo2 : public VSDGeometryListElement
 {
 public:
-  VSDXPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
+  VSDPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
     m_dataID(dataID), m_id(id), m_level(level), m_x(x), m_y(y) {}
-  ~VSDXPolylineTo2() {}
-  void handle(VSDXCollector *collector);
-  VSDXGeometryListElement *clone();
+  ~VSDPolylineTo2() {}
+  void handle(VSDCollector *collector);
+  VSDGeometryListElement *clone();
   unsigned m_dataID;
 private:
   unsigned m_id, m_level;
   double m_x, m_y;
 };
 
-class VSDXNURBSTo2 : public VSDXGeometryListElement
+class VSDNURBSTo2 : public VSDGeometryListElement
 {
 public:
-  VSDXNURBSTo2(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) :
+  VSDNURBSTo2(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) :
     m_dataID(dataID), m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev) {}
-  ~VSDXNURBSTo2() {}
-  void handle(VSDXCollector *collector);
-  VSDXGeometryListElement *clone();
+  ~VSDNURBSTo2() {}
+  void handle(VSDCollector *collector);
+  VSDGeometryListElement *clone();
   unsigned m_dataID;
 private:
   unsigned m_id, m_level;
@@ -124,5 +124,5 @@ private:
 
 } // namespace libvisio
 
-#endif // __VSDXGEOMETRYLIST_H__
+#endif // __VSDGEOMETRYLIST_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

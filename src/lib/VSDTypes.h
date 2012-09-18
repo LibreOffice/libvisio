@@ -28,8 +28,8 @@
  * instead of those above.
  */
 
-#ifndef VSDXTYPES_H
-#define VSDXTYPES_H
+#ifndef VSDTYPES_H
+#define VSDTYPES_H
 
 #include <libwpd/libwpd.h>
 
@@ -149,25 +149,25 @@ enum TextFormat
   VSD_TEXT_UTF16
 };
 
-class VSDXName
+class VSDName
 {
 public:
-  VSDXName(const WPXBinaryData &data, TextFormat format)
+  VSDName(const WPXBinaryData &data, TextFormat format)
     : m_data(data),
       m_format(format) {}
-  VSDXName() : m_data(), m_format(VSD_TEXT_ANSI) {}
+  VSDName() : m_data(), m_format(VSD_TEXT_ANSI) {}
   WPXBinaryData m_data;
   TextFormat m_format;
 };
 
-struct VSDXFont
+struct VSDFont
 {
   WPXString name;
   TextFormat encoding;
-  VSDXFont() : name("Arial"), encoding(libvisio::VSD_TEXT_ANSI) {}
+  VSDFont() : name("Arial"), encoding(libvisio::VSD_TEXT_ANSI) {}
 };
 
 } // namespace libvisio
 
-#endif /* VSDXTYPES_H */
+#endif /* VSDTYPES_H */
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

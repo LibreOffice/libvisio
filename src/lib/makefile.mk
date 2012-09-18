@@ -35,19 +35,19 @@ SLOFILES= \
 	$(SLO)$/VSD6Parser.obj \
 	$(SLO)$/VSDInternalStream.obj \
 	$(SLO)$/VSDSVGGenerator.obj \
-	$(SLO)$/VSDXCharacterList.obj \
-	$(SLO)$/VSDXContentCollector.obj \
-	$(SLO)$/VSDXFieldList.obj \
-	$(SLO)$/VSDXGeometryList.obj \
-	$(SLO)$/VSDXOutputElementList.obj \
-	$(SLO)$/VSDXPages.obj \
-	$(SLO)$/VSDXParagraphList.obj \
-	$(SLO)$/VSDXParser.obj \
-	$(SLO)$/VSDXShapeList.obj \
-	$(SLO)$/VSDXStencils.obj \
+	$(SLO)$/VSDCharacterList.obj \
+	$(SLO)$/VSDContentCollector.obj \
+	$(SLO)$/VSDFieldList.obj \
+	$(SLO)$/VSDGeometryList.obj \
+	$(SLO)$/VSDOutputElementList.obj \
+	$(SLO)$/VSDPages.obj \
+	$(SLO)$/VSDParagraphList.obj \
+	$(SLO)$/VSDParser.obj \
+	$(SLO)$/VSDShapeList.obj \
+	$(SLO)$/VSDStencils.obj \
 	$(SLO)$/VSDStringVector.obj \
-	$(SLO)$/VSDXStylesCollector.obj \
-	$(SLO)$/VSDXStyles.obj
+	$(SLO)$/VSDStylesCollector.obj \
+	$(SLO)$/VSDStyles.obj
 
 LIB1ARCHIV=$(LB)$/libvisiolib.a
 LIB1TARGET=$(SLB)$/$(TARGET).lib

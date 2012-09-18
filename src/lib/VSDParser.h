@@ -28,8 +28,8 @@
  * instead of those above.
  */
 
-#ifndef __VSDXPARSER_H__
-#define __VSDXPARSER_H__
+#ifndef __VSDPARSER_H__
+#define __VSDPARSER_H__
 
 #include <stdio.h>
 #include <iostream>
@@ -38,18 +38,18 @@
 #include <libwpd/libwpd.h>
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpg/libwpg.h>
-#include "VSDXTypes.h"
-#include "VSDXGeometryList.h"
-#include "VSDXFieldList.h"
-#include "VSDXCharacterList.h"
-#include "VSDXParagraphList.h"
-#include "VSDXShapeList.h"
-#include "VSDXStencils.h"
+#include "VSDTypes.h"
+#include "VSDGeometryList.h"
+#include "VSDFieldList.h"
+#include "VSDCharacterList.h"
+#include "VSDParagraphList.h"
+#include "VSDShapeList.h"
+#include "VSDStencils.h"
 
 namespace libvisio
 {
 
-class VSDXCollector;
+class VSDCollector;
 
 struct Pointer
 {
@@ -60,11 +60,11 @@ struct Pointer
   unsigned ListSize;
 };
 
-class VSDXParser
+class VSDParser
 {
 public:
-  explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
-  virtual ~VSDXParser();
+  explicit VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  virtual ~VSDParser();
   bool parseMain();
   bool extractStencils();
 
@@ -135,20 +135,20 @@ protected:
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
   ChunkHeader m_header;
-  VSDXCollector *m_collector;
-  VSDXGeometryList *m_geomList;
-  std::vector<VSDXGeometryList *> m_geomListVector;
-  VSDXFieldList m_fieldList;
-  VSDXCharacterList *m_charList;
-  VSDXParagraphList *m_paraList;
-  std::vector<VSDXCharacterList *> m_charListVector;
-  std::vector<VSDXParagraphList *> m_paraListVector;
-  VSDXShapeList m_shapeList;
+  VSDCollector *m_collector;
+  VSDGeometryList *m_geomList;
+  std::vector<VSDGeometryList *> m_geomListVector;
+  VSDFieldList m_fieldList;
+  VSDCharacterList *m_charList;
+  VSDParagraphList *m_paraList;
+  std::vector<VSDCharacterList *> m_charListVector;
+  std::vector<VSDParagraphList *> m_paraListVector;
+  VSDShapeList m_shapeList;
   unsigned m_currentLevel;
 
-  VSDXStencils m_stencils;
-  VSDXStencil *m_currentStencil;
-  VSDXStencilShape m_stencilShape;
+  VSDStencils m_stencils;
+  VSDStencil *m_currentStencil;
+  VSDStencilShape m_stencilShape;
   bool m_isStencilStarted;
   bool m_isInStyles;
   unsigned m_currentShapeLevel;
@@ -157,13 +157,13 @@ protected:
   bool m_extractStencils;
 
 private:
-  VSDXParser();
-  VSDXParser(const VSDXParser &);
-  VSDXParser &operator=(const VSDXParser &);
+  VSDParser();
+  VSDParser(const VSDParser &);
+  VSDParser &operator=(const VSDParser &);
 
 };
 
 } // namespace libvisio
 
-#endif // __VSDXPARSER_H__
+#endif // __VSDPARSER_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

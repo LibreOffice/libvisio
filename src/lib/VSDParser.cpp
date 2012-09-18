@@ -35,23 +35,23 @@
 #include <cmath>
 #include <set>
 #include "libvisio_utils.h"
-#include "VSDXParser.h"
+#include "VSDParser.h"
 #include "VSDInternalStream.h"
-#include "VSDXDocumentStructure.h"
-#include "VSDXContentCollector.h"
-#include "VSDXStylesCollector.h"
+#include "VSDDocumentStructure.h"
+#include "VSDContentCollector.h"
+#include "VSDStylesCollector.h"
 
-libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDXGeometryList()),
-    m_geomListVector(), m_fieldList(), m_charList(new VSDXCharacterList()),
-    m_paraList(new VSDXParagraphList()), m_charListVector(), m_paraListVector(),
+libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(new VSDGeometryList()),
+    m_geomListVector(), m_fieldList(), m_charList(new VSDCharacterList()),
+    m_paraList(new VSDParagraphList()), m_charListVector(), m_paraListVector(),
     m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentShapeLevel(0),
     m_currentShapeID((unsigned)-1),
     m_extractStencils(false)
 {}
 
-libvisio::VSDXParser::~VSDXParser()
+libvisio::VSDParser::~VSDParser()
 {
   if (m_geomList)
   {
@@ -70,7 +70,7 @@ libvisio::VSDXParser::~VSDXParser()
   }
 }
 
-bool libvisio::VSDXParser::parseMain()
+bool libvisio::VSDParser::parseMain()
 {
   if (!m_input)
   {
@@ -92,14 +92,14 @@ bool libvisio::VSDXParser::parseMain()
   std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
   std::vector<std::list<unsigned> > documentPageShapeOrders;
 
-  VSDXStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
+  VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
   m_collector = &stylesCollector;
   if (!parseDocument(&trailerStream))
     return false;
 
-  VSDXStyles styles = stylesCollector.getStyleSheets();
+  VSDStyles styles = stylesCollector.getStyleSheets();
 
-  VSDXContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
+  VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
   m_collector = &contentCollector;
   if (!parseDocument(&trailerStream))
     return false;
@@ -107,7 +107,7 @@ bool libvisio::VSDXParser::parseMain()
   return true;
 }
 
-bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
+bool libvisio::VSDParser::parseDocument(WPXInputStream *input)
 {
   try
   {
@@ -120,13 +120,13 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input)
   }
 }
 
-bool libvisio::VSDXParser::extractStencils()
+bool libvisio::VSDParser::extractStencils()
 {
   m_extractStencils = true;
   return parseMain();
 }
 
-void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, unsigned level)
+void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, unsigned level)
 {
   // Parse out pointers to streams
   input->seek(shift, WPX_SEEK_SET);
@@ -178,19 +178,19 @@ void libvisio::VSDXParser::handleStreams(WPXInputStream *input, unsigned shift, 
 }
 
 
-void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsigned level)
+void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigned level)
 {
   m_header.level = level;
   m_header.id = idx;
   m_header.chunkType = ptr.Type;
   _handleLevelChange(level);
-  VSDXStencil tmpStencil;
+  VSDStencil tmpStencil;
   bool compressed = ((ptr.Format & 2) == 2);
   m_input->seek(ptr.Offset, WPX_SEEK_SET);
   VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
   unsigned shift = compressed ? 4 : 0;
 
-  VSD_DEBUG_MSG(("VSDXParser::handleStream: level %i, ptr.Type 0x%.8x, ptr.Offset 0x%.8x, ptr.Length 0x%.8x, ptr.Format 0x%.4x\n",
+  VSD_DEBUG_MSG(("VSDParser::handleStream: level %i, ptr.Type 0x%.8x, ptr.Offset 0x%.8x, ptr.Length 0x%.8x, ptr.Format 0x%.4x\n",
                  level, ptr.Type, ptr.Offset, ptr.Length, ptr.Format));
 
   switch (ptr.Type)
@@ -225,13 +225,13 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
   case VSD_SHAPE_SHAPE:
     m_currentShapeID = idx;
     if (m_isStencilStarted)
-      m_stencilShape = VSDXStencilShape();
+      m_stencilShape = VSDStencilShape();
     break;
   case VSD_SHAPE_FOREIGN:
     m_currentShapeID = idx;
     if (m_isStencilStarted)
     {
-      m_stencilShape = VSDXStencilShape();
+      m_stencilShape = VSDStencilShape();
       m_stencilShape.m_foreign = new ForeignData();
     }
     break;
@@ -300,7 +300,7 @@ void libvisio::VSDXParser::handleStream(const Pointer &ptr, unsigned idx, unsign
 
 }
 
-void libvisio::VSDXParser::handleBlob(WPXInputStream *input, unsigned level)
+void libvisio::VSDParser::handleBlob(WPXInputStream *input, unsigned level)
 {
   try
   {
@@ -312,12 +312,12 @@ void libvisio::VSDXParser::handleBlob(WPXInputStream *input, unsigned level)
   }
   catch (EndOfStreamException &)
   {
-    VSD_DEBUG_MSG(("VSDXParser::handleBlob - catching EndOfStreamException\n"));
+    VSD_DEBUG_MSG(("VSDParser::handleBlob - catching EndOfStreamException\n"));
   }
 }
 
 
-void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned level)
+void libvisio::VSDParser::handleChunks(WPXInputStream *input, unsigned level)
 {
   long endPos = 0;
 
@@ -334,7 +334,7 @@ void libvisio::VSDXParser::handleChunks(WPXInputStream *input, unsigned level)
   }
 }
 
-void libvisio::VSDXParser::handleChunk(WPXInputStream *input)
+void libvisio::VSDParser::handleChunk(WPXInputStream *input)
 {
   switch (m_header.chunkType)
   {
@@ -473,7 +473,7 @@ void libvisio::VSDXParser::handleChunk(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::_handleLevelChange(unsigned level)
+void libvisio::VSDParser::_handleLevelChange(unsigned level)
 {
   if (level == m_currentLevel)
     return;
@@ -483,29 +483,29 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
     m_charListVector.push_back(m_charList);
     m_paraListVector.push_back(m_paraList);
     // reinitialize, but don't clear, because we want those pointers to be valid until we handle the whole vector
-    m_geomList = new VSDXGeometryList();
-    m_charList = new VSDXCharacterList();
-    m_paraList = new VSDXParagraphList();
+    m_geomList = new VSDGeometryList();
+    m_charList = new VSDCharacterList();
+    m_paraList = new VSDParagraphList();
     m_shapeList.handle(m_collector);
     m_shapeList.clear();
   }
   if (level <= m_currentShapeLevel)
   {
-    for (std::vector<VSDXGeometryList *>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
+    for (std::vector<VSDGeometryList *>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
     {
       (*iter)->handle(m_collector);
       (*iter)->clear();
       delete *iter;
     }
     m_geomListVector.clear();
-    for (std::vector<VSDXCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); ++iter2)
+    for (std::vector<VSDCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); ++iter2)
     {
       (*iter2)->handle(m_collector);
       (*iter2)->clear();
       delete *iter2;
     }
     m_charListVector.clear();
-    for (std::vector<VSDXParagraphList *>::iterator iter3 = m_paraListVector.begin(); iter3 != m_paraListVector.end(); ++iter3)
+    for (std::vector<VSDParagraphList *>::iterator iter3 = m_paraListVector.begin(); iter3 != m_paraListVector.end(); ++iter3)
     {
       (*iter3)->handle(m_collector);
       (*iter3)->clear();
@@ -523,7 +523,7 @@ void libvisio::VSDXParser::_handleLevelChange(unsigned level)
 
 // --- READERS ---
 
-void libvisio::VSDXParser::readEllipticalArcTo(WPXInputStream *input)
+void libvisio::VSDParser::readEllipticalArcTo(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x3 = readDouble(input); // End x
@@ -545,7 +545,7 @@ void libvisio::VSDXParser::readEllipticalArcTo(WPXInputStream *input)
 }
 
 
-void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
+void libvisio::VSDParser::readForeignData(WPXInputStream *input)
 {
   unsigned long tmpBytesRead = 0;
   const unsigned char *buffer = input->read(m_header.dataLength, tmpBytesRead);
@@ -563,12 +563,12 @@ void libvisio::VSDXParser::readForeignData(WPXInputStream *input)
     m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
 }
 
-void libvisio::VSDXParser::readOLEList(WPXInputStream * /* input */)
+void libvisio::VSDParser::readOLEList(WPXInputStream * /* input */)
 {
   m_collector->collectOLEList(m_header.id, m_header.level);
 }
 
-void libvisio::VSDXParser::readOLEData(WPXInputStream *input)
+void libvisio::VSDParser::readOLEData(WPXInputStream *input)
 {
   unsigned long tmpBytesRead = 0;
   const unsigned char *buffer = input->read(m_header.dataLength, tmpBytesRead);
@@ -586,7 +586,7 @@ void libvisio::VSDXParser::readOLEData(WPXInputStream *input)
     m_collector->collectOLEData(m_header.id, m_header.level, oleData);
 }
 
-void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
+void libvisio::VSDParser::readEllipse(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double cx = readDouble(input);
@@ -607,7 +607,7 @@ void libvisio::VSDXParser::readEllipse(WPXInputStream *input)
     m_geomList->addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
 }
 
-void libvisio::VSDXParser::readLine(WPXInputStream *input)
+void libvisio::VSDParser::readLine(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double strokeWidth = readDouble(input);
@@ -628,13 +628,13 @@ void libvisio::VSDXParser::readLine(WPXInputStream *input)
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_lineStyle)
-      m_stencilShape.m_lineStyle = new VSDXLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+      m_stencilShape.m_lineStyle = new VSDLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   }
   else
     m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
 }
 
-void libvisio::VSDXParser::readTextBlock(WPXInputStream *input)
+void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double leftMargin = readDouble(input);
@@ -662,7 +662,7 @@ void libvisio::VSDXParser::readTextBlock(WPXInputStream *input)
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_textBlockStyle)
-      m_stencilShape.m_textBlockStyle = new VSDXTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
+      m_stencilShape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
           verticalAlign, bgClrId, c, defaultTabStop, textDirection);
   }
   else
@@ -670,10 +670,10 @@ void libvisio::VSDXParser::readTextBlock(WPXInputStream *input)
                                   verticalAlign, bgClrId, c, defaultTabStop, textDirection);
 }
 
-void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
+void libvisio::VSDParser::readGeomList(WPXInputStream *input)
 {
   if (m_isStencilStarted)
-    m_stencilShape.m_geometries.push_back(VSDXGeometryList());
+    m_stencilShape.m_geometries.push_back(VSDGeometryList());
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
   input->seek(subHeaderLength, WPX_SEEK_CUR);
@@ -692,7 +692,7 @@ void libvisio::VSDXParser::readGeomList(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::readCharList(WPXInputStream *input)
+void libvisio::VSDParser::readCharList(WPXInputStream *input)
 {
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
@@ -707,7 +707,7 @@ void libvisio::VSDXParser::readCharList(WPXInputStream *input)
   m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
-void libvisio::VSDXParser::readParaList(WPXInputStream *input)
+void libvisio::VSDParser::readParaList(WPXInputStream *input)
 {
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
@@ -722,14 +722,14 @@ void libvisio::VSDXParser::readParaList(WPXInputStream *input)
   m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
-void libvisio::VSDXParser::readPage(WPXInputStream *input)
+void libvisio::VSDParser::readPage(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR); //sub header length and children list length
   uint32_t backgroundPageID = readU32(input);
   m_collector->collectPage(m_header.id, m_header.level, backgroundPageID);
 }
 
-void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
+void libvisio::VSDParser::readGeometry(WPXInputStream *input)
 {
   unsigned char geomFlags = readU8(input);
 
@@ -739,7 +739,7 @@ void libvisio::VSDXParser::readGeometry(WPXInputStream *input)
     m_geomList->addGeometry(m_header.id, m_header.level, geomFlags);
 }
 
-void libvisio::VSDXParser::readMoveTo(WPXInputStream *input)
+void libvisio::VSDParser::readMoveTo(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x = readDouble(input);
@@ -752,7 +752,7 @@ void libvisio::VSDXParser::readMoveTo(WPXInputStream *input)
     m_geomList->addMoveTo(m_header.id, m_header.level, x, y);
 }
 
-void libvisio::VSDXParser::readLineTo(WPXInputStream *input)
+void libvisio::VSDParser::readLineTo(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x = readDouble(input);
@@ -765,7 +765,7 @@ void libvisio::VSDXParser::readLineTo(WPXInputStream *input)
     m_geomList->addLineTo(m_header.id, m_header.level, x, y);
 }
 
-void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
+void libvisio::VSDParser::readArcTo(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x2 = readDouble(input);
@@ -780,7 +780,7 @@ void libvisio::VSDXParser::readArcTo(WPXInputStream *input)
     m_geomList->addArcTo(m_header.id, m_header.level, x2, y2, bow);
 }
 
-void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
+void libvisio::VSDParser::readXFormData(WPXInputStream *input)
 {
   XForm xform;
   input->seek(1, WPX_SEEK_CUR);
@@ -803,7 +803,7 @@ void libvisio::VSDXParser::readXFormData(WPXInputStream *input)
   m_collector->collectXFormData(m_header.id, m_header.level, xform);
 }
 
-void libvisio::VSDXParser::readTxtXForm(WPXInputStream *input)
+void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
 {
   XForm txtxform;
   input->seek(1, WPX_SEEK_CUR);
@@ -824,14 +824,14 @@ void libvisio::VSDXParser::readTxtXForm(WPXInputStream *input)
   m_collector->collectTxtXForm(m_header.id, m_header.level, txtxform);
 }
 
-void libvisio::VSDXParser::readShapeId(WPXInputStream *input)
+void libvisio::VSDParser::readShapeId(WPXInputStream *input)
 {
   unsigned shapeId = readU32(input);
 
   m_shapeList.addShapeId(m_header.id, m_header.level, shapeId);
 }
 
-void libvisio::VSDXParser::readShapeList(WPXInputStream *input)
+void libvisio::VSDParser::readShapeList(WPXInputStream *input)
 {
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
@@ -846,7 +846,7 @@ void libvisio::VSDXParser::readShapeList(WPXInputStream *input)
   m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
-void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
+void libvisio::VSDParser::readForeignDataType(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double imgOffsetX = readDouble(input);
@@ -875,7 +875,7 @@ void libvisio::VSDXParser::readForeignDataType(WPXInputStream *input)
     m_collector->collectForeignDataType(m_header.id, m_header.level, foreignType, foreignFormat, imgOffsetX, imgOffsetY, imgWidth, imgHeight);
 }
 
-void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
+void libvisio::VSDParser::readPageProps(WPXInputStream *input)
 {
   // Skip bytes representing unit to *display* (value is always inches)
   input->seek(1, WPX_SEEK_CUR);
@@ -900,7 +900,7 @@ void libvisio::VSDXParser::readPageProps(WPXInputStream *input)
     m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale);
 }
 
-void libvisio::VSDXParser::readShape(WPXInputStream *input)
+void libvisio::VSDParser::readShape(WPXInputStream *input)
 {
   if (m_header.id != (unsigned)-1)
     m_currentShapeID = m_header.id;
@@ -927,7 +927,7 @@ void libvisio::VSDXParser::readShape(WPXInputStream *input)
   m_currentShapeID = (unsigned)-1;
 }
 
-void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
+void libvisio::VSDParser::readNURBSTo(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x = readDouble(input);
@@ -1092,7 +1092,7 @@ void libvisio::VSDXParser::readNURBSTo(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
+void libvisio::VSDParser::readPolylineTo(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x = readDouble(input);
@@ -1197,7 +1197,7 @@ void libvisio::VSDXParser::readPolylineTo(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::readInfiniteLine(WPXInputStream *input)
+void libvisio::VSDParser::readInfiniteLine(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x1 = readDouble(input);
@@ -1213,7 +1213,7 @@ void libvisio::VSDXParser::readInfiniteLine(WPXInputStream *input)
     m_geomList->addInfiniteLine(m_header.id, m_header.level, x1, y1, x2, y2);
 }
 
-void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
+void libvisio::VSDParser::readShapeData(WPXInputStream *input)
 {
   unsigned char dataType = readU8(input);
 
@@ -1287,7 +1287,7 @@ void libvisio::VSDXParser::readShapeData(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::readSplineStart(WPXInputStream *input)
+void libvisio::VSDParser::readSplineStart(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x = readDouble(input);
@@ -1304,7 +1304,7 @@ void libvisio::VSDXParser::readSplineStart(WPXInputStream *input)
     m_geomList->addSplineStart(m_header.id, m_header.level, x, y, secondKnot, firstKnot, lastKnot, degree);
 }
 
-void libvisio::VSDXParser::readSplineKnot(WPXInputStream *input)
+void libvisio::VSDParser::readSplineKnot(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double x = readDouble(input);
@@ -1318,7 +1318,7 @@ void libvisio::VSDXParser::readSplineKnot(WPXInputStream *input)
     m_geomList->addSplineKnot(m_header.id, m_header.level, x, y, knot);
 }
 
-void libvisio::VSDXParser::readNameList(WPXInputStream * /* input */)
+void libvisio::VSDParser::readNameList(WPXInputStream * /* input */)
 {
   if (m_isStencilStarted)
     m_stencilShape.m_names.clear();
@@ -1326,7 +1326,7 @@ void libvisio::VSDXParser::readNameList(WPXInputStream * /* input */)
     m_collector->collectNameList(m_header.id, m_header.level);
 }
 
-void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
+void libvisio::VSDParser::readFieldList(WPXInputStream *input)
 {
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
@@ -1350,7 +1350,7 @@ void libvisio::VSDXParser::readFieldList(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDXParser::readColours(WPXInputStream *input)
+void libvisio::VSDParser::readColours(WPXInputStream *input)
 {
   input->seek(6, WPX_SEEK_SET);
   unsigned numColours = readU8(input);
@@ -1372,7 +1372,7 @@ void libvisio::VSDXParser::readColours(WPXInputStream *input)
   m_collector->collectColours(colours);
 }
 
-void libvisio::VSDXParser::readFont(WPXInputStream *input)
+void libvisio::VSDParser::readFont(WPXInputStream *input)
 {
   input->seek(4, WPX_SEEK_CUR);
   ::WPXBinaryData textStream;
@@ -1389,7 +1389,7 @@ void libvisio::VSDXParser::readFont(WPXInputStream *input)
   m_collector->collectFont(m_header.id, textStream, libvisio::VSD_TEXT_UTF16);
 }
 
-void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
+void libvisio::VSDParser::readFontIX(WPXInputStream *input)
 {
   input->seek(2, WPX_SEEK_CUR);
   unsigned char codePage = readU8(input);
@@ -1444,7 +1444,7 @@ void libvisio::VSDXParser::readFontIX(WPXInputStream *input)
 
 /* StyleSheet readers */
 
-void libvisio::VSDXParser::readStyleSheet(WPXInputStream *input)
+void libvisio::VSDParser::readStyleSheet(WPXInputStream *input)
 {
   input->seek(0x22, WPX_SEEK_CUR);
   unsigned lineStyle = readU32(input);
@@ -1456,7 +1456,7 @@ void libvisio::VSDXParser::readStyleSheet(WPXInputStream *input)
   m_collector->collectStyleSheet(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
 }
 
-void libvisio::VSDXParser::readPageSheet(WPXInputStream * /* input */)
+void libvisio::VSDParser::readPageSheet(WPXInputStream * /* input */)
 {
   m_currentShapeLevel = m_header.level;
   m_collector->collectPageSheet(m_header.id, m_header.level);

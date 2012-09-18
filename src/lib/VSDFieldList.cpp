@@ -29,20 +29,20 @@
  */
 
 #include <time.h>
-#include "VSDXCollector.h"
-#include "VSDXFieldList.h"
+#include "VSDCollector.h"
+#include "VSDFieldList.h"
 
-void libvisio::VSDXTextField::handle(VSDXCollector *collector)
+void libvisio::VSDTextField::handle(VSDCollector *collector)
 {
   collector->collectTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
 
-libvisio::VSDXFieldListElement *libvisio::VSDXTextField::clone()
+libvisio::VSDFieldListElement *libvisio::VSDTextField::clone()
 {
-  return new VSDXTextField(m_id, m_level, m_nameId, m_formatStringId);
+  return new VSDTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
 
-WPXString libvisio::VSDXTextField::getString(const std::map<unsigned, WPXString> &strVec)
+WPXString libvisio::VSDTextField::getString(const std::map<unsigned, WPXString> &strVec)
 {
   std::map<unsigned, WPXString>::const_iterator iter = strVec.find(m_nameId);
   if (iter != strVec.end())
@@ -51,25 +51,25 @@ WPXString libvisio::VSDXTextField::getString(const std::map<unsigned, WPXString>
     return WPXString();
 }
 
-void libvisio::VSDXTextField::setNameId(int nameId)
+void libvisio::VSDTextField::setNameId(int nameId)
 {
   m_nameId = nameId;
 }
 
 
-void libvisio::VSDXNumericField::handle(VSDXCollector *collector)
+void libvisio::VSDNumericField::handle(VSDCollector *collector)
 {
   collector->collectNumericField(m_id, m_level, m_format, m_number, m_formatStringId);
 }
 
-libvisio::VSDXFieldListElement *libvisio::VSDXNumericField::clone()
+libvisio::VSDFieldListElement *libvisio::VSDNumericField::clone()
 {
-  return new VSDXNumericField(m_id, m_level, m_format, m_number, m_formatStringId);
+  return new VSDNumericField(m_id, m_level, m_format, m_number, m_formatStringId);
 }
 
 #define MAX_BUFFER 1024
 
-WPXString libvisio::VSDXNumericField::datetimeToString(const char *format, double datetime)
+WPXString libvisio::VSDNumericField::datetimeToString(const char *format, double datetime)
 {
   WPXString result;
   char buffer[MAX_BUFFER];
@@ -79,7 +79,7 @@ WPXString libvisio::VSDXNumericField::datetimeToString(const char *format, doubl
   return result;
 }
 
-WPXString libvisio::VSDXNumericField::getString(const std::map<unsigned, WPXString> &)
+WPXString libvisio::VSDNumericField::getString(const std::map<unsigned, WPXString> &)
 {
   if (m_format == 0xffff)
     return WPXString();
@@ -169,17 +169,17 @@ WPXString libvisio::VSDXNumericField::getString(const std::map<unsigned, WPXStri
   }
 }
 
-void libvisio::VSDXNumericField::setFormat(unsigned short format)
+void libvisio::VSDNumericField::setFormat(unsigned short format)
 {
   m_format = format;
 }
-void libvisio::VSDXNumericField::setValue(double number)
+void libvisio::VSDNumericField::setValue(double number)
 {
   m_number = number;
 }
 
 
-libvisio::VSDXFieldList::VSDXFieldList() :
+libvisio::VSDFieldList::VSDFieldList() :
   m_elements(),
   m_elementsOrder(),
   m_id(0),
@@ -187,23 +187,23 @@ libvisio::VSDXFieldList::VSDXFieldList() :
 {
 }
 
-libvisio::VSDXFieldList::VSDXFieldList(const libvisio::VSDXFieldList &fieldList) :
+libvisio::VSDFieldList::VSDFieldList(const libvisio::VSDFieldList &fieldList) :
   m_elements(),
   m_elementsOrder(fieldList.m_elementsOrder),
   m_id(fieldList.m_id),
   m_level(fieldList.m_level)
 {
-  std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
+  std::map<unsigned, VSDFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
   for (; iter != fieldList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
-libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDXFieldList &fieldList)
+libvisio::VSDFieldList &libvisio::VSDFieldList::operator=(const libvisio::VSDFieldList &fieldList)
 {
   if (this != &fieldList)
   {
     clear();
-    std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
+    std::map<unsigned, VSDFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
     for (; iter != fieldList.m_elements.end(); ++iter)
       m_elements[iter->first] = iter->second->clone();
     m_elementsOrder = fieldList.m_elementsOrder;
@@ -213,41 +213,41 @@ libvisio::VSDXFieldList &libvisio::VSDXFieldList::operator=(const libvisio::VSDX
   return *this;
 }
 
-libvisio::VSDXFieldList::~VSDXFieldList()
+libvisio::VSDFieldList::~VSDFieldList()
 {
   clear();
 }
 
-void libvisio::VSDXFieldList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
+void libvisio::VSDFieldList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
   for (unsigned i = 0; i<elementsOrder.size(); i++)
     m_elementsOrder.push_back(elementsOrder[i]);
 }
 
-void libvisio::VSDXFieldList::addFieldList(unsigned id, unsigned level)
+void libvisio::VSDFieldList::addFieldList(unsigned id, unsigned level)
 {
   m_id = id;
   m_level = level;
 }
 
-void libvisio::VSDXFieldList::addTextField(unsigned id, unsigned level, int nameId, int formatStringId)
+void libvisio::VSDFieldList::addTextField(unsigned id, unsigned level, int nameId, int formatStringId)
 {
-  m_elements[id] = new VSDXTextField(id, level, nameId, formatStringId);
+  m_elements[id] = new VSDTextField(id, level, nameId, formatStringId);
 }
 
-void libvisio::VSDXFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
+void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
 {
-  m_elements[id] = new VSDXNumericField(id, level, format, number, formatStringId);
+  m_elements[id] = new VSDNumericField(id, level, format, number, formatStringId);
 }
 
-void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
+void libvisio::VSDFieldList::handle(VSDCollector *collector)
 {
   if (empty())
     return;
 
   collector->collectFieldList(m_id, m_level);
-  std::map<unsigned, VSDXFieldListElement *>::iterator iter;
+  std::map<unsigned, VSDFieldListElement *>::iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
@@ -264,20 +264,20 @@ void libvisio::VSDXFieldList::handle(VSDXCollector *collector)
   }
 }
 
-void libvisio::VSDXFieldList::clear()
+void libvisio::VSDFieldList::clear()
 {
-  for (std::map<unsigned, VSDXFieldListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
+  for (std::map<unsigned, VSDFieldListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
     delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();
 }
 
-libvisio::VSDXFieldListElement *libvisio::VSDXFieldList::getElement(unsigned index)
+libvisio::VSDFieldListElement *libvisio::VSDFieldList::getElement(unsigned index)
 {
   if (m_elementsOrder.size() > index)
     index = m_elementsOrder[index];
 
-  std::map<unsigned, VSDXFieldListElement *>::const_iterator iter = m_elements.find(index);
+  std::map<unsigned, VSDFieldListElement *>::const_iterator iter = m_elements.find(index);
   if (iter != m_elements.end())
     return iter->second;
   else

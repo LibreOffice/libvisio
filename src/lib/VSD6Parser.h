@@ -35,13 +35,13 @@
 #include <iostream>
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
-#include "VSDXParser.h"
+#include "VSDParser.h"
 #include "VSDInternalStream.h"
 
 namespace libvisio
 {
 
-class VSD6Parser : public VSDXParser
+class VSD6Parser : public VSDParser
 {
 public:
   explicit VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
@@ -56,8 +56,8 @@ private:
   void readTextField(WPXInputStream *input);
 
   VSD6Parser();
-  VSD6Parser(const VSDXParser &);
-  VSD6Parser &operator=(const VSDXParser &);
+  VSD6Parser(const VSDParser &);
+  VSD6Parser &operator=(const VSDParser &);
 };
 
 } // namespace libvisio

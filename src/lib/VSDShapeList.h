@@ -28,8 +28,8 @@
  * instead of those above.
  */
 
-#ifndef __VSDXPARAGRAPHLIST_H__
-#define __VSDXPARAGRAPHLIST_H__
+#ifndef __VSDSHAPELIST_H__
+#define __VSDSHAPELIST_H__
 
 #include <vector>
 #include <map>
@@ -37,32 +37,27 @@
 namespace libvisio
 {
 
-class VSDXParagraphListElement;
-class VSDXCollector;
+class VSDShapeListElement;
 
-class VSDXParagraphList
+class VSDShapeList
 {
 public:
-  VSDXParagraphList();
-  VSDXParagraphList(const VSDXParagraphList &paraList);
-  ~VSDXParagraphList();
-  VSDXParagraphList &operator=(const VSDXParagraphList &paraList);
-  void addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                 double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
-
-  void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
-  void handle(VSDXCollector *collector);
+  VSDShapeList();
+  ~VSDShapeList();
+  void addShapeId(unsigned id, unsigned level, unsigned shapeId);
+  void setElementsOrder(const std::vector<unsigned> &elementsOrder);
+  void handle(VSDCollector *collector);
   void clear();
   bool empty() const
   {
     return (m_elements.empty());
   }
 private:
-  std::map<unsigned, VSDXParagraphListElement *> m_elements;
+  std::map<unsigned, VSDShapeListElement *> m_elements;
   std::vector<unsigned> m_elementsOrder;
 };
 
 } // namespace libvisio
 
-#endif // __VSDXPARAGRAPHLIST_H__
+#endif // __VSDSHAPELIST_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
