@@ -341,7 +341,7 @@ void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned
   _handleLevelChange(level);
   if (!m_charStyle)
     m_charStyle = new VSDCharStyle(charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+                                   allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
 void libvisio::VSDStylesCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,

@@ -47,7 +47,7 @@ class VSDParaIX : public VSDParagraphListElement
 {
 public:
   VSDParaIX(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-             double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) :
+            double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) :
     m_id(id), m_level(level), m_charCount(charCount), m_indFirst(indFirst), m_indLeft(indLeft), m_indRight(indRight),
     m_spLine(spLine), m_spBefore(spBefore), m_spAfter(spAfter), m_align(align), m_flags(flags) {}
   ~VSDParaIX() {}
@@ -71,13 +71,13 @@ private:
 void libvisio::VSDParaIX::handle(VSDCollector *collector)
 {
   collector->collectVSDParaStyle(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
-                                  m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
+                                 m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
 }
 
 libvisio::VSDParagraphListElement *libvisio::VSDParaIX::clone()
 {
   return new VSDParaIX(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
-                        m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
+                       m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
 }
 
 

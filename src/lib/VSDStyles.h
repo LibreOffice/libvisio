@@ -44,7 +44,7 @@ struct VSDLineStyle
   VSDLineStyle()
     : width(0.01), colour(), pattern(0), startMarker(0), endMarker(0), cap(0) {}
   VSDLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
-                unsigned char em, unsigned char c)
+               unsigned char em, unsigned char c)
     : width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
   ~VSDLineStyle() {}
   double width;

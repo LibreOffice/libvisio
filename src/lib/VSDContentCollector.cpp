@@ -2179,8 +2179,8 @@ void libvisio::VSDContentCollector::collectVSDCharStyle(unsigned /*id*/ , unsign
 {
   _handleLevelChange(level);
   VSDCharStyle format(charCount, fontID, fontColour, fontSize, bold, italic,
-                       underline, doubleunderline, strikeout, doublestrikeout,
-                       allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+                      underline, doubleunderline, strikeout, doublestrikeout,
+                      allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   m_charFormats.push_back(format);
 }
 

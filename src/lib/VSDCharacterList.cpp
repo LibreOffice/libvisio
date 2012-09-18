@@ -47,8 +47,8 @@ class VSDCharIX : public VSDCharacterListElement
 {
 public:
   VSDCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-             bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) :
+            bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) :
     m_id(id), m_level(level), m_charCount(charCount), m_fontID(fontID), m_fontColour(fontColour), m_fontSize(fontSize),
     m_bold(bold), m_italic(italic), m_underline(underline), m_doubleunderline(doubleunderline), m_strikeout(strikeout),
     m_doublestrikeout(doublestrikeout), m_allcaps(allcaps), m_initcaps(initcaps), m_smallcaps(smallcaps),
@@ -72,15 +72,15 @@ private:
 void libvisio::VSDCharIX::handle(VSDCollector *collector)
 {
   collector->collectVSDCharStyle(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
-                                  m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
-                                  m_superscript, m_subscript, m_fontFace);
+                                 m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
+                                 m_superscript, m_subscript, m_fontFace);
 }
 
 libvisio::VSDCharacterListElement *libvisio::VSDCharIX::clone()
 {
   return new VSDCharIX(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
-                        m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
-                        m_superscript, m_subscript, m_fontFace);
+                       m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
+                       m_superscript, m_subscript, m_fontFace);
 }
 
 
@@ -119,7 +119,7 @@ void libvisio::VSDCharacterList::addCharIX(unsigned id , unsigned level, unsigne
     bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace)
 {
   m_elements[id] = new VSDCharIX(id, level, charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline,
-                                  strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+                                 strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
 void libvisio::VSDCharacterList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

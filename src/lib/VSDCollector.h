@@ -84,10 +84,10 @@ public:
   virtual void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format) = 0;
   virtual void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format) = 0;
   virtual void collectVSDCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-                                    bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                                    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;
+                                   bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
+                                   bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;
   virtual void collectVSDParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                                    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
+                                   double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
   virtual void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                                 unsigned char verticalAlign, unsigned char bgClrId, const Colour &bgColour, double defaultTabStop,
                                 unsigned char textDirection) = 0;
