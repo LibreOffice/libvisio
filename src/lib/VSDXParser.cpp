@@ -82,7 +82,7 @@ bool libvisio::VSDXParser::parseMain()
     return false;
   }
 
-  return false;
+  return true;
 }
 
 bool libvisio::VSDXParser::extractStencils()

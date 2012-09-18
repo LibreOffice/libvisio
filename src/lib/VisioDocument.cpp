@@ -34,16 +34,15 @@
 #include "libvisio_utils.h"
 #include "VSDSVGGenerator.h"
 #include "VSDParser.h"
+#include "VSDXParser.h"
 #include "VSD6Parser.h"
 #include "VSD11Parser.h"
+#include "VSDZipStream.h"
 
-/**
-Analyzes the content of an input stream to see if it can be parsed
-\param input The input stream
-\return A value that indicates whether the content from the input
-stream is a Visio Document that libvisio able to parse
-*/
-bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
+namespace
+{
+
+static bool isBinaryVisioDocument(WPXInputStream *input)
 {
   WPXInputStream *tmpDocStream = 0;
   try
@@ -57,7 +56,7 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
 
     tmpDocStream->seek(0x1A, WPX_SEEK_SET);
 
-    unsigned char version = readU8(tmpDocStream);
+    unsigned char version = libvisio::readU8(tmpDocStream);
     delete tmpDocStream;
 
     VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
@@ -78,6 +77,54 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
   return false;
 }
 
+static bool isOpcVisioDocument(WPXInputStream *input)
+{
+  WPXInputStream *tmpInput = input;
+  try
+  {
+    input->seek(0, WPX_SEEK_SET);
+    libvisio::VSDZipStream zinput(input);
+    // Kidnapping the OLE document API and extending it to support zip files.
+    if (zinput.isOLEStream())
+      input = zinput.getDocumentOLEStream("visio/document.xml");
+    // TODO: Make the above more sophisticated by parsing the _rels/.rels,
+    // finding a target of type
+    // http://schemas.microsoft.com/visio/2010/relationships/document
+    // and checking whether it exists. But For thw while, just check
+    // for visio/document.xml which is where the document is currently.
+    if (!input)
+      return false;
+    if (input != tmpInput)
+      delete input;
+    input = tmpInput;
+    return true;
+  }
+  catch (...)
+  {
+    if (input != tmpInput)
+      delete input;
+    input = tmpInput;
+    return false;
+  }
+}
+
+} // anonymous namespace
+
+/**
+Analyzes the content of an input stream to see if it can be parsed
+\param input The input stream
+\return A value that indicates whether the content from the input
+stream is a Visio Document that libvisio able to parse
+*/
+bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
+{
+  if (isBinaryVisioDocument(input))
+    return true;
+  if (isOpcVisioDocument(input))
+    return true;
+  return false;
+}
+
 /**
 Parses the input stream content. It will make callbacks to the functions provided by a
 WPGPaintInterface class implementation when needed. This is often commonly called the
@@ -88,43 +135,55 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 */
 bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
 {
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
-    return false;
-
-  WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
-
-  if (!docStream)
-    return false;
-
-  docStream->seek(0x1A, WPX_SEEK_SET);
-
-  unsigned char version = readU8(docStream);
-  VSDParser *parser;
-  switch(version)
+  if (isBinaryVisioDocument(input))
   {
-  case 6:
-    parser = new VSD6Parser(docStream, painter);
-    break;
-  case 11:
-    parser = new VSD11Parser(docStream, painter);
-    break;
-  default:
-    return false;
-  }
+    input->seek(0, WPX_SEEK_SET);
+    if (!input->isOLEStream())
+      return false;
 
-  if (parser)
-    parser->parseMain();
-  else
-  {
+    WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
+
+    if (!docStream)
+      return false;
+
+    docStream->seek(0x1A, WPX_SEEK_SET);
+
+    unsigned char version = readU8(docStream);
+    VSDParser *parser = 0;
+    switch(version)
+    {
+    case 6:
+      parser = new VSD6Parser(docStream, painter);
+      break;
+    case 11:
+      parser = new VSD11Parser(docStream, painter);
+      break;
+    default:
+      break;
+    }
+
+    if (parser)
+      parser->parseMain();
+    else
+    {
+      delete docStream;
+      return false;
+    }
+
+    delete parser;
     delete docStream;
+
+    return true;
+  }
+  else if (isOpcVisioDocument(input))
+  {
+    input->seek(0, WPX_SEEK_SET);
+    VSDXParser parser(input, painter);
+    if (parser.parseMain())
+      return true;
     return false;
   }
-
-  delete parser;
-  delete docStream;
-
-  return true;
+  return false;
 }
 
 /**
@@ -137,43 +196,55 @@ when needed.
 */
 bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
 {
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
-    return false;
-
-  WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
-
-  if (!docStream)
-    return false;
-
-  docStream->seek(0x1A, WPX_SEEK_SET);
-
-  unsigned char version = readU8(docStream);
-  VSDParser *parser;
-  switch(version)
+  if (isBinaryVisioDocument(input))
   {
-  case 6:
-    parser = new VSD6Parser(docStream, painter);
-    break;
-  case 11:
-    parser = new VSD11Parser(docStream, painter);
-    break;
-  default:
-    return false;
-  }
+    input->seek(0, WPX_SEEK_SET);
+    if (!input->isOLEStream())
+      return false;
 
-  if (parser)
-    parser->extractStencils();
-  else
-  {
+    WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
+
+    if (!docStream)
+      return false;
+
+    docStream->seek(0x1A, WPX_SEEK_SET);
+
+    unsigned char version = readU8(docStream);
+    VSDParser *parser;
+    switch(version)
+    {
+    case 6:
+      parser = new VSD6Parser(docStream, painter);
+      break;
+    case 11:
+      parser = new VSD11Parser(docStream, painter);
+      break;
+    default:
+      return false;
+    }
+
+    if (parser)
+      parser->extractStencils();
+    else
+    {
+      delete docStream;
+      return false;
+    }
+
+    delete parser;
     delete docStream;
+
+    return true;
+  }
+  else if (isOpcVisioDocument(input))
+  {
+    input->seek(0, WPX_SEEK_SET);
+    VSDXParser parser(input, painter);
+    if (parser.extractStencils())
+      return true;
     return false;
   }
-
-  delete parser;
-  delete docStream;
-
-  return true;
+  return false;
 }
 
 /**
