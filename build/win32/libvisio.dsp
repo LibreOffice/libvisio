@@ -103,7 +103,47 @@ SOURCE=..\..\src\lib\VSD6Parser.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDCharacterList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDContentCollector.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDFieldList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDGeometryList.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDInternalStream.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDOutputElementList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDPages.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDParagraphList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDParser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDShapeList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDStencils.cpp
 # End Source File
 # Begin Source File
 
@@ -111,55 +151,19 @@ SOURCE=..\..\src\lib\VSDStringVector.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDStyles.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDStylesCollector.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDSVGGenerator.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSDXCharacterList.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXContentCollector.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXFieldList.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXGeometryList.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXOutputElementList.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXPages.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXParagraphList.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXParser.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXShapeList.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXStencils.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXStyles.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXStylesCollector.cpp
+SOURCE=..\..\src\lib\VSDZipStream.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -187,7 +191,55 @@ SOURCE=..\..\src\lib\VSD6Parser.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDCharacterList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDCollector.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDContentCollector.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDDocumentStructure.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDFieldList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDGeometryList.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDInternalStream.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDOutputElementList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDPages.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDParagraphList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDParser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDShapeList.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDStencils.h
 # End Source File
 # Begin Source File
 
@@ -195,67 +247,23 @@ SOURCE=..\..\src\lib\VSDStringVector.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDStyles.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDStylesCollector.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDSVGGenerator.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSDXCharacterList.h
+SOURCE=..\..\src\lib\VSDTypes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSDXCollector.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXContentCollector.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXDocumentStructure.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXFieldList.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXGeometryList.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXOutputElementList.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXPages.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXParagraphList.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXParser.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXShapeList.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXStencils.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXStyles.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXStylesCollector.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSDXTypes.h
+SOURCE=..\..\src\lib\VSDZipStream.h
 # End Source File
 # End Group
 # End Target
