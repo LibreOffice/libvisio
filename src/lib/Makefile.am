@@ -36,6 +36,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStringVector.cpp \
 	VSDStyles.cpp \
 	VSDStylesCollector.cpp \
+	VSDXParser.cpp \
 	VSDZipStream.cpp \
 	libvisio_utils.h \
 	VSD11Parser.h \
@@ -57,6 +58,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStyles.h \
 	VSDStylesCollector.h \
 	VSDTypes.h \
+	VSDXParser.h \
 	VSDZipStream.h
 
 if OS_WIN32
