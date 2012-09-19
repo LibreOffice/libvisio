@@ -60,10 +60,10 @@ AC_SUBST(ZLIB_LIBS)
 # Find required boost headers
 # ===========================
 
-AC_CHECK_HEADER(
-	boost/spirit/include/classic_core.hpp,
+AC_CHECK_HEADERS(
+	boost/spirit/include/classic_core.hpp boost/algorithm/string.hpp,
 	[],
-	[AC_MSG_ERROR(boost/spirit/include/classic_core.hpp not found. install boost >= 1.36)],
+	[AC_MSG_ERROR(Required boost headers not found. install boost >= 1.36)],
 	[]
 )
 

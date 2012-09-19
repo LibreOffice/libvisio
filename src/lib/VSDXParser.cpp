@@ -31,8 +31,10 @@
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <libwpd-stream/libwpd-stream.h>
+#include <boost/algorithm/string.hpp>
 #include "VSDXParser.h"
 #include "libvisio_utils.h"
+#include "VSDZipStream.h"
 
 namespace
 {
@@ -113,9 +115,15 @@ libvisio::VSDXRelationships::VSDXRelationships(xmlTextReaderPtr reader)
         if (xmlStrEqual(name, BAD_CAST("Relationships")))
         {
           if (xmlTextReaderNodeType(reader) == 1)
+          {
+            VSD_DEBUG_MSG(("Relationships ON\n"));
             inRelationships = true;
+          }
           else if (xmlTextReaderNodeType(reader) == 15)
+          {
+            VSD_DEBUG_MSG(("Relationships OFF\n"));
             inRelationships = false;
+          }
         }
         else if (xmlStrEqual(name, BAD_CAST("Relationship")))
         {
@@ -179,6 +187,40 @@ std::string libvisio::getRelationshipsForTarget(const char *target)
   return relStr;
 }
 
+std::string libvisio::getTargetBaseDirectory(const char *target)
+{
+  std::string str(target);
+  std::string::size_type position = str.find_last_of('/');
+  if (position == std::string::npos)
+    position = 0;
+  str.erase(position ? position+1 : position);
+  return str;
+}
+
+void libvisio::normalizePath(std::string &path)
+{
+  std::vector<std::string> segments;
+  boost::split(segments, path, boost::is_any_of("/\\"));
+  std::vector<std::string> normalizedSegments;
+
+  std::vector<std::string>::const_iterator iter = segments.begin();
+  for (; iter != segments.end(); ++iter)
+  {
+    if (*iter == "..")
+      normalizedSegments.pop_back();
+    else if (*iter != ".")
+      normalizedSegments.push_back(*iter);
+  }
+
+  path.clear();
+  for(iter = normalizedSegments.begin(); iter != normalizedSegments.end(); ++iter)
+  {
+    if (!path.empty())
+      path.append("/");
+    path.append(*iter);
+  }
+}
+
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_extractStencils(false)
 {}
@@ -190,17 +232,229 @@ libvisio::VSDXParser::~VSDXParser()
 bool libvisio::VSDXParser::parseMain()
 {
   if (!m_input)
+    return false;
+
+  WPXInputStream *tmpInput = 0;
+  try
   {
+    m_input->seek(0, WPX_SEEK_SET);
+    VSDZipStream zinput(m_input);
+    if (!zinput.isOLEStream())
+      return false;
+
+    tmpInput = zinput.getDocumentOLEStream("_rels/.rels");
+    if (!tmpInput)
+      return false;
+
+    libvisio::VSDXRelationships rootRels;
+    libvisio::parseRelationships(tmpInput, rootRels);
+    delete tmpInput;
+
+    // Check whether the relationship points to a Visio document stream
+    const libvisio::VSDXRelationship *rel = rootRels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/document");
+    if (!rel)
+      return false;
+
+    bool retVal = parseDocument(&zinput, rel->getTarget().c_str());
+    delete tmpInput;
+    return retVal;
+  }
+  catch (...)
+  {
+    if (tmpInput)
+      delete tmpInput;
     return false;
   }
-
-  return true;
 }
 
 bool libvisio::VSDXParser::extractStencils()
 {
   m_extractStencils = true;
   return parseMain();
+}
+
+bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name)
+{
+  if (!input)
+    return false;
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
+  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  input->seek(0, WPX_SEEK_SET);
+  if (!stream)
+    return false;
+  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
+  input->seek(0, WPX_SEEK_SET);
+  VSDXRelationships rels;
+  if (relStream)
+  {
+    parseRelationships(relStream, rels);
+    delete relStream;
+  }
+
+  const VSDXRelationship *rel = rels.getRelationshipByType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
+  if (rel)
+  {
+    std::string target = getTargetBaseDirectory(name);
+    target += rel->getTarget();
+    normalizePath(target);
+    if (!parseTheme(input, target.c_str()))
+    {
+      VSD_DEBUG_MSG(("Could not parse theme\n"));
+    }
+    input->seek(0, WPX_SEEK_SET);
+  }
+
+  // TODO: put here the real document.xml parsing instructions
+
+  rel = rels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/masters");
+  if (rel)
+  {
+    std::string target = getTargetBaseDirectory(name);
+    target += rel->getTarget();
+    normalizePath(target);
+    if (!parseMasters(input, target.c_str()))
+    {
+      VSD_DEBUG_MSG(("Could not parse masters\n"));
+    }
+    input->seek(0, WPX_SEEK_SET);
+  }
+
+  rel = rels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/pages");
+  if (rel)
+  {
+    std::string target = getTargetBaseDirectory(name);
+    target += rel->getTarget();
+    normalizePath(target);
+    if (!parsePages(input, target.c_str()))
+    {
+      VSD_DEBUG_MSG(("Could not parse pages\n"));
+    }
+    input->seek(0, WPX_SEEK_SET);
+  }
+
+  return true;
+}
+
+bool libvisio::VSDXParser::parseMasters(WPXInputStream *input, const char *name)
+{
+  if (!input)
+    return false;
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
+  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  if (!stream)
+    return false;
+  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
+  VSDXRelationships rels;
+  if (relStream)
+  {
+    parseRelationships(relStream, rels);
+    delete relStream;
+  }
+
+  // TODO: put here the real masters.xml parsing instructions
+
+  delete stream;
+  return true;
+}
+
+bool libvisio::VSDXParser::parseMaster(WPXInputStream *input, const char *name)
+{
+  if (!input)
+    return false;
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
+  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  if (!stream)
+    return false;
+  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
+  VSDXRelationships rels;
+  if (relStream)
+  {
+    parseRelationships(relStream, rels);
+    delete relStream;
+  }
+
+  // TODO: put here the real masterN.xml parsing instructions
+
+  delete stream;
+  return true;
+}
+
+bool libvisio::VSDXParser::parsePages(WPXInputStream *input, const char *name)
+{
+  if (!input)
+    return false;
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
+  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  if (!stream)
+    return false;
+  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
+  VSDXRelationships rels;
+  if (relStream)
+  {
+    parseRelationships(relStream, rels);
+    delete relStream;
+  }
+
+  // TODO: put here the real pages.xml parsing instructions
+
+  delete stream;
+  return true;
+}
+
+bool libvisio::VSDXParser::parsePage(WPXInputStream *input, const char *name)
+{
+  if (!input)
+    return false;
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
+  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  if (!stream)
+    return false;
+  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
+  VSDXRelationships rels;
+  if (relStream)
+  {
+    parseRelationships(relStream, rels);
+    delete relStream;
+  }
+
+  // TODO: put here the real pageN.xml parsing instructions
+
+  delete stream;
+  return true;
+}
+
+bool libvisio::VSDXParser::parseTheme(WPXInputStream *input, const char *name)
+{
+  if (!input)
+    return false;
+  input->seek(0, WPX_SEEK_SET);
+  if (!input->isOLEStream())
+    return false;
+  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  if (!stream)
+    return false;
+  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
+  VSDXRelationships rels;
+  if (relStream)
+  {
+    parseRelationships(relStream, rels);
+    delete relStream;
+  }
+
+  // TODO: put here the real themeN.xml parsing instructions
+
+  delete stream;
+  return true;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

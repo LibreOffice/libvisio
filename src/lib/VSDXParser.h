@@ -89,6 +89,8 @@ private:
 
 void parseRelationships(WPXInputStream *input, VSDXRelationships &rels);
 std::string getRelationshipsForTarget(const char *target);
+std::string getTargetBaseDirectory(const char *target);
+void normalizePath(std::string &path);
 
 class VSDXParser
 {
@@ -102,6 +104,13 @@ private:
   VSDXParser();
   VSDXParser(const VSDXParser &);
   VSDXParser &operator=(const VSDXParser &);
+
+  bool parseDocument(WPXInputStream *input, const char *name);
+  bool parseMasters(WPXInputStream *input, const char *name);
+  bool parseMaster(WPXInputStream *input, const char *name);
+  bool parsePages(WPXInputStream *input, const char *name);
+  bool parsePage(WPXInputStream *input, const char *name);
+  bool parseTheme(WPXInputStream *input, const char *name);
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
