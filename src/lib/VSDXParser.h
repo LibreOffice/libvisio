@@ -88,6 +88,7 @@ private:
 };
 
 void parseRelationships(WPXInputStream *input, VSDXRelationships &rels);
+std::string getRelationshipsForTarget(const char *target);
 
 class VSDXParser
 {

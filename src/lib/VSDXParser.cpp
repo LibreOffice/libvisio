@@ -168,6 +168,16 @@ void libvisio::parseRelationships(WPXInputStream *input, VSDXRelationships &rels
   rels = VSDXRelationships(reader);
 }
 
+std::string libvisio::getRelationshipsForTarget(const char *target)
+{
+  std::string relStr(target);
+  std::string::size_type position = relStr.find_last_of('/');
+  if (position == std::string::npos)
+    position = 0;
+  relStr.insert(position ? position+1 : position, "_rels/");
+  relStr.append(".rels");
+  return relStr;
+}
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_extractStencils(false)
