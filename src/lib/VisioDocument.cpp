@@ -79,31 +79,39 @@ static bool isBinaryVisioDocument(WPXInputStream *input)
 
 static bool isOpcVisioDocument(WPXInputStream *input)
 {
-  WPXInputStream *tmpInput = input;
+  WPXInputStream *tmpInput = 0;
   try
   {
     input->seek(0, WPX_SEEK_SET);
     libvisio::VSDZipStream zinput(input);
     // Kidnapping the OLE document API and extending it to support zip files.
-    if (zinput.isOLEStream())
-      input = zinput.getDocumentOLEStream("visio/document.xml");
-    // TODO: Make the above more sophisticated by parsing the _rels/.rels,
-    // finding a target of type
-    // http://schemas.microsoft.com/visio/2010/relationships/document
-    // and checking whether it exists. But For thw while, just check
-    // for visio/document.xml which is where the document is currently.
-    if (!input)
+    if (!zinput.isOLEStream())
       return false;
-    if (input != tmpInput)
-      delete input;
-    input = tmpInput;
+
+    tmpInput = zinput.getDocumentOLEStream("_rels/.rels");
+    if (!tmpInput)
+      return false;
+
+    libvisio::VSDXRelationships rootRels;
+    libvisio::parseRelationships(tmpInput, rootRels);
+    delete tmpInput;
+
+    // Check whether the relationship points to a Visio document stream
+    const libvisio::VSDXRelationship *rel = rootRels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/document");
+    if (!rel)
+      return false;
+
+    // check whether the pointed Visio document stream exists in the document
+    tmpInput = zinput.getDocumentOLEStream(rel->getTarget().c_str());
+    if (!tmpInput)
+      return false;
+    delete tmpInput;
     return true;
   }
   catch (...)
   {
-    if (input != tmpInput)
-      delete input;
-    input = tmpInput;
+    if (tmpInput)
+      delete tmpInput;
     return false;
   }
 }
