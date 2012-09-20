@@ -92,8 +92,7 @@ static bool isOpcVisioDocument(WPXInputStream *input)
     if (!tmpInput)
       return false;
 
-    libvisio::VSDXRelationships rootRels;
-    libvisio::parseRelationships(tmpInput, rootRels);
+    libvisio::VSDXRelationships rootRels(tmpInput);
     delete tmpInput;
 
     // Check whether the relationship points to a Visio document stream

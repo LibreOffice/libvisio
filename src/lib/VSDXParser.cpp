@@ -43,12 +43,12 @@ namespace
 
 extern "C" {
 
-  int vsdxInputCloseFunc(void * /* context */)
+  static int vsdxInputCloseFunc(void * /* context */)
   {
     return 0;
   }
 
-  int vsdxInputReadFunc(void *context, char *buffer, int len)
+  static int vsdxInputReadFunc(void *context, char *buffer, int len)
   {
     WPXInputStream *input = (WPXInputStream *)context;
 
@@ -68,22 +68,17 @@ extern "C" {
 
 }
 
-} // anonymous namespace
-
-
-// Helper functions
-
-void libvisio::parseRelationships(WPXInputStream *input, VSDXRelationships &rels)
+static std::string getTargetBaseDirectory(const char *target)
 {
-  if (!input)
-    return;
-  xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, NULL, NULL, 0);
-  if (!reader)
-    return;
-  rels = VSDXRelationships(reader);
+  std::string str(target);
+  std::string::size_type position = str.find_last_of('/');
+  if (position == std::string::npos)
+    position = 0;
+  str.erase(position ? position+1 : position);
+  return str;
 }
 
-std::string libvisio::getRelationshipsForTarget(const char *target)
+std::string getRelationshipsForTarget(const char *target)
 {
   std::string relStr(target ? target : "");
   std::string::size_type position = relStr.find_last_of('/');
@@ -94,39 +89,7 @@ std::string libvisio::getRelationshipsForTarget(const char *target)
   return relStr;
 }
 
-std::string libvisio::getTargetBaseDirectory(const char *target)
-{
-  std::string str(target);
-  std::string::size_type position = str.find_last_of('/');
-  if (position == std::string::npos)
-    position = 0;
-  str.erase(position ? position+1 : position);
-  return str;
-}
-
-void libvisio::normalizePath(std::string &path)
-{
-  std::vector<std::string> segments;
-  boost::split(segments, path, boost::is_any_of("/\\"));
-  std::vector<std::string> normalizedSegments;
-
-  std::vector<std::string>::const_iterator iter = segments.begin();
-  for (; iter != segments.end(); ++iter)
-  {
-    if (*iter == "..")
-      normalizedSegments.pop_back();
-    else if (*iter != ".")
-      normalizedSegments.push_back(*iter);
-  }
-
-  path.clear();
-  for(iter = normalizedSegments.begin(); iter != normalizedSegments.end(); ++iter)
-  {
-    if (!path.empty())
-      path.append("/");
-    path.append(*iter);
-  }
-}
+} // anonymous namespace
 
 
 // VSDXRelationship
@@ -165,10 +128,33 @@ libvisio::VSDXRelationship::~VSDXRelationship()
 
 void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
 {
-  // Be careful that
   std::string target(baseDir ? baseDir : "");
+  if (!target.empty())
+    target += "/";
   target += m_target;
-  normalizePath(target);
+
+  // normalize path by resolving any ".." or "." segments
+  // and eliminating duplicate path separators
+  std::vector<std::string> segments;
+  boost::split(segments, target, boost::is_any_of("/\\"));
+  std::vector<std::string> normalizedSegments;
+
+  for (unsigned i = 0; i < segments.size(); ++i)
+  {
+    if (segments[i] == "..")
+      normalizedSegments.pop_back();
+    else if (segments[i] != "." && !segments[i].empty())
+      normalizedSegments.push_back(segments[i]);
+  }
+
+  target.clear();
+  for(unsigned j = 0; j < normalizedSegments.size(); ++j)
+  {
+    if (!target.empty())
+      target.append("/");
+    target.append(normalizedSegments[j]);
+  }
+
   VSD_DEBUG_MSG(("VSDXRelationship::rebaseTarget %s -> %s\n", m_target.c_str(), target.c_str()));
   m_target = target;
 }
@@ -178,6 +164,50 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
 
 libvisio::VSDXRelationships::VSDXRelationships(xmlTextReaderPtr reader)
   : m_relsByType(), m_relsById()
+{
+  parseRelationships(reader);
+}
+
+libvisio::VSDXRelationships::VSDXRelationships(WPXInputStream *input)
+  : m_relsByType(), m_relsById()
+{
+  if (input)
+  {
+    xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, NULL, NULL, 0);
+    parseRelationships(reader);
+  }
+}
+
+libvisio::VSDXRelationships::~VSDXRelationships()
+{
+}
+
+void libvisio::VSDXRelationships::rebaseTargets(const char *baseDir)
+{
+  std::map<std::string, libvisio::VSDXRelationship>::iterator iter;
+  for (iter = m_relsByType.begin(); iter != m_relsByType.end(); ++iter)
+    iter->second.rebaseTarget(baseDir);
+  for (iter = m_relsById.begin(); iter != m_relsById.end(); ++iter)
+    iter->second.rebaseTarget(baseDir);
+}
+
+const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipByType(const char *type) const
+{
+  std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsByType.find(type);
+  if (iter != m_relsByType.end())
+    return &(iter->second);
+  return 0;
+}
+
+const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipById(const char *type) const
+{
+  std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsById.find(type);
+  if (iter != m_relsById.end())
+    return &(iter->second);
+  return 0;
+}
+
+void libvisio::VSDXRelationships::parseRelationships(xmlTextReaderPtr reader)
 {
   if (reader)
   {
@@ -217,41 +247,6 @@ libvisio::VSDXRelationships::VSDXRelationships(xmlTextReaderPtr reader)
   }
 }
 
-libvisio::VSDXRelationships::VSDXRelationships()
-  : m_relsByType(), m_relsById()
-{
-}
-
-libvisio::VSDXRelationships::~VSDXRelationships()
-{
-}
-
-void libvisio::VSDXRelationships::rebaseTargets(const char *baseDir)
-{
-  std::map<std::string, libvisio::VSDXRelationship>::iterator iter;
-  for (iter = m_relsByType.begin(); iter != m_relsByType.end(); ++iter)
-    iter->second.rebaseTarget(baseDir);
-  for (iter = m_relsById.begin(); iter != m_relsById.end(); ++iter)
-    iter->second.rebaseTarget(baseDir);
-}
-
-const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipByType(const char *type) const
-{
-  std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsByType.find(type);
-  if (iter != m_relsByType.end())
-    return &(iter->second);
-  return 0;
-}
-
-const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipById(const char *type) const
-{
-  std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsById.find(type);
-  if (iter != m_relsById.end())
-    return &(iter->second);
-  return 0;
-}
-
-
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(0), m_painter(painter), m_collector(), m_stencils(), m_extractStencils(false)
 {
@@ -283,8 +278,7 @@ bool libvisio::VSDXParser::parseMain()
     if (!tmpInput)
       return false;
 
-    libvisio::VSDXRelationships rootRels;
-    libvisio::parseRelationships(tmpInput, rootRels);
+    libvisio::VSDXRelationships rootRels(tmpInput);
     delete tmpInput;
 
     // Check whether the relationship points to a Visio document stream
@@ -337,13 +331,10 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
     return false;
   WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
   input->seek(0, WPX_SEEK_SET);
-  VSDXRelationships rels;
+  VSDXRelationships rels(relStream);
   if (relStream)
-  {
-    parseRelationships(relStream, rels);
-    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
-  }
+  rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
   const VSDXRelationship *rel = rels.getRelationshipByType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
   if (rel)
@@ -391,13 +382,11 @@ bool libvisio::VSDXParser::parseMasters(WPXInputStream *input, const char *name)
   if (!stream)
     return false;
   WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  VSDXRelationships rels;
+  input->seek(0, WPX_SEEK_SET);
+  VSDXRelationships rels(relStream);
   if (relStream)
-  {
-    parseRelationships(relStream, rels);
-    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
-  }
+  rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
   // TODO: put here the real masters.xml parsing instructions
 
@@ -412,21 +401,15 @@ bool libvisio::VSDXParser::parseMaster(WPXInputStream *input, const char *name)
   input->seek(0, WPX_SEEK_SET);
   if (!input->isOLEStream())
     return false;
-  WPXInputStream *stream = input->getDocumentOLEStream(name);
-  if (!stream)
-    return false;
   WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  VSDXRelationships rels;
+  input->seek(0, WPX_SEEK_SET);
+  VSDXRelationships rels(relStream);
   if (relStream)
-  {
-    parseRelationships(relStream, rels);
-    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
-  }
+  rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
   // TODO: put here the real masterN.xml parsing instructions
 
-  delete stream;
   return true;
 }
 
@@ -441,13 +424,11 @@ bool libvisio::VSDXParser::parsePages(WPXInputStream *input, const char *name)
   if (!stream)
     return false;
   WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  VSDXRelationships rels;
+  input->seek(0, WPX_SEEK_SET);
+  VSDXRelationships rels(relStream);
   if (relStream)
-  {
-    parseRelationships(relStream, rels);
-    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
-  }
+  rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
   // TODO: put here the real pages.xml parsing instructions
 
@@ -466,13 +447,11 @@ bool libvisio::VSDXParser::parsePage(WPXInputStream *input, const char *name)
   if (!stream)
     return false;
   WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  VSDXRelationships rels;
+  input->seek(0, WPX_SEEK_SET);
+  VSDXRelationships rels(relStream);
   if (relStream)
-  {
-    parseRelationships(relStream, rels);
-    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
-  }
+  rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
   // TODO: put here the real pageN.xml parsing instructions
 
@@ -491,13 +470,11 @@ bool libvisio::VSDXParser::parseTheme(WPXInputStream *input, const char *name)
   if (!stream)
     return false;
   WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  VSDXRelationships rels;
+  input->seek(0, WPX_SEEK_SET);
+  VSDXRelationships rels(relStream);
   if (relStream)
-  {
-    parseRelationships(relStream, rels);
-    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
-  }
+  rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
   // TODO: put here the real themeN.xml parsing instructions
 

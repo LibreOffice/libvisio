@@ -77,7 +77,7 @@ class VSDXRelationships
 {
 public:
   VSDXRelationships(xmlTextReaderPtr reader);
-  VSDXRelationships();
+  VSDXRelationships(WPXInputStream *input);
   ~VSDXRelationships();
 
   void rebaseTargets(const char *baseDir);
@@ -93,14 +93,9 @@ public:
 private:
   std::map<std::string, VSDXRelationship> m_relsByType;
   std::map<std::string, VSDXRelationship> m_relsById;
+
+  void parseRelationships(xmlTextReaderPtr reader);
 };
-
-// Helper functions
-
-void parseRelationships(WPXInputStream *input, VSDXRelationships &rels);
-std::string getRelationshipsForTarget(const char *target);
-std::string getTargetBaseDirectory(const char *target);
-void normalizePath(std::string &path);
 
 
 // Main parser class
