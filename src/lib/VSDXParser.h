@@ -35,11 +35,15 @@
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpg/libwpg.h>
 #include <libxml/xmlreader.h>
+#include "VSDStencils.h"
 
 namespace libvisio
 {
 
 class VSDCollector;
+
+
+// Helper classes to properly handle OPC relationships
 
 class VSDXRelationship
 {
@@ -91,10 +95,15 @@ private:
   std::map<std::string, VSDXRelationship> m_relsById;
 };
 
+// Helper functions
+
 void parseRelationships(WPXInputStream *input, VSDXRelationships &rels);
 std::string getRelationshipsForTarget(const char *target);
 std::string getTargetBaseDirectory(const char *target);
 void normalizePath(std::string &path);
+
+
+// Main parser class
 
 class VSDXParser
 {
@@ -109,6 +118,8 @@ private:
   VSDXParser(const VSDXParser &);
   VSDXParser &operator=(const VSDXParser &);
 
+  // Functions parsing the Visio 2013 OPC document structure
+
   bool parseDocument(WPXInputStream *input, const char *name);
   bool parseMasters(WPXInputStream *input, const char *name);
   bool parseMaster(WPXInputStream *input, const char *name);
@@ -116,8 +127,14 @@ private:
   bool parsePage(WPXInputStream *input, const char *name);
   bool parseTheme(WPXInputStream *input, const char *name);
 
+  // Functions reading the Visio 2013 OPC document content
+
+
+
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
+  VSDCollector *m_collector;
+  VSDStencils m_stencils;
 
   bool m_extractStencils;
 

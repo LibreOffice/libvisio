@@ -34,6 +34,8 @@
 #include <boost/algorithm/string.hpp>
 #include "VSDXParser.h"
 #include "libvisio_utils.h"
+#include "VSDContentCollector.h"
+#include "VSDStylesCollector.h"
 #include "VSDZipStream.h"
 
 namespace
@@ -66,7 +68,68 @@ extern "C" {
 
 }
 
+} // anonymous namespace
+
+
+// Helper functions
+
+void libvisio::parseRelationships(WPXInputStream *input, VSDXRelationships &rels)
+{
+  if (!input)
+    return;
+  xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, NULL, NULL, 0);
+  if (!reader)
+    return;
+  rels = VSDXRelationships(reader);
 }
+
+std::string libvisio::getRelationshipsForTarget(const char *target)
+{
+  std::string relStr(target ? target : "");
+  std::string::size_type position = relStr.find_last_of('/');
+  if (position == std::string::npos)
+    position = 0;
+  relStr.insert(position ? position+1 : position, "_rels/");
+  relStr.append(".rels");
+  return relStr;
+}
+
+std::string libvisio::getTargetBaseDirectory(const char *target)
+{
+  std::string str(target);
+  std::string::size_type position = str.find_last_of('/');
+  if (position == std::string::npos)
+    position = 0;
+  str.erase(position ? position+1 : position);
+  return str;
+}
+
+void libvisio::normalizePath(std::string &path)
+{
+  std::vector<std::string> segments;
+  boost::split(segments, path, boost::is_any_of("/\\"));
+  std::vector<std::string> normalizedSegments;
+
+  std::vector<std::string>::const_iterator iter = segments.begin();
+  for (; iter != segments.end(); ++iter)
+  {
+    if (*iter == "..")
+      normalizedSegments.pop_back();
+    else if (*iter != ".")
+      normalizedSegments.push_back(*iter);
+  }
+
+  path.clear();
+  for(iter = normalizedSegments.begin(); iter != normalizedSegments.end(); ++iter)
+  {
+    if (!path.empty())
+      path.append("/");
+    path.append(*iter);
+  }
+}
+
+
+// VSDXRelationship
 
 libvisio::VSDXRelationship::VSDXRelationship(xmlTextReaderPtr reader)
   : m_id(), m_type(), m_target()
@@ -102,11 +165,16 @@ libvisio::VSDXRelationship::~VSDXRelationship()
 
 void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
 {
-  std::string target(baseDir);
+  // Be careful that
+  std::string target(baseDir ? baseDir : "");
   target += m_target;
   normalizePath(target);
+  VSD_DEBUG_MSG(("VSDXRelationship::rebaseTarget %s -> %s\n", m_target.c_str(), target.c_str()));
   m_target = target;
 }
+
+
+// VSDXRelationships
 
 libvisio::VSDXRelationships::VSDXRelationships(xmlTextReaderPtr reader)
   : m_relsByType(), m_relsById()
@@ -183,67 +251,24 @@ const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipBy
   return 0;
 }
 
-void libvisio::parseRelationships(WPXInputStream *input, VSDXRelationships &rels)
-{
-  if (!input)
-    return;
-  xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, NULL, NULL, 0);
-  if (!reader)
-    return;
-  rels = VSDXRelationships(reader);
-}
-
-std::string libvisio::getRelationshipsForTarget(const char *target)
-{
-  std::string relStr(target);
-  std::string::size_type position = relStr.find_last_of('/');
-  if (position == std::string::npos)
-    position = 0;
-  relStr.insert(position ? position+1 : position, "_rels/");
-  relStr.append(".rels");
-  return relStr;
-}
-
-std::string libvisio::getTargetBaseDirectory(const char *target)
-{
-  std::string str(target);
-  std::string::size_type position = str.find_last_of('/');
-  if (position == std::string::npos)
-    position = 0;
-  str.erase(position ? position+1 : position);
-  return str;
-}
-
-void libvisio::normalizePath(std::string &path)
-{
-  std::vector<std::string> segments;
-  boost::split(segments, path, boost::is_any_of("/\\"));
-  std::vector<std::string> normalizedSegments;
-
-  std::vector<std::string>::const_iterator iter = segments.begin();
-  for (; iter != segments.end(); ++iter)
-  {
-    if (*iter == "..")
-      normalizedSegments.pop_back();
-    else if (*iter != ".")
-      normalizedSegments.push_back(*iter);
-  }
-
-  path.clear();
-  for(iter = normalizedSegments.begin(); iter != normalizedSegments.end(); ++iter)
-  {
-    if (!path.empty())
-      path.append("/");
-    path.append(*iter);
-  }
-}
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_extractStencils(false)
-{}
+  : m_input(0), m_painter(painter), m_collector(), m_stencils(), m_extractStencils(false)
+{
+  input->seek(0, WPX_SEEK_CUR);
+  m_input = new VSDZipStream(input);
+  if (!m_input || !m_input->isOLEStream())
+  {
+    if (m_input)
+      delete m_input;
+    m_input = 0;
+  }
+}
 
 libvisio::VSDXParser::~VSDXParser()
 {
+  if (m_input)
+    delete m_input;
 }
 
 bool libvisio::VSDXParser::parseMain()
@@ -254,12 +279,7 @@ bool libvisio::VSDXParser::parseMain()
   WPXInputStream *tmpInput = 0;
   try
   {
-    m_input->seek(0, WPX_SEEK_SET);
-    VSDZipStream zinput(m_input);
-    if (!zinput.isOLEStream())
-      return false;
-
-    tmpInput = zinput.getDocumentOLEStream("_rels/.rels");
+    tmpInput = m_input->getDocumentOLEStream("_rels/.rels");
     if (!tmpInput)
       return false;
 
@@ -272,9 +292,23 @@ bool libvisio::VSDXParser::parseMain()
     if (!rel)
       return false;
 
-    bool retVal = parseDocument(&zinput, rel->getTarget().c_str());
-    delete tmpInput;
-    return retVal;
+    std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
+    std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
+    std::vector<std::list<unsigned> > documentPageShapeOrders;
+
+    VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
+    m_collector = &stylesCollector;
+    if (!parseDocument(m_input, rel->getTarget().c_str()))
+      return false;
+
+    VSDStyles styles = stylesCollector.getStyleSheets();
+
+    VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
+    m_collector = &contentCollector;
+    if (!parseDocument(m_input, rel->getTarget().c_str()))
+      return false;
+
+    return true;
   }
   catch (...)
   {
