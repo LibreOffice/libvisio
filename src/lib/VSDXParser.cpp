@@ -100,6 +100,14 @@ libvisio::VSDXRelationship::~VSDXRelationship()
 {
 }
 
+void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
+{
+  std::string target(baseDir);
+  target += m_target;
+  normalizePath(target);
+  m_target = target;
+}
+
 libvisio::VSDXRelationships::VSDXRelationships(xmlTextReaderPtr reader)
   : m_relsByType(), m_relsById()
 {
@@ -148,6 +156,15 @@ libvisio::VSDXRelationships::VSDXRelationships()
 
 libvisio::VSDXRelationships::~VSDXRelationships()
 {
+}
+
+void libvisio::VSDXRelationships::rebaseTargets(const char *baseDir)
+{
+  std::map<std::string, libvisio::VSDXRelationship>::iterator iter;
+  for (iter = m_relsByType.begin(); iter != m_relsByType.end(); ++iter)
+    iter->second.rebaseTarget(baseDir);
+  for (iter = m_relsById.begin(); iter != m_relsById.end(); ++iter)
+    iter->second.rebaseTarget(baseDir);
 }
 
 const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipByType(const char *type) const
@@ -290,16 +307,14 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
   if (relStream)
   {
     parseRelationships(relStream, rels);
+    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
   }
 
   const VSDXRelationship *rel = rels.getRelationshipByType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
   if (rel)
   {
-    std::string target = getTargetBaseDirectory(name);
-    target += rel->getTarget();
-    normalizePath(target);
-    if (!parseTheme(input, target.c_str()))
+    if (!parseTheme(input, rel->getTarget().c_str()))
     {
       VSD_DEBUG_MSG(("Could not parse theme\n"));
     }
@@ -311,10 +326,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
   rel = rels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/masters");
   if (rel)
   {
-    std::string target = getTargetBaseDirectory(name);
-    target += rel->getTarget();
-    normalizePath(target);
-    if (!parseMasters(input, target.c_str()))
+    if (!parseMasters(input, rel->getTarget().c_str()))
     {
       VSD_DEBUG_MSG(("Could not parse masters\n"));
     }
@@ -324,10 +336,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
   rel = rels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/pages");
   if (rel)
   {
-    std::string target = getTargetBaseDirectory(name);
-    target += rel->getTarget();
-    normalizePath(target);
-    if (!parsePages(input, target.c_str()))
+    if (!parsePages(input, rel->getTarget().c_str()))
     {
       VSD_DEBUG_MSG(("Could not parse pages\n"));
     }
@@ -352,6 +361,7 @@ bool libvisio::VSDXParser::parseMasters(WPXInputStream *input, const char *name)
   if (relStream)
   {
     parseRelationships(relStream, rels);
+    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
   }
 
@@ -376,6 +386,7 @@ bool libvisio::VSDXParser::parseMaster(WPXInputStream *input, const char *name)
   if (relStream)
   {
     parseRelationships(relStream, rels);
+    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
   }
 
@@ -400,6 +411,7 @@ bool libvisio::VSDXParser::parsePages(WPXInputStream *input, const char *name)
   if (relStream)
   {
     parseRelationships(relStream, rels);
+    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
   }
 
@@ -424,6 +436,7 @@ bool libvisio::VSDXParser::parsePage(WPXInputStream *input, const char *name)
   if (relStream)
   {
     parseRelationships(relStream, rels);
+    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
   }
 
@@ -448,6 +461,7 @@ bool libvisio::VSDXParser::parseTheme(WPXInputStream *input, const char *name)
   if (relStream)
   {
     parseRelationships(relStream, rels);
+    rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
     delete relStream;
   }
 

@@ -48,6 +48,8 @@ public:
   VSDXRelationship();
   ~VSDXRelationship();
 
+  void rebaseTarget(const char *baseDir);
+
   const std::string getId() const
   {
     return m_id;
@@ -73,6 +75,8 @@ public:
   VSDXRelationships(xmlTextReaderPtr reader);
   VSDXRelationships();
   ~VSDXRelationships();
+
+  void rebaseTargets(const char *baseDir);
 
   const VSDXRelationship *getRelationshipByType(const char *type) const;
   const VSDXRelationship *getRelationshipById(const char *id) const;
