@@ -451,7 +451,7 @@ void libvisio::VSDSVGGenerator::drawPath(const ::WPXPropertyListVector &path)
       m_outputSink << (propList["libwpg:sweep"] ? propList["libwpg:sweep"]->getInt() : 1) << " ";
       m_outputSink << doubleToString(72*(propList["svg:x"]->getDouble())) << "," << doubleToString(72*(propList["svg:y"]->getDouble()));
     }
-    else if ((i >= path.count()-1 && i > 2) && propList["libwpg:path-action"] && propList["libwpg:path-action"]->getStr() == "Z" )
+    else if (propList["libwpg:path-action"] && propList["libwpg:path-action"]->getStr() == "Z")
     {
       isClosed = true;
       m_outputSink << "\nZ";
