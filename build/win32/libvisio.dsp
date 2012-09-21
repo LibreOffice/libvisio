@@ -91,6 +91,10 @@ SOURCE=..\..\src\lib\libvisio_utils.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VDXParser.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VisioDocument.cpp
 # End Source File
 # Begin Source File
@@ -184,6 +188,10 @@ SOURCE=..\..\src\lib\libvisio.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\libvisio_utils.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VDXParser.h
 # End Source File
 # Begin Source File
 

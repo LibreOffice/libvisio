@@ -40,6 +40,7 @@ INCPRE+=-I$(SOLARVER)$/$(INPATH)$/inc$/external/libxml
 
 SLOFILES= \
 	$(SLO)$/libvisio_utils.obj \
+	$(SLO)$/VDXParser.obj \
 	$(SLO)$/VisioDocument.obj \
 	$(SLO)$/VSD11Parser.obj \
 	$(SLO)$/VSD6Parser.obj \

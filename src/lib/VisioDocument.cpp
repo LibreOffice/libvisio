@@ -32,6 +32,7 @@
 #include <string>
 #include "libvisio.h"
 #include "libvisio_utils.h"
+#include "VDXParser.h"
 #include "VSDSVGGenerator.h"
 #include "VSDParser.h"
 #include "VSDXParser.h"
@@ -252,7 +253,10 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
   {
     VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
     input->seek(0, WPX_SEEK_SET);
-    return true;
+    VDXParser parser(input, painter);
+    if (parser.parseMain())
+      return true;
+    return false;
   }
   return false;
 }
