@@ -163,6 +163,14 @@ SOURCE=..\..\src\lib\VSDSVGGenerator.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXMLHelper.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXParser.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDZipStream.cpp
 # End Source File
 # End Group
@@ -260,6 +268,14 @@ SOURCE=..\..\src\lib\VSDSVGGenerator.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDTypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXMLHelper.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXParser.h
 # End Source File
 # Begin Source File
 

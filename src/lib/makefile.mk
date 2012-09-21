@@ -32,6 +32,12 @@ INCPRE+=$(SOLARVER)$/$(UPD)$/$(INPATH)$/inc$/libwpg
 INCPRE+=-I$(SOLARVER)$/$(INPATH)$/inc$/external/zlib
 .ENDIF
 
+.IF "$(SYSTEM_LIBXML)" == "YES"
+INCPRE+=$(LIBXML_CFLAGS) -I..
+.ELSE
+INCPRE+=-I$(SOLARVER)$/$(INPATH)$/inc$/external/libxml
+.ENDIF
+
 SLOFILES= \
 	$(SLO)$/libvisio_utils.obj \
 	$(SLO)$/VisioDocument.obj \
@@ -52,6 +58,8 @@ SLOFILES= \
 	$(SLO)$/VSDStylesCollector.obj \
 	$(SLO)$/VSDStyles.obj \
 	$(SLO)$/VSDSVGGenerator.obj \
+	$(SLO)$/VSDXMLHelper.obj \
+	$(SLO)$/VSDXParser.obj \
 	$(SLO)$/VSDZipStream.obj
 
 LIB1ARCHIV=$(LB)$/libvisiolib.a
