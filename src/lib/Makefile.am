@@ -36,6 +36,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStringVector.cpp \
 	VSDStyles.cpp \
 	VSDStylesCollector.cpp \
+	VSDXMLHelper.cpp \
 	VSDXParser.cpp \
 	VSDZipStream.cpp \
 	libvisio_utils.h \
@@ -58,6 +59,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStyles.h \
 	VSDStylesCollector.h \
 	VSDTypes.h \
+	VSDXMLHelper.h \
 	VSDXParser.h \
 	VSDZipStream.h
 

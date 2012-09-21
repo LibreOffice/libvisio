@@ -27,57 +27,75 @@
  * instead of those above.
  */
 
-#ifndef __VSDXPARSER_H__
-#define __VSDXPARSER_H__
+#ifndef __VSDXMLHELPER_H__
+#define __VSDXMLHELPER_H__
 
 #include <map>
 #include <string>
 #include <libwpd-stream/libwpd-stream.h>
-#include <libwpg/libwpg.h>
-#include "VSDXMLHelper.h"
-#include "VSDStencils.h"
+#include <libxml/xmlreader.h>
 
 namespace libvisio
 {
 
 class VSDCollector;
 
-class VSDXParser
+
+// Helper classes to properly handle OPC relationships
+
+class VSDXRelationship
 {
 public:
-  explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
-  virtual ~VSDXParser();
-  bool parseMain();
-  bool extractStencils();
+  VSDXRelationship(xmlTextReaderPtr reader);
+  VSDXRelationship();
+  ~VSDXRelationship();
+
+  void rebaseTarget(const char *baseDir);
+
+  const std::string getId() const
+  {
+    return m_id;
+  }
+  const std::string getType() const
+  {
+    return m_type;
+  }
+  const std::string getTarget() const
+  {
+    return m_target;
+  }
 
 private:
-  VSDXParser();
-  VSDXParser(const VSDXParser &);
-  VSDXParser &operator=(const VSDXParser &);
+  std::string m_id;
+  std::string m_type;
+  std::string m_target;
+};
 
-  // Functions parsing the Visio 2013 OPC document structure
+class VSDXRelationships
+{
+public:
+  VSDXRelationships(xmlTextReaderPtr reader);
+  VSDXRelationships(WPXInputStream *input);
+  ~VSDXRelationships();
 
-  bool parseDocument(WPXInputStream *input, const char *name);
-  bool parseMasters(WPXInputStream *input, const char *name);
-  bool parseMaster(WPXInputStream *input, const char *name);
-  bool parsePages(WPXInputStream *input, const char *name);
-  bool parsePage(WPXInputStream *input, const char *name);
-  bool parseTheme(WPXInputStream *input, const char *name);
+  void rebaseTargets(const char *baseDir);
 
-  // Functions reading the Visio 2013 OPC document content
+  const VSDXRelationship *getRelationshipByType(const char *type) const;
+  const VSDXRelationship *getRelationshipById(const char *id) const;
 
+  bool empty() const
+  {
+    return m_relsByType.empty() && m_relsById.empty();
+  }
 
+private:
+  std::map<std::string, VSDXRelationship> m_relsByType;
+  std::map<std::string, VSDXRelationship> m_relsById;
 
-  WPXInputStream *m_input;
-  libwpg::WPGPaintInterface *m_painter;
-  VSDCollector *m_collector;
-  VSDStencils m_stencils;
-
-  bool m_extractStencils;
-
+  void parseRelationships(xmlTextReaderPtr reader);
 };
 
 } // namespace libvisio
 
-#endif // __VSDXPARSER_H__
+#endif // __VSDXMLHELPER_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
