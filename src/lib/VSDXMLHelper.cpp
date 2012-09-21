@@ -208,15 +208,19 @@ void libvisio::VSDXRelationships::rebaseTargets(const char *baseDir)
 
 const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipByType(const char *type) const
 {
+  if (!type)
+    return 0;
   std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsByType.find(type);
   if (iter != m_relsByType.end())
     return &(iter->second);
   return 0;
 }
 
-const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipById(const char *type) const
+const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipById(const char *id) const
 {
-  std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsById.find(type);
+  if (!id)
+    return 0;
+  std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsById.find(id);
   if (iter != m_relsById.end())
     return &(iter->second);
   return 0;

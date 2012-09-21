@@ -119,7 +119,7 @@ static bool isOpcVisioDocument(WPXInputStream *input)
 static bool isXmlVisioDocument(WPXInputStream *input)
 {
   input->seek(0, WPX_SEEK_SET);
-  xmlTextReaderPtr reader = libvisio::xmlReaderForStream(input, 0, 0, 0);
+  xmlTextReaderPtr reader = libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
   if (!reader)
     return false;
   int ret = xmlTextReaderRead(reader);

@@ -37,6 +37,7 @@
 #include "VSDContentCollector.h"
 #include "VSDStylesCollector.h"
 #include "VSDZipStream.h"
+#include "VSDXMLHelper.h"
 
 namespace
 {
@@ -65,7 +66,8 @@ std::string getRelationshipsForTarget(const char *target)
 
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(0), m_painter(painter), m_collector(), m_stencils(), m_extractStencils(false)
+  : m_input(0), m_painter(painter), m_collector(),
+    m_stencils(), m_extractStencils(false), m_currentDepth(0)
 {
   input->seek(0, WPX_SEEK_CUR);
   m_input = new VSDZipStream(input);
@@ -163,7 +165,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
     input->seek(0, WPX_SEEK_SET);
   }
 
-  // TODO: put here the real document.xml parsing instructions
+  processXmlDocument(stream, rels);
 
   rel = rels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/masters");
   if (rel)
@@ -205,7 +207,7 @@ bool libvisio::VSDXParser::parseMasters(WPXInputStream *input, const char *name)
     delete relStream;
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  // TODO: put here the real masters.xml parsing instructions
+  processXmlDocument(stream, rels);
 
   delete stream;
   return true;
@@ -218,6 +220,9 @@ bool libvisio::VSDXParser::parseMaster(WPXInputStream *input, const char *name)
   input->seek(0, WPX_SEEK_SET);
   if (!input->isOLEStream())
     return false;
+  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  if (!stream)
+    return false;
   WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
   input->seek(0, WPX_SEEK_SET);
   VSDXRelationships rels(relStream);
@@ -225,8 +230,9 @@ bool libvisio::VSDXParser::parseMaster(WPXInputStream *input, const char *name)
     delete relStream;
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  // TODO: put here the real masterN.xml parsing instructions
+  processXmlDocument(stream, rels);
 
+  delete stream;
   return true;
 }
 
@@ -247,7 +253,7 @@ bool libvisio::VSDXParser::parsePages(WPXInputStream *input, const char *name)
     delete relStream;
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  // TODO: put here the real pages.xml parsing instructions
+  processXmlDocument(stream, rels);
 
   delete stream;
   return true;
@@ -270,7 +276,7 @@ bool libvisio::VSDXParser::parsePage(WPXInputStream *input, const char *name)
     delete relStream;
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  // TODO: put here the real pageN.xml parsing instructions
+  processXmlDocument(stream, rels);
 
   delete stream;
   return true;
@@ -293,10 +299,106 @@ bool libvisio::VSDXParser::parseTheme(WPXInputStream *input, const char *name)
     delete relStream;
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  // TODO: put here the real themeN.xml parsing instructions
+  processXmlDocument(stream, rels);
 
   delete stream;
   return true;
+}
+
+void libvisio::VSDXParser::processXmlDocument(WPXInputStream *input, VSDXRelationships &rels)
+{
+  if (!input)
+    return;
+
+  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
+  if (!reader)
+    return;
+  int ret = xmlTextReaderRead(reader);
+  while (ret == 1)
+  {
+    xmlChar *nodeName = xmlTextReaderName(reader);
+    if (!nodeName)
+    {
+      ret = xmlTextReaderRead(reader);
+      continue;
+    }
+
+    if (xmlStrEqual(nodeName, BAD_CAST("Rel")) && xmlTextReaderNodeType(reader) == 1)
+    {
+      xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("r:id"));
+      if (id)
+      {
+        const VSDXRelationship *rel = rels.getRelationshipById((char *)id);
+        if (rel)
+        {
+          std::string type = rel->getType();
+          if (type == "http://schemas.microsoft.com/visio/2010/relationships/master")
+          {
+            m_currentDepth += xmlTextReaderDepth(reader);
+            parseMaster(m_input, rel->getTarget().c_str());
+            m_currentDepth -= xmlTextReaderDepth(reader);
+          }
+          else if (type == "http://schemas.microsoft.com/visio/2010/relationships/page")
+          {
+            m_currentDepth += xmlTextReaderDepth(reader);
+            parsePage(m_input, rel->getTarget().c_str());
+            m_currentDepth -= xmlTextReaderDepth(reader);
+          }
+          else
+            processXmlNode(reader);
+        }
+        xmlFree(id);
+      }
+    }
+    else
+      processXmlNode(reader);
+
+    xmlFree(nodeName);
+    ret = xmlTextReaderRead(reader);
+  }
+
+  xmlFreeTextReader(reader);
+}
+
+void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
+{
+  if (!reader)
+    return;
+#ifdef DEBUG
+  xmlChar *name = xmlTextReaderName(reader);
+  if (!name)
+    name = xmlStrdup(BAD_CAST(""));
+  xmlChar *value = xmlTextReaderValue(reader);
+  int type = xmlTextReaderNodeType(reader);
+  int isEmptyElement = xmlTextReaderIsEmptyElement(reader);
+
+  for (int i=0; i<xmlTextReaderDepth(reader)+m_currentDepth; ++i)
+  {
+    VSD_DEBUG_MSG((" "));
+  }
+  VSD_DEBUG_MSG(("%i %i %s", isEmptyElement, type, name));
+  xmlFree(name);
+  if (xmlTextReaderNodeType(reader) == 1)
+  {
+    xmlChar *name1, *value1;
+    while (xmlTextReaderMoveToNextAttribute(reader))
+    {
+      name1 = xmlTextReaderName(reader);
+      value1 = xmlTextReaderValue(reader);
+      printf(" %s=\"%s\"", name1, value1);
+      xmlFree(name1);
+      xmlFree(value1);
+    }
+  }
+
+  if (!value)
+    VSD_DEBUG_MSG(("\n"));
+  else
+  {
+    VSD_DEBUG_MSG((" %s\n", value));
+    xmlFree(value);
+  }
+#endif
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

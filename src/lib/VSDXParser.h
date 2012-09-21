@@ -66,7 +66,8 @@ private:
 
   // Functions reading the Visio 2013 OPC document content
 
-
+  void processXmlDocument(WPXInputStream *input, VSDXRelationships &rels);
+  void processXmlNode(xmlTextReaderPtr reader);
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
@@ -74,7 +75,7 @@ private:
   VSDStencils m_stencils;
 
   bool m_extractStencils;
-
+  int m_currentDepth;
 };
 
 } // namespace libvisio
