@@ -63,11 +63,14 @@ private:
   bool parsePages(WPXInputStream *input, const char *name);
   bool parsePage(WPXInputStream *input, const char *name);
   bool parseTheme(WPXInputStream *input, const char *name);
+  void processXmlDocument(WPXInputStream *input, VSDXRelationships &rels);
+  void processXmlNode(xmlTextReaderPtr reader);
 
   // Functions reading the Visio 2013 OPC document content
 
-  void processXmlDocument(WPXInputStream *input, VSDXRelationships &rels);
-  void processXmlNode(xmlTextReaderPtr reader);
+  void extractBinaryData(WPXInputStream *input, const char *name);
+
+  // Private data
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
@@ -76,6 +79,7 @@ private:
 
   bool m_extractStencils;
   int m_currentDepth;
+  WPXBinaryData m_currentBinaryData;
 };
 
 } // namespace libvisio

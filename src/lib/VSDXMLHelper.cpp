@@ -98,7 +98,7 @@ libvisio::VSDXRelationship::VSDXRelationship(xmlTextReaderPtr reader)
       xmlFree(name);
       xmlFree(value);
     }
-    VSD_DEBUG_MSG(("Relationship : %s type: %s target: %s\n", m_id.c_str(), m_type.c_str(), m_target.c_str()));
+    // VSD_DEBUG_MSG(("Relationship : %s type: %s target: %s\n", m_id.c_str(), m_type.c_str(), m_target.c_str()));
   }
 }
 
@@ -140,7 +140,7 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
     target.append(normalizedSegments[j]);
   }
 
-  VSD_DEBUG_MSG(("VSDXRelationship::rebaseTarget %s -> %s\n", m_target.c_str(), target.c_str()));
+  // VSD_DEBUG_MSG(("VSDXRelationship::rebaseTarget %s -> %s\n", m_target.c_str(), target.c_str()));
   m_target = target;
 }
 
@@ -166,12 +166,12 @@ libvisio::VSDXRelationships::VSDXRelationships(WPXInputStream *input)
           {
             if (xmlTextReaderNodeType(reader) == 1)
             {
-              VSD_DEBUG_MSG(("Relationships ON\n"));
+              // VSD_DEBUG_MSG(("Relationships ON\n"));
               inRelationships = true;
             }
             else if (xmlTextReaderNodeType(reader) == 15)
             {
-              VSD_DEBUG_MSG(("Relationships OFF\n"));
+              // VSD_DEBUG_MSG(("Relationships OFF\n"));
               inRelationships = false;
             }
           }

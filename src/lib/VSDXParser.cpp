@@ -66,8 +66,8 @@ std::string getRelationshipsForTarget(const char *target)
 
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(0), m_painter(painter), m_collector(),
-    m_stencils(), m_extractStencils(false), m_currentDepth(0)
+  : m_input(0), m_painter(painter), m_collector(), m_stencils(), m_extractStencils(false),
+    m_currentDepth(0), m_currentBinaryData()
 {
   input->seek(0, WPX_SEEK_CUR);
   m_input = new VSDZipStream(input);
@@ -344,6 +344,10 @@ void libvisio::VSDXParser::processXmlDocument(WPXInputStream *input, VSDXRelatio
             parsePage(m_input, rel->getTarget().c_str());
             m_currentDepth -= xmlTextReaderDepth(reader);
           }
+          else if (type == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
+          {
+            extractBinaryData(m_input, rel->getTarget().c_str());
+          }
           else
             processXmlNode(reader);
         }
@@ -399,6 +403,30 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     xmlFree(value);
   }
 #endif
+}
+
+#define VSDX_DATA_READ_SIZE 4096UL
+
+void libvisio::VSDXParser::extractBinaryData(WPXInputStream *input, const char *name)
+{
+  m_currentBinaryData.clear();
+  if (!input || !input->isOLEStream())
+    return;
+  input->seek(0, WPX_SEEK_SET);
+  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  if (!stream)
+    return;
+  while (true)
+  {
+    unsigned long numBytesRead;
+    const unsigned char *buffer = stream->read(VSDX_DATA_READ_SIZE, numBytesRead);
+    if (numBytesRead)
+      m_currentBinaryData.append(buffer, numBytesRead);
+    if (stream->atEOS())
+      break;
+  }
+  delete stream;
+  VSD_DEBUG_MSG(("%s\n", m_currentBinaryData.getBase64Data().cstr()));
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
