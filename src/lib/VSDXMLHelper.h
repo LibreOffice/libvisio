@@ -38,8 +38,15 @@
 namespace libvisio
 {
 
-class VSDCollector;
+// create an xmlTextReader pointer from a WPXInputStream pointer
+// needs to be freed using xmlTextReaderFree function.
 
+xmlTextReaderPtr xmlReaderForStream(WPXInputStream *input,
+                                    const char *URL,
+                                    const char *encoding,
+                                    int options);
+
+class VSDCollector;
 
 // Helper classes to properly handle OPC relationships
 
@@ -74,7 +81,6 @@ private:
 class VSDXRelationships
 {
 public:
-  VSDXRelationships(xmlTextReaderPtr reader);
   VSDXRelationships(WPXInputStream *input);
   ~VSDXRelationships();
 
@@ -91,8 +97,6 @@ public:
 private:
   std::map<std::string, VSDXRelationship> m_relsByType;
   std::map<std::string, VSDXRelationship> m_relsById;
-
-  void parseRelationships(xmlTextReaderPtr reader);
 };
 
 } // namespace libvisio

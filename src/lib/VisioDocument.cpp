@@ -37,6 +37,7 @@
 #include "VSDXParser.h"
 #include "VSD6Parser.h"
 #include "VSD11Parser.h"
+#include "VSDXMLHelper.h"
 #include "VSDZipStream.h"
 
 namespace
@@ -115,7 +116,58 @@ static bool isOpcVisioDocument(WPXInputStream *input)
   }
 }
 
+static bool isXmlVisioDocument(WPXInputStream *input)
+{
+  input->seek(0, WPX_SEEK_SET);
+  xmlTextReaderPtr reader = libvisio::xmlReaderForStream(input, 0, 0, 0);
+  if (!reader)
+    return false;
+  int ret = xmlTextReaderRead(reader);
+  while (ret == 1 && 1 != xmlTextReaderNodeType(reader))
+    ret = xmlTextReaderRead(reader);
+  if (ret != 1)
+  {
+    xmlFreeTextReader(reader);
+    return false;
+  }
+  xmlChar *name = xmlTextReaderName(reader);
+  if (!name)
+  {
+    xmlFreeTextReader(reader);
+    return false;
+  }
+  if (!xmlStrEqual(name, BAD_CAST("VisioDocument")))
+  {
+    xmlFree(name);
+    xmlFreeTextReader(reader);
+    return false;
+  }
+  xmlFree(name);
+
+  // Checking the two possible namespaces of VDX documents. This may be a bit strict
+  // and filter out some of third party VDX documents. If that happens, commenting out
+  // this block could be an option.
+#if 1
+  xmlChar *nsname = xmlTextReaderNamespaceUri(reader);
+  if (!nsname)
+  {
+    xmlFreeTextReader(reader);
+    return false;
+  }
+  if (!xmlStrEqual(nsname, BAD_CAST("urn:schemas-microsoft-com:office:visio"))
+      && !xmlStrEqual(nsname, BAD_CAST("http://schemas.microsoft.com/visio/2003/core")))
+  {
+    xmlFree(nsname);
+    xmlFreeTextReader(reader);
+    return false;
+  }
+#endif
+  xmlFreeTextReader(reader);
+  return true;
+}
+
 } // anonymous namespace
+
 
 /**
 Analyzes the content of an input stream to see if it can be parsed
@@ -127,8 +179,12 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
 {
   if (isBinaryVisioDocument(input))
     return true;
+#if 1
   if (isOpcVisioDocument(input))
     return true;
+  if (isXmlVisioDocument(input))
+    return true;
+#endif
   return false;
 }
 
@@ -144,6 +200,7 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
 {
   if (isBinaryVisioDocument(input))
   {
+    VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
     input->seek(0, WPX_SEEK_SET);
     if (!input->isOLEStream())
       return false;
@@ -184,11 +241,18 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
   }
   else if (isOpcVisioDocument(input))
   {
+    VSD_DEBUG_MSG(("Parsing Visio Document based on Open Packaging Convention\n"));
     input->seek(0, WPX_SEEK_SET);
     VSDXParser parser(input, painter);
     if (parser.parseMain())
       return true;
     return false;
+  }
+  else if (isXmlVisioDocument(input))
+  {
+    VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
+    input->seek(0, WPX_SEEK_SET);
+    return true;
   }
   return false;
 }

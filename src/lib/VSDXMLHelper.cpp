@@ -69,6 +69,13 @@ extern "C" {
 
 } // anonymous namespace
 
+// xmlTextReader helper function
+
+xmlTextReaderPtr libvisio::xmlReaderForStream(WPXInputStream *input, const char *URL, const char *encoding, int options)
+{
+  return xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, URL, encoding, options);
+}
+
 
 // VSDXRelationship
 
@@ -140,19 +147,49 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
 
 // VSDXRelationships
 
-libvisio::VSDXRelationships::VSDXRelationships(xmlTextReaderPtr reader)
-  : m_relsByType(), m_relsById()
-{
-  parseRelationships(reader);
-}
-
 libvisio::VSDXRelationships::VSDXRelationships(WPXInputStream *input)
   : m_relsByType(), m_relsById()
 {
   if (input)
   {
-    xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, NULL, NULL, 0);
-    parseRelationships(reader);
+    xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
+    if (reader)
+    {
+      bool inRelationships = false;
+      int ret = xmlTextReaderRead(reader);
+      while (ret == 1)
+      {
+        xmlChar *name = xmlTextReaderName(reader);
+        if (name)
+        {
+          if (xmlStrEqual(name, BAD_CAST("Relationships")))
+          {
+            if (xmlTextReaderNodeType(reader) == 1)
+            {
+              VSD_DEBUG_MSG(("Relationships ON\n"));
+              inRelationships = true;
+            }
+            else if (xmlTextReaderNodeType(reader) == 15)
+            {
+              VSD_DEBUG_MSG(("Relationships OFF\n"));
+              inRelationships = false;
+            }
+          }
+          else if (xmlStrEqual(name, BAD_CAST("Relationship")))
+          {
+            if (inRelationships)
+            {
+              VSDXRelationship relationship(reader);
+              m_relsByType[relationship.getType()] = relationship;
+              m_relsById[relationship.getId()] = relationship;
+            }
+          }
+        }
+        xmlFree(name);
+        ret = xmlTextReaderRead(reader);
+      }
+      xmlFreeTextReader(reader);
+    }
   }
 }
 
@@ -183,46 +220,6 @@ const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipBy
   if (iter != m_relsById.end())
     return &(iter->second);
   return 0;
-}
-
-void libvisio::VSDXRelationships::parseRelationships(xmlTextReaderPtr reader)
-{
-  if (reader)
-  {
-    bool inRelationships = false;
-    int ret = xmlTextReaderRead(reader);
-    while (ret == 1)
-    {
-      xmlChar *name = xmlTextReaderName(reader);
-      if (name)
-      {
-        if (xmlStrEqual(name, BAD_CAST("Relationships")))
-        {
-          if (xmlTextReaderNodeType(reader) == 1)
-          {
-            VSD_DEBUG_MSG(("Relationships ON\n"));
-            inRelationships = true;
-          }
-          else if (xmlTextReaderNodeType(reader) == 15)
-          {
-            VSD_DEBUG_MSG(("Relationships OFF\n"));
-            inRelationships = false;
-          }
-        }
-        else if (xmlStrEqual(name, BAD_CAST("Relationship")))
-        {
-          if (inRelationships)
-          {
-            VSDXRelationship relationship(reader);
-            m_relsByType[relationship.getType()] = relationship;
-            m_relsById[relationship.getId()] = relationship;
-          }
-        }
-      }
-      xmlFree(name);
-      ret = xmlTextReaderRead(reader);
-    }
-  }
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
