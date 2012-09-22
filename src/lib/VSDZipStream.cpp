@@ -160,7 +160,10 @@ WPXInputStream *libvisio::VSDZipStream::getDocumentOLEStream(const char *name)
 
 bool libvisio::VSDZipStreamImpl::findCentralDirectoryEnd()
 {
-  m_input->seek(m_cdir_offset, WPX_SEEK_SET);
+  if (m_cdir_offset || m_input->seek(-1024, WPX_SEEK_END))
+  {
+    m_input->seek(m_cdir_offset, WPX_SEEK_SET);
+  }
   try
   {
     while (!m_input->atEOS())
