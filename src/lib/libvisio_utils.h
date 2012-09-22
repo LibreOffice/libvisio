@@ -96,6 +96,10 @@ class EndOfStreamException
 {
 };
 
+class XmlParserException
+{
+};
+
 class GenericException
 {
 };

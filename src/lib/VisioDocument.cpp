@@ -119,52 +119,59 @@ static bool isOpcVisioDocument(WPXInputStream *input)
 
 static bool isXmlVisioDocument(WPXInputStream *input)
 {
-  input->seek(0, WPX_SEEK_SET);
-  xmlTextReaderPtr reader = libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
-  if (!reader)
-    return false;
-  int ret = xmlTextReaderRead(reader);
-  while (ret == 1 && 1 != xmlTextReaderNodeType(reader))
-    ret = xmlTextReaderRead(reader);
-  if (ret != 1)
+  xmlTextReaderPtr reader = 0;
+  try
   {
-    xmlFreeTextReader(reader);
-    return false;
-  }
-  xmlChar *name = xmlTextReaderName(reader);
-  if (!name)
-  {
-    xmlFreeTextReader(reader);
-    return false;
-  }
-  if (!xmlStrEqual(name, BAD_CAST("VisioDocument")))
-  {
-    xmlFree(name);
-    xmlFreeTextReader(reader);
-    return false;
-  }
-  xmlFree(name);
+    input->seek(0, WPX_SEEK_SET);
+    reader = libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
+    if (!reader)
+      return false;
+    int ret = xmlTextReaderRead(reader);
+    while (ret == 1 && 1 != xmlTextReaderNodeType(reader))
+      ret = xmlTextReaderRead(reader);
+    if (ret != 1)
+    {
+      xmlFreeTextReader(reader);
+      return false;
+    }
+    const xmlChar *name = xmlTextReaderConstName(reader);
+    if (!name)
+    {
+      xmlFreeTextReader(reader);
+      return false;
+    }
+    if (!xmlStrEqual(name, BAD_CAST("VisioDocument")))
+    {
+      xmlFreeTextReader(reader);
+      return false;
+    }
 
-  // Checking the two possible namespaces of VDX documents. This may be a bit strict
-  // and filter out some of third party VDX documents. If that happens, commenting out
-  // this block could be an option.
+    // Checking the two possible namespaces of VDX documents. This may be a bit strict
+    // and filter out some of third party VDX documents. If that happens, commenting out
+    // this block could be an option.
 #if 1
-  xmlChar *nsname = xmlTextReaderNamespaceUri(reader);
-  if (!nsname)
-  {
-    xmlFreeTextReader(reader);
-    return false;
-  }
-  if (!xmlStrEqual(nsname, BAD_CAST("urn:schemas-microsoft-com:office:visio"))
-      && !xmlStrEqual(nsname, BAD_CAST("http://schemas.microsoft.com/visio/2003/core")))
-  {
-    xmlFree(nsname);
-    xmlFreeTextReader(reader);
-    return false;
-  }
+    const xmlChar *nsname = xmlTextReaderConstNamespaceUri(reader);
+    if (!nsname)
+    {
+      xmlFreeTextReader(reader);
+      return false;
+    }
+    if (!xmlStrEqual(nsname, BAD_CAST("urn:schemas-microsoft-com:office:visio"))
+        && !xmlStrEqual(nsname, BAD_CAST("http://schemas.microsoft.com/visio/2003/core")))
+    {
+      xmlFreeTextReader(reader);
+      return false;
+    }
 #endif
-  xmlFreeTextReader(reader);
-  return true;
+    xmlFreeTextReader(reader);
+    return true;
+  }
+  catch (...)
+  {
+    if (reader)
+      xmlFreeTextReader(reader);
+    return false;
+  }
 }
 
 } // anonymous namespace

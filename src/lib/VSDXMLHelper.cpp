@@ -42,7 +42,7 @@ namespace
 
 extern "C" {
 
-  static int vsdxInputCloseFunc(void * /* context */)
+  static int vsdxInputCloseFunc(void *)
   {
     return 0;
   }
@@ -65,6 +65,12 @@ extern "C" {
     return tmpNumBytesRead;
   }
 
+  static void vsdxReaderErrorFunc(void *, const char *, xmlParserSeverities severity, xmlTextReaderLocatorPtr)
+  {
+    if (severity == XML_PARSER_SEVERITY_ERROR)
+      throw libvisio::XmlParserException();
+  }
+
 }
 
 } // anonymous namespace
@@ -73,7 +79,9 @@ extern "C" {
 
 xmlTextReaderPtr libvisio::xmlReaderForStream(WPXInputStream *input, const char *URL, const char *encoding, int options)
 {
-  return xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, URL, encoding, options);
+  xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, URL, encoding, options);
+  xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, 0);
+  return reader;
 }
 
 
