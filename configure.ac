@@ -39,7 +39,7 @@ PKG_PROG_PKG_CONFIG([0.20])
 # ====================
 PKG_CHECK_MODULES([LIBVISIO],[
 	libwpd-0.9
-	libwpd-stream-0.9 >= 0.9.5
+	libwpd-stream-0.9
 	libwpg-0.2
 	libxml-2.0
 ])

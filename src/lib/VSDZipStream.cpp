@@ -33,6 +33,7 @@
 #include <string.h>
 #include <zlib.h>
 #include <map>
+#include <libwpd-stream/libwpd-stream.h>
 #include "VSDZipStream.h"
 #include "VSDInternalStream.h"
 #include "libvisio_utils.h"
@@ -160,10 +161,12 @@ WPXInputStream *libvisio::VSDZipStream::getDocumentOLEStream(const char *name)
 
 bool libvisio::VSDZipStreamImpl::findCentralDirectoryEnd()
 {
+#if defined(LIBWPD_STREAM_VERSION_MAJOR) && defined(LIBWPD_STREAM_VERSION_MINOR) && defined(LIBWPD_STREAM_VERSION_REVISION) \
+  && (LIBWPD_STREAM_VERSION_MAJOR > 0 || (LIBWPD_STREAM_VERSION_MAJOR == 0 && (LIBWPD_STREAM_VERSION_MINOR > 9 \
+  || (LIBWPD_STREAM_VERSION_MINOR == 9 && LIBWPD_STREAM_VERSION_REVISION >= 5))))
   if (m_cdir_offset || m_input->seek(-1024, WPX_SEEK_END))
-  {
+#endif
     m_input->seek(m_cdir_offset, WPX_SEEK_SET);
-  }
   try
   {
     while (!m_input->atEOS())
