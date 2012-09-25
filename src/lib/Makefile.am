@@ -11,10 +11,14 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_include_HEADERS = \
 	VSDStringVector.h \
 	VisioDocument.h
 
-AM_CXXFLAGS = $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
+
+generated_files = \
+	$(top_builddir)/src/lib/tokens.h \
+	$(top_builddir)/src/lib/tokenhash.h
 
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = $(LIBVISIO_LIBS) @LIBVISIO_WIN32_RESOURCE@
-libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@
+libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@ $(generated_files)
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_utils.cpp \
@@ -38,6 +42,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStyles.cpp \
 	VSDStylesCollector.cpp \
 	VSDXMLHelper.cpp \
+	VSDXMLTokenMap.cpp \
 	VSDXParser.cpp \
 	VSDZipStream.cpp \
 	libvisio_utils.h \
@@ -62,8 +67,22 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStylesCollector.h \
 	VSDTypes.h \
 	VSDXMLHelper.h \
+	VSDXMLTokenMap.h \
 	VSDXParser.h \
-	VSDZipStream.h
+	VSDZipStream.h \
+	$(generated_files)
+
+$(libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_OBJECTS) : $(generated_files)
+
+$(top_builddir)/src/lib/tokens.h : $(top_builddir)/src/lib/tokens.gperf
+
+$(top_builddir)/src/lib/tokenhash.h : $(top_builddir)/src/lib/tokens.gperf
+	$(GPERF) --compare-strncmp -C -m 20 $(top_builddir)/src/lib/tokens.gperf \
+		| $(SED) -e "s/(char\*)0/(char\*)0, 0/g" > $(top_builddir)/src/lib/tokenhash.h
+
+$(top_builddir)/src/lib/tokens.gperf : $(top_srcdir)/src/lib/tokens.txt gentoken.pl
+	perl $(top_srcdir)/src/lib/gentoken.pl $(top_srcdir)/src/lib/tokens.txt \
+		$(top_builddir)/src/lib/tokens.h $(top_builddir)/src/lib/tokens.gperf
 
 if OS_WIN32
 
@@ -73,8 +92,12 @@ if OS_WIN32
 
 endif
 
+clean-local :
+	rm -f $(generated_files) $(top_builddir)/src/lib/*.gperf
 
 EXTRA_DIST = \
+	tokens.txt \
+    gentoken.pl \
 	libvisio.rc.in \
 	makefile.mk
 
