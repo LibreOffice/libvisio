@@ -5,6 +5,7 @@ version_info = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 endif
 
 lib_LTLIBRARIES = libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la
+noinst_LTLIBRARIES = libtokenmap.la
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_includedir = $(includedir)/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@/libvisio
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_include_HEADERS = \
 	libvisio.h \
@@ -17,8 +18,8 @@ generated_files = \
 	$(top_builddir)/src/lib/tokens.h \
 	$(top_builddir)/src/lib/tokenhash.h
 
-libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = $(LIBVISIO_LIBS) @LIBVISIO_WIN32_RESOURCE@
-libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@ $(generated_files)
+libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = libtokenmap.la $(LIBVISIO_LIBS) @LIBVISIO_WIN32_RESOURCE@
+libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@ libtokenmap.la
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_utils.cpp \
@@ -42,7 +43,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStyles.cpp \
 	VSDStylesCollector.cpp \
 	VSDXMLHelper.cpp \
-	VSDXMLTokenMap.cpp \
 	VSDXParser.cpp \
 	VSDZipStream.cpp \
 	libvisio_utils.h \
@@ -67,12 +67,16 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStylesCollector.h \
 	VSDTypes.h \
 	VSDXMLHelper.h \
-	VSDXMLTokenMap.h \
 	VSDXParser.h \
-	VSDZipStream.h \
-	$(generated_files)
+	VSDZipStream.h
 
-$(libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_OBJECTS) : $(generated_files)
+libtokenmap_la_SOURCES = \
+	VSDXMLTokenMap.cpp \
+	VSDXMLTokenMap.h \
+	$(generated_files)
+	
+
+$(libtokenmap_la_OBJECTS) : $(generated_files)
 
 $(top_builddir)/src/lib/tokens.h : $(top_builddir)/src/lib/tokens.gperf
 

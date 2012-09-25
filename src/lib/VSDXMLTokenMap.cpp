@@ -35,36 +35,31 @@ namespace libvisio
 
 #include "tokenhash.h"
 
-int getTokenId( const char *name, int name_length )
+} // namespace libvisio
+
+int libvisio::VSDXMLTokenMap::getTokenId(const xmlChar *name)
 {
-  const xmltoken *token = Perfect_Hash::in_word_set( name, name_length );
-  if( token )
+  const xmltoken *token = Perfect_Hash::in_word_set((const char *)name, xmlStrlen(name));
+  if(token)
     return token->tokenId;
   else
     return XML_TOKEN_INVALID;
 }
 
-int getTokenId( const xmlChar *name )
-{
-  return getTokenId((const char *)name, xmlStrlen(name));
-}
-
-const char *getTokenName( int tokenId )
+const xmlChar *libvisio::VSDXMLTokenMap::getTokenName(int tokenId)
 {
   if(tokenId >= XML_TOKEN_COUNT)
     return 0;
 
   const xmltoken *currentToken = wordlist;
-  while( currentToken != wordlist+sizeof(wordlist)/sizeof(*wordlist) )
+  while(currentToken != wordlist+sizeof(wordlist)/sizeof(*wordlist))
   {
     if(currentToken->tokenId == tokenId)
-      return currentToken->name;
+      return BAD_CAST(currentToken->name);
     ++currentToken;
   }
 
   return 0;
 }
-
-} // namespace libvisio
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

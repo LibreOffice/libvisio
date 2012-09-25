@@ -39,9 +39,8 @@ namespace libvisio
 class VSDXMLTokenMap
 {
 public:
-  static int getTokenId(const char *name, int name_len);
   static int getTokenId(const xmlChar *name);
-  static const char *getTokenName(int tokenId);
+  static const xmlChar *getTokenName(int tokenId);
 };
 
 } // namespace libvisio
