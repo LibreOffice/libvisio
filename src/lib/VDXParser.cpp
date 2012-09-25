@@ -102,10 +102,8 @@ bool libvisio::VDXParser::processXmlDocument(WPXInputStream *input)
   int ret = xmlTextReaderRead(reader);
   while (ret == 1)
   {
-    xmlChar *nodeName = xmlTextReaderName(reader);
     processXmlNode(reader);
 
-    xmlFree(nodeName);
     ret = xmlTextReaderRead(reader);
   }
   xmlFreeTextReader(reader);
@@ -124,10 +122,8 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   if (!reader)
     return;
 #ifdef DEBUG
-  xmlChar *name = xmlTextReaderName(reader);
-  if (!name)
-    name = xmlStrdup(BAD_CAST(""));
-  xmlChar *value = xmlTextReaderValue(reader);
+  const xmlChar *name = xmlTextReaderConstName(reader);
+  const xmlChar *value = xmlTextReaderConstValue(reader);
   int type = xmlTextReaderNodeType(reader);
   int isEmptyElement = xmlTextReaderIsEmptyElement(reader);
 
@@ -135,18 +131,14 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   {
     VSD_DEBUG_MSG((" "));
   }
-  VSD_DEBUG_MSG(("%i %i %s", isEmptyElement, type, name));
-  xmlFree(name);
+  VSD_DEBUG_MSG(("%i %i %s", isEmptyElement, type, name ? (const char *)name : ""));
   if (xmlTextReaderNodeType(reader) == 1)
   {
-    xmlChar *name1, *value1;
     while (xmlTextReaderMoveToNextAttribute(reader))
     {
-      name1 = xmlTextReaderName(reader);
-      value1 = xmlTextReaderValue(reader);
+      const xmlChar *name1 = xmlTextReaderConstName(reader);
+      const xmlChar *value1 = xmlTextReaderConstValue(reader);
       printf(" %s=\"%s\"", name1, value1);
-      xmlFree(name1);
-      xmlFree(value1);
     }
   }
 
@@ -155,7 +147,6 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   else
   {
     VSD_DEBUG_MSG((" %s\n", value));
-    xmlFree(value);
   }
 #endif
 }

@@ -95,16 +95,14 @@ libvisio::VSDXRelationship::VSDXRelationship(xmlTextReaderPtr reader)
   {
     while (xmlTextReaderMoveToNextAttribute(reader))
     {
-      xmlChar *name = xmlTextReaderName(reader);
-      xmlChar *value = xmlTextReaderValue(reader);
+      const xmlChar *name = xmlTextReaderConstName(reader);
+      const xmlChar *value = xmlTextReaderConstValue(reader);
       if (xmlStrEqual(name, BAD_CAST("Id")))
-        m_id = (char *)value;
+        m_id = (const char *)value;
       else if (xmlStrEqual(name, BAD_CAST("Type")))
-        m_type = (char *)value;
+        m_type = (const char *)value;
       else if (xmlStrEqual(name, BAD_CAST("Target")))
-        m_target = (char *)value;
-      xmlFree(name);
-      xmlFree(value);
+        m_target = (const char *)value;
     }
     // VSD_DEBUG_MSG(("Relationship : %s type: %s target: %s\n", m_id.c_str(), m_type.c_str(), m_target.c_str()));
   }
@@ -167,7 +165,7 @@ libvisio::VSDXRelationships::VSDXRelationships(WPXInputStream *input)
       int ret = xmlTextReaderRead(reader);
       while (ret == 1)
       {
-        xmlChar *name = xmlTextReaderName(reader);
+        const xmlChar *name = xmlTextReaderConstName(reader);
         if (name)
         {
           if (xmlStrEqual(name, BAD_CAST("Relationships")))
@@ -193,7 +191,6 @@ libvisio::VSDXRelationships::VSDXRelationships(WPXInputStream *input)
             }
           }
         }
-        xmlFree(name);
         ret = xmlTextReaderRead(reader);
       }
       xmlFreeTextReader(reader);
