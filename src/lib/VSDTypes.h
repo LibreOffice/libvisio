@@ -31,6 +31,7 @@
 #ifndef VSDTYPES_H
 #define VSDTYPES_H
 
+#include <vector>
 #include <libwpd/libwpd.h>
 
 namespace libvisio
@@ -146,6 +147,7 @@ enum TextFormat
   VSD_TEXT_RUSSIAN,
   VSD_TEXT_THAI,
   VSD_TEXT_CENTRAL_EUROPE,
+  VSD_TEXT_UTF8,
   VSD_TEXT_UTF16
 };
 

@@ -28,6 +28,9 @@
  */
 
 #include <string.h>
+#include <errno.h>
+#include <sstream>
+#include <istream>
 #include <vector>
 #include <boost/algorithm/string.hpp>
 #include <libxml/xmlIO.h>
@@ -83,6 +86,106 @@ xmlTextReaderPtr libvisio::xmlReaderForStream(WPXInputStream *input, const char 
   xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, 0);
   return reader;
 }
+
+libvisio::Colour libvisio::xmlStringToColour(const xmlChar *s)
+{
+  std::string str((const char *)s);
+  if (str[0] == '#')
+  {
+    if (str.length() != 7)
+    {
+      VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+      throw XmlParserException();
+    }
+    else
+      str.erase(str.begin());
+  }
+  else
+  {
+    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+    throw XmlParserException();
+  }
+
+  std::istringstream istr(str);
+  unsigned val = 0;
+  istr >> std::hex >> val;
+
+  return Colour((val & 0xff0000) >> 16, (val & 0xff00) >> 8, val & 0xff, 0);
+}
+
+long libvisio::xmlStringToInt(const xmlChar *s)
+{
+  char *end;
+  errno = 0;
+  long value = strtol((const char *)s, &end, 0);
+
+  if ((ERANGE == errno && (LONG_MAX == value || LONG_MIN == value)) || (errno && !value))
+  {
+    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+    throw XmlParserException();
+  }
+  else if (*end)
+  {
+    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+    throw XmlParserException();
+  }
+
+  return value;
+}
+
+double libvisio::xmlStringToDouble(const xmlChar *s)
+{
+  char *end;
+  std::string doubleStr((const char *)s);
+
+#ifndef __ANDROID__
+  std::string decimalPoint(localeconv()->decimal_point);
+#else
+  std::string decimalPoint(".");
+#endif
+  if (!decimalPoint.empty() && decimalPoint != ".")
+  {
+    if (!doubleStr.empty())
+    {
+      std::string::size_type pos;
+      while ((pos = doubleStr.find(".")) != std::string::npos)
+        doubleStr.replace(pos,1,decimalPoint);
+    }
+  }
+
+  errno = 0;
+  double value = strtod(doubleStr.c_str(), &end);
+
+  if ((ERANGE == errno) || (errno && !value))
+  {
+    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+    throw XmlParserException();
+  }
+  else if (*end)
+  {
+    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+    throw XmlParserException();
+  }
+
+  return value;
+}
+
+bool libvisio::xmlStringToBool(const xmlChar *s)
+{
+  bool value = false;
+  if (xmlStrEqual(s, BAD_CAST("true")) || xmlStrEqual(s, BAD_CAST("1")))
+    value = true;
+  else if (xmlStrEqual(s, BAD_CAST("false")) || xmlStrEqual(s, BAD_CAST("0")))
+    value = false;
+  else
+  {
+    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+    throw XmlParserException();
+  }
+  return value;
+
+}
+
 
 
 // VSDXRelationship

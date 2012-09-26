@@ -148,8 +148,9 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourInde
   else if (m_fillPattern == 1)
   {
     m_fillType = "solid";
-    if (colourIndexFG < m_colours.size())
-      m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexFG]));
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(colourIndexFG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:fill-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
@@ -163,14 +164,16 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourInde
   {
     m_fillType = "gradient";
     m_styleProps.insert("draw:style", "axial");
-    if (colourIndexFG < m_colours.size())
-      m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexFG]));
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(colourIndexFG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:start-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
 #endif
-    if (colourIndexBG < m_colours.size())
-      m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexBG]));
+    iter = m_colours.find(colourIndexBG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:end-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
@@ -195,14 +198,16 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourInde
   {
     m_fillType = "gradient";
     m_styleProps.insert("draw:style", "linear");
-    if (colourIndexBG < m_colours.size())
-      m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(colourIndexBG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:start-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
 #endif
-    if (colourIndexFG < m_colours.size())
-      m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    iter = m_colours.find(colourIndexFG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:end-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
@@ -252,14 +257,16 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourInde
     m_styleProps.insert("draw:style", "rectangular");
     m_styleProps.insert("svg:cx", 0.5, WPX_PERCENT);
     m_styleProps.insert("svg:cy", 0.5, WPX_PERCENT);
-    if (colourIndexBG < m_colours.size())
-      m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(colourIndexBG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:start-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
 #endif
-    if (colourIndexFG < m_colours.size())
-      m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    iter = m_colours.find(colourIndexFG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:end-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
@@ -280,14 +287,16 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourInde
   {
     m_fillType = "gradient";
     m_styleProps.insert("draw:style", "radial");
-    if (colourIndexBG < m_colours.size())
-      m_styleProps.insert("draw:start-color", getColourString(m_colours[colourIndexBG]));
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(colourIndexBG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:start-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
 #endif
-    if (colourIndexFG < m_colours.size())
-      m_styleProps.insert("draw:end-color", getColourString(m_colours[colourIndexFG]));
+    iter = m_colours.find(colourIndexFG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:end-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexFG out of bonds\n"));
@@ -331,8 +340,9 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourInde
     // fill types we don't handle right, but let us approximate with solid fill
   {
     m_fillType = "solid";
-    if (colourIndexBG < m_colours.size())
-      m_styleProps.insert("draw:fill-color", getColourString(m_colours[colourIndexBG]));
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(colourIndexBG);
+    if (iter != m_colours.end())
+      m_styleProps.insert("draw:fill-color", getColourString(iter->second));
 #ifdef DEBUG
     else
       VSD_DEBUG_MSG(("_fillAndShadowProperties: colourIndexBG out of bonds\n"));
@@ -2144,12 +2154,9 @@ void libvisio::VSDContentCollector::collectUnhandledChunk(unsigned /* id */, uns
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::collectColours(const std::vector<Colour> &colours)
+void libvisio::VSDContentCollector::collectColours(const std::map<unsigned, Colour> &colours)
 {
-  m_colours.clear();
-  m_colours.reserve(colours.size());
-  for (unsigned i = 0; i < colours.size(); i++)
-    m_colours.push_back(colours[i]);
+  m_colours = colours;
 }
 
 void libvisio::VSDContentCollector::collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format)
@@ -2516,6 +2523,15 @@ void libvisio::VSDContentCollector::appendCharacters(WPXString &text, const std:
 {
   if (format == VSD_TEXT_UTF16)
     return appendCharacters(text, characters);
+  if (format == VSD_TEXT_UTF8)
+  {
+    for (std::vector<unsigned char>::const_iterator iter = characters.begin();
+         iter != characters.end(); ++iter)
+    {
+      text.append((const char)*iter);
+    }
+    return;
+  }
 
   static const unsigned short cp874map[] =
   {

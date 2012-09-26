@@ -38,6 +38,7 @@
 #include "VSDStylesCollector.h"
 #include "VSDZipStream.h"
 #include "VSDXMLHelper.h"
+#include "VSDXMLTokenMap.h"
 
 
 libvisio::VDXParser::VDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
@@ -121,6 +122,22 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
 {
   if (!reader)
     return;
+  int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+  int tokenType = xmlTextReaderNodeType(reader);
+  switch (tokenId)
+  {
+  case XML_COLORS:
+    if (tokenType == 1)
+      readColours(reader);
+    break;
+  case XML_FACENAMES:
+    if (tokenType == 1)
+      readFonts(reader);
+    break;
+  default:
+    break;
+  }
+
 #ifdef DEBUG
   const xmlChar *name = xmlTextReaderConstName(reader);
   const xmlChar *value = xmlTextReaderConstValue(reader);
@@ -149,6 +166,217 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     VSD_DEBUG_MSG((" %s\n", value));
   }
 #endif
+}
+
+// Functions reading the DiagramML document content
+
+void libvisio::VDXParser::readEllipticalArcTo(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readForeignData(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readEllipse(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readLine(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readGeomList(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readGeometry(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readMoveTo(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readLineTo(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readArcTo(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readNURBSTo(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readPolylineTo(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readInfiniteLine(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readShapeData(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readXFormData(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readShapeId(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readShapeList(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readForeignDataType(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readPageProps(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readShape(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readColours(xmlTextReaderPtr reader)
+{
+  int ret = xmlTextReaderRead(reader);
+  int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+  std::map<unsigned, Colour> colours;
+  while (ret == 1 && ((XML_COLORS != tokenId || 15 != xmlTextReaderNodeType(reader))))
+  {
+    if (XML_COLORENTRY == tokenId)
+    {
+      xmlChar *ix = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+      xmlChar *rgb = xmlTextReaderGetAttribute(reader, BAD_CAST("RGB"));
+      if (ix && rgb)
+      {
+        unsigned idx = (unsigned)xmlStringToInt(ix);
+        Colour rgbColour = xmlStringToColour(rgb);
+        if (idx)
+          colours[idx] = rgbColour;
+      }
+      xmlFree(rgb);
+      xmlFree(ix);
+
+    }
+    ret = xmlTextReaderRead(reader);
+    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+  }
+
+}
+
+void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
+{
+  int ret = xmlTextReaderRead(reader);
+  int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+  while (ret == 1 && ((XML_FACENAMES != tokenId || 15 != xmlTextReaderNodeType(reader))))
+  {
+    if (XML_FACENAME == tokenId)
+    {
+      xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
+      xmlChar *name = xmlTextReaderGetAttribute(reader, BAD_CAST("Name"));
+      if (id && name)
+      {
+        unsigned idx = (unsigned)xmlStringToInt(id);
+        WPXBinaryData textStream(name, xmlStrlen(name));
+        m_collector->collectFont(idx, textStream, libvisio::VSD_TEXT_UTF8);
+      }
+      xmlFree(name);
+      xmlFree(id);
+
+    }
+    ret = xmlTextReaderRead(reader);
+    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+  }
+}
+
+void libvisio::VDXParser::readCharList(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readParaList(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readPage(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readText(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readCharIX(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readParaIX(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readNameList(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readName(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readFieldList(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readTextField(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readStyleSheet(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readPageSheet(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readSplineStart(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readSplineKnot(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readStencilShape(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readOLEList(xmlTextReaderPtr /* reader */)
+{
+}
+
+void libvisio::VDXParser::readOLEData(xmlTextReaderPtr /* reader */)
+{
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

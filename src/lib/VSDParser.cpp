@@ -1358,7 +1358,7 @@ void libvisio::VSDParser::readColours(WPXInputStream *input)
 
   input->seek(1, WPX_SEEK_CUR);
 
-  std::vector<Colour> colours;
+  std::map<unsigned, Colour> colours;
 
   for (unsigned i = 0; i < numColours; i++)
   {
@@ -1367,7 +1367,7 @@ void libvisio::VSDParser::readColours(WPXInputStream *input)
     tmpColour.b = readU8(input);
     tmpColour.a = readU8(input);
 
-    colours.push_back(tmpColour);
+    colours[i] = tmpColour;
   }
   m_collector->collectColours(colours);
 }

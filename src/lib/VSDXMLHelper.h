@@ -34,6 +34,7 @@
 #include <string>
 #include <libwpd-stream/libwpd-stream.h>
 #include <libxml/xmlreader.h>
+#include "VSDTypes.h"
 
 namespace libvisio
 {
@@ -45,6 +46,15 @@ xmlTextReaderPtr xmlReaderForStream(WPXInputStream *input,
                                     const char *URL,
                                     const char *encoding,
                                     int options);
+
+Colour xmlStringToColour(const xmlChar *s);
+
+long xmlStringToInt(const xmlChar *s);
+
+double xmlStringToDouble(const xmlChar *s);
+
+bool xmlStringToBool(const xmlChar *s);
+
 
 class VSDCollector;
 

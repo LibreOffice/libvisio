@@ -225,7 +225,7 @@ void libvisio::VSDStylesCollector::collectUnhandledChunk(unsigned /* id */, unsi
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectColours(const std::vector<Colour> & /* colours */)
+void libvisio::VSDStylesCollector::collectColours(const std::map<unsigned, Colour> & /* colours */)
 {
 }
 

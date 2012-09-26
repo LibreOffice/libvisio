@@ -6,3 +6,6 @@
 *.rc
 Makefile
 Makefile.in
+tokenhash.h
+tokens.h
+tokens.gperf

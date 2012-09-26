@@ -62,6 +62,53 @@ private:
 
   // Functions reading the DiagramML document content
 
+  void readEllipticalArcTo(xmlTextReaderPtr reader);
+  void readForeignData(xmlTextReaderPtr reader);
+  void readEllipse(xmlTextReaderPtr reader);
+  void readLine(xmlTextReaderPtr reader);
+  void readFillAndShadow(xmlTextReaderPtr reader);
+  void readGeomList(xmlTextReaderPtr reader);
+  void readGeometry(xmlTextReaderPtr reader);
+  void readMoveTo(xmlTextReaderPtr reader);
+  void readLineTo(xmlTextReaderPtr reader);
+  void readArcTo(xmlTextReaderPtr reader);
+  void readNURBSTo(xmlTextReaderPtr reader);
+  void readPolylineTo(xmlTextReaderPtr reader);
+  void readInfiniteLine(xmlTextReaderPtr reader);
+  void readShapeData(xmlTextReaderPtr reader);
+  void readXFormData(xmlTextReaderPtr reader);
+  void readTxtXForm(xmlTextReaderPtr reader);
+  void readShapeId(xmlTextReaderPtr reader);
+  void readShapeList(xmlTextReaderPtr reader);
+  void readForeignDataType(xmlTextReaderPtr reader);
+  void readPageProps(xmlTextReaderPtr reader);
+  void readShape(xmlTextReaderPtr reader);
+  void readColours(xmlTextReaderPtr reader);
+  void readFonts(xmlTextReaderPtr reader);
+  void readCharList(xmlTextReaderPtr reader);
+  void readParaList(xmlTextReaderPtr reader);
+  void readPage(xmlTextReaderPtr reader);
+  void readText(xmlTextReaderPtr reader);
+  void readCharIX(xmlTextReaderPtr reader);
+  void readParaIX(xmlTextReaderPtr reader);
+  void readTextBlock(xmlTextReaderPtr reader);
+
+  void readNameList(xmlTextReaderPtr reader);
+  void readName(xmlTextReaderPtr reader);
+
+  void readFieldList(xmlTextReaderPtr reader);
+  void readTextField(xmlTextReaderPtr reader);
+
+  void readStyleSheet(xmlTextReaderPtr reader);
+  void readPageSheet(xmlTextReaderPtr reader);
+
+  void readSplineStart(xmlTextReaderPtr reader);
+  void readSplineKnot(xmlTextReaderPtr reader);
+
+  void readStencilShape(xmlTextReaderPtr reader);
+
+  void readOLEList(xmlTextReaderPtr reader);
+  void readOLEData(xmlTextReaderPtr reader);
 
   // Private data
 

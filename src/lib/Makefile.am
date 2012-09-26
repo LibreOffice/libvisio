@@ -23,7 +23,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_utils.cpp \
-	VDXParser.cpp \
 	VisioDocument.cpp \
 	VSD11Parser.cpp \
 	VSD6Parser.cpp \
@@ -46,7 +45,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXParser.cpp \
 	VSDZipStream.cpp \
 	libvisio_utils.h \
-	VDXParser.h \
 	VSD11Parser.h \
 	VSD6Parser.h \
 	VSDInternalStream.h \
@@ -71,6 +69,8 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDZipStream.h
 
 libtokenmap_la_SOURCES = \
+	VDXParser.cpp \
+	VDXParser.h \
 	VSDXMLTokenMap.cpp \
 	VSDXMLTokenMap.h \
 	$(generated_files)
