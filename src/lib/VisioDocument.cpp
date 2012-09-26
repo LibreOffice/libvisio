@@ -280,6 +280,7 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
 {
   if (isBinaryVisioDocument(input))
   {
+    VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
     input->seek(0, WPX_SEEK_SET);
     if (!input->isOLEStream())
       return false;
@@ -292,7 +293,7 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
     docStream->seek(0x1A, WPX_SEEK_SET);
 
     unsigned char version = readU8(docStream);
-    VSDParser *parser;
+    VSDParser *parser = 0;
     switch(version)
     {
     case 6:
@@ -302,7 +303,7 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
       parser = new VSD11Parser(docStream, painter);
       break;
     default:
-      return false;
+      break;
     }
 
     if (parser)
@@ -320,8 +321,18 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
   }
   else if (isOpcVisioDocument(input))
   {
+    VSD_DEBUG_MSG(("Parsing Visio Document based on Open Packaging Convention\n"));
     input->seek(0, WPX_SEEK_SET);
     VSDXParser parser(input, painter);
+    if (parser.extractStencils())
+      return true;
+    return false;
+  }
+  else if (isXmlVisioDocument(input))
+  {
+    VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
+    input->seek(0, WPX_SEEK_SET);
+    VDXParser parser(input, painter);
     if (parser.extractStencils())
       return true;
     return false;

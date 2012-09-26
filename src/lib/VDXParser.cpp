@@ -42,7 +42,8 @@
 
 
 libvisio::VDXParser::VDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_collector(), m_stencils(), m_extractStencils(false)
+  : m_input(input), m_painter(painter), m_collector(), m_stencils(), m_extractStencils(false),
+    m_isInStyles(false)
 {
 }
 
@@ -133,6 +134,25 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_FACENAMES:
     if (tokenType == 1)
       readFonts(reader);
+    break;
+  case XML_STYLESHEETS:
+    if (tokenType == 1)
+      m_isInStyles = true;
+    else if (tokenType == 15)
+      m_isInStyles = false;
+    break;
+  case XML_PAGES:
+    if (tokenType == 1 && m_extractStencils)
+    {
+      int ret = 1;
+      do
+      {
+        ret = xmlTextReaderRead(reader);
+        tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+        tokenType = xmlTextReaderNodeType(reader);
+      }
+      while ((XML_PAGES != tokenId || 15 != tokenType) && ret == 1);
+    }
     break;
   default:
     break;

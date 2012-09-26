@@ -118,6 +118,7 @@ private:
   VSDStencils m_stencils;
 
   bool m_extractStencils;
+  bool m_isInStyles;
 };
 
 } // namespace libvisio
