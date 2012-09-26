@@ -66,6 +66,7 @@ print ( GPERF "%%\n" );
 
 print ( HXX "#ifndef __VSDXMLTOKENS_HXX__\n" );
 print ( HXX "#define __VSDXMLTOKENS_HXX__\n" );
+print ( HXX "\n" );
 
 $i = 0;
 foreach( sort(keys(%tokens)) )
@@ -75,8 +76,11 @@ foreach( sort(keys(%tokens)) )
     $i = $i + 1;
 }
 print ( GPERF "%%\n" );
+print ( HXX "\n" );
 print ( HXX "const int XML_TOKEN_COUNT = $i;\n" );
+print ( HXX "\n" );
 print ( HXX "const int XML_TOKEN_INVALID = -1;\n" );
+print ( HXX "\n" );
 print ( HXX "#endif\n" );
 close ( HXX );
 close ( GPERF );
