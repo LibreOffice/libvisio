@@ -35,6 +35,7 @@ AC_LIBTOOL_WIN32_DLL
 PKG_PROG_PKG_CONFIG([0.20])
 
 AC_PROG_EGREP
+AC_PROG_SED
 
 dnl ===================================================================
 dnl Check for gperf
