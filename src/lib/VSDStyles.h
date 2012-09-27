@@ -42,13 +42,13 @@ namespace libvisio
 struct VSDLineStyle
 {
   VSDLineStyle()
-    : width(0.01), colour(), pattern(0), startMarker(0), endMarker(0), cap(0) {}
-  VSDLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
+    : width(0.01), colourId(0), pattern(0), startMarker(0), endMarker(0), cap(0) {}
+  VSDLineStyle(double w, unsigned char col, unsigned char p, unsigned char sm,
                unsigned char em, unsigned char c)
-    : width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
+    : width(w), colourId(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
   ~VSDLineStyle() {}
   double width;
-  Colour colour;
+  unsigned char colourId;
   unsigned char pattern;
   unsigned char startMarker;
   unsigned char endMarker;
@@ -58,9 +58,12 @@ struct VSDLineStyle
 struct VSDFillStyle
 {
   VSDFillStyle()
-    : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
-  VSDFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga, Colour sfgc, unsigned char shp, double shX, double shY)
-    : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
+    : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0), shadowPattern(0),
+      shadowFgColourId(), shadowBgColourId(), shadowOffsetX(0), shadowOffsetY(0) {}
+  VSDFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga,
+               unsigned char shp, unsigned char sfgcId, unsigned char sbgcId, double shX, double shY)
+    : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga),
+      shadowPattern(shp), shadowFgColourId(sfgcId), shadowBgColourId(sbgcId), shadowOffsetX(shX), shadowOffsetY(shY) {}
   ~VSDFillStyle() {}
   unsigned char fgColourId;
   //  Colour fgColour;
@@ -71,8 +74,9 @@ struct VSDFillStyle
   unsigned char fgTransparency;
   unsigned char bgTransparency;
 
-  Colour shadowFgColour;
   unsigned char shadowPattern;
+  unsigned char shadowFgColourId;
+  unsigned char shadowBgColourId;
   double shadowOffsetX;
   double shadowOffsetY;
 };

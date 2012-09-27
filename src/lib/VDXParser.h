@@ -55,6 +55,11 @@ private:
   VDXParser(const VDXParser &);
   VDXParser &operator=(const VDXParser &);
 
+  // Helper functions
+
+  int readLongData(long &value, xmlTextReaderPtr reader);
+  int readDoubleData(double &value, xmlTextReaderPtr reader);
+
   // Functions to read teh DiagramML document structure
 
   bool processXmlDocument(WPXInputStream *input);
@@ -105,6 +110,7 @@ private:
   void readSplineStart(xmlTextReaderPtr reader);
   void readSplineKnot(xmlTextReaderPtr reader);
 
+  void readStencil(xmlTextReaderPtr reader);
   void readStencilShape(xmlTextReaderPtr reader);
 
   void readOLEList(xmlTextReaderPtr reader);
@@ -116,6 +122,8 @@ private:
   libwpg::WPGPaintInterface *m_painter;
   VSDCollector *m_collector;
   VSDStencils m_stencils;
+  VSDStencilShape m_stencilShape;
+  bool m_isStencilStarted;
 
   bool m_extractStencils;
   bool m_isInStyles;

@@ -136,8 +136,8 @@ libvisio::VSDContentCollector::VSDContentCollector(
 }
 
 void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
-    unsigned fillFGTransparency, unsigned fillBGTransparency,
-    unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+    unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern,
+    unsigned char shadowIndexFG, unsigned char /* shadowIndexBG */, double shadowOffsetX, double shadowOffsetY)
 {
   m_fillPattern = fillPattern;
   m_fillFGTransparency = fillFGTransparency;
@@ -349,13 +349,14 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(unsigned colourInde
 #endif
   }
 
-  if (shadowPattern != 0)
+  std::map<unsigned, Colour>::const_iterator iter = m_colours.find(shadowIndexFG);
+  if (shadowPattern != 0 && iter != m_colours.end())
   {
     m_styleProps.insert("draw:shadow","visible"); // for ODG
     m_styleProps.insert("draw:shadow-offset-x",shadowOffsetX != 0.0 ? shadowOffsetX : m_shadowOffsetX);
     m_styleProps.insert("draw:shadow-offset-y",shadowOffsetY != 0.0 ? shadowOffsetY : m_shadowOffsetY);
-    m_styleProps.insert("draw:shadow-color",getColourString(shfgc));
-    m_styleProps.insert("draw:shadow-opacity",(double)(1 - shfgc.a/255.), WPX_PERCENT);
+    m_styleProps.insert("draw:shadow-color",getColourString(iter->second));
+    m_styleProps.insert("draw:shadow-opacity", 1.0, WPX_PERCENT);
   }
   m_styleProps.insert("draw:fill", m_fillType);
 }
@@ -534,18 +535,26 @@ void libvisio::VSDContentCollector::_applyLinePattern()
     m_styleProps.insert("draw:stroke", "solid");
 }
 
-void libvisio::VSDContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap)
+void libvisio::VSDContentCollector::_lineProperties(double strokeWidth, unsigned char colourId, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap)
 {
   m_linePattern = linePattern;
 
   if (linePattern == 0) return; // No need to add style
 
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
-  m_lineColour = getColourString(c);
-  m_styleProps.insert("svg:stroke-color", m_lineColour);
+  std::map<unsigned, Colour>::const_iterator iter = m_colours.find(colourId);
+  if (iter != m_colours.end())
+  {
+    m_lineColour = getColourString(iter->second);
+    m_styleProps.insert("svg:stroke-color", m_lineColour);
+  }
+  else
+    m_styleProps.remove("svg:stroke-color");
+#if 0
   if (c.a)
     m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
   else
+#endif
     m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
   switch (lineCap)
   {
@@ -1349,23 +1358,27 @@ void libvisio::VSDContentCollector::collectInfiniteLine(unsigned /* id */, unsig
     m_currentLineGeometry.push_back(infLine);
 }
 
-void libvisio::VSDContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap)
+void libvisio::VSDContentCollector::collectLine(unsigned /* id */, unsigned level, double strokeWidth, unsigned char colourId,
+    unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap)
 {
   _handleLevelChange(level);
-  _lineProperties(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+  _lineProperties(strokeWidth, colourId, linePattern, startMarker, endMarker, lineCap);
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
     unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency,
-    unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY)
+    unsigned shadowPattern, unsigned char shadowIndexFG, unsigned char shadowIndexBG, double shadowOffsetX, double shadowOffsetY)
 {
   _handleLevelChange(level);
-  _fillAndShadowProperties(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
+  _fillAndShadowProperties(colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency,
+                           shadowPattern, shadowIndexFG, shadowIndexBG, shadowOffsetX, shadowOffsetY);
 }
 
-void libvisio::VSDContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc)
+void libvisio::VSDContentCollector::collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
+    unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, unsigned char shadowIndexFG, unsigned char shadowIndexBG)
 {
-  collectFillAndShadow(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
+  collectFillAndShadow(id, level, colourIndexFG, colourIndexBG, fillPattern, fillFGTransparency, fillBGTransparency,
+                       shadowPattern, shadowIndexFG, shadowIndexBG, m_shadowOffsetX, m_shadowOffsetY);
 }
 
 void libvisio::VSDContentCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData &binaryData)
@@ -2280,17 +2293,21 @@ void libvisio::VSDContentCollector::collectStyleSheet(unsigned /* id */, unsigne
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double /* strokeWidth */, Colour /* c */, unsigned char /* linePattern */,  unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char /* lineCap */)
+void libvisio::VSDContentCollector::collectLineStyle(unsigned /* id */, unsigned level, double /* strokeWidth */, unsigned char /* colourId */,
+    unsigned char /* linePattern */,  unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned char /* lineCap */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/, double /*shadowOffsetX*/, double /*shadowOffsetY*/)
+void libvisio::VSDContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/,
+    unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, unsigned char /* shadowIndexFG */, unsigned char /* shadowIndexBG */,
+    double /*shadowOffsetX*/, double /*shadowOffsetY*/)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/, unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, Colour /*shfgc*/)
+void libvisio::VSDContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, unsigned char /*colourIndexFG*/, unsigned char /*colourIndexBG*/, unsigned char /*fillPattern*/,
+    unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, unsigned char /* shadowIndexFG */, unsigned char /* shadowIndexBG */)
 {
   _handleLevelChange(level);
 }
@@ -2324,7 +2341,7 @@ void libvisio::VSDContentCollector::lineStyleFromStyleSheet(unsigned styleId)
 void libvisio::VSDContentCollector::lineStyleFromStyleSheet(const VSDLineStyle *style)
 {
   if (style)
-    _lineProperties(style->width, style->colour, style->pattern, style->startMarker, style->endMarker, style->cap);
+    _lineProperties(style->width, style->colourId, style->pattern, style->startMarker, style->endMarker, style->cap);
 }
 
 void libvisio::VSDContentCollector::fillStyleFromStyleSheet(unsigned styleId)
@@ -2335,8 +2352,8 @@ void libvisio::VSDContentCollector::fillStyleFromStyleSheet(unsigned styleId)
 void libvisio::VSDContentCollector::fillStyleFromStyleSheet(const VSDFillStyle *style)
 {
   if (style)
-    _fillAndShadowProperties(style->fgColourId, style->bgColourId, style->pattern, style->fgTransparency, style->bgTransparency,
-                             style->shadowPattern, style->shadowFgColour, style->shadowOffsetX, style->shadowOffsetY);
+    _fillAndShadowProperties(style->fgColourId, style->bgColourId, style->pattern, style->fgTransparency, style->bgTransparency, style->shadowPattern,
+                             style->shadowFgColourId, style->shadowBgColourId, style->shadowOffsetX, style->shadowOffsetY);
 }
 
 void libvisio::VSDContentCollector::collectFieldList(unsigned /* id */, unsigned level)

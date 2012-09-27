@@ -205,28 +205,25 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
   input->seek(3, WPX_SEEK_CUR);
   unsigned char fillBGTransparency = readU8(input);
   unsigned char fillPattern = readU8(input);
-  input->seek(1, WPX_SEEK_CUR);
-  Colour shfgc;            // Shadow Foreground Colour
-  shfgc.r = readU8(input);
-  shfgc.g = readU8(input);
-  shfgc.b = readU8(input);
-  shfgc.a = readU8(input);
-  input->seek(5, WPX_SEEK_CUR);  // Shadow Background Colour skipped
+  unsigned char shadowIndexFG = readU8(input);
+  input->seek(4, WPX_SEEK_CUR);
+  unsigned char shadowIndexBG = readU8(input);
+  input->seek(4, WPX_SEEK_CUR);
   unsigned char shadowPattern = readU8(input);
 
   if (m_isInStyles)
     m_collector->collectFillStyle(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,
-                                  fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
+                                  fillFGTransparency, fillBGTransparency, shadowPattern, shadowIndexFG, shadowIndexBG);
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_fillStyle)
       m_stencilShape.m_fillStyle = new VSDFillStyle(colourIndexFG, colourIndexBG, fillPattern,
-          fillFGTransparency, fillBGTransparency, shfgc, shadowPattern,
+          fillFGTransparency, fillBGTransparency, shadowPattern, shadowIndexFG, shadowIndexBG,
           m_currentStencil->m_shadowOffsetX, m_currentStencil->m_shadowOffsetY);
   }
   else
     m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,
-                                      fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
+                                      fillFGTransparency, fillBGTransparency, shadowPattern, shadowIndexFG, shadowIndexBG);
 }
 
 void libvisio::VSD6Parser::readName(WPXInputStream *input)

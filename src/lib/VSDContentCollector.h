@@ -69,12 +69,14 @@ public:
   void collectOLEList(unsigned id, unsigned level);
   void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
-  void collectLine(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap);
+  void collectLine(unsigned id, unsigned level, double strokeWidth, unsigned char colourId, unsigned linePattern,
+                   unsigned char startMarker, unsigned char endMarker, unsigned lineCap);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
-                            unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc,
-                            double shadowOffsetX, double shadowOffsetY);
+                            unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern,
+                            unsigned char shadowIndexFG, unsigned char shadowIndexBG, double shadowOffsetX, double shadowOffsetY);
   void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
-                            unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, Colour shfgc);
+                            unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern,
+                            unsigned char shadowIndexFG, unsigned char shadowIndexBG);
   void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
@@ -119,12 +121,14 @@ public:
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
-  void collectLineStyle(unsigned id, unsigned level, double strokeWidth, Colour c, unsigned char linePattern, unsigned char startMarker, unsigned char endMarker, unsigned char lineCap);
+  void collectLineStyle(unsigned id, unsigned level, double strokeWidth, unsigned char colourId, unsigned char linePattern,
+                        unsigned char startMarker, unsigned char endMarker, unsigned char lineCap);
   void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern,
-                        unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc,
-                        double shadowOffsetX, double shadowOffsetY);
+                        unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
+                        unsigned char shadowIndexFG, unsigned char shadowIndexBG, double shadowOffsetX, double shadowOffsetY);
   void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern,
-                        unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern, Colour shfgc);
+                        unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
+                        unsigned char shadowIndexFG, unsigned char shadowIndexBG);
   void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
                           bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                           bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
@@ -171,13 +175,12 @@ private:
   void fillStyleFromStyleSheet(const VSDFillStyle *style);
 
   void _applyLinePattern();
-  void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
+  void _lineProperties(double strokeWidth, unsigned char colourId, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
   const char *_linePropertiesMarkerViewbox(unsigned marker);
   const char *_linePropertiesMarkerPath(unsigned marker);
   double _linePropertiesMarkerScale(unsigned marker);
-  void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
-                                unsigned fillFGTransparency, unsigned fillBGTransparency,
-                                unsigned shadowPattern, Colour shfgc, double shadowOffsetX, double shadowOffsetY);
+  void _fillAndShadowProperties(unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency,
+                                unsigned shadowPattern, unsigned char shadowIndexFG, unsigned char shadowIndexBG, double shadowOffsetX, double shadowOffsetY);
 
   void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
   void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
