@@ -651,11 +651,6 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
   double bottomMargin = readDouble(input);
   unsigned char verticalAlign = readU8(input);
   unsigned char bgClrId = readU8(input);
-  Colour c;
-  c.r = readU8(input);
-  c.g = readU8(input);
-  c.b = readU8(input);
-  c.a = readU8(input);
   input->seek(1, WPX_SEEK_CUR);
   double defaultTabStop = readDouble(input);
   input->seek(12, WPX_SEEK_CUR);
@@ -663,16 +658,16 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
 
   if (m_isInStyles)
     m_collector->collectTextBlockStyle(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                       verticalAlign, bgClrId, c, defaultTabStop, textDirection);
+                                       verticalAlign, bgClrId, defaultTabStop, textDirection);
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_textBlockStyle)
       m_stencilShape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-          verticalAlign, bgClrId, c, defaultTabStop, textDirection);
+          verticalAlign, bgClrId,  defaultTabStop, textDirection);
   }
   else
     m_collector->collectTextBlock(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                  verticalAlign, bgClrId, c, defaultTabStop, textDirection);
+                                  verticalAlign, bgClrId,  defaultTabStop, textDirection);
 }
 
 void libvisio::VSDParser::readGeomList(WPXInputStream *input)

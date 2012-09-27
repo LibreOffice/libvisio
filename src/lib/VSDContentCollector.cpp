@@ -979,9 +979,10 @@ void libvisio::VSDContentCollector::_flushText()
       textProps.insert("svg:stroke-opacity", opacity, WPX_PERCENT);
       textProps.insert("svg:fill-opacity", opacity, WPX_PERCENT);
       // TODO: In draw, text span background cannot be specified the same way as in writer span
-      if (m_textBlockStyle.textBkgndColourId)
+      std::map<unsigned, Colour>::const_iterator iter = m_colours.find(m_textBlockStyle.textBkgndColourId);
+      if (m_textBlockStyle.textBkgndColourId && iter != m_colours.end())
       {
-        textProps.insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
+        textProps.insert("fo:background-color", getColourString(iter->second));
 #if 0
         if (m_textBlockStyle.textBkgndColour.a)
           textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, WPX_PERCENT);
@@ -2250,11 +2251,10 @@ void libvisio::VSDContentCollector::collectVSDCharStyle(unsigned /*id*/ , unsign
 }
 
 void libvisio::VSDContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double leftMargin, double rightMargin,
-    double topMargin, double bottomMargin,  unsigned char verticalAlign, unsigned char bgClrId,
-    const Colour &bgColour, double defaultTabStop,  unsigned char textDirection)
+    double topMargin, double bottomMargin,  unsigned char verticalAlign, unsigned char bgClrId, double defaultTabStop,  unsigned char textDirection)
 {
   _handleLevelChange(level);
-  m_textBlockStyle = VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
+  m_textBlockStyle = VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, bgClrId, defaultTabStop, textDirection);
 }
 
 void libvisio::VSDContentCollector::collectNameList(unsigned /*id*/, unsigned level)
@@ -2326,9 +2326,8 @@ void libvisio::VSDContentCollector::collectParaIXStyle(unsigned /* id */, unsign
 }
 
 
-void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
-    double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */,
-    const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
+void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */, double /* topMargin */,
+    double /* bottomMargin */,  unsigned char /* verticalAlign */, unsigned char /* bgClrId */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
   _handleLevelChange(level);
 }

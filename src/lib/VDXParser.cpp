@@ -358,7 +358,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
     case XML_SHDWBKGNDTRANS:
     case XML_SHAPESHDWTYPE:
     case XML_SHAPESHDWOBLIQUEANGLE:
-	case XML_SHAPESHDWSCALEFACTOR:
+    case XML_SHAPESHDWSCALEFACTOR:
     default:
       break;
     }
@@ -525,8 +525,79 @@ void libvisio::VDXParser::readParaIX(xmlTextReaderPtr /* reader */)
 {
 }
 
-void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr /* reader */)
+void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
 {
+  double leftMargin = 0.0;
+  double rightMargin = 0.0;
+  double topMargin = 0.0;
+  double bottomMargin = 0.0;
+  long verticalAlign = 0.0;
+  long bgClrId = 0.0;
+  double defaultTabStop = 0.0;
+  long textDirection = 0.0;
+
+  unsigned level = (unsigned)xmlTextReaderDepth(reader);
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_LEFTMARGIN:
+      if (1 == tokenType)
+        ret = readDoubleData(leftMargin, reader);
+      break;
+    case XML_RIGHTMARGIN:
+      if (1 == tokenType)
+        ret = readDoubleData(rightMargin, reader);
+      break;
+    case XML_TOPMARGIN:
+      if (1 == tokenType)
+        ret = readDoubleData(topMargin, reader);
+      break;
+    case XML_BOTTOMMARGIN:
+      if (1 == tokenType)
+        ret = readDoubleData(bottomMargin, reader);
+      break;
+    case XML_VERTICALALIGN:
+      if (1 == tokenType)
+        ret = readLongData(verticalAlign, reader);
+      break;
+    case XML_TEXTBKGND:
+      if (1 == tokenType)
+        ret = readLongData(bgClrId, reader);
+      break;
+    case XML_DEFAULTTABSTOP:
+      if (1 == tokenType)
+        ret = readDoubleData(defaultTabStop, reader);
+      break;
+    case XML_TEXTDIRECTION:
+      if (1 == tokenType)
+        ret = readLongData(textDirection, reader);
+      break;
+    case XML_TEXTBKGNDTRANS:
+    default:
+      break;
+    }
+  }
+  while ((XML_TEXTBLOCK != tokenId || 15 != tokenType) && ret == 1);
+
+  if (m_isInStyles)
+    m_collector->collectTextBlockStyle(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
+                                       (unsigned char)verticalAlign, (unsigned char)bgClrId, defaultTabStop, (unsigned char)textDirection);
+  else if (m_isStencilStarted)
+  {
+    if (!m_stencilShape.m_textBlockStyle)
+      m_stencilShape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
+          (unsigned char)verticalAlign, (unsigned char)bgClrId, defaultTabStop, (unsigned char)textDirection);
+  }
+  else
+    m_collector->collectTextBlock(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
+                                  (unsigned char)verticalAlign, (unsigned char)bgClrId, defaultTabStop, (unsigned char)textDirection);
 }
 
 void libvisio::VDXParser::readNameList(xmlTextReaderPtr /* reader */)

@@ -179,17 +179,15 @@ struct VSDTextBlockStyle
     bottomMargin(0.0),
     verticalAlign(0),
     textBkgndColourId(0),
-    textBkgndColour(0xff,0xff,0xff,0),
     defaultTabStop(0.5),
     textDirection(0) {}
-  VSDTextBlockStyle(double lm, double rm, double tm, double bm, unsigned char va, unsigned char bgClrId, Colour bgClr, double defTab, unsigned char td) :
+  VSDTextBlockStyle(double lm, double rm, double tm, double bm, unsigned char va, unsigned char bgClrId, double defTab, unsigned char td) :
     leftMargin(lm),
     rightMargin(rm),
     topMargin(tm),
     bottomMargin(bm),
     verticalAlign(va),
     textBkgndColourId(bgClrId),
-    textBkgndColour(bgClr),
     defaultTabStop(defTab),
     textDirection(td) {}
   ~VSDTextBlockStyle() {}
@@ -199,7 +197,6 @@ struct VSDTextBlockStyle
   double bottomMargin;
   unsigned char verticalAlign;
   unsigned char textBkgndColourId;
-  Colour textBkgndColour;
   double defaultTabStop;
   unsigned char textDirection;
 };
