@@ -43,7 +43,7 @@
 
 libvisio::VDXParser::VDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_collector(), m_stencils(), m_stencilShape(),
-    m_isStencilStarted(false), m_extractStencils(false), m_isInStyles(false)
+    m_isStencilStarted(false), m_extractStencils(false), m_isInStyles(false), m_colours()
 {
 }
 
@@ -231,7 +231,7 @@ void libvisio::VDXParser::readEllipse(xmlTextReaderPtr /* reader */)
 void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
 {
   double strokeWidth = 0;
-  long colourId = 0;
+  Colour colour;
   long linePattern = 0;
   long startMarker = 0;
   long endMarker = 0;
@@ -254,7 +254,7 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
       break;
     case XML_LINECOLOR:
       if (1 == tokenType)
-        ret = readLongData(colourId, reader);
+        readExtendedColourData(colour, reader);
       break;
     case XML_LINEPATTERN:
       if (1 == tokenType)
@@ -279,26 +279,25 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   while ((XML_LINE != tokenId || 15 != tokenType) && ret == 1);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(0, level, strokeWidth, (unsigned char)colourId, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    m_collector->collectLineStyle(0, level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_lineStyle)
-      m_stencilShape.m_lineStyle = new VSDLineStyle(strokeWidth, (unsigned char)colourId, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+      m_stencilShape.m_lineStyle = new VSDLineStyle(strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
   }
   else
-    m_collector->collectLine(0, level, strokeWidth, (unsigned char)colourId, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
-
+    m_collector->collectLine(0, level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
 }
 
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 {
-  long fillColourIndexFG = 0;
+  Colour fillColourFG;
   long fillFGTransparency = 0;
-  long fillColourIndexBG = 0;
+  Colour fillColourBG;
   long fillBGTransparency = 0;
   long fillPattern = 0;
-  long shadowColourIndexFG = 0;
-  long shadowColourIndexBG = 0;
+  Colour shadowColourFG;
+  Colour shadowColourBG;
   long shadowPattern = 0;
   double shadowOffsetX = 0;
   double shadowOffsetY = 0;
@@ -316,11 +315,11 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
     {
     case XML_FILLFOREGND:
       if (1 == tokenType)
-        ret = readLongData(fillColourIndexFG, reader);
+        ret = readExtendedColourData(fillColourFG, reader);
       break;
     case XML_FILLBKGND:
       if (1 == tokenType)
-        ret = readLongData(fillColourIndexBG, reader);
+        ret = readExtendedColourData(fillColourBG, reader);
       break;
     case XML_FILLPATTERN:
       if (1 == tokenType)
@@ -328,11 +327,11 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     case XML_SHDWFOREGND:
       if (1 == tokenType)
-        ret = readLongData(shadowColourIndexFG, reader);
+        ret = readExtendedColourData(shadowColourFG, reader);
       break;
     case XML_SHDWBKGND:
       if (1 == tokenType)
-        ret = readLongData(shadowColourIndexBG, reader);
+        ret = readExtendedColourData(shadowColourBG, reader);
       break;
     case XML_SHDWPATTERN:
       if (1 == tokenType)
@@ -366,22 +365,19 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   while ((XML_FILL != tokenId || 15 != tokenType) && ret == 1);
 
   if (m_isInStyles)
-    m_collector->collectFillStyle(0, level, (unsigned char)fillColourIndexFG, (unsigned char)fillColourIndexBG, (unsigned char)fillPattern,
-                                  (unsigned char)fillFGTransparency, (unsigned char)fillBGTransparency, (unsigned char)shadowPattern,
-                                  (unsigned char)shadowColourIndexFG, (unsigned char)shadowColourIndexBG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectFillStyle(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, (unsigned char)fillFGTransparency,
+                                  (unsigned char)fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
   else if (m_isStencilStarted)
   {
     VSD_DEBUG_MSG(("Found stencil fill\n"));
     if (!m_stencilShape.m_fillStyle)
-      m_stencilShape.m_fillStyle = new VSDFillStyle((unsigned char)fillColourIndexFG, (unsigned char)fillColourIndexBG, (unsigned char)fillPattern,
-          (unsigned char)fillFGTransparency, (unsigned char)fillBGTransparency, (unsigned char)shadowPattern,
-          (unsigned char)shadowColourIndexFG, (unsigned char)shadowColourIndexBG, shadowOffsetX, shadowOffsetY);
+      m_stencilShape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
+          (unsigned char)fillFGTransparency, (unsigned char)fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
+          shadowOffsetX, shadowOffsetY);
   }
   else
-    m_collector->collectFillAndShadow(0, level, (unsigned char)fillColourIndexFG, (unsigned char)fillColourIndexBG, (unsigned char)fillPattern,
-                                      (unsigned char)fillFGTransparency, (unsigned char)fillBGTransparency, (unsigned char)shadowPattern,
-                                      (unsigned char)shadowColourIndexFG, (unsigned char)shadowColourIndexBG, shadowOffsetX, shadowOffsetY);
-
+    m_collector->collectFillAndShadow(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, (unsigned char)fillFGTransparency,
+                                      (unsigned char)fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VDXParser::readGeomList(xmlTextReaderPtr /* reader */)
@@ -509,7 +505,7 @@ void libvisio::VDXParser::readColours(xmlTextReaderPtr reader)
 {
   int ret = xmlTextReaderRead(reader);
   int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
-  std::map<unsigned, Colour> colours;
+  m_colours.clear();
   while (ret == 1 && ((XML_COLORS != tokenId || 15 != xmlTextReaderNodeType(reader))))
   {
     if (XML_COLORENTRY == tokenId)
@@ -521,7 +517,7 @@ void libvisio::VDXParser::readColours(xmlTextReaderPtr reader)
         unsigned idx = (unsigned)xmlStringToLong(ix);
         Colour rgbColour = xmlStringToColour(rgb);
         if (idx)
-          colours[idx] = rgbColour;
+          m_colours[idx] = rgbColour;
       }
       xmlFree(rgb);
       xmlFree(ix);
@@ -530,7 +526,7 @@ void libvisio::VDXParser::readColours(xmlTextReaderPtr reader)
     ret = xmlTextReaderRead(reader);
     tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
   }
-
+  m_collector->collectColours(m_colours);
 }
 
 void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
@@ -588,8 +584,9 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   double rightMargin = 0.0;
   double topMargin = 0.0;
   double bottomMargin = 0.0;
-  long verticalAlign = 0.0;
-  long bgClrId = 0.0;
+  long verticalAlign = 0;
+  long bgClrId = 0;
+  Colour bgColour;
   double defaultTabStop = 0.0;
   long textDirection = 0.0;
 
@@ -626,7 +623,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
       break;
     case XML_TEXTBKGND:
       if (1 == tokenType)
-        ret = readLongData(bgClrId, reader);
+        ret = readExtendedColourData(bgColour, bgClrId, reader);
       break;
     case XML_DEFAULTTABSTOP:
       if (1 == tokenType)
@@ -643,18 +640,29 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   }
   while ((XML_TEXTBLOCK != tokenId || 15 != tokenType) && ret == 1);
 
+  if (bgClrId < 0)
+    bgClrId = 0;
+  if (bgClrId)
+  {
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId-1);
+    if (iter != m_colours.end())
+      bgColour = iter->second;
+    else
+      bgColour = Colour();
+  }
+
   if (m_isInStyles)
     m_collector->collectTextBlockStyle(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                       (unsigned char)verticalAlign, (unsigned char)bgClrId, defaultTabStop, (unsigned char)textDirection);
+                                       (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_textBlockStyle)
       m_stencilShape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-          (unsigned char)verticalAlign, (unsigned char)bgClrId, defaultTabStop, (unsigned char)textDirection);
+          (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   }
   else
     m_collector->collectTextBlock(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                  (unsigned char)verticalAlign, (unsigned char)bgClrId, defaultTabStop, (unsigned char)textDirection);
+                                  (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
 }
 
 void libvisio::VDXParser::readNameList(xmlTextReaderPtr /* reader */)
@@ -771,6 +779,52 @@ int libvisio::VDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
     ret = xmlTextReaderRead(reader);
   }
   return ret;
+}
+
+int libvisio::VDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
+{
+  int ret = xmlTextReaderRead(reader);
+  if (3 == xmlTextReaderNodeType(reader))
+  {
+    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
+    if (stringValue)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
+      value = xmlStringToColour(stringValue);
+    }
+    ret = xmlTextReaderRead(reader);
+  }
+  return ret;
+}
+
+int libvisio::VDXParser::readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  idx = -1;
+  try
+  {
+    ret = readLongData(idx, reader);
+  }
+  catch (const XmlParserException &)
+  {
+    idx = -1;
+    ret = readColourData(value, reader);
+  }
+  if (idx > 0)
+  {
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find((unsigned)idx);
+    if (iter != m_colours.end())
+      value = iter->second;
+    else
+      idx = -1;
+  }
+  return ret;
+}
+
+int libvisio::VDXParser::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
+{
+  long idx = -1;
+  return readExtendedColourData(value, idx, reader);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

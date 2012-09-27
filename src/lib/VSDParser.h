@@ -131,6 +131,7 @@ protected:
 
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);
+  Colour _colourFromIndex(unsigned idx);
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
@@ -155,6 +156,7 @@ protected:
   unsigned m_currentShapeID;
 
   bool m_extractStencils;
+  std::map<unsigned, Colour> m_colours;
 
 private:
   VSDParser();

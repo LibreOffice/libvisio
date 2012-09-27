@@ -60,6 +60,10 @@ private:
   int readLongData(long &value, xmlTextReaderPtr reader);
   int readDoubleData(double &value, xmlTextReaderPtr reader);
   int readBoolData(bool &value, xmlTextReaderPtr reader);
+  int readColourData(Colour &value, xmlTextReaderPtr reader);
+  int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
+  int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
+
 
   // Functions to read teh DiagramML document structure
 
@@ -128,6 +132,7 @@ private:
 
   bool m_extractStencils;
   bool m_isInStyles;
+  std::map<unsigned, Colour> m_colours;
 };
 
 } // namespace libvisio

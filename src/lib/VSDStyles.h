@@ -42,13 +42,13 @@ namespace libvisio
 struct VSDLineStyle
 {
   VSDLineStyle()
-    : width(0.01), colourId(0), pattern(0), startMarker(0), endMarker(0), cap(0) {}
-  VSDLineStyle(double w, unsigned char col, unsigned char p, unsigned char sm,
+    : width(0.01), colour(), pattern(0), startMarker(0), endMarker(0), cap(0) {}
+  VSDLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
                unsigned char em, unsigned char c)
-    : width(w), colourId(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
+    : width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
   ~VSDLineStyle() {}
   double width;
-  unsigned char colourId;
+  Colour colour;
   unsigned char pattern;
   unsigned char startMarker;
   unsigned char endMarker;
@@ -58,25 +58,19 @@ struct VSDLineStyle
 struct VSDFillStyle
 {
   VSDFillStyle()
-    : fgColourId(1), bgColourId(0), pattern(0), fgTransparency(0), bgTransparency(0), shadowPattern(0),
-      shadowFgColourId(), shadowBgColourId(), shadowOffsetX(0), shadowOffsetY(0) {}
-  VSDFillStyle(unsigned char fgcId, unsigned char bgcId, unsigned char p, unsigned char fga, unsigned char bga,
-               unsigned char shp, unsigned char sfgcId, unsigned char sbgcId, double shX, double shY)
-    : fgColourId(fgcId), bgColourId(bgcId), pattern(p), fgTransparency(fga), bgTransparency(bga),
-      shadowPattern(shp), shadowFgColourId(sfgcId), shadowBgColourId(sbgcId), shadowOffsetX(shX), shadowOffsetY(shY) {}
+    : fgColour(), bgColour(), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
+  VSDFillStyle(const Colour &fgc, const Colour &bgc, unsigned char p, unsigned char fga, unsigned char bga, const Colour &sfgc, unsigned char shp, double shX, double shY)
+    : fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
   ~VSDFillStyle() {}
-  unsigned char fgColourId;
-  //  Colour fgColour;
-  unsigned char bgColourId;
-  //  Colour bgColour;
+  Colour fgColour;
+  Colour bgColour;
   unsigned char pattern;
 
   unsigned char fgTransparency;
   unsigned char bgTransparency;
 
+  Colour shadowFgColour;
   unsigned char shadowPattern;
-  unsigned char shadowFgColourId;
-  unsigned char shadowBgColourId;
   double shadowOffsetX;
   double shadowOffsetY;
 };
@@ -100,7 +94,7 @@ struct VSDCharStyle
     superscript(false),
     subscript(false),
     face() {}
-  VSDCharStyle(unsigned cc, unsigned short id, Colour c, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, VSDFont f) :
+  VSDCharStyle(unsigned cc, unsigned short id, const Colour &c, double s, bool b, bool i, bool u, bool du, bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, VSDFont f) :
     charCount(cc),
     faceID(id),
     colour(c),
@@ -178,16 +172,18 @@ struct VSDTextBlockStyle
     topMargin(0.0),
     bottomMargin(0.0),
     verticalAlign(0),
-    textBkgndColourId(0),
+    isTextBkgndFilled(true),
+    textBkgndColour(0xff,0xff,0xff,0),
     defaultTabStop(0.5),
     textDirection(0) {}
-  VSDTextBlockStyle(double lm, double rm, double tm, double bm, unsigned char va, unsigned char bgClrId, double defTab, unsigned char td) :
+  VSDTextBlockStyle(double lm, double rm, double tm, double bm, unsigned char va, bool isBgFilled, Colour bgClr, double defTab, unsigned char td) :
     leftMargin(lm),
     rightMargin(rm),
     topMargin(tm),
     bottomMargin(bm),
     verticalAlign(va),
-    textBkgndColourId(bgClrId),
+    isTextBkgndFilled(isBgFilled),
+    textBkgndColour(bgClr),
     defaultTabStop(defTab),
     textDirection(td) {}
   ~VSDTextBlockStyle() {}
@@ -196,7 +192,8 @@ struct VSDTextBlockStyle
   double topMargin;
   double bottomMargin;
   unsigned char verticalAlign;
-  unsigned char textBkgndColourId;
+  bool isTextBkgndFilled;
+  Colour textBkgndColour;
   double defaultTabStop;
   unsigned char textDirection;
 };

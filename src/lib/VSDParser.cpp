@@ -48,7 +48,7 @@ libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface 
     m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentShapeLevel(0),
     m_currentShapeID((unsigned)-1),
-    m_extractStencils(false)
+    m_extractStencils(false), m_colours()
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -611,17 +611,12 @@ void libvisio::VSDParser::readLine(WPXInputStream *input)
 {
   input->seek(1, WPX_SEEK_CUR);
   double strokeWidth = readDouble(input);
-#if 1
-  unsigned char colourId = readU8(input);
-  input->seek(4, WPX_SEEK_CUR);
-#else
   input->seek(1, WPX_SEEK_CUR);
   Colour c;
   c.r = readU8(input);
   c.g = readU8(input);
   c.b = readU8(input);
   c.a = readU8(input);
-#endif
   unsigned char linePattern = readU8(input);
   input->seek(10, WPX_SEEK_CUR);
   unsigned char startMarker = readU8(input);
@@ -629,14 +624,14 @@ void libvisio::VSDParser::readLine(WPXInputStream *input)
   unsigned char lineCap = readU8(input);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, colourId, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_lineStyle)
-      m_stencilShape.m_lineStyle = new VSDLineStyle(strokeWidth, colourId, linePattern, startMarker, endMarker, lineCap);
+      m_stencilShape.m_lineStyle = new VSDLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   }
   else
-    m_collector->collectLine(m_header.id, m_header.level, strokeWidth, colourId, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
 }
 
 void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
@@ -650,7 +645,12 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double bottomMargin = readDouble(input);
   unsigned char verticalAlign = readU8(input);
-  unsigned char bgClrId = readU8(input);
+  bool isBgFilled = (!!readU8(input));
+  Colour c;
+  c.r = readU8(input);
+  c.g = readU8(input);
+  c.b = readU8(input);
+  c.a = readU8(input);
   input->seek(1, WPX_SEEK_CUR);
   double defaultTabStop = readDouble(input);
   input->seek(12, WPX_SEEK_CUR);
@@ -658,16 +658,16 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
 
   if (m_isInStyles)
     m_collector->collectTextBlockStyle(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                       verticalAlign, bgClrId, defaultTabStop, textDirection);
+                                       verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
   else if (m_isStencilStarted)
   {
     if (!m_stencilShape.m_textBlockStyle)
       m_stencilShape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-          verticalAlign, bgClrId,  defaultTabStop, textDirection);
+          verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
   }
   else
     m_collector->collectTextBlock(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                  verticalAlign, bgClrId,  defaultTabStop, textDirection);
+                                  verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
 }
 
 void libvisio::VSDParser::readGeomList(WPXInputStream *input)
@@ -1355,10 +1355,8 @@ void libvisio::VSDParser::readColours(WPXInputStream *input)
   input->seek(6, WPX_SEEK_SET);
   unsigned numColours = readU8(input);
   Colour tmpColour;
-
   input->seek(1, WPX_SEEK_CUR);
-
-  std::map<unsigned, Colour> colours;
+  m_colours.clear();
 
   for (unsigned i = 0; i < numColours; i++)
   {
@@ -1367,9 +1365,9 @@ void libvisio::VSDParser::readColours(WPXInputStream *input)
     tmpColour.b = readU8(input);
     tmpColour.a = readU8(input);
 
-    colours[i] = tmpColour;
+    m_colours[i] = tmpColour;
   }
-  m_collector->collectColours(colours);
+  m_collector->collectColours(m_colours);
 }
 
 void libvisio::VSDParser::readFont(WPXInputStream *input)
@@ -1460,6 +1458,14 @@ void libvisio::VSDParser::readPageSheet(WPXInputStream * /* input */)
 {
   m_currentShapeLevel = m_header.level;
   m_collector->collectPageSheet(m_header.id, m_header.level);
+}
+
+libvisio::Colour libvisio::VSDParser::_colourFromIndex(unsigned idx)
+{
+  std::map<unsigned, Colour>::const_iterator iter = m_colours.find(idx);
+  if (iter != m_colours.end())
+    return iter->second;
+  return libvisio::Colour();
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

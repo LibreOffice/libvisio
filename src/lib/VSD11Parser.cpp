@@ -219,17 +219,20 @@ void libvisio::VSD11Parser::readParaIX(WPXInputStream *input)
 
 void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
 {
-  unsigned char colourIndexFG = readU8(input);
+  Colour colourFG = _colourFromIndex(readU8(input));
   input->seek(3, WPX_SEEK_CUR);
   unsigned char fillFGTransparency = readU8(input);
-  unsigned char colourIndexBG = readU8(input);
+  Colour colourBG = _colourFromIndex(readU8(input));
   input->seek(3, WPX_SEEK_CUR);
   unsigned char fillBGTransparency = readU8(input);
   unsigned char fillPattern = readU8(input);
-  unsigned char shadowIndexFG = readU8(input);
-  input->seek(4, WPX_SEEK_CUR);
-  unsigned char shadowIndexBG = readU8(input);
-  input->seek(4, WPX_SEEK_CUR);
+  input->seek(1, WPX_SEEK_CUR);
+  Colour shfgc;            // Shadow Foreground Colour
+  shfgc.r = readU8(input);
+  shfgc.g = readU8(input);
+  shfgc.b = readU8(input);
+  shfgc.a = readU8(input);
+  input->seek(5, WPX_SEEK_CUR); // Shadow Background Colour skipped
   unsigned char shadowPattern = readU8(input);
 // only version 11 after that point
   input->seek(2, WPX_SEEK_CUR); // Shadow Type and Value format byte
@@ -237,22 +240,23 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR); // Value format byte
   double shadowOffsetY = -readDouble(input);
 
+
+
   if (m_isInStyles)
-    m_collector->collectFillStyle(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,
-                                  fillFGTransparency, fillBGTransparency, shadowPattern, shadowIndexFG,
-                                  shadowIndexBG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectFillStyle(m_header.id, m_header.level, colourFG, colourBG, fillPattern,
+                                  fillFGTransparency, fillBGTransparency, shadowPattern, shfgc,
+                                  shadowOffsetX, shadowOffsetY);
   else if (m_isStencilStarted)
   {
     VSD_DEBUG_MSG(("Found stencil fill\n"));
     if (!m_stencilShape.m_fillStyle)
-      m_stencilShape.m_fillStyle = new VSDFillStyle(colourIndexFG, colourIndexBG, fillPattern,
-          fillFGTransparency, fillBGTransparency, shadowPattern,shadowIndexFG,
-          shadowIndexBG, shadowOffsetX, shadowOffsetY);
+      m_stencilShape.m_fillStyle = new VSDFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
+          fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY);
   }
   else
-    m_collector->collectFillAndShadow(m_header.id, m_header.level, colourIndexFG, colourIndexBG, fillPattern,
-                                      fillFGTransparency, fillBGTransparency, shadowPattern, shadowIndexFG,
-                                      shadowIndexBG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectFillAndShadow(m_header.id, m_header.level, colourFG, colourBG, fillPattern,
+                                      fillFGTransparency, fillBGTransparency, shadowPattern, shfgc,
+                                      shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VSD11Parser::readName(WPXInputStream *input)

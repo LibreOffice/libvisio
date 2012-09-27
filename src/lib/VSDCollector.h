@@ -48,14 +48,11 @@ public:
   virtual void collectOLEList(unsigned id, unsigned level) = 0;
   virtual void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData) = 0;
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
-  virtual void collectLine(unsigned id, unsigned level, double strokeWidth, unsigned char colourId, unsigned linePattern,
-                           unsigned char startMarker, unsigned char endMarker, unsigned lineCap) = 0;
-  virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG,
-                                    unsigned fillPattern, unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern,
-                                    unsigned char shadowIndexFG, unsigned char shadowIndexBG, double shadowOffsetX, double shadowOffsetY) = 0;
-  virtual void collectFillAndShadow(unsigned id, unsigned level, unsigned colourIndexFG, unsigned colourIndexBG, unsigned fillPattern,
-                                    unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern,
-                                    unsigned char shadowIndexFG, unsigned char shadowIndexBG) = 0;
+  virtual void collectLine(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap) = 0;
+  virtual void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, unsigned fillFGTransparency,
+                                    unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
+  virtual void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, unsigned fillFGTransparency,
+                                    unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc) = 0;
   virtual void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags) = 0;
   virtual void collectMoveTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectLineTo(unsigned id, unsigned level, double x, double y) = 0;
@@ -91,29 +88,29 @@ public:
   virtual void collectVSDParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
   virtual void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                                unsigned char verticalAlign, unsigned char bgClrId, double defaultTabStop, unsigned char textDirection) = 0;
+                                unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection) = 0;
   virtual void collectNameList(unsigned id, unsigned level) = 0;
   virtual void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format) = 0;
   virtual void collectPageSheet(unsigned id, unsigned level) = 0;
 
   // Style collectors
   virtual void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;
-  virtual void collectLineStyle(unsigned id, unsigned level, double strokeWidth, unsigned char colourId, unsigned char linePattern,
+  virtual void collectLineStyle(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
                                 unsigned char startMarker, unsigned char endMarker, unsigned char lineCap) = 0;
-  virtual void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern,
+  virtual void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
                                 unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
-                                unsigned char shadowIndexFG, unsigned char shadowIndexBG, double shadowOffsetX, double shadowOffsetY) = 0;
-  virtual void collectFillStyle(unsigned id, unsigned level, unsigned char colourIndexFG, unsigned char colourIndexBG, unsigned char fillPattern,
+                                const Colour &shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
+  virtual void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
                                 unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
-                                unsigned char shadowIndexFG, unsigned char shadowIndexBG) = 0;
+                                const Colour &shfgc) = 0;
   virtual void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
                                   bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                   bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;
   virtual void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                   double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
   virtual void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                                     unsigned char verticalAlign, unsigned char bgClrId, double defaultTabStop, unsigned char textDirection) = 0;
-
+                                     unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop,
+                                     unsigned char textDirection) = 0;
   // Field list
   virtual void collectFieldList(unsigned id, unsigned level) = 0;
   virtual void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId) = 0;
