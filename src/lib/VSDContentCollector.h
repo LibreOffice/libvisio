@@ -102,7 +102,6 @@ public:
 
   void collectUnhandledChunk(unsigned id, unsigned level);
 
-  void collectColours(const std::map<unsigned, Colour> &colours);
   void collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format);
   void collectText(unsigned id, unsigned level, const WPXBinaryData &textStream, TextFormat format);
   void collectVSDCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
@@ -220,7 +219,6 @@ private:
   bool m_noLine;
   bool m_noFill;
   bool m_noShow;
-  std::map<unsigned, Colour> m_colours;
   std::map<unsigned short, VSDFont> m_fonts;
   unsigned m_currentLevel;
   bool m_isShapeStarted;

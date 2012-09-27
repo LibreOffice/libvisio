@@ -156,7 +156,7 @@ protected:
   unsigned m_currentShapeID;
 
   bool m_extractStencils;
-  std::map<unsigned, Colour> m_colours;
+  std::vector<Colour> m_colours;
 
 private:
   VSDParser();

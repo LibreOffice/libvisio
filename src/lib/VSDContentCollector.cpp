@@ -119,7 +119,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0), m_styleProps(),
   m_lineColour("black"), m_fillType("none"), m_linePattern(1),
   m_fillPattern(1), m_fillFGTransparency(0), m_fillBGTransparency(0),
-  m_noLine(false), m_noFill(false), m_noShow(false), m_colours(), m_fonts(),
+  m_noLine(false), m_noFill(false), m_noShow(false), m_fonts(),
   m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
   m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
@@ -2091,11 +2091,6 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
 void libvisio::VSDContentCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);
-}
-
-void libvisio::VSDContentCollector::collectColours(const std::map<unsigned, Colour> &colours)
-{
-  m_colours = colours;
 }
 
 void libvisio::VSDContentCollector::collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format)

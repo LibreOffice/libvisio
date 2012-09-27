@@ -1365,9 +1365,8 @@ void libvisio::VSDParser::readColours(WPXInputStream *input)
     tmpColour.b = readU8(input);
     tmpColour.a = readU8(input);
 
-    m_colours[i] = tmpColour;
+    m_colours.push_back(tmpColour);
   }
-  m_collector->collectColours(m_colours);
 }
 
 void libvisio::VSDParser::readFont(WPXInputStream *input)
@@ -1462,9 +1461,8 @@ void libvisio::VSDParser::readPageSheet(WPXInputStream * /* input */)
 
 libvisio::Colour libvisio::VSDParser::_colourFromIndex(unsigned idx)
 {
-  std::map<unsigned, Colour>::const_iterator iter = m_colours.find(idx);
-  if (iter != m_colours.end())
-    return iter->second;
+  if (idx < m_colours.size())
+    return m_colours[idx];
   return libvisio::Colour();
 }
 

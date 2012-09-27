@@ -93,7 +93,6 @@ public:
   void collectInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2);
   void collectUnhandledChunk(unsigned id, unsigned level);
 
-  void collectColours(const std::map<unsigned, Colour> &colours);
   void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format);
 
   void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format);

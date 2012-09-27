@@ -526,7 +526,6 @@ void libvisio::VDXParser::readColours(xmlTextReaderPtr reader)
     ret = xmlTextReaderRead(reader);
     tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
   }
-  m_collector->collectColours(m_colours);
 }
 
 void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
