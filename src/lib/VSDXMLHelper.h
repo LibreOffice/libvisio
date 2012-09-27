@@ -49,7 +49,7 @@ xmlTextReaderPtr xmlReaderForStream(WPXInputStream *input,
 
 Colour xmlStringToColour(const xmlChar *s);
 
-long xmlStringToInt(const xmlChar *s);
+long xmlStringToLong(const xmlChar *s);
 
 double xmlStringToDouble(const xmlChar *s);
 

@@ -113,7 +113,7 @@ libvisio::Colour libvisio::xmlStringToColour(const xmlChar *s)
   return Colour((val & 0xff0000) >> 16, (val & 0xff00) >> 8, val & 0xff, 0);
 }
 
-long libvisio::xmlStringToInt(const xmlChar *s)
+long libvisio::xmlStringToLong(const xmlChar *s)
 {
   char *end;
   errno = 0;

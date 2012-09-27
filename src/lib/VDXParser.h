@@ -59,6 +59,7 @@ private:
 
   int readLongData(long &value, xmlTextReaderPtr reader);
   int readDoubleData(double &value, xmlTextReaderPtr reader);
+  int readBoolData(bool &value, xmlTextReaderPtr reader);
 
   // Functions to read teh DiagramML document structure
 

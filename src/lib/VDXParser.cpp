@@ -420,8 +420,65 @@ void libvisio::VDXParser::readShapeData(xmlTextReaderPtr /* reader */)
 {
 }
 
-void libvisio::VDXParser::readXFormData(xmlTextReaderPtr /* reader */)
+void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
 {
+  XForm xform;
+
+  unsigned level = (unsigned)xmlTextReaderDepth(reader);
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_PINX:
+      if (1 == tokenType)
+        ret = readDoubleData(xform.pinX, reader);
+      break;
+    case XML_PINY:
+      if (1 == tokenType)
+        ret = readDoubleData(xform.pinY, reader);
+      break;
+    case XML_WIDTH:
+      if (1 == tokenType)
+        ret = readDoubleData(xform.height, reader);
+      break;
+    case XML_HEIGHT:
+      if (1 == tokenType)
+        ret = readDoubleData(xform.width, reader);
+      break;
+    case XML_LOCPINX:
+      if (1 == tokenType)
+        ret = readDoubleData(xform.pinLocX, reader);
+      break;
+    case XML_LOCPINY:
+      if (1 == tokenType)
+        ret = readDoubleData(xform.pinLocY, reader);
+      break;
+    case XML_ANGLE:
+      if (1 == tokenType)
+        ret = readDoubleData(xform.angle, reader);
+      break;
+    case XML_FLIPX:
+      if (1 == tokenType)
+        ret = readBoolData(xform.flipX, reader);
+      break;
+    case XML_FLIPY:
+      if (1 == tokenType)
+        ret = readBoolData(xform.flipY, reader);
+      break;
+    case XML_RESIZEMODE:
+    default:
+      break;
+    }
+  }
+  while ((XML_XFORM != tokenId || 15 != tokenType) && ret == 1);
+
+  m_collector->collectXFormData(0, level, xform);
 }
 
 void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr /* reader */)
@@ -461,7 +518,7 @@ void libvisio::VDXParser::readColours(xmlTextReaderPtr reader)
       xmlChar *rgb = xmlTextReaderGetAttribute(reader, BAD_CAST("RGB"));
       if (ix && rgb)
       {
-        unsigned idx = (unsigned)xmlStringToInt(ix);
+        unsigned idx = (unsigned)xmlStringToLong(ix);
         Colour rgbColour = xmlStringToColour(rgb);
         if (idx)
           colours[idx] = rgbColour;
@@ -488,7 +545,7 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
       xmlChar *name = xmlTextReaderGetAttribute(reader, BAD_CAST("Name"));
       if (id && name)
       {
-        unsigned idx = (unsigned)xmlStringToInt(id);
+        unsigned idx = (unsigned)xmlStringToLong(id);
         WPXBinaryData textStream(name, xmlStrlen(name));
         m_collector->collectFont(idx, textStream, libvisio::VSD_TEXT_UTF8);
       }
@@ -624,10 +681,10 @@ void libvisio::VDXParser::readStyleSheet(xmlTextReaderPtr reader)
   xmlChar *textStyle = xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle"));
   if (id)
   {
-    unsigned nId = (unsigned)xmlStringToInt(id);
-    unsigned nLineStyle =  (unsigned)(lineStyle ? xmlStringToInt(lineStyle) : -1);
-    unsigned nFillStyle = (unsigned)(fillStyle ? xmlStringToInt(fillStyle) : -1);
-    unsigned nTextStyle = (unsigned)(textStyle ? xmlStringToInt(textStyle) : -1);
+    unsigned nId = (unsigned)xmlStringToLong(id);
+    unsigned nLineStyle =  (unsigned)(lineStyle ? xmlStringToLong(lineStyle) : -1);
+    unsigned nFillStyle = (unsigned)(fillStyle ? xmlStringToLong(fillStyle) : -1);
+    unsigned nTextStyle = (unsigned)(textStyle ? xmlStringToLong(textStyle) : -1);
     m_collector->collectStyleSheet(nId, (unsigned)xmlTextReaderDepth(reader), nLineStyle, nFillStyle, nTextStyle);
   }
   if (id)
@@ -675,7 +732,10 @@ int libvisio::VDXParser::readLongData(long &value, xmlTextReaderPtr reader)
   {
     const xmlChar *stringValue = xmlTextReaderConstValue(reader);
     if (stringValue)
-      value = xmlStringToInt(stringValue);
+    {
+      VSD_DEBUG_MSG(("VDXParser::readLongData stringValue %s\n", (const char *)stringValue));
+      value = (unsigned char)xmlStringToLong(stringValue);
+    }
     ret = xmlTextReaderRead(reader);
   }
   return ret;
@@ -688,7 +748,26 @@ int libvisio::VDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
   {
     const xmlChar *stringValue = xmlTextReaderConstValue(reader);
     if (stringValue)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readDoubleData stringValue %s\n", (const char *)stringValue));
       value = (unsigned char)xmlStringToDouble(stringValue);
+    }
+    ret = xmlTextReaderRead(reader);
+  }
+  return ret;
+}
+
+int libvisio::VDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
+{
+  int ret = xmlTextReaderRead(reader);
+  if (3 == xmlTextReaderNodeType(reader))
+  {
+    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
+    if (stringValue)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
+      value = (unsigned char)xmlStringToBool(stringValue);
+    }
     ret = xmlTextReaderRead(reader);
   }
   return ret;
