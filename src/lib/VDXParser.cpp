@@ -358,6 +358,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
     case XML_SHDWBKGNDTRANS:
     case XML_SHAPESHDWTYPE:
     case XML_SHAPESHDWOBLIQUEANGLE:
+	case XML_SHAPESHDWSCALEFACTOR:
     default:
       break;
     }
