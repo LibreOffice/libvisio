@@ -128,6 +128,11 @@ bool libvisio::VSDParser::extractStencils()
 
 void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, unsigned level)
 {
+  std::vector<unsigned> pointerOrder;
+  std::map<unsigned, libvisio::Pointer> PtrList;
+  std::map<unsigned, libvisio::Pointer> FontFaces;
+  unsigned i = 0;
+
   try
   {
     // Parse out pointers to streams
@@ -137,9 +142,6 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, u
     unsigned listSize = readU32(input);
     unsigned pointerCount = readU32(input);
     input->seek(4, WPX_SEEK_CUR);
-    std::map<unsigned, libvisio::Pointer> PtrList;
-    std::map<unsigned, libvisio::Pointer> FontFaces;
-    unsigned i = 0;
     for (i = 0; i < pointerCount; i++)
     {
       Pointer ptr;
@@ -153,33 +155,34 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, u
       else if (ptr.Type != 0)
         PtrList[i] = ptr;
     }
-    std::vector<unsigned> pointerOrder;
     for (i = 0; i < listSize; ++i)
       pointerOrder.push_back(readU32(input));
+  }
+  catch (const EndOfStreamException &)
+  {
+    pointerOrder.clear();
+    PtrList.clear();
+    FontFaces.clear();
+  }
 
-    std::map<unsigned, libvisio::Pointer>::iterator iter;
+  std::map<unsigned, libvisio::Pointer>::iterator iter;
+  for (iter = FontFaces.begin(); iter != FontFaces.end(); ++iter)
+    handleStream(iter->second, iter->first, level+1);
 
-    for (iter = FontFaces.begin(); iter != FontFaces.end(); ++iter)
-      handleStream(iter->second, iter->first, level+1);
-
-    if (!pointerOrder.empty())
+  if (!pointerOrder.empty())
+  {
+    for (i=0; i < pointerOrder.size(); ++i)
     {
-      for (i=0; i < pointerOrder.size(); ++i)
+      iter = PtrList.find(pointerOrder[i]);
+      if (iter != PtrList.end())
       {
-        iter = PtrList.find(pointerOrder[i]);
-        if (iter != PtrList.end())
-        {
-          handleStream(iter->second, iter->first, level+1);
-          PtrList.erase(iter);
-        }
+        handleStream(iter->second, iter->first, level+1);
+        PtrList.erase(iter);
       }
     }
-    for (iter = PtrList.begin(); iter != PtrList.end(); ++iter)
-      handleStream(iter->second, iter->first, level+1);
   }
-  catch (...)
-  {
-  }
+  for (iter = PtrList.begin(); iter != PtrList.end(); ++iter)
+    handleStream(iter->second, iter->first, level+1);
 
 }
 
@@ -334,7 +337,7 @@ void libvisio::VSDParser::handleChunks(WPXInputStream *input, unsigned level)
     endPos = m_header.dataLength+m_header.trailer+input->tell();
 
     _handleLevelChange(m_header.level);
-    VSD_DEBUG_MSG(("Shape: parsing chunk type %x\n", m_header.chunkType));
+    VSD_DEBUG_MSG(("Shape: parsing chunk type 0x%x\n", m_header.chunkType));
     handleChunk(input);
     input->seek(endPos, WPX_SEEK_SET);
   }
@@ -911,16 +914,28 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
   if (m_header.id != (unsigned)-1)
     m_currentShapeID = m_header.id;
   m_currentShapeLevel = m_header.level;
-  input->seek(0x12, WPX_SEEK_CUR);
-  unsigned masterPage = readU32(input);
-  input->seek(4, WPX_SEEK_CUR);
-  unsigned masterShape = readU32(input);
-  input->seek(0x4, WPX_SEEK_CUR);
-  unsigned fillStyle = readU32(input);
-  input->seek(4, WPX_SEEK_CUR);
-  unsigned lineStyle = readU32(input);
-  input->seek(4, WPX_SEEK_CUR);
-  unsigned textStyle = readU32(input);
+  unsigned masterPage = (unsigned)-1;
+  unsigned masterShape = (unsigned)-1;
+  unsigned lineStyle = (unsigned)-1;
+  unsigned fillStyle = (unsigned)-1;
+  unsigned textStyle = (unsigned)-1;
+
+  try
+  {
+    input->seek(0x12, WPX_SEEK_CUR);
+    masterPage = readU32(input);
+    input->seek(4, WPX_SEEK_CUR);
+    masterShape = readU32(input);
+    input->seek(0x4, WPX_SEEK_CUR);
+    fillStyle = readU32(input);
+    input->seek(4, WPX_SEEK_CUR);
+    lineStyle = readU32(input);
+    input->seek(4, WPX_SEEK_CUR);
+    textStyle = readU32(input);
+  }
+  catch (const EndOfStreamException &)
+  {
+  }
 
   if (m_isStencilStarted)
   {
