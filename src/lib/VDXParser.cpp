@@ -42,13 +42,33 @@
 
 
 libvisio::VDXParser::VDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_collector(), m_stencils(), m_stencilShape(),
-    m_isStencilStarted(false), m_extractStencils(false), m_isInStyles(false), m_colours()
+  : m_input(input), m_painter(painter), m_collector(), m_stencils(), m_currentStencil(0), m_stencilShape(),
+    m_isStencilStarted(false), m_currentStencilID((unsigned)-1), m_extractStencils(false), m_isInStyles(false),
+    m_colours(), m_charList(new VSDCharacterList()), m_charListVector(), m_currentLevel(0), m_currentShapeLevel(0),
+    m_fieldList(), m_geomList(new VSDGeometryList()), m_geomListVector(), m_paraList(new VSDParagraphList()),
+    m_paraListVector(), m_shapeList()
 {
 }
 
 libvisio::VDXParser::~VDXParser()
 {
+  if (m_geomList)
+  {
+    m_geomList->clear();
+    delete m_geomList;
+  }
+  if (m_charList)
+  {
+    m_charList->clear();
+    delete m_charList;
+  }
+  if (m_paraList)
+  {
+    m_paraList->clear();
+    delete m_paraList;
+  }
+  if (m_currentStencil)
+    delete m_currentStencil;
 }
 
 bool libvisio::VDXParser::parseMain()
@@ -125,61 +145,122 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     return;
   int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
   int tokenType = xmlTextReaderNodeType(reader);
+  _handleLevelChange((unsigned)xmlTextReaderDepth(reader));
   switch (tokenId)
   {
   case XML_COLORS:
-    if (tokenType == 1)
+    if (1 == tokenType)
       readColours(reader);
     break;
   case XML_FACENAMES:
-    if (tokenType == 1)
+    if (1 == tokenType)
       readFonts(reader);
     break;
-  case XML_STYLESHEETS:
-    if (tokenType == 1)
-      m_isInStyles = true;
-    else if (tokenType == 15)
-      m_isInStyles = false;
-    break;
-  case XML_STYLESHEET:
-    if (tokenType == 1)
-      readStyleSheet(reader);
-    break;
-  case XML_LINE:
-    if (tokenType == 1)
-      readLine(reader);
-    break;
   case XML_FILL:
-    if (tokenType == 1)
+    if (1 == tokenType)
       readFillAndShadow(reader);
     break;
-  case XML_PAGES:
-    if (tokenType == 1 && m_extractStencils)
+  case XML_LINE:
+    if (1 == tokenType)
+      readLine(reader);
+    break;
+  case XML_MASTER:
+    if (1 == tokenType)
     {
-      int ret = 1;
-      do
+      if (m_extractStencils)
+        readPage(reader);
+      else
+        readStencil(reader);
+    }
+    else if (tokenType == 15)
+    {
+      if (m_extractStencils)
       {
-        ret = xmlTextReaderRead(reader);
-        tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
-        tokenType = xmlTextReaderNodeType(reader);
+        _handleLevelChange(0);
+        m_collector->endPage();
       }
-      while ((XML_PAGES != tokenId || 15 != tokenType) && ret == 1);
+      else
+      {
+        if (m_currentStencil)
+        {
+          m_stencils.addStencil(m_currentStencilID, *m_currentStencil);
+          delete m_currentStencil;
+        }
+        m_currentStencil = 0;
+        m_currentStencilID = (unsigned)-1;
+      }
+    }
+    break;
+  case XML_MASTERS:
+    if (1 == tokenType)
+    {
+      if (m_extractStencils)
+        m_isStencilStarted = false;
+      else
+        m_isStencilStarted = true;
+    }
+    else if (15 == tokenType)
+    {
+      if (m_extractStencils)
+        m_collector->endPages();
+      else
+        m_isStencilStarted = false;
     }
     break;
   case XML_PAGE:
-    readPage(reader);
+    if (1 == tokenType)
+    {
+      if (m_extractStencils)
+      {
+        // This skips page, because we are spitting out the stencils only
+        int ret = 1;
+        do
+        {
+          ret = xmlTextReaderRead(reader);
+          tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+          tokenType = xmlTextReaderNodeType(reader);
+        }
+        while ((XML_PAGE != tokenId || 15 != tokenType) && ret == 1);
+      }
+      else
+        readPage(reader);
+    }
+    else if (tokenType == 15 && !m_extractStencils)
+    {
+      _handleLevelChange(0);
+      m_collector->endPage();
+    }
     break;
-  case XML_MASTERS:
-    if (tokenType == 1 && !m_extractStencils)
-      m_isStencilStarted = true;
-    else
+  case XML_PAGEPROPS:
+    if (1 == tokenType)
+      readPageProps(reader);
+    break;
+  case XML_PAGES:
+    if (1 == tokenType)
       m_isStencilStarted = false;
+    else if (15 == tokenType && !m_extractStencils)
+      m_collector->endPages();
     break;
-  case XML_MASTER:
-    if (m_extractStencils)
-      readPage(reader);
-    else
-      readStencil(reader);
+  case XML_PAGESHEET:
+    if (1 == tokenType)
+      readPageSheet(reader);
+    break;
+  case XML_STYLESHEET:
+    if (1 == tokenType)
+      readStyleSheet(reader);
+    break;
+  case XML_STYLESHEETS:
+    if (1 == tokenType)
+      m_isInStyles = true;
+    else if (tokenType == 15)
+    {
+      _handleLevelChange(0);
+      m_isInStyles = false;
+    }
+    break;
+  case XML_XFORM:
+    if (1 == tokenType)
+      readXFormData(reader);
     break;
   default:
     break;
@@ -292,9 +373,9 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 {
   Colour fillColourFG;
-  long fillFGTransparency = 0;
+  double fillFGTransparency = 0.0;
   Colour fillColourBG;
-  long fillBGTransparency = 0;
+  double fillBGTransparency = 0.0;
   long fillPattern = 0;
   Colour shadowColourFG;
   Colour shadowColourBG;
@@ -339,11 +420,11 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     case XML_FILLFOREGNDTRANS:
       if (1 == tokenType)
-        ret = readLongData(fillFGTransparency, reader);
+        ret = readDoubleData(fillFGTransparency, reader);
       break;
     case XML_FILLBKGNDTRANS:
       if (1 == tokenType)
-        ret = readLongData(fillBGTransparency, reader);
+        ret = readDoubleData(fillBGTransparency, reader);
       break;
     case XML_SHAPESHDWOFFSETX:
       if (1 == tokenType)
@@ -365,19 +446,19 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   while ((XML_FILL != tokenId || 15 != tokenType) && ret == 1);
 
   if (m_isInStyles)
-    m_collector->collectFillStyle(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, (unsigned char)fillFGTransparency,
-                                  (unsigned char)fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectFillStyle(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, (unsigned char)(255.0*fillFGTransparency),
+                                  (unsigned char)(255.0*fillBGTransparency), (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
   else if (m_isStencilStarted)
   {
     VSD_DEBUG_MSG(("Found stencil fill\n"));
     if (!m_stencilShape.m_fillStyle)
       m_stencilShape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
-          (unsigned char)fillFGTransparency, (unsigned char)fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
+          (unsigned char)(255.0*fillFGTransparency), (unsigned char)(255.0*fillBGTransparency), shadowColourFG, (unsigned char)shadowPattern,
           shadowOffsetX, shadowOffsetY);
   }
   else
-    m_collector->collectFillAndShadow(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, (unsigned char)fillFGTransparency,
-                                      (unsigned char)fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectFillAndShadow(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, (unsigned char)(255.0*fillFGTransparency),
+                                      (unsigned char)(255.0*fillBGTransparency), (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VDXParser::readGeomList(xmlTextReaderPtr /* reader */)
@@ -493,8 +574,75 @@ void libvisio::VDXParser::readForeignDataType(xmlTextReaderPtr /* reader */)
 {
 }
 
-void libvisio::VDXParser::readPageProps(xmlTextReaderPtr /* reader */)
+void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
 {
+  double pageWidth = 0.0;
+  double pageHeight = 0.0;
+  double shadowOffsetX = 0.0;
+  double shadowOffsetY = 0.0;
+  double pageScale = 1.0;
+  double drawingScale = 1.0;
+
+  unsigned level = (unsigned)xmlTextReaderDepth(reader);
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_PAGEWIDTH:
+      if (1 == tokenType)
+        ret =readDoubleData(pageWidth, reader);
+      break;
+    case XML_PAGEHEIGHT:
+      if (1 == tokenType)
+        ret = readDoubleData(pageHeight, reader);
+      break;
+    case XML_SHDWOFFSETX:
+      if (1 == tokenType)
+        ret = readDoubleData(shadowOffsetX, reader);
+      break;
+    case XML_SHDWOFFSETY:
+      if (1 == tokenType)
+        ret = readDoubleData(shadowOffsetY, reader);
+      break;
+    case XML_PAGESCALE:
+      if (1 == tokenType)
+        ret = readDoubleData(pageScale, reader);
+      break;
+    case XML_DRAWINGSCALE:
+      if (1 == tokenType)
+        ret = readDoubleData(drawingScale, reader);
+      break;
+    case XML_DRAWINGSIZETYPE:
+    case XML_DRAWINGSCALETYPE:
+    case XML_INHIBITSNAP:
+    case XML_UIVISIBILITY:
+    case XML_SHDWTYPE:
+    case XML_SHDWOBLIQUEANGLE:
+    case XML_SHDWSCALEFACTOR:
+    default:
+      break;
+    }
+  }
+  while ((XML_PAGEPROPS != tokenId || 15 != tokenType) && ret == 1);
+
+  if (m_isStencilStarted)
+  {
+    if (m_currentStencil)
+    {
+      m_currentStencil->m_shadowOffsetX = shadowOffsetX;
+      m_currentStencil->m_shadowOffsetY = shadowOffsetY;
+    }
+  }
+  else
+  {
+    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, pageScale/drawingScale);
+  }
 }
 
 void libvisio::VDXParser::readShape(xmlTextReaderPtr /* reader */)
@@ -561,8 +709,21 @@ void libvisio::VDXParser::readParaList(xmlTextReaderPtr /* reader */)
 {
 }
 
-void libvisio::VDXParser::readPage(xmlTextReaderPtr /* reader */)
+void libvisio::VDXParser::readPage(xmlTextReaderPtr reader)
 {
+  xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
+  xmlChar *bgndPage = xmlTextReaderGetAttribute(reader, BAD_CAST("BackPage"));
+  if (id)
+  {
+    unsigned nId = (unsigned)xmlStringToLong(id);
+    unsigned backgroundPageID =  (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
+    m_collector->startPage(nId);
+    m_collector->collectPage(nId, (unsigned)xmlTextReaderDepth(reader), backgroundPageID);
+  }
+  if (id)
+    xmlFree(id);
+  if (bgndPage)
+    xmlFree(bgndPage);
 }
 
 void libvisio::VDXParser::readText(xmlTextReaderPtr /* reader */)
@@ -704,8 +865,10 @@ void libvisio::VDXParser::readStyleSheet(xmlTextReaderPtr reader)
     xmlFree(textStyle);
 }
 
-void libvisio::VDXParser::readPageSheet(xmlTextReaderPtr /* reader */)
+void libvisio::VDXParser::readPageSheet(xmlTextReaderPtr reader)
 {
+  m_currentShapeLevel = (unsigned)xmlTextReaderDepth(reader);
+  m_collector->collectPageSheet(0, m_currentShapeLevel);
 }
 
 void libvisio::VDXParser::readSplineStart(xmlTextReaderPtr /* reader */)
@@ -716,8 +879,21 @@ void libvisio::VDXParser::readSplineKnot(xmlTextReaderPtr /* reader */)
 {
 }
 
-void libvisio::VDXParser::readStencil(xmlTextReaderPtr /* reader */)
+void libvisio::VDXParser::readStencil(xmlTextReaderPtr reader)
 {
+  xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
+  if (id)
+  {
+    unsigned nId = (unsigned)xmlStringToLong(id);
+    m_currentStencilID = nId;
+  }
+  else
+    m_currentStencilID = (unsigned)-1;
+  if (m_currentStencil)
+    delete m_currentStencil;
+  m_currentStencil = new VSDStencil();
+  if (id)
+    xmlFree(id);
 }
 
 void libvisio::VDXParser::readStencilShape(xmlTextReaderPtr /* reader */)
@@ -741,7 +917,7 @@ int libvisio::VDXParser::readLongData(long &value, xmlTextReaderPtr reader)
     if (stringValue)
     {
       VSD_DEBUG_MSG(("VDXParser::readLongData stringValue %s\n", (const char *)stringValue));
-      value = (unsigned char)xmlStringToLong(stringValue);
+      value = xmlStringToLong(stringValue);
     }
     ret = xmlTextReaderRead(reader);
   }
@@ -757,7 +933,7 @@ int libvisio::VDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
     if (stringValue)
     {
       VSD_DEBUG_MSG(("VDXParser::readDoubleData stringValue %s\n", (const char *)stringValue));
-      value = (unsigned char)xmlStringToDouble(stringValue);
+      value = xmlStringToDouble(stringValue);
     }
     ret = xmlTextReaderRead(reader);
   }
@@ -773,7 +949,7 @@ int libvisio::VDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
     if (stringValue)
     {
       VSD_DEBUG_MSG(("VDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
-      value = (unsigned char)xmlStringToBool(stringValue);
+      value = xmlStringToBool(stringValue);
     }
     ret = xmlTextReaderRead(reader);
   }
@@ -824,6 +1000,54 @@ int libvisio::VDXParser::readExtendedColourData(Colour &value, xmlTextReaderPtr 
 {
   long idx = -1;
   return readExtendedColourData(value, idx, reader);
+}
+
+void libvisio::VDXParser::_handleLevelChange(unsigned level)
+{
+  if (level == m_currentLevel)
+    return;
+  if (level <= m_currentShapeLevel+1)
+  {
+    m_geomListVector.push_back(m_geomList);
+    m_charListVector.push_back(m_charList);
+    m_paraListVector.push_back(m_paraList);
+    // reinitialize, but don't clear, because we want those pointers to be valid until we handle the whole vector
+    m_geomList = new VSDGeometryList();
+    m_charList = new VSDCharacterList();
+    m_paraList = new VSDParagraphList();
+    m_shapeList.handle(m_collector);
+    m_shapeList.clear();
+  }
+  if (level <= m_currentShapeLevel)
+  {
+    for (std::vector<VSDGeometryList *>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
+    {
+      (*iter)->handle(m_collector);
+      (*iter)->clear();
+      delete *iter;
+    }
+    m_geomListVector.clear();
+    for (std::vector<VSDCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); ++iter2)
+    {
+      (*iter2)->handle(m_collector);
+      (*iter2)->clear();
+      delete *iter2;
+    }
+    m_charListVector.clear();
+    for (std::vector<VSDParagraphList *>::iterator iter3 = m_paraListVector.begin(); iter3 != m_paraListVector.end(); ++iter3)
+    {
+      (*iter3)->handle(m_collector);
+      (*iter3)->clear();
+      delete *iter3;
+    }
+    m_paraListVector.clear();
+    if (!m_fieldList.empty())
+    {
+      m_fieldList.handle(m_collector);
+      m_fieldList.clear();
+    }
+  }
+  m_currentLevel = level;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -35,6 +35,9 @@
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpg/libwpg.h>
 #include "VSDXMLHelper.h"
+#include "VSDCharacterList.h"
+#include "VSDParagraphList.h"
+#include "VSDShapeList.h"
 #include "VSDStencils.h"
 
 namespace libvisio
@@ -63,6 +66,7 @@ private:
   int readColourData(Colour &value, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
+  void _handleLevelChange(unsigned level);
 
 
   // Functions to read teh DiagramML document structure
@@ -127,12 +131,24 @@ private:
   libwpg::WPGPaintInterface *m_painter;
   VSDCollector *m_collector;
   VSDStencils m_stencils;
+  VSDStencil *m_currentStencil;
   VSDStencilShape m_stencilShape;
   bool m_isStencilStarted;
+  unsigned m_currentStencilID;
 
   bool m_extractStencils;
   bool m_isInStyles;
   std::map<unsigned, Colour> m_colours;
+  VSDCharacterList *m_charList;
+  std::vector<VSDCharacterList *> m_charListVector;
+  unsigned m_currentLevel;
+  unsigned m_currentShapeLevel;
+  VSDFieldList m_fieldList;
+  VSDGeometryList *m_geomList;
+  std::vector<VSDGeometryList *> m_geomListVector;
+  VSDParagraphList *m_paraList;
+  std::vector<VSDParagraphList *> m_paraListVector;
+  VSDShapeList m_shapeList;
 };
 
 } // namespace libvisio
