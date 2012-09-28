@@ -149,7 +149,7 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const Colour &colou
     m_fillType = "solid";
     m_styleProps.insert("draw:fill-color", getColourString(colourFG));
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("draw:opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("draw:opacity", 1 - m_fillFGTransparency, WPX_PERCENT);
     else
       m_styleProps.remove("draw:opacity");
   }

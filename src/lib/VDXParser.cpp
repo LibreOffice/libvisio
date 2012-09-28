@@ -633,11 +633,8 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
 
   if (m_isStencilStarted)
   {
-//    if (m_currentStencil)
-    {
-      m_currentStencil->m_shadowOffsetX = shadowOffsetX;
-      m_currentStencil->m_shadowOffsetY = shadowOffsetY;
-    }
+    m_currentStencil->m_shadowOffsetX = shadowOffsetX;
+    m_currentStencil->m_shadowOffsetY = shadowOffsetY;
   }
   else
   {
