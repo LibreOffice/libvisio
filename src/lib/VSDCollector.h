@@ -49,10 +49,10 @@ public:
   virtual void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData) = 0;
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
   virtual void collectLine(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap) = 0;
-  virtual void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, unsigned fillFGTransparency,
-                                    unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
-  virtual void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, unsigned fillFGTransparency,
-                                    unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc) = 0;
+  virtual void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
+                                    double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
+  virtual void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
+                                    double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc) = 0;
   virtual void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags) = 0;
   virtual void collectMoveTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectLineTo(unsigned id, unsigned level, double x, double y) = 0;
@@ -97,11 +97,10 @@ public:
   virtual void collectLineStyle(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
                                 unsigned char startMarker, unsigned char endMarker, unsigned char lineCap) = 0;
   virtual void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
-                                unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
-                                const Colour &shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
+                                double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc,
+                                double shadowOffsetX, double shadowOffsetY) = 0;
   virtual void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
-                                unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
-                                const Colour &shfgc) = 0;
+                                double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc) = 0;
   virtual void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
                                   bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                   bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;

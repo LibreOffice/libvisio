@@ -59,15 +59,15 @@ struct VSDFillStyle
 {
   VSDFillStyle()
     : fgColour(), bgColour(), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(), shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
-  VSDFillStyle(const Colour &fgc, const Colour &bgc, unsigned char p, unsigned char fga, unsigned char bga, const Colour &sfgc, unsigned char shp, double shX, double shY)
+  VSDFillStyle(const Colour &fgc, const Colour &bgc, unsigned char p, double fga, double bga, const Colour &sfgc, unsigned char shp, double shX, double shY)
     : fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga), shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
   ~VSDFillStyle() {}
   Colour fgColour;
   Colour bgColour;
   unsigned char pattern;
 
-  unsigned char fgTransparency;
-  unsigned char bgTransparency;
+  double fgTransparency;
+  double bgTransparency;
 
   Colour shadowFgColour;
   unsigned char shadowPattern;

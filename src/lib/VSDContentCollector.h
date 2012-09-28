@@ -71,10 +71,10 @@ public:
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap);
   void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-                            unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc,
+                            double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc,
                             double shadowOffsetX, double shadowOffsetY);
   void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-                            unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc);
+                            double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc);
   void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
@@ -121,11 +121,10 @@ public:
   void collectLineStyle(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
                         unsigned char startMarker, unsigned char endMarker, unsigned char lineCap);
   void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
-                        unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
-                        const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
+                        double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc,
+                        double shadowOffsetX, double shadowOffsetY);
   void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
-                        unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
-                        const Colour &shfgc);
+                        double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc);
   void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
                           bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                           bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
@@ -176,8 +175,8 @@ private:
   const char *_linePropertiesMarkerViewbox(unsigned marker);
   const char *_linePropertiesMarkerPath(unsigned marker);
   double _linePropertiesMarkerScale(unsigned marker);
-  void _fillAndShadowProperties(const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, unsigned fillFGTransparency,
-                                unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
+  void _fillAndShadowProperties(const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
+                                double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
 
   void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
   void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
@@ -214,8 +213,8 @@ private:
   ::WPXString m_fillType;
   unsigned m_linePattern;
   unsigned m_fillPattern;
-  unsigned m_fillFGTransparency;
-  unsigned m_fillBGTransparency;
+  double m_fillFGTransparency;
+  double m_fillBGTransparency;
   bool m_noLine;
   bool m_noFill;
   bool m_noShow;

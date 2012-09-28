@@ -82,14 +82,14 @@ void libvisio::VSDStylesCollector::collectLine(unsigned /* id */, unsigned level
 }
 
 void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, const Colour & /* colourIndexFG */,
-    const Colour & /* colourIndexBG */, unsigned /* fillPattern */, unsigned /* fillFGTransparency */, unsigned /* fillBGTransparency */,
+    const Colour & /* colourIndexBG */, unsigned /* fillPattern */, double /* fillFGTransparency */, double /* fillBGTransparency */,
     unsigned /* shadowPattern */, const Colour & /* shfgc */, double /* shadowOffsetX */, double /* shadowOffsetY */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, const Colour & /* colourIndexFG */,
-    const Colour & /* colourIndexBG */, unsigned /* fillPattern */, unsigned /* fillFGTransparency */, unsigned /* fillBGTransparency */,
+    const Colour & /* colourIndexBG */, unsigned /* fillPattern */, double /* fillFGTransparency */, double /* fillBGTransparency */,
     unsigned /* shadowPattern */, const Colour & /* shfgc */)
 {
   _handleLevelChange(level);
@@ -300,8 +300,8 @@ void libvisio::VSDStylesCollector::collectLineStyle(unsigned /* id */, unsigned 
 }
 
 void libvisio::VSDStylesCollector::collectFillStyle(unsigned /*id*/, unsigned level, const Colour &colourFG, const Colour &colourBG,
-    unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency,
-    unsigned char shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY)
+    unsigned char fillPattern, double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc,
+    double shadowOffsetX, double shadowOffsetY)
 {
   if (!m_fillStyle)
     m_fillStyle = new VSDFillStyle();
@@ -321,8 +321,7 @@ void libvisio::VSDStylesCollector::collectFillStyle(unsigned /*id*/, unsigned le
 }
 
 void libvisio::VSDStylesCollector::collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG,
-    unsigned char fillPattern, unsigned char fillFGTransparency, unsigned char fillBGTransparency,
-    unsigned char shadowPattern, const Colour &shfgc)
+    unsigned char fillPattern, double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc)
 {
   collectFillStyle(id, level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }

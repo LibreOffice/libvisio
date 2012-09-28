@@ -446,19 +446,19 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   while ((XML_FILL != tokenId || 15 != tokenType) && ret == 1);
 
   if (m_isInStyles)
-    m_collector->collectFillStyle(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, (unsigned char)(255.0*fillFGTransparency),
-                                  (unsigned char)(255.0*fillBGTransparency), (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectFillStyle(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
+                                  fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
   else if (m_isStencilStarted)
   {
     VSD_DEBUG_MSG(("Found stencil fill\n"));
     if (!m_stencilShape.m_fillStyle)
       m_stencilShape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
-          (unsigned char)(255.0*fillFGTransparency), (unsigned char)(255.0*fillBGTransparency), shadowColourFG, (unsigned char)shadowPattern,
+          fillFGTransparency, fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
           shadowOffsetX, shadowOffsetY);
   }
   else
-    m_collector->collectFillAndShadow(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, (unsigned char)(255.0*fillFGTransparency),
-                                      (unsigned char)(255.0*fillBGTransparency), (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectFillAndShadow(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency,
+                                      (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VDXParser::readGeomList(xmlTextReaderPtr /* reader */)
@@ -633,7 +633,7 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
 
   if (m_isStencilStarted)
   {
-    if (m_currentStencil)
+//    if (m_currentStencil)
     {
       m_currentStencil->m_shadowOffsetX = shadowOffsetX;
       m_currentStencil->m_shadowOffsetY = shadowOffsetY;
@@ -881,6 +881,7 @@ void libvisio::VDXParser::readSplineKnot(xmlTextReaderPtr /* reader */)
 
 void libvisio::VDXParser::readStencil(xmlTextReaderPtr reader)
 {
+  printf("Fridrich\n");
   xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
   if (id)
   {

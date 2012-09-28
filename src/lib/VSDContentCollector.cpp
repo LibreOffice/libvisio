@@ -136,7 +136,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
 }
 
 void libvisio::VSDContentCollector::_fillAndShadowProperties(const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-    unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY)
+    double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   m_fillPattern = fillPattern;
   m_fillFGTransparency = fillFGTransparency;
@@ -160,12 +160,12 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const Colour &colou
     m_styleProps.insert("draw:start-color", getColourString(colourFG));
     m_styleProps.insert("draw:end-color", getColourString(colourBG));
     m_styleProps.remove("draw:opacity");
-    if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+    if (m_fillBGTransparency > 0.0)
+      m_styleProps.insert("libwpg:start-opacity", 1 - m_fillBGTransparency, WPX_PERCENT);
     else
       m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
-    if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+    if (m_fillFGTransparency > 0.0)
+      m_styleProps.insert("libwpg:end-opacity", 1 - m_fillFGTransparency, WPX_PERCENT);
     else
       m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
@@ -183,11 +183,11 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const Colour &colou
     m_styleProps.insert("draw:end-color", getColourString(colourFG));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", 1 - m_fillBGTransparency, WPX_PERCENT);
     else
       m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", 1 - m_fillFGTransparency, WPX_PERCENT);
     else
       m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
@@ -230,11 +230,11 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const Colour &colou
     m_styleProps.insert("draw:end-color", getColourString(colourFG));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", 1 - m_fillBGTransparency, WPX_PERCENT);
     else
       m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", 1 - m_fillFGTransparency, WPX_PERCENT);
     else
       m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:angle", 0);
@@ -248,11 +248,11 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const Colour &colou
     m_styleProps.insert("draw:end-color", getColourString(colourFG));
     m_styleProps.remove("draw:opacity");
     if (m_fillBGTransparency > 0)
-      m_styleProps.insert("libwpg:start-opacity", (double)(1 - m_fillBGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:start-opacity", 1 - m_fillBGTransparency, WPX_PERCENT);
     else
       m_styleProps.insert("libwpg:start-opacity", 1, WPX_PERCENT);
     if (m_fillFGTransparency > 0)
-      m_styleProps.insert("libwpg:end-opacity", (double)(1 - m_fillFGTransparency/255.0), WPX_PERCENT);
+      m_styleProps.insert("libwpg:end-opacity", 1 - m_fillFGTransparency, WPX_PERCENT);
     else
       m_styleProps.insert("libwpg:end-opacity", 1, WPX_PERCENT);
     m_styleProps.insert("draw:border", 0, WPX_PERCENT);
@@ -1295,14 +1295,14 @@ void libvisio::VSDContentCollector::collectLine(unsigned /* id */, unsigned leve
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned /* id */, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-    unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY)
+    double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY)
 {
   _handleLevelChange(level);
   _fillAndShadowProperties(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-    unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc)
+    double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc)
 {
   collectFillAndShadow(id, level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
@@ -1963,8 +1963,8 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   // Save line colour and pattern, fill type and pattern
   m_fillType = "none";
   m_fillPattern = 1; // same as "solid"
-  m_fillFGTransparency = 0;
-  m_fillBGTransparency = 0;
+  m_fillFGTransparency = 0.0;
+  m_fillBGTransparency = 0.0;
 
   // Reset style
   m_styleProps.clear();
@@ -2221,14 +2221,13 @@ void libvisio::VSDContentCollector::collectLineStyle(unsigned /* id */, unsigned
 }
 
 void libvisio::VSDContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, const Colour & /*colourFG*/, const Colour & /*colourBG*/, unsigned char /*fillPattern*/,
-    unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, const Colour & /*shfgc*/,
-    double /*shadowOffsetX*/, double /*shadowOffsetY*/)
+    double /*fillFGTransparency*/, double /*fillBGTransparency*/, unsigned char /*shadowPattern*/, const Colour & /*shfgc*/, double /*shadowOffsetX*/, double /*shadowOffsetY*/)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDContentCollector::collectFillStyle(unsigned /*id*/, unsigned level, const Colour & /*colourFG*/, const Colour & /*colourBG*/, unsigned char /*fillPattern*/,
-    unsigned char /*fillFGTransparency*/, unsigned char /*fillBGTransparency*/, unsigned char /*shadowPattern*/, const Colour & /*shfgc*/)
+    double /*fillFGTransparency*/, double /*fillBGTransparency*/, unsigned char /*shadowPattern*/, const Colour & /*shfgc*/)
 {
   _handleLevelChange(level);
 }

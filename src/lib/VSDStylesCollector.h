@@ -63,10 +63,10 @@ public:
   void collectLine(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker,
                    unsigned char endMarker, unsigned lineCap);
   void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-                            unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc,
+                            double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc,
                             double shadowOffsetX, double shadowOffsetY);
   void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-                            unsigned fillFGTransparency, unsigned fillBGTransparency, unsigned shadowPattern, const Colour &shfgc);
+                            double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc);
   void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
@@ -115,10 +115,10 @@ public:
   void collectLineStyle(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
                         unsigned char startMarker, unsigned char endMarker, unsigned char lineCap);
   void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
-                        unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
+                        double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern,
                         const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
   void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
-                        unsigned char fillFGTransparency, unsigned char fillBGTransparency, unsigned char shadowPattern,
+                        double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern,
                         const Colour &shfgc);
   void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
                           double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
