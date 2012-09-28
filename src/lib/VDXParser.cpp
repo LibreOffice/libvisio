@@ -881,7 +881,6 @@ void libvisio::VDXParser::readSplineKnot(xmlTextReaderPtr /* reader */)
 
 void libvisio::VDXParser::readStencil(xmlTextReaderPtr reader)
 {
-  printf("Fridrich\n");
   xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
   if (id)
   {
