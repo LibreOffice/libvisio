@@ -131,7 +131,8 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
   m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
-  m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0)
+  m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
+  m_isBackgroundPage(false)
 {
 }
 
@@ -1931,7 +1932,7 @@ void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned
   m_currentPage.m_pageHeight = m_scale*m_pageHeight;
 }
 
-void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID)
+void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID, bool /* isBackgroundPage */)
 {
   _handleLevelChange(level);
   m_currentPage.m_backgroundPageID = backgroundPageID;

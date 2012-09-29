@@ -206,7 +206,7 @@ void libvisio::VSDStylesCollector::collectPageProps(unsigned /* id */, unsigned 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectPage(unsigned /* id */, unsigned level, unsigned /* backgroundPageID */)
+void libvisio::VSDStylesCollector::collectPage(unsigned /* id */, unsigned level, unsigned /* backgroundPageID */, bool /* isBackgroundPage */)
 {
   _handleLevelChange(level);
 }

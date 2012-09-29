@@ -715,7 +715,7 @@ void libvisio::VDXParser::readPage(xmlTextReaderPtr reader)
     unsigned nId = (unsigned)xmlStringToLong(id);
     unsigned backgroundPageID =  (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
     m_collector->startPage(nId);
-    m_collector->collectPage(nId, (unsigned)xmlTextReaderDepth(reader), backgroundPageID);
+    m_collector->collectPage(nId, (unsigned)xmlTextReaderDepth(reader), backgroundPageID, false);
   }
   if (id)
     xmlFree(id);

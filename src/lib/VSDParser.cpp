@@ -741,7 +741,7 @@ void libvisio::VSDParser::readPage(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR); //sub header length and children list length
   uint32_t backgroundPageID = readU32(input);
-  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID);
+  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage);
 }
 
 void libvisio::VSDParser::readGeometry(WPXInputStream *input)

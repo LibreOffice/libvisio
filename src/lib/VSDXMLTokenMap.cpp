@@ -30,12 +30,12 @@
 #include "VSDXMLTokenMap.h"
 #include <string.h>
 
-namespace libvisio
+namespace
 {
 
 #include "tokenhash.h"
 
-} // namespace libvisio
+} // anonymous namespace
 
 int libvisio::VSDXMLTokenMap::getTokenId(const xmlChar *name)
 {
