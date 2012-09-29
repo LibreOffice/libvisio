@@ -68,8 +68,7 @@ private:
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   void _handleLevelChange(unsigned level);
 
-
-  // Functions to read teh DiagramML document structure
+  // Functions to read the DatadiagramML document structure
 
   bool processXmlDocument(WPXInputStream *input);
   void processXmlNode(xmlTextReaderPtr reader);

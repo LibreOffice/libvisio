@@ -55,6 +55,16 @@ private:
   VSDXParser(const VSDXParser &);
   VSDXParser &operator=(const VSDXParser &);
 
+  // Helper functions
+
+  int readLongData(long &value, xmlTextReaderPtr reader);
+  int readDoubleData(double &value, xmlTextReaderPtr reader);
+  int readBoolData(bool &value, xmlTextReaderPtr reader);
+  int readColourData(Colour &value, xmlTextReaderPtr reader);
+  int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
+  int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
+  void _handleLevelChange(unsigned level);
+
   // Functions parsing the Visio 2013 OPC document structure
 
   bool parseDocument(WPXInputStream *input, const char *name);
@@ -80,6 +90,8 @@ private:
   bool m_extractStencils;
   int m_currentDepth;
   WPXBinaryData m_currentBinaryData;
+
+  std::map<unsigned, Colour> m_colours;
 };
 
 } // namespace libvisio

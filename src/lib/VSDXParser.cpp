@@ -38,6 +38,7 @@
 #include "VSDStylesCollector.h"
 #include "VSDZipStream.h"
 #include "VSDXMLHelper.h"
+#include "VSDTypes.h"
 
 namespace
 {
@@ -67,7 +68,7 @@ std::string getRelationshipsForTarget(const char *target)
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(0), m_painter(painter), m_collector(), m_stencils(), m_extractStencils(false),
-    m_currentDepth(0), m_currentBinaryData()
+    m_currentDepth(0), m_currentBinaryData(), m_colours()
 {
   input->seek(0, WPX_SEEK_CUR);
   m_input = new VSDZipStream(input);
@@ -421,4 +422,89 @@ void libvisio::VSDXParser::extractBinaryData(WPXInputStream *input, const char *
   VSD_DEBUG_MSG(("%s\n", m_currentBinaryData.getBase64Data().cstr()));
 }
 
+int libvisio::VSDXParser::readLongData(long &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXParser::readLongData stringValue %s\n", (const char *)stringValue));
+    value = xmlStringToLong(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXParser::readDoubleData stringValue %s\n", (const char *)stringValue));
+    value = xmlStringToDouble(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
+    value = xmlStringToBool(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
+    value = xmlStringToColour(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXParser::readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  idx = -1;
+  try
+  {
+    ret = readLongData(idx, reader);
+  }
+  catch (const XmlParserException &)
+  {
+    idx = -1;
+    ret = readColourData(value, reader);
+  }
+  if (idx > 0)
+  {
+    std::map<unsigned, Colour>::const_iterator iter = m_colours.find((unsigned)idx);
+    if (iter != m_colours.end())
+      value = iter->second;
+    else
+      idx = -1;
+  }
+  return ret;
+}
+
+int libvisio::VSDXParser::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
+{
+  long idx = -1;
+  return readExtendedColourData(value, idx, reader);
+}
+
+void libvisio::VSDXParser::_handleLevelChange(unsigned /*level*/)
+{
+}
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
