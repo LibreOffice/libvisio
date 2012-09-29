@@ -158,6 +158,8 @@ protected:
   bool m_extractStencils;
   std::vector<Colour> m_colours;
 
+  bool m_isBackgroundPage;
+
 private:
   VSDParser();
   VSDParser(const VSDParser &);

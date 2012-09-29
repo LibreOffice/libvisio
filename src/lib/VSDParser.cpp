@@ -47,8 +47,7 @@ libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface 
     m_paraList(new VSDParagraphList()), m_charListVector(), m_paraListVector(),
     m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_stencilShape(), m_isStencilStarted(false), m_isInStyles(false), m_currentShapeLevel(0),
-    m_currentShapeID((unsigned)-1),
-    m_extractStencils(false), m_colours()
+    m_currentShapeID((unsigned)-1), m_extractStencils(false), m_colours(), m_isBackgroundPage(false)
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -214,6 +213,10 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   case VSD_PAGE:
     if (m_extractStencils)
       return;
+    if (ptr.Format == 0xd2 || ptr.Format == 0xd6)
+      m_isBackgroundPage = true;
+    else
+      m_isBackgroundPage = false;
     m_collector->startPage(idx);
     break;
   case VSD_STENCILS:
@@ -225,7 +228,10 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     break;
   case VSD_STENCIL_PAGE:
     if (m_extractStencils)
+    {
+      m_isBackgroundPage = false;
       m_collector->startPage(idx);
+    }
     else
       m_currentStencil = &tmpStencil;
     break;
