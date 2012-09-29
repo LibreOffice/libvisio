@@ -74,14 +74,18 @@ void libvisio::VSDPage::draw(libwpg::WPGPaintInterface *painter) const
 }
 
 libvisio::VSDPages::VSDPages()
-  : m_pages(), m_pagesOrder()
+  : m_pages(), m_backgroundPages()
 {
 }
 
 void libvisio::VSDPages::addPage(const libvisio::VSDPage &page)
 {
-  m_pagesOrder.push_back(page.m_currentPageID);
-  m_pages[page.m_currentPageID] = page;
+  m_pages.push_back(page);
+}
+
+void libvisio::VSDPages::addBackgroundPage(const libvisio::VSDPage &page)
+{
+  m_backgroundPages[page.m_currentPageID] = page;
 }
 
 void libvisio::VSDPages::draw(libwpg::WPGPaintInterface *painter)
@@ -89,11 +93,19 @@ void libvisio::VSDPages::draw(libwpg::WPGPaintInterface *painter)
   if (!painter)
     return;
 
-  for (unsigned i = 0; i < m_pagesOrder.size(); ++i)
+  for (unsigned i = 0; i < m_pages.size(); ++i)
   {
-    std::map<unsigned, libvisio::VSDPage>::iterator iter = m_pages.find(m_pagesOrder[i]);
-    if (iter == m_pages.end())
-      continue;
+    WPXPropertyList pageProps;
+    pageProps.insert("svg:width", m_pages[i].m_pageWidth);
+    pageProps.insert("svg:height", m_pages[i].m_pageHeight);
+    painter->startGraphics(pageProps);
+    _drawWithBackground(painter, m_pages[i]);
+    painter->endGraphics();
+  }
+  // Visio shows background pages in tabs after the normal pages
+  for (std::map<unsigned, libvisio::VSDPage>::const_iterator iter = m_backgroundPages.begin();
+       iter != m_backgroundPages.end(); ++iter)
+  {
     WPXPropertyList pageProps;
     pageProps.insert("svg:width", iter->second.m_pageWidth);
     pageProps.insert("svg:height", iter->second.m_pageHeight);
@@ -108,10 +120,10 @@ void libvisio::VSDPages::_drawWithBackground(libwpg::WPGPaintInterface *painter,
   if (!painter)
     return;
 
-  if (page.m_backgroundPageID != 0xffffffff)
+  if (page.m_backgroundPageID != (unsigned)-1)
   {
-    std::map<unsigned, libvisio::VSDPage>::iterator iter = m_pages.find(page.m_backgroundPageID);
-    if (iter != m_pages.end())
+    std::map<unsigned, libvisio::VSDPage>::iterator iter = m_backgroundPages.find(page.m_backgroundPageID);
+    if (iter != m_backgroundPages.end())
       _drawWithBackground(painter, iter->second);
   }
   page.draw(painter);

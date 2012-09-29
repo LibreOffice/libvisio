@@ -1932,10 +1932,11 @@ void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned
   m_currentPage.m_pageHeight = m_scale*m_pageHeight;
 }
 
-void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID, bool /* isBackgroundPage */)
+void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID, bool isBackgroundPage)
 {
   _handleLevelChange(level);
   m_currentPage.m_backgroundPageID = backgroundPageID;
+  m_isBackgroundPage = isBackgroundPage;
 }
 
 void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
@@ -2417,8 +2418,12 @@ void libvisio::VSDContentCollector::endPage()
   {
     _handleLevelChange(0);
     _flushCurrentPage();
-    m_pages.addPage(m_currentPage);
+    if (m_isBackgroundPage)
+      m_pages.addBackgroundPage(m_currentPage);
+    else
+      m_pages.addPage(m_currentPage);
     m_isPageStarted = false;
+    m_isBackgroundPage = false;
   }
 }
 
