@@ -710,17 +710,21 @@ void libvisio::VDXParser::readPage(xmlTextReaderPtr reader)
 {
   xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
   xmlChar *bgndPage = xmlTextReaderGetAttribute(reader, BAD_CAST("BackPage"));
+  xmlChar *background = xmlTextReaderGetAttribute(reader, BAD_CAST("Background"));
   if (id)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
     unsigned backgroundPageID =  (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
+    bool isBackgroundPage = background ? xmlStringToBool(background) : false;
     m_collector->startPage(nId);
-    m_collector->collectPage(nId, (unsigned)xmlTextReaderDepth(reader), backgroundPageID, false);
+    m_collector->collectPage(nId, (unsigned)xmlTextReaderDepth(reader), backgroundPageID, isBackgroundPage);
   }
   if (id)
     xmlFree(id);
   if (bgndPage)
     xmlFree(bgndPage);
+  if (background)
+    xmlFree(background);
 }
 
 void libvisio::VDXParser::readText(xmlTextReaderPtr /* reader */)
