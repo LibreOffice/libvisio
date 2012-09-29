@@ -42,7 +42,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStyles.cpp \
 	VSDStylesCollector.cpp \
 	VSDXMLHelper.cpp \
-	VSDXParser.cpp \
 	VSDZipStream.cpp \
 	libvisio_utils.h \
 	VSD11Parser.h \
@@ -65,7 +64,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDStylesCollector.h \
 	VSDTypes.h \
 	VSDXMLHelper.h \
-	VSDXParser.h \
 	VSDZipStream.h
 
 libtokenmap_la_SOURCES = \
@@ -73,6 +71,8 @@ libtokenmap_la_SOURCES = \
 	VDXParser.h \
 	VSDXMLTokenMap.cpp \
 	VSDXMLTokenMap.h \
+	VSDXParser.cpp \
+	VSDXParser.h \
 	$(generated_files)
 	
 

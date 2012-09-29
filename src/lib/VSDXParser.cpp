@@ -38,7 +38,7 @@
 #include "VSDStylesCollector.h"
 #include "VSDZipStream.h"
 #include "VSDXMLHelper.h"
-#include "VSDTypes.h"
+#include "VSDXMLTokenMap.h"
 
 namespace
 {
