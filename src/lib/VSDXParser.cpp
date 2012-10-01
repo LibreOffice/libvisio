@@ -1145,9 +1145,76 @@ void libvisio::VSDXParser::readStencil(xmlTextReaderPtr reader)
 
 void libvisio::VSDXParser::readPageSheet(xmlTextReaderPtr reader)
 {
-  m_currentShapeLevel = (unsigned)getElementDepth(reader);
-  m_collector->collectPageSheet(0, m_currentShapeLevel);
-  readPageProps(reader);
+  double pageWidth = 0.0;
+  double pageHeight = 0.0;
+  double shadowOffsetX = 0.0;
+  double shadowOffsetY = 0.0;
+  double pageScale = 1.0;
+  double drawingScale = 1.0;
+
+  unsigned level = (unsigned)getElementDepth(reader);
+  m_currentShapeLevel = level;
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXParser::readPageProps: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_PAGEWIDTH:
+      if (1 == tokenType)
+        ret =readDoubleData(pageWidth, reader);
+      break;
+    case XML_PAGEHEIGHT:
+      if (1 == tokenType)
+        ret = readDoubleData(pageHeight, reader);
+      break;
+    case XML_SHDWOFFSETX:
+      if (1 == tokenType)
+        ret = readDoubleData(shadowOffsetX, reader);
+      break;
+    case XML_SHDWOFFSETY:
+      if (1 == tokenType)
+        ret = readDoubleData(shadowOffsetY, reader);
+      break;
+    case XML_PAGESCALE:
+      if (1 == tokenType)
+        ret = readDoubleData(pageScale, reader);
+      break;
+    case XML_DRAWINGSCALE:
+      if (1 == tokenType)
+        ret = readDoubleData(drawingScale, reader);
+      break;
+    case XML_DRAWINGSIZETYPE:
+    case XML_DRAWINGSCALETYPE:
+    case XML_INHIBITSNAP:
+    case XML_UIVISIBILITY:
+    case XML_SHDWTYPE:
+    case XML_SHDWOBLIQUEANGLE:
+    case XML_SHDWSCALEFACTOR:
+    default:
+      break;
+    }
+  }
+  while ((XML_PAGESHEET != tokenId || 15 != tokenType) && 1 == ret);
+
+  if (m_isStencilStarted)
+  {
+    m_currentStencil->m_shadowOffsetX = shadowOffsetX;
+    m_currentStencil->m_shadowOffsetY = shadowOffsetY;
+  }
+  else
+  {
+  m_collector->collectPageSheet(0, level);
+    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, pageScale/drawingScale);
+  }
 }
 
 int libvisio::VSDXParser::getElementDepth(xmlTextReaderPtr reader)
