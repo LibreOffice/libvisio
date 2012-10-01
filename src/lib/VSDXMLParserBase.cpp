@@ -170,7 +170,7 @@ void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
 
     }
   }
-  while ((XML_COLORS != tokenId || 15 != tokenType) && 1 == ret);
+  while ((XML_COLORS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VSDXMLParserBase::readCharList(xmlTextReaderPtr /* reader */)
@@ -252,6 +252,12 @@ void libvisio::VSDXMLParserBase::readStyleSheet(xmlTextReaderPtr reader)
     xmlFree(fillStyle);
   if (textStyle)
     xmlFree(textStyle);
+}
+
+void libvisio::VSDXMLParserBase::readPageSheet(xmlTextReaderPtr reader)
+{
+  m_currentShapeLevel = (unsigned)getElementDepth(reader);
+  m_collector->collectPageSheet(0, m_currentShapeLevel);
 }
 
 void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr /* reader */)

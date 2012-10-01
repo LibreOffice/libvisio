@@ -121,6 +121,7 @@ protected:
   void readTextField(xmlTextReaderPtr reader);
 
   void readStyleSheet(xmlTextReaderPtr reader);
+  void readPageSheet(xmlTextReaderPtr reader);
 
   void readSplineStart(xmlTextReaderPtr reader);
   void readSplineKnot(xmlTextReaderPtr reader);

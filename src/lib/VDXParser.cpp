@@ -109,12 +109,6 @@ bool libvisio::VDXParser::processXmlDocument(WPXInputStream *input)
   }
   xmlFreeTextReader(reader);
 
-  if (ret)
-  {
-    VSD_DEBUG_MSG(("Failed to parse DiagramML document\n"));
-    return false;
-  }
-
   return true;
 }
 
@@ -128,30 +122,30 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   switch (tokenId)
   {
   case XML_COLORS:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       readColours(reader);
     break;
   case XML_FACENAMES:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       readFonts(reader);
     break;
   case XML_FILL:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       readFillAndShadow(reader);
     break;
   case XML_LINE:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       readLine(reader);
     break;
   case XML_MASTER:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       if (m_extractStencils)
         readPage(reader);
       else
         readStencil(reader);
     }
-    else if (tokenType == 15)
+    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
     {
       if (m_extractStencils)
       {
@@ -171,14 +165,14 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     break;
   case XML_MASTERS:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       if (m_extractStencils)
         m_isStencilStarted = false;
       else
         m_isStencilStarted = true;
     }
-    else if (15 == tokenType)
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
       if (m_extractStencils)
         m_collector->endPages();
@@ -187,7 +181,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     break;
   case XML_PAGE:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       if (m_extractStencils)
       {
@@ -199,46 +193,60 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
           tokenId = getElementToken(reader);
           tokenType = xmlTextReaderNodeType(reader);
         }
-        while ((XML_PAGE != tokenId || 15 != tokenType) && 1 == ret);
+        while ((XML_PAGE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
       }
       else
         readPage(reader);
     }
-    else if (tokenType == 15 && !m_extractStencils)
+    else if (tokenType == XML_READER_TYPE_END_ELEMENT && !m_extractStencils)
     {
       _handleLevelChange(0);
       m_collector->endPage();
     }
     break;
   case XML_PAGEPROPS:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       readPageProps(reader);
     break;
   case XML_PAGES:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       m_isStencilStarted = false;
-    else if (15 == tokenType && !m_extractStencils)
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType && !m_extractStencils)
       m_collector->endPages();
     break;
   case XML_PAGESHEET:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       readPageSheet(reader);
     break;
+  case XML_SOLUTIONXML:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+    {
+      do
+      {
+        xmlTextReaderRead(reader);
+        // SolutionXML inside VDX file can have invalid namespace URIs
+        xmlResetLastError();
+        tokenId = getElementToken(reader);
+        tokenType = xmlTextReaderNodeType(reader);
+      }
+      while (XML_SOLUTIONXML != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType);
+    }
+    break;
   case XML_STYLESHEET:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       readStyleSheet(reader);
     break;
   case XML_STYLESHEETS:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       m_isInStyles = true;
-    else if (tokenType == 15)
+    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
     {
       _handleLevelChange(0);
       m_isInStyles = false;
     }
     break;
   case XML_XFORM:
-    if (1 == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType)
       readXFormData(reader);
     break;
   default:
@@ -301,34 +309,34 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
     switch (tokenId)
     {
     case XML_LINEWEIGHT:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(strokeWidth, reader);
       break;
     case XML_LINECOLOR:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         readExtendedColourData(colour, reader);
       break;
     case XML_LINEPATTERN:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(linePattern, reader);
       break;
     case XML_BEGINARROW:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(startMarker, reader);
       break;
     case XML_ENDARROW:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(endMarker, reader);
       break;
     case XML_LINECAP:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(lineCap, reader);
       break;
     default:
       break;
     }
   }
-  while ((XML_LINE != tokenId || 15 != tokenType) && 1 == ret);
+  while ((XML_LINE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (m_isInStyles)
     m_collector->collectLineStyle(0, level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
@@ -370,43 +378,43 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
     switch (tokenId)
     {
     case XML_FILLFOREGND:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readExtendedColourData(fillColourFG, reader);
       break;
     case XML_FILLBKGND:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readExtendedColourData(fillColourBG, reader);
       break;
     case XML_FILLPATTERN:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(fillPattern, reader);
       break;
     case XML_SHDWFOREGND:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readExtendedColourData(shadowColourFG, reader);
       break;
     case XML_SHDWBKGND:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readExtendedColourData(shadowColourBG, reader);
       break;
     case XML_SHDWPATTERN:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(shadowPattern, reader);
       break;
     case XML_FILLFOREGNDTRANS:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(fillFGTransparency, reader);
       break;
     case XML_FILLBKGNDTRANS:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(fillBGTransparency, reader);
       break;
     case XML_SHAPESHDWOFFSETX:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetX, reader);
       break;
     case XML_SHAPESHDWOFFSETY:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetY, reader);
       break;
     case XML_SHDWFOREGNDTRANS:
@@ -418,7 +426,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_FILL != tokenId || 15 != tokenType) && 1 == ret);
+  while ((XML_FILL != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (m_isInStyles)
     m_collector->collectFillStyle(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
@@ -456,39 +464,39 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
     switch (tokenId)
     {
     case XML_PINX:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(xform.pinX, reader);
       break;
     case XML_PINY:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(xform.pinY, reader);
       break;
     case XML_WIDTH:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(xform.height, reader);
       break;
     case XML_HEIGHT:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(xform.width, reader);
       break;
     case XML_LOCPINX:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(xform.pinLocX, reader);
       break;
     case XML_LOCPINY:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(xform.pinLocY, reader);
       break;
     case XML_ANGLE:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(xform.angle, reader);
       break;
     case XML_FLIPX:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readBoolData(xform.flipX, reader);
       break;
     case XML_FLIPY:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readBoolData(xform.flipY, reader);
       break;
     case XML_RESIZEMODE:
@@ -496,7 +504,7 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_XFORM != tokenId || 15 != tokenType) && 1 == ret);
+  while ((XML_XFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   m_collector->collectXFormData(0, level, xform);
 }
@@ -530,27 +538,27 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
     switch (tokenId)
     {
     case XML_PAGEWIDTH:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret =readDoubleData(pageWidth, reader);
       break;
     case XML_PAGEHEIGHT:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(pageHeight, reader);
       break;
     case XML_SHDWOFFSETX:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetX, reader);
       break;
     case XML_SHDWOFFSETY:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetY, reader);
       break;
     case XML_PAGESCALE:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(pageScale, reader);
       break;
     case XML_DRAWINGSCALE:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(drawingScale, reader);
       break;
     case XML_DRAWINGSIZETYPE:
@@ -564,7 +572,7 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_PAGEPROPS != tokenId || 15 != tokenType) && 1 == ret);
+  while ((XML_PAGEPROPS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (m_isStencilStarted)
   {
@@ -606,7 +614,7 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
       xmlFree(id);
     }
   }
-  while ((XML_FACENAMES != tokenId || 15 != tokenType) && 1 == ret);
+  while ((XML_FACENAMES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
@@ -633,35 +641,35 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
     switch (tokenId)
     {
     case XML_LEFTMARGIN:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(leftMargin, reader);
       break;
     case XML_RIGHTMARGIN:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(rightMargin, reader);
       break;
     case XML_TOPMARGIN:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(topMargin, reader);
       break;
     case XML_BOTTOMMARGIN:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(bottomMargin, reader);
       break;
     case XML_VERTICALALIGN:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(verticalAlign, reader);
       break;
     case XML_TEXTBKGND:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readExtendedColourData(bgColour, bgClrId, reader);
       break;
     case XML_DEFAULTTABSTOP:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(defaultTabStop, reader);
       break;
     case XML_TEXTDIRECTION:
-      if (1 == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(textDirection, reader);
       break;
     case XML_TEXTBKGNDTRANS:
@@ -669,7 +677,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_TEXTBLOCK != tokenId || 15 != tokenType) && 1 == ret);
+  while ((XML_TEXTBLOCK != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (bgClrId < 0)
     bgClrId = 0;
@@ -694,12 +702,6 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   else
     m_collector->collectTextBlock(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
                                   (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
-}
-
-void libvisio::VDXParser::readPageSheet(xmlTextReaderPtr reader)
-{
-  m_currentShapeLevel = (unsigned)getElementDepth(reader);
-  m_collector->collectPageSheet(0, m_currentShapeLevel);
 }
 
 int libvisio::VDXParser::readLongData(long &value, xmlTextReaderPtr reader)

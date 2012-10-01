@@ -77,7 +77,7 @@ private:
 
   void extractBinaryData(WPXInputStream *input, const char *name);
 
-  void readPageSheet(xmlTextReaderPtr reader);
+  void readPageSheetProperties(xmlTextReaderPtr reader);
 
   void readStyleProperties(xmlTextReaderPtr reader);
 

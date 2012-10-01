@@ -77,8 +77,6 @@ private:
   void readFonts(xmlTextReaderPtr reader);
   void readTextBlock(xmlTextReaderPtr reader);
 
-  void readPageSheet(xmlTextReaderPtr reader);
-
   // Private data
 
   WPXInputStream *m_input;
