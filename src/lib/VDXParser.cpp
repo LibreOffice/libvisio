@@ -218,6 +218,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readPageSheet(reader);
     break;
+  case XML_SHAPE:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readShape(reader);
+    break;
   case XML_SOLUTIONXML:
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {

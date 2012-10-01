@@ -133,8 +133,57 @@ void libvisio::VSDXMLParserBase::readForeignDataType(xmlTextReaderPtr /* reader 
 {
 }
 
-void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
 {
+  m_currentShapeLevel = getElementDepth(reader);
+  unsigned id = (unsigned)-1;
+  unsigned masterPage = (unsigned)-1;
+  unsigned masterShape = (unsigned)-1;
+  unsigned lineStyle = (unsigned)-1;
+  unsigned fillStyle = (unsigned)-1;
+  unsigned textStyle = (unsigned)-1;
+
+  xmlChar *idString = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
+  xmlChar *masterPageString = xmlTextReaderGetAttribute(reader, BAD_CAST("MasterPage"));
+  xmlChar *masterShapeString = xmlTextReaderGetAttribute(reader, BAD_CAST("MasterShape"));
+  xmlChar *lineStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("LineStyle"));
+  xmlChar *fillStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("FillStyle"));
+  xmlChar *textStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle"));
+  xmlChar *typeString = xmlTextReaderGetAttribute(reader, BAD_CAST("Type"));
+
+  id = (unsigned)(idString ? xmlStringToLong(idString) : -1);
+  masterPage =  (unsigned)(masterPageString ? xmlStringToLong(masterPageString) : -1);
+  masterShape =  (unsigned)(masterShapeString ? xmlStringToLong(masterShapeString) : -1);
+  lineStyle =  (unsigned)(lineStyleString ? xmlStringToLong(lineStyleString) : -1);
+  fillStyle =  (unsigned)(fillStyleString ? xmlStringToLong(fillStyleString) : -1);
+  textStyle =  (unsigned)(textStyleString ? xmlStringToLong(textStyleString) : -1);
+
+  if (idString)
+    xmlFree(idString);
+  if (masterPageString)
+    xmlFree(masterPageString);
+  if (masterShapeString)
+    xmlFree(masterShapeString);
+  if (lineStyleString)
+    xmlFree(lineStyleString);
+  if (fillStyleString)
+    xmlFree(fillStyleString);
+  if (textStyleString)
+    xmlFree(textStyleString);
+
+  if (m_isStencilStarted)
+  {
+    m_stencilShape = VSDStencilShape();
+
+    if (typeString && xmlStrEqual(typeString, BAD_CAST(("Foreign"))))
+      m_stencilShape.m_foreign = new ForeignData();
+
+    m_stencilShape.m_lineStyleId = lineStyle;
+    m_stencilShape.m_fillStyleId = fillStyle;
+    m_stencilShape.m_textStyleId = textStyle;
+  }
+  else
+    m_collector->collectShape(id, m_currentShapeLevel, masterPage, masterShape, lineStyle, fillStyle, textStyle);
 }
 
 void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
