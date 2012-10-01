@@ -44,7 +44,7 @@
 libvisio::VDXParser::VDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_collector(), m_stencils(), m_currentStencil(0), m_stencilShape(),
     m_isStencilStarted(false), m_currentStencilID((unsigned)-1), m_extractStencils(false), m_isInStyles(false),
-    m_colours(), m_charList(new VSDCharacterList()), m_charListVector(), m_currentLevel(0), m_currentShapeLevel(0),
+    m_currentLevel(0), m_currentShapeLevel(0), m_colours(), m_charList(new VSDCharacterList()), m_charListVector(),
     m_fieldList(), m_geomList(new VSDGeometryList()), m_geomListVector(), m_paraList(new VSDParagraphList()),
     m_paraListVector(), m_shapeList()
 {
@@ -143,9 +143,9 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
 {
   if (!reader)
     return;
-  int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+  int tokenId = getElementToken(reader);
   int tokenType = xmlTextReaderNodeType(reader);
-  _handleLevelChange((unsigned)xmlTextReaderDepth(reader));
+  _handleLevelChange((unsigned)getElementDepth(reader));
   switch (tokenId)
   {
   case XML_COLORS:
@@ -217,7 +217,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
         do
         {
           ret = xmlTextReaderRead(reader);
-          tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+          tokenId = getElementToken(reader);
           tokenType = xmlTextReaderNodeType(reader);
         }
         while ((XML_PAGE != tokenId || 15 != tokenType) && ret == 1);
@@ -271,7 +271,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   const xmlChar *value = xmlTextReaderConstValue(reader);
   int isEmptyElement = xmlTextReaderIsEmptyElement(reader);
 
-  for (int i=0; i<xmlTextReaderDepth(reader); ++i)
+  for (int i=0; i<getElementDepth(reader); ++i)
   {
     VSD_DEBUG_MSG((" "));
   }
@@ -318,14 +318,18 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   long endMarker = 0;
   long lineCap = 0;
 
-  unsigned level = (unsigned)xmlTextReaderDepth(reader);
+  unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = -1;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
-    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readLine: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
     {
@@ -383,14 +387,18 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   double shadowOffsetX = 0;
   double shadowOffsetY = 0;
 
-  unsigned level = (unsigned)xmlTextReaderDepth(reader);
+  unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = -1;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
-    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readFillAndShadow: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
     {
@@ -501,14 +509,18 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
 {
   XForm xform;
 
-  unsigned level = (unsigned)xmlTextReaderDepth(reader);
+  unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = -1;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
-    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readXFormData: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
     {
@@ -583,14 +595,18 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
   double pageScale = 1.0;
   double drawingScale = 1.0;
 
-  unsigned level = (unsigned)xmlTextReaderDepth(reader);
+  unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = -1;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
-    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readPageProps: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
     {
@@ -629,7 +645,7 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_PAGEPROPS != tokenId || 15 != tokenType) && ret == 1);
+  while ((XML_PAGEPROPS != tokenId || 15 != tokenType) && 1 == ret);
 
   if (m_isStencilStarted)
   {
@@ -648,11 +664,21 @@ void libvisio::VDXParser::readShape(xmlTextReaderPtr /* reader */)
 
 void libvisio::VDXParser::readColours(xmlTextReaderPtr reader)
 {
-  int ret = xmlTextReaderRead(reader);
-  int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
   m_colours.clear();
-  while (ret == 1 && ((XML_COLORS != tokenId || 15 != xmlTextReaderNodeType(reader))))
+
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
   {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readColours: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
     if (XML_COLORENTRY == tokenId)
     {
       xmlChar *ix = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
@@ -668,17 +694,25 @@ void libvisio::VDXParser::readColours(xmlTextReaderPtr reader)
       xmlFree(ix);
 
     }
-    ret = xmlTextReaderRead(reader);
-    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
   }
+  while ((XML_COLORS != tokenId || 15 != tokenType) && 1 == ret);
 }
 
 void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
 {
-  int ret = xmlTextReaderRead(reader);
-  int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
-  while (ret == 1 && ((XML_FACENAMES != tokenId || 15 != xmlTextReaderNodeType(reader))))
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
   {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readColours: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
     if (XML_FACENAME == tokenId)
     {
       xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
@@ -691,11 +725,9 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
       }
       xmlFree(name);
       xmlFree(id);
-
     }
-    ret = xmlTextReaderRead(reader);
-    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
   }
+  while ((XML_FACENAMES != tokenId || 15 != tokenType) && 1 == ret);
 }
 
 void libvisio::VDXParser::readCharList(xmlTextReaderPtr /* reader */)
@@ -717,7 +749,7 @@ void libvisio::VDXParser::readPage(xmlTextReaderPtr reader)
     unsigned backgroundPageID =  (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
     bool isBackgroundPage = background ? xmlStringToBool(background) : false;
     m_collector->startPage(nId);
-    m_collector->collectPage(nId, (unsigned)xmlTextReaderDepth(reader), backgroundPageID, isBackgroundPage);
+    m_collector->collectPage(nId, (unsigned)getElementDepth(reader), backgroundPageID, isBackgroundPage);
   }
   if (id)
     xmlFree(id);
@@ -751,14 +783,14 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   double defaultTabStop = 0.0;
   long textDirection = 0.0;
 
-  unsigned level = (unsigned)xmlTextReaderDepth(reader);
+  unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = -1;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
-    tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+    tokenId = getElementToken(reader);
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
     {
@@ -854,7 +886,7 @@ void libvisio::VDXParser::readStyleSheet(xmlTextReaderPtr reader)
     unsigned nLineStyle =  (unsigned)(lineStyle ? xmlStringToLong(lineStyle) : -1);
     unsigned nFillStyle = (unsigned)(fillStyle ? xmlStringToLong(fillStyle) : -1);
     unsigned nTextStyle = (unsigned)(textStyle ? xmlStringToLong(textStyle) : -1);
-    m_collector->collectStyleSheet(nId, (unsigned)xmlTextReaderDepth(reader), nLineStyle, nFillStyle, nTextStyle);
+    m_collector->collectStyleSheet(nId, (unsigned)getElementDepth(reader), nLineStyle, nFillStyle, nTextStyle);
   }
   if (id)
     xmlFree(id);
@@ -868,7 +900,7 @@ void libvisio::VDXParser::readStyleSheet(xmlTextReaderPtr reader)
 
 void libvisio::VDXParser::readPageSheet(xmlTextReaderPtr reader)
 {
-  m_currentShapeLevel = (unsigned)xmlTextReaderDepth(reader);
+  m_currentShapeLevel = (unsigned)getElementDepth(reader);
   m_collector->collectPageSheet(0, m_currentShapeLevel);
 }
 
@@ -1049,6 +1081,16 @@ void libvisio::VDXParser::_handleLevelChange(unsigned level)
     }
   }
   m_currentLevel = level;
+}
+
+int libvisio::VDXParser::getElementToken(xmlTextReaderPtr reader)
+{
+  return VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+}
+
+int libvisio::VDXParser::getElementDepth(xmlTextReaderPtr reader)
+{
+  return getElementDepth(reader);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

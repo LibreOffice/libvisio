@@ -35,6 +35,9 @@
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpg/libwpg.h>
 #include "VSDXMLHelper.h"
+#include "VSDCharacterList.h"
+#include "VSDParagraphList.h"
+#include "VSDShapeList.h"
 #include "VSDStencils.h"
 
 namespace libvisio
@@ -65,6 +68,9 @@ private:
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   void _handleLevelChange(unsigned level);
 
+  int getElementToken(xmlTextReaderPtr reader);
+  int getElementDepth(xmlTextReaderPtr reader);
+
   // Functions parsing the Visio 2013 OPC document structure
 
   bool parseDocument(WPXInputStream *input, const char *name);
@@ -80,18 +86,82 @@ private:
 
   void extractBinaryData(WPXInputStream *input, const char *name);
 
+  void readEllipticalArcTo(xmlTextReaderPtr reader);
+  void readForeignData(xmlTextReaderPtr reader);
+  void readEllipse(xmlTextReaderPtr reader);
+  void readLine(xmlTextReaderPtr reader);
+  void readFillAndShadow(xmlTextReaderPtr reader);
+  void readGeomList(xmlTextReaderPtr reader);
+  void readGeometry(xmlTextReaderPtr reader);
+  void readMoveTo(xmlTextReaderPtr reader);
+  void readLineTo(xmlTextReaderPtr reader);
+  void readArcTo(xmlTextReaderPtr reader);
+  void readNURBSTo(xmlTextReaderPtr reader);
+  void readPolylineTo(xmlTextReaderPtr reader);
+  void readInfiniteLine(xmlTextReaderPtr reader);
+  void readShapeData(xmlTextReaderPtr reader);
+  void readXFormData(xmlTextReaderPtr reader);
+  void readTxtXForm(xmlTextReaderPtr reader);
+  void readShapeId(xmlTextReaderPtr reader);
+  void readShapeList(xmlTextReaderPtr reader);
+  void readForeignDataType(xmlTextReaderPtr reader);
+  void readPageProps(xmlTextReaderPtr reader);
+  void readShape(xmlTextReaderPtr reader);
+  void readColours(xmlTextReaderPtr reader);
+  void readFonts(xmlTextReaderPtr reader);
+  void readCharList(xmlTextReaderPtr reader);
+  void readParaList(xmlTextReaderPtr reader);
+  void readPage(xmlTextReaderPtr reader);
+  void readText(xmlTextReaderPtr reader);
+  void readCharIX(xmlTextReaderPtr reader);
+  void readParaIX(xmlTextReaderPtr reader);
+  void readTextBlock(xmlTextReaderPtr reader);
+
+  void readNameList(xmlTextReaderPtr reader);
+  void readName(xmlTextReaderPtr reader);
+
+  void readFieldList(xmlTextReaderPtr reader);
+  void readTextField(xmlTextReaderPtr reader);
+
+  void readStyleSheet(xmlTextReaderPtr reader);
+  void readPageSheet(xmlTextReaderPtr reader);
+
+  void readSplineStart(xmlTextReaderPtr reader);
+  void readSplineKnot(xmlTextReaderPtr reader);
+
+  void readStencil(xmlTextReaderPtr reader);
+  void readStencilShape(xmlTextReaderPtr reader);
+
+  void readOLEList(xmlTextReaderPtr reader);
+  void readOLEData(xmlTextReaderPtr reader);
+
   // Private data
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
   VSDCollector *m_collector;
   VSDStencils m_stencils;
+  VSDStencil *m_currentStencil;
+  VSDStencilShape m_stencilShape;
+  bool m_isStencilStarted;
+  unsigned m_currentStencilID;
 
   bool m_extractStencils;
+  bool m_isInStyles;
   int m_currentDepth;
+  unsigned m_currentLevel;
+  unsigned m_currentShapeLevel;
   WPXBinaryData m_currentBinaryData;
 
   std::map<unsigned, Colour> m_colours;
+  VSDCharacterList *m_charList;
+  std::vector<VSDCharacterList *> m_charListVector;
+  VSDFieldList m_fieldList;
+  VSDGeometryList *m_geomList;
+  std::vector<VSDGeometryList *> m_geomListVector;
+  VSDParagraphList *m_paraList;
+  std::vector<VSDParagraphList *> m_paraListVector;
+  VSDShapeList m_shapeList;
 };
 
 } // namespace libvisio

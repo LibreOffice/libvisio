@@ -68,6 +68,9 @@ private:
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   void _handleLevelChange(unsigned level);
 
+  int getElementToken(xmlTextReaderPtr reader);
+  int getElementDepth(xmlTextReaderPtr reader);
+
   // Functions to read the DatadiagramML document structure
 
   bool processXmlDocument(WPXInputStream *input);
@@ -137,11 +140,11 @@ private:
 
   bool m_extractStencils;
   bool m_isInStyles;
+  unsigned m_currentLevel;
+  unsigned m_currentShapeLevel;
   std::map<unsigned, Colour> m_colours;
   VSDCharacterList *m_charList;
   std::vector<VSDCharacterList *> m_charListVector;
-  unsigned m_currentLevel;
-  unsigned m_currentShapeLevel;
   VSDFieldList m_fieldList;
   VSDGeometryList *m_geomList;
   std::vector<VSDGeometryList *> m_geomListVector;

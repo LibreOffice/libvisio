@@ -19,6 +19,8 @@ Annotation
 ArcTo
 AsianFont
 AttachedToolbars
+AuthorEntry
+AuthorList
 AutoGen
 AutoLinkComparison
 AvenueSizeX
@@ -48,6 +50,8 @@ Calendar
 CanGlue
 Case
 Category
+Cell
+CellDef
 CenterX
 CenterY
 Char
@@ -57,6 +61,9 @@ ColorEntry
 Colors
 ColorTrans
 Comment
+CommentEntry
+CommentList
+Comments
 Company
 ComplexScriptFont
 ComplexScriptSize
@@ -139,6 +146,7 @@ EventItem
 EventList
 EventMultiDrop
 EventXFMod
+Extensions
 ExtraInfo
 FaceName
 FaceNames
@@ -166,6 +174,7 @@ Foreign
 ForeignData
 Format
 Frame
+FunctionDef
 Gamma
 Geom
 Glue
@@ -266,6 +275,7 @@ LocPinY
 Manager
 MarkerIndex
 Master
+MasterContents
 Masters
 MasterShortcut
 Menu
@@ -293,6 +303,7 @@ Overline
 Page
 PageBottomMargin
 PageColor
+PageContents
 PageHeight
 PageLayout
 PageLeftMargin
@@ -348,8 +359,13 @@ Protection
 ProtectMasters
 ProtectShapes
 ProtectStyles
+PublishedPage
+PublishSettings
 ReadOnly
+RefBy
+RefreshableData
 RefreshConflict
+Rel
 Relationships
 ResizeMode
 ResizePage
@@ -359,6 +375,9 @@ RibbonX
 RightMargin
 Rounding
 RouteStyle
+Row
+RowDef
+RowKeyValue
 RowMap
 RTLText
 Rule
@@ -372,6 +391,8 @@ RuleTest
 ScaleX
 ScaleY
 Scratch
+Section
+SectionDef
 SelectMode
 Shape
 ShapeFixedCode
