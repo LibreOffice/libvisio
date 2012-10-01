@@ -68,13 +68,32 @@ extern "C" {
     return tmpNumBytesRead;
   }
 
+#ifdef DEBUG
+  static void vsdxReaderErrorFunc(void *, const char *message, xmlParserSeverities severity, xmlTextReaderLocatorPtr)
+#else
   static void vsdxReaderErrorFunc(void *, const char *, xmlParserSeverities severity, xmlTextReaderLocatorPtr)
+#endif
   {
-    if (severity == XML_PARSER_SEVERITY_ERROR)
-      throw libvisio::XmlParserException();
+    switch (severity)
+    {
+    case XML_PARSER_SEVERITY_VALIDITY_WARNING:
+      VSD_DEBUG_MSG(("Found xml parser severity validity warning %s\n", message));
+      break;
+    case XML_PARSER_SEVERITY_VALIDITY_ERROR:
+      VSD_DEBUG_MSG(("Found xml parser severity validity error %s\n", message));
+      break;
+    case XML_PARSER_SEVERITY_WARNING:
+      VSD_DEBUG_MSG(("Found xml parser severity warning %s\n", message));
+      break;
+    case XML_PARSER_SEVERITY_ERROR:
+      VSD_DEBUG_MSG(("Found xml parser severity error %s\n", message));
+      break;
+    default:
+      break;
+    }
   }
 
-}
+} // extern "C"
 
 } // anonymous namespace
 
@@ -89,6 +108,8 @@ xmlTextReaderPtr libvisio::xmlReaderForStream(WPXInputStream *input, const char 
 
 libvisio::Colour libvisio::xmlStringToColour(const xmlChar *s)
 {
+  if (xmlStrEqual(s, BAD_CAST("Themed")))
+    return libvisio::Colour();
   std::string str((const char *)s);
   if (str[0] == '#')
   {
@@ -115,6 +136,9 @@ libvisio::Colour libvisio::xmlStringToColour(const xmlChar *s)
 
 long libvisio::xmlStringToLong(const xmlChar *s)
 {
+  if (xmlStrEqual(s, BAD_CAST("Themed")))
+    return 0;
+
   char *end;
   errno = 0;
   long value = strtol((const char *)s, &end, 0);
@@ -135,6 +159,9 @@ long libvisio::xmlStringToLong(const xmlChar *s)
 
 double libvisio::xmlStringToDouble(const xmlChar *s)
 {
+  if (xmlStrEqual(s, BAD_CAST("Themed")))
+    return 0;
+
   char *end;
   std::string doubleStr((const char *)s);
 
@@ -172,6 +199,9 @@ double libvisio::xmlStringToDouble(const xmlChar *s)
 
 bool libvisio::xmlStringToBool(const xmlChar *s)
 {
+  if (xmlStrEqual(s, BAD_CAST("Themed")))
+    return 0;
+
   bool value = false;
   if (xmlStrEqual(s, BAD_CAST("true")) || xmlStrEqual(s, BAD_CAST("1")))
     value = true;
