@@ -747,11 +747,14 @@ void libvisio::VSDParser::readPage(WPXInputStream *input)
 void libvisio::VSDParser::readGeometry(WPXInputStream *input)
 {
   unsigned char geomFlags = readU8(input);
+  bool noFill = (!!(geomFlags & 1));
+  bool noLine = (!!(geomFlags & 2));
+  bool noShow = (!!(geomFlags & 4));
 
   if (m_isStencilStarted)
-    m_stencilShape.m_geometries.back().addGeometry(m_header.id, m_header.level, geomFlags);
+    m_stencilShape.m_geometries.back().addGeometry(m_header.id, m_header.level, noFill, noLine, noShow);
   else
-    m_geomList->addGeometry(m_header.id, m_header.level, geomFlags);
+    m_geomList->addGeometry(m_header.id, m_header.level, noFill, noLine, noShow);
 }
 
 void libvisio::VSDParser::readMoveTo(WPXInputStream *input)

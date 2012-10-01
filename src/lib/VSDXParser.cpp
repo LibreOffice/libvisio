@@ -887,10 +887,78 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   }
 }
 
-
 int libvisio::VSDXParser::getElementDepth(xmlTextReaderPtr reader)
 {
   return xmlTextReaderDepth(reader)+m_currentDepth;
+}
+
+void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
+{
+  XForm xform;
+
+  unsigned level = (unsigned)getElementDepth(reader);
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readShapeProperties: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_PINX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(xform.pinX, reader);
+      break;
+    case XML_PINY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(xform.pinY, reader);
+      break;
+    case XML_WIDTH:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(xform.height, reader);
+      break;
+    case XML_HEIGHT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(xform.width, reader);
+      break;
+    case XML_LOCPINX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(xform.pinLocX, reader);
+      break;
+    case XML_LOCPINY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(xform.pinLocY, reader);
+      break;
+    case XML_ANGLE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(xform.angle, reader);
+      break;
+    case XML_FLIPX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readBoolData(xform.flipX, reader);
+      break;
+    case XML_FLIPY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readBoolData(xform.flipY, reader);
+      break;
+    case XML_GEOMETRY:
+      break;
+    case XML_FOREIGNDATA:
+      break;
+    case XML_RESIZEMODE:
+    default:
+      break;
+    }
+  }
+  while ((XML_SHAPE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+
+  m_collector->collectXFormData(0, level, xform);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

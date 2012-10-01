@@ -1434,16 +1434,16 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
   }
 }
 
-void libvisio::VSDContentCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char geomFlags)
+void libvisio::VSDContentCollector::collectGeometry(unsigned /* id */, unsigned level, bool noFill, bool noLine, bool noShow)
 {
   _handleLevelChange(level);
   m_x = 0.0;
   m_y = 0.0;
   m_originalX = 0.0;
   m_originalY = 0.0;
-  m_noFill = ((geomFlags & 1) == 1);
-  m_noLine = ((geomFlags & 2) == 2);
-  m_noShow = ((geomFlags & 4) == 4);
+  m_noFill = noFill;
+  m_noLine = noLine;
+  m_noShow = noShow;
 
   _applyLinePattern();
 

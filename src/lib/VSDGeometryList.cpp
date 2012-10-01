@@ -39,15 +39,17 @@ namespace libvisio
 class VSDGeometry : public VSDGeometryListElement
 {
 public:
-  VSDGeometry(unsigned id, unsigned level, unsigned geomFlags) :
-    m_id(id), m_level(level), m_geomFlags(geomFlags) {}
+  VSDGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow) :
+    m_id(id), m_level(level), m_noFill(noFill), m_noLine(noLine), m_noShow(noShow) {}
   ~VSDGeometry() {}
   void handle(VSDCollector *collector);
   VSDGeometryListElement *clone();
 private:
   unsigned m_id;
   unsigned m_level;
-  unsigned char m_geomFlags;
+  bool m_noFill;
+  bool m_noLine;
+  bool m_noShow;
 };
 
 class VSDMoveTo : public VSDGeometryListElement
@@ -195,12 +197,12 @@ private:
 void libvisio::VSDGeometry::handle(VSDCollector *collector)
 {
   collector->collectSplineEnd();
-  collector->collectGeometry(m_id, m_level, m_geomFlags);
+  collector->collectGeometry(m_id, m_level, m_noFill, m_noLine, m_noShow);
 }
 
 libvisio::VSDGeometryListElement *libvisio::VSDGeometry::clone()
 {
-  return new VSDGeometry(m_id, m_level, m_geomFlags);
+  return new VSDGeometry(m_id, m_level, m_noFill, m_noLine, m_noShow);
 }
 
 
@@ -376,9 +378,9 @@ libvisio::VSDGeometryList::~VSDGeometryList()
   clear();
 }
 
-void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, unsigned char geomFlags)
+void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow)
 {
-  m_elements[id] = new VSDGeometry(id, level, geomFlags);
+  m_elements[id] = new VSDGeometry(id, level, noFill, noLine, noShow);
 }
 
 void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, double x, double y)

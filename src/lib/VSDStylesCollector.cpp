@@ -95,7 +95,7 @@ void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned /* id */, unsig
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectGeometry(unsigned /* id */, unsigned level, unsigned char /* geomFlags */)
+void libvisio::VSDStylesCollector::collectGeometry(unsigned /* id */, unsigned level, bool /* noFill */, bool /* noLine */, bool /* noShow */)
 {
   _handleLevelChange(level);
 }

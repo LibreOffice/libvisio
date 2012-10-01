@@ -177,6 +177,7 @@ Frame
 FunctionDef
 Gamma
 Geom
+Geometry
 Glue
 GlueSettings
 GlueType

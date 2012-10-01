@@ -81,6 +81,8 @@ private:
 
   void readStyleProperties(xmlTextReaderPtr reader);
 
+  void readShapeProperties(xmlTextReaderPtr reader);
+
   // Private data
 
   WPXInputStream *m_input;

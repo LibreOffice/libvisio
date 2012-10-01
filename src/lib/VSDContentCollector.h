@@ -75,7 +75,7 @@ public:
                             double shadowOffsetX, double shadowOffsetY);
   void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
                             double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc);
-  void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags);
+  void collectGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
   void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow);

@@ -53,7 +53,7 @@ public:
                                     double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
   virtual void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
                                     double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc) = 0;
-  virtual void collectGeometry(unsigned id, unsigned level, unsigned char geomFlags) = 0;
+  virtual void collectGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow) = 0;
   virtual void collectMoveTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectLineTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectArcTo(unsigned id, unsigned level, double x2, double y2, double bow) = 0;
