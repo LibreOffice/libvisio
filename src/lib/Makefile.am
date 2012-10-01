@@ -69,6 +69,8 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 libtokenmap_la_SOURCES = \
 	VDXParser.cpp \
 	VDXParser.h \
+	VSDXMLParserBase.cpp \
+	VSDXMLParserBase.h \
 	VSDXMLTokenMap.cpp \
 	VSDXMLTokenMap.h \
 	VSDXParser.cpp \
