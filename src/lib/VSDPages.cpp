@@ -33,7 +33,7 @@
 
 libvisio::VSDPage::VSDPage()
   : m_pageWidth(0.0), m_pageHeight(0.0),
-    m_currentPageID(0), m_backgroundPageID(0xffffffff),
+    m_currentPageID(0), m_backgroundPageID((unsigned)-1),
     m_pageElements()
 {
 }

@@ -45,7 +45,7 @@ libvisio::VSDStylesCollector::VSDStylesCollector(
   m_pageShapeOrder(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_groupShapeOrder(), m_shapeList(), m_currentStyleSheet(0), m_styles(),
   m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
-  m_lineStyleMaster(0xffffffff), m_fillStyleMaster(0xffffffff), m_textStyleMaster(0xffffffff),
+  m_lineStyleMaster((unsigned)-1), m_fillStyleMaster((unsigned)-1), m_textStyleMaster((unsigned)-1),
   m_isStyleStarted(false), m_currentShapeLevel(0)
 {
   m_groupXFormsSequence.clear();

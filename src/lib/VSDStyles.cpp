@@ -30,7 +30,7 @@
 
 #include "VSDStyles.h"
 
-#define NOMASTER 0xffffffff
+#define NOMASTER (unsigned)-1
 
 libvisio::VSDStyles::VSDStyles() :
   m_lineStyles(), m_fillStyles(), m_textBlockStyles(), m_charStyles(), m_paraStyles(),

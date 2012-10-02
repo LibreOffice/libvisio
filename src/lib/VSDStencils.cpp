@@ -33,7 +33,7 @@
 
 libvisio::VSDStencilShape::VSDStencilShape()
   : m_geometries(), m_fields(), m_foreign(0),
-    m_lineStyleId(0xffffffff), m_fillStyleId(0xffffffff), m_textStyleId(0xffffffff),
+    m_lineStyleId((unsigned)-1), m_fillStyleId((unsigned)-1), m_textStyleId((unsigned)-1),
     m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
     m_text(), m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(),
     m_xform(), m_txtxform(0)
