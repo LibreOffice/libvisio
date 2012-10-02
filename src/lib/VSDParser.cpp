@@ -818,7 +818,10 @@ void libvisio::VSDParser::readXFormData(WPXInputStream *input)
   xform.flipX = (readU8(input) != 0);
   xform.flipY = (readU8(input) != 0);
 
-  m_collector->collectXFormData(m_header.id, m_header.level, xform);
+  if (m_isStencilStarted)
+    m_stencilShape.m_xform = xform;
+  else
+    m_collector->collectXFormData(m_header.id, m_header.level, xform);
 }
 
 void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
@@ -839,7 +842,14 @@ void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   txtxform.angle = readDouble(input);
 
-  m_collector->collectTxtXForm(m_header.id, m_header.level, txtxform);
+  if (m_isStencilStarted)
+  {
+    if (m_stencilShape.m_txtxform)
+      delete (m_stencilShape.m_txtxform);
+    m_stencilShape.m_txtxform = new XForm(txtxform);
+  }
+  else
+    m_collector->collectTxtXForm(m_header.id, m_header.level, txtxform);
 }
 
 void libvisio::VSDParser::readShapeId(WPXInputStream *input)

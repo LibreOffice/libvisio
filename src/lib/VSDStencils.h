@@ -63,6 +63,8 @@ public:
   TextFormat m_textFormat;
   std::map<unsigned, NURBSData> m_nurbsData;
   std::map<unsigned, PolylineData> m_polylineData;
+  XForm m_xform;
+  XForm *m_txtxform;
 };
 
 class VSDStencil

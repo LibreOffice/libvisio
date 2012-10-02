@@ -35,7 +35,8 @@ libvisio::VSDStencilShape::VSDStencilShape()
   : m_geometries(), m_fields(), m_foreign(0),
     m_lineStyleId(0xffffffff), m_fillStyleId(0xffffffff), m_textStyleId(0xffffffff),
     m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
-    m_text(), m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData()
+    m_text(), m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(),
+    m_xform(), m_txtxform(0)
 {
 }
 
@@ -49,7 +50,8 @@ libvisio::VSDStencilShape::VSDStencilShape(const libvisio::VSDStencilShape &shap
     m_charStyle(shape.m_charStyle ? new VSDCharStyle(*(shape.m_charStyle)) : 0),
     m_paraStyle(shape.m_paraStyle ? new VSDParaStyle(*(shape.m_paraStyle)) : 0),
     m_text(shape.m_text), m_names(shape.m_names), m_textFormat(shape.m_textFormat),
-    m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData) {}
+    m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData),
+    m_xform(shape.m_xform), m_txtxform(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : 0) {}
 
 libvisio::VSDStencilShape::~VSDStencilShape()
 {
@@ -65,6 +67,8 @@ libvisio::VSDStencilShape::~VSDStencilShape()
     delete m_charStyle;
   if (m_paraStyle)
     delete m_paraStyle;
+  if (m_txtxform)
+    delete m_txtxform;
 }
 
 libvisio::VSDStencilShape &libvisio::VSDStencilShape::operator=(const libvisio::VSDStencilShape &shape)
@@ -99,6 +103,10 @@ libvisio::VSDStencilShape &libvisio::VSDStencilShape::operator=(const libvisio::
     m_textFormat = shape.m_textFormat;
     m_nurbsData = shape.m_nurbsData;
     m_polylineData = shape.m_polylineData;
+    m_xform = shape.m_xform;
+    if (m_txtxform)
+      delete m_txtxform;
+    m_txtxform = shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : 0;
   }
   return *this;
 }

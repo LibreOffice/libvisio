@@ -52,6 +52,10 @@ struct XForm
   XForm() : pinX(0.0), pinY(0.0), height(0.0), width(0.0),
     pinLocX(0.0), pinLocY(0.0), angle(0.0),
     flipX(false), flipY(false), x(0.0), y(0.0) {}
+  XForm(const XForm &xform) : pinX(xform.pinX), pinY(xform.pinY), height(xform.height),
+    width(xform.width), pinLocX(xform.pinLocX), pinLocY(xform.pinLocY), angle(xform.angle),
+    flipX(xform.flipX), flipY(xform.flipY), x(xform.x), y(xform.y) {}
+
 };
 
 // Utilities
