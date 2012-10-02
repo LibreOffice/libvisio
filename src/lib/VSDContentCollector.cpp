@@ -129,7 +129,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
-  m_backgroundPageID(0xffffffff), m_currentPageID(0), m_currentPage(), m_pages(),
+  m_backgroundPageID((unsigned)-1), m_currentPageID(0), m_currentPage(), m_pages(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
   m_isBackgroundPage(false)
@@ -2004,7 +2004,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
 
   // Get stencil shape
   m_stencilShape = 0;
-  if (masterPage != 0xffffffff && masterShape != 0xffffffff)
+  if (masterPage != (unsigned)-1 && masterShape != (unsigned)-1)
   {
     const VSDStencil *stencil = m_stencils.getStencil(masterPage);
     if (stencil)
@@ -2072,11 +2072,11 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
     }
   }
 
-  if (lineStyleId != 0xffffffff)
+  if (lineStyleId != (unsigned)-1)
     lineStyleFromStyleSheet(lineStyleId);
-  if (fillStyleId != 0xffffffff)
+  if (fillStyleId != (unsigned)-1)
     fillStyleFromStyleSheet(fillStyleId);
-  if (textStyleId != 0xffffffff)
+  if (textStyleId != (unsigned)-1)
   {
     if (m_styles.getCharStyle(textStyleId))
       m_defaultCharStyle = *(m_styles.getCharStyle(textStyleId));
