@@ -156,6 +156,16 @@ AS_IF([test x"$enable_werror" != "xno"], [
 	CFLAGS="$CFLAGS -Werror"
 	CXXFLAGS="$CXXFLAGS -Werror"
 ])
+AC_ARG_ENABLE([weffc],
+	[AS_HELP_STRING([--disable-weffc], [ Disable -Weffc++ warnings, usefull when using an old version of gcc or of boost])],
+	[enable_weffc="$enableval"],
+	[enable_weffc=yes]
+)
+AC_ARG_ENABLE([wparanoic],
+	[AS_HELP_STRING([--enable-wparanoic], [Enable a lot of warnings...])],
+	[enable_wparanoic="$enableval"],
+	[enable_wparanoic=no]
+)
 # Courtesy of Glib: Ensure MSVC-compatible struct packing convention
 # is used when compiling for Win32 with gcc.
 AS_IF([test "x$native_win32" = "xyes"], [
@@ -178,7 +188,27 @@ AS_IF([test "x$native_win32" = "xyes"], [
 		])
 	])
 	CFLAGS="$CFLAGS -Wall -Wextra -pedantic"
-	CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow -pedantic"
+		CXXFLAGS="$CXXFLAGS -Wall -Wextra -pedantic -Wshadow -Wunused-variable"
+		AS_IF([test x"$enable_weffc" != "xno"], [
+			CXXFLAGS="$CXXFLAGS -Weffc++"
+		])
+		AS_IF([test x"$enable_wparanoic" != "xno"], [
+			CXXFLAGS="$CXXFLAGS -Wcast-align -Wcast-qual -Wchar-subscripts"
+			CXXFLAGS="$CXXFLAGS -Wcomment -Wconversion -Wdisabled-optimization"
+			CXXFLAGS="$CXXFLAGS -Wfloat-equal -Wformat -Wformat=2"
+			CXXFLAGS="$CXXFLAGS -Wformat-nonliteral -Wformat-security"
+			CXXFLAGS="$CXXFLAGS -Wformat-y2k -Wimport -Winit-self -Winvalid-pch"
+			CXXFLAGS="$CXXFLAGS -Wmissing-braces -Wmissing-field-initializers"
+			CXXFLAGS="$CXXFLAGS -Wmissing-format-attribute -Wmissing-include-dirs"
+			CXXFLAGS="$CXXFLAGS -Wmissing-noreturn -Wpacked -Wparentheses"
+			CXXFLAGS="$CXXFLAGS -Wpointer-arith -Wredundant-decls -Wreturn-type"
+			CXXFLAGS="$CXXFLAGS -Wsequence-point -Wsign-compare -Wstrict-aliasing"
+			CXXFLAGS="$CXXFLAGS -Wstrict-aliasing=2 -Wswitch -Wswitch-default"
+			CXXFLAGS="$CXXFLAGS -Wswitch-enum -Wtrigraphs -Wunknown-pragmas -Wunused"
+			CXXFLAGS="$CXXFLAGS -Wunused-function -Wunused-label -Wunused-parameter"
+			CXXFLAGS="$CXXFLAGS -Wunused-value -Wvariadic-macros"
+			CXXFLAGS="$CXXFLAGS -Wvolatile-register-var -Wwrite-strings"
+		])
 ], [
 	AS_IF([test x"$GCC" = xyes], [
 		# Be tough with warnings and produce less careless code
