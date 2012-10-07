@@ -251,7 +251,7 @@ private:
   VSDStyles m_styles;
 
   VSDStencils m_stencils;
-  const VSDStencilShape *m_stencilShape;
+  const VSDShape *m_stencilShape;
   bool m_isStencilStarted;
 
   unsigned m_currentGeometryCount;

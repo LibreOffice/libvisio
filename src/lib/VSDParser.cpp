@@ -240,13 +240,13 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   case VSD_SHAPE_SHAPE:
     m_currentShapeID = idx;
     if (m_isStencilStarted)
-      m_stencilShape = VSDStencilShape();
+      m_stencilShape = VSDShape();
     break;
   case VSD_SHAPE_FOREIGN:
     m_currentShapeID = idx;
     if (m_isStencilStarted)
     {
-      m_stencilShape = VSDStencilShape();
+      m_stencilShape = VSDShape();
       m_stencilShape.m_foreign = new ForeignData();
     }
     break;

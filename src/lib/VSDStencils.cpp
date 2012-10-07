@@ -31,7 +31,7 @@
 #include "VSDStencils.h"
 #include "libvisio_utils.h"
 
-libvisio::VSDStencilShape::VSDStencilShape()
+libvisio::VSDShape::VSDShape()
   : m_geometries(), m_fields(), m_foreign(0),
     m_lineStyleId((unsigned)-1), m_fillStyleId((unsigned)-1), m_textStyleId((unsigned)-1),
     m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
@@ -40,7 +40,7 @@ libvisio::VSDStencilShape::VSDStencilShape()
 {
 }
 
-libvisio::VSDStencilShape::VSDStencilShape(const libvisio::VSDStencilShape &shape)
+libvisio::VSDShape::VSDShape(const libvisio::VSDShape &shape)
   : m_geometries(shape.m_geometries), m_fields(shape.m_fields),
     m_foreign(shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0),
     m_lineStyleId(shape.m_lineStyleId), m_fillStyleId(shape.m_fillStyleId), m_textStyleId(shape.m_textStyleId),
@@ -53,7 +53,7 @@ libvisio::VSDStencilShape::VSDStencilShape(const libvisio::VSDStencilShape &shap
     m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData),
     m_xform(shape.m_xform), m_txtxform(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : 0) {}
 
-libvisio::VSDStencilShape::~VSDStencilShape()
+libvisio::VSDShape::~VSDShape()
 {
   if (m_foreign)
     delete m_foreign;
@@ -71,7 +71,7 @@ libvisio::VSDStencilShape::~VSDStencilShape()
     delete m_txtxform;
 }
 
-libvisio::VSDStencilShape &libvisio::VSDStencilShape::operator=(const libvisio::VSDStencilShape &shape)
+libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shape)
 {
   if (this != &shape)
   {
@@ -137,14 +137,14 @@ libvisio::VSDStencil &libvisio::VSDStencil::operator=(const libvisio::VSDStencil
   return *this;
 }
 
-void libvisio::VSDStencil::addStencilShape(unsigned id, const VSDStencilShape &shape)
+void libvisio::VSDStencil::addStencilShape(unsigned id, const VSDShape &shape)
 {
   m_shapes[id] = shape;
 }
 
-const libvisio::VSDStencilShape *libvisio::VSDStencil::getStencilShape(unsigned id) const
+const libvisio::VSDShape *libvisio::VSDStencil::getStencilShape(unsigned id) const
 {
-  std::map<unsigned, VSDStencilShape>::const_iterator iter = m_shapes.find(id);
+  std::map<unsigned, VSDShape>::const_iterator iter = m_shapes.find(id);
   if (iter != m_shapes.end())
     return &(iter->second);
   else

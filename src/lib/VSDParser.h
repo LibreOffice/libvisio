@@ -149,7 +149,7 @@ protected:
 
   VSDStencils m_stencils;
   VSDStencil *m_currentStencil;
-  VSDStencilShape m_stencilShape;
+  VSDShape m_stencilShape;
   bool m_isStencilStarted;
   bool m_isInStyles;
   unsigned m_currentShapeLevel;

@@ -167,7 +167,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
 
   if (m_isStencilStarted)
   {
-    m_stencilShape = VSDStencilShape();
+    m_stencilShape = VSDShape();
 
     if (typeString && xmlStrEqual(typeString, BAD_CAST(("Foreign"))))
       m_stencilShape.m_foreign = new ForeignData();

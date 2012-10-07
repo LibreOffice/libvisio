@@ -56,7 +56,7 @@ protected:
   VSDCollector *m_collector;
   VSDStencils m_stencils;
   VSDStencil *m_currentStencil;
-  VSDStencilShape m_stencilShape;
+  VSDShape m_stencilShape;
   bool m_isStencilStarted;
   unsigned m_currentStencilID;
 

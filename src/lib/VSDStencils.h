@@ -41,13 +41,13 @@
 namespace libvisio
 {
 
-class VSDStencilShape
+class VSDShape
 {
 public:
-  VSDStencilShape();
-  VSDStencilShape(const VSDStencilShape &shape);
-  ~VSDStencilShape();
-  VSDStencilShape &operator=(const VSDStencilShape &shape);
+  VSDShape();
+  VSDShape(const VSDShape &shape);
+  ~VSDShape();
+  VSDShape &operator=(const VSDShape &shape);
 
   std::vector<VSDGeometryList> m_geometries;
   VSDFieldList m_fields;
@@ -74,9 +74,9 @@ public:
   VSDStencil(const VSDStencil &stencil);
   ~VSDStencil();
   VSDStencil &operator=(const VSDStencil &stencil);
-  void addStencilShape(unsigned id, const VSDStencilShape &shape);
-  const VSDStencilShape *getStencilShape(unsigned id) const;
-  std::map<unsigned, VSDStencilShape> m_shapes;
+  void addStencilShape(unsigned id, const VSDShape &shape);
+  const VSDShape *getStencilShape(unsigned id) const;
+  std::map<unsigned, VSDShape> m_shapes;
   double m_shadowOffsetX;
   double m_shadowOffsetY;
 };
