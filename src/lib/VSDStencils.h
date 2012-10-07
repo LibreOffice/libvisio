@@ -88,6 +88,7 @@ public:
   ~VSDStencils();
   void addStencil(unsigned idx, const VSDStencil &stencil);
   const VSDStencil *getStencil(unsigned idx) const;
+  const VSDShape *getStencilShape(unsigned pageId, unsigned shapeId) const;
   unsigned count() const
   {
     return m_stencils.size();

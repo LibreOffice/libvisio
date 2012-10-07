@@ -175,4 +175,15 @@ const libvisio::VSDStencil *libvisio::VSDStencils::getStencil(unsigned idx) cons
   else
     return 0;
 }
+
+const libvisio::VSDShape *libvisio::VSDStencils::getStencilShape(unsigned pageId, unsigned shapeId) const
+{
+  if ((unsigned)-1 == pageId || (unsigned)-1 == shapeId)
+    return 0;
+  const libvisio::VSDStencil *tmpStencil = getStencil(pageId);
+  if (!tmpStencil)
+    return 0;
+  return tmpStencil->getStencilShape(shapeId);
+}
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

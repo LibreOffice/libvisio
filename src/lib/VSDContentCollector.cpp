@@ -2003,73 +2003,67 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_stencilFields.clear();
 
   // Get stencil shape
-  m_stencilShape = 0;
-  if (masterPage != (unsigned)-1 && masterShape != (unsigned)-1)
+  m_stencilShape = m_stencils.getStencilShape(masterPage, masterShape);
+  // Initialize the shape from stencil content
+  if (m_stencilShape)
   {
-    const VSDStencil *stencil = m_stencils.getStencil(masterPage);
-    if (stencil)
-      m_stencilShape = stencil->getStencilShape(masterShape);
-    // Initialize the shape from stencil content
-    if (m_stencilShape)
+    if (m_stencilShape->m_foreign)
     {
-      if (m_stencilShape->m_foreign)
-      {
-        m_foreignType = m_stencilShape->m_foreign->type;
-        m_foreignFormat = m_stencilShape->m_foreign->format;
-        m_foreignOffsetX = m_stencilShape->m_foreign->offsetX;
-        m_foreignOffsetY = m_stencilShape->m_foreign->offsetY;
-        m_foreignWidth = m_stencilShape->m_foreign->width;
-        m_foreignHeight = m_stencilShape->m_foreign->height;
-        m_currentForeignData.clear();
-        _handleForeignData(m_stencilShape->m_foreign->data);
-      }
-
-      m_textStream = m_stencilShape->m_text;
-      m_textFormat = m_stencilShape->m_textFormat;
-
-      for (std::map< unsigned, VSDName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
-      {
-        WPXString nameString;
-        _convertDataToString(nameString, iterData->second.m_data, iterData->second.m_format);
-        m_stencilNames[iterData->first] = nameString;
-      }
-
-      m_stencilFields = m_stencilShape->m_fields;
-      for (unsigned i = 0; i < m_stencilFields.size(); i++)
-      {
-        VSDFieldListElement *elem = m_stencilFields.getElement(i);
-        if (elem)
-          m_fields.push_back(elem->getString(m_stencilNames));
-        else
-          m_fields.push_back(WPXString());
-      }
-
-      if (m_stencilShape->m_lineStyleId)
-        lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
-      if (m_stencilShape->m_lineStyle)
-        lineStyleFromStyleSheet(m_stencilShape->m_lineStyle);
-
-      if (m_stencilShape->m_fillStyleId)
-        fillStyleFromStyleSheet(m_stencilShape->m_fillStyleId);
-      if (m_stencilShape->m_fillStyle)
-        fillStyleFromStyleSheet(m_stencilShape->m_fillStyle);
-
-      if (m_stencilShape->m_textStyleId)
-      {
-        if (m_styles.getCharStyle(m_stencilShape->m_textStyleId))
-          m_defaultCharStyle = *(m_styles.getCharStyle(m_stencilShape->m_textStyleId));
-        if (m_styles.getParaStyle(m_stencilShape->m_textStyleId))
-          m_defaultParaStyle = *(m_styles.getParaStyle(m_stencilShape->m_textStyleId));
-        if (m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId))
-          m_textBlockStyle = *(m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId));
-      }
-      if (m_stencilShape->m_textBlockStyle)
-        m_textBlockStyle = *(m_stencilShape->m_textBlockStyle);
-      if (m_stencilShape->m_charStyle)
-        m_defaultCharStyle = *(m_stencilShape->m_charStyle);
-      if (m_stencilShape->m_paraStyle)
-        m_defaultParaStyle = *(m_stencilShape->m_paraStyle);
+      m_foreignType = m_stencilShape->m_foreign->type;
+      m_foreignFormat = m_stencilShape->m_foreign->format;
+      m_foreignOffsetX = m_stencilShape->m_foreign->offsetX;
+      m_foreignOffsetY = m_stencilShape->m_foreign->offsetY;
+      m_foreignWidth = m_stencilShape->m_foreign->width;
+      m_foreignHeight = m_stencilShape->m_foreign->height;
+      m_currentForeignData.clear();
+      _handleForeignData(m_stencilShape->m_foreign->data);
     }
+
+    m_textStream = m_stencilShape->m_text;
+    m_textFormat = m_stencilShape->m_textFormat;
+
+    for (std::map< unsigned, VSDName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
+    {
+      WPXString nameString;
+      _convertDataToString(nameString, iterData->second.m_data, iterData->second.m_format);
+      m_stencilNames[iterData->first] = nameString;
+    }
+
+    m_stencilFields = m_stencilShape->m_fields;
+    for (unsigned i = 0; i < m_stencilFields.size(); i++)
+    {
+      VSDFieldListElement *elem = m_stencilFields.getElement(i);
+      if (elem)
+        m_fields.push_back(elem->getString(m_stencilNames));
+      else
+        m_fields.push_back(WPXString());
+    }
+
+    if (m_stencilShape->m_lineStyleId)
+      lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
+    if (m_stencilShape->m_lineStyle)
+      lineStyleFromStyleSheet(m_stencilShape->m_lineStyle);
+
+    if (m_stencilShape->m_fillStyleId)
+      fillStyleFromStyleSheet(m_stencilShape->m_fillStyleId);
+    if (m_stencilShape->m_fillStyle)
+      fillStyleFromStyleSheet(m_stencilShape->m_fillStyle);
+
+    if (m_stencilShape->m_textStyleId)
+    {
+      if (m_styles.getCharStyle(m_stencilShape->m_textStyleId))
+        m_defaultCharStyle = *(m_styles.getCharStyle(m_stencilShape->m_textStyleId));
+      if (m_styles.getParaStyle(m_stencilShape->m_textStyleId))
+        m_defaultParaStyle = *(m_styles.getParaStyle(m_stencilShape->m_textStyleId));
+      if (m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId))
+        m_textBlockStyle = *(m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId));
+    }
+    if (m_stencilShape->m_textBlockStyle)
+      m_textBlockStyle = *(m_stencilShape->m_textBlockStyle);
+    if (m_stencilShape->m_charStyle)
+      m_defaultCharStyle = *(m_stencilShape->m_charStyle);
+    if (m_stencilShape->m_paraStyle)
+      m_defaultParaStyle = *(m_stencilShape->m_paraStyle);
   }
 
   if (lineStyleId != (unsigned)-1)
