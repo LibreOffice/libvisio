@@ -42,7 +42,7 @@
 
 
 libvisio::VSDXMLParserBase::VSDXMLParserBase()
-  : m_collector(), m_stencils(), m_currentStencil(0), m_stencilShape(),
+  : m_collector(), m_stencils(), m_currentStencil(0), m_shape(),
     m_isStencilStarted(false), m_currentStencilID((unsigned)-1), m_extractStencils(false), m_isInStyles(false),
     m_currentLevel(0), m_currentShapeLevel(0), m_colours(), m_charList(new VSDCharacterList()), m_charListVector(),
     m_fieldList(), m_geomList(new VSDGeometryList()), m_geomListVector(), m_paraList(new VSDParagraphList()),
@@ -167,14 +167,14 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
 
   if (m_isStencilStarted)
   {
-    m_stencilShape = VSDShape();
+    m_shape = VSDShape();
 
     if (typeString && xmlStrEqual(typeString, BAD_CAST(("Foreign"))))
-      m_stencilShape.m_foreign = new ForeignData();
+      m_shape.m_foreign = new ForeignData();
 
-    m_stencilShape.m_lineStyleId = lineStyle;
-    m_stencilShape.m_fillStyleId = fillStyle;
-    m_stencilShape.m_textStyleId = textStyle;
+    m_shape.m_lineStyleId = lineStyle;
+    m_shape.m_fillStyleId = fillStyle;
+    m_shape.m_textStyleId = textStyle;
   }
   else
     m_collector->collectShape(id, m_currentShapeLevel, masterPage, masterShape, lineStyle, fillStyle, textStyle);

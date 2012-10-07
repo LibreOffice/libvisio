@@ -867,14 +867,14 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   }
   else if (m_isStencilStarted)
   {
-    if (!m_stencilShape.m_lineStyle)
-      m_stencilShape.m_lineStyle = new VSDLineStyle(strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
-    if (!m_stencilShape.m_fillStyle)
-      m_stencilShape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
-          fillFGTransparency, fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
-          shadowOffsetX, shadowOffsetY);
-    if (!m_stencilShape.m_textBlockStyle)
-      m_stencilShape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
+    if (!m_shape.m_lineStyle)
+      m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    if (!m_shape.m_fillStyle)
+      m_shape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
+                                             fillFGTransparency, fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
+                                             shadowOffsetX, shadowOffsetY);
+    if (!m_shape.m_textBlockStyle)
+      m_shape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
           (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   }
   else

@@ -346,8 +346,8 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
     m_collector->collectLineStyle(0, level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
   else if (m_isStencilStarted)
   {
-    if (!m_stencilShape.m_lineStyle)
-      m_stencilShape.m_lineStyle = new VSDLineStyle(strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    if (!m_shape.m_lineStyle)
+      m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
   }
   else
     m_collector->collectLine(0, level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
@@ -438,10 +438,10 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   else if (m_isStencilStarted)
   {
     VSD_DEBUG_MSG(("Found stencil fill\n"));
-    if (!m_stencilShape.m_fillStyle)
-      m_stencilShape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
-          fillFGTransparency, fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
-          shadowOffsetX, shadowOffsetY);
+    if (!m_shape.m_fillStyle)
+      m_shape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
+                                             fillFGTransparency, fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
+                                             shadowOffsetX, shadowOffsetY);
   }
   else
     m_collector->collectFillAndShadow(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency,
@@ -699,8 +699,8 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
                                        (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   else if (m_isStencilStarted)
   {
-    if (!m_stencilShape.m_textBlockStyle)
-      m_stencilShape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
+    if (!m_shape.m_textBlockStyle)
+      m_shape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
           (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   }
   else
