@@ -238,21 +238,18 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   case VSD_SHAPE_GROUP:
   case VSD_SHAPE_GUIDE:
   case VSD_SHAPE_SHAPE:
-    m_currentShapeID = idx;
-    if (m_isStencilStarted)
-      m_shape = VSDShape();
-    break;
   case VSD_SHAPE_FOREIGN:
     m_currentShapeID = idx;
     if (m_isStencilStarted)
-    {
       m_shape = VSDShape();
-      m_shape.m_foreign = new ForeignData();
-    }
     break;
   case VSD_OLE_LIST:
     if (m_isStencilStarted)
+    {
+      if (!m_shape.m_foreign)
+        m_shape.m_foreign = new ForeignData();
       m_shape.m_foreign->dataId = idx;
+    }
     break;
   default:
     break;
@@ -570,6 +567,8 @@ void libvisio::VSDParser::readForeignData(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
+    if (!m_shape.m_foreign)
+      m_shape.m_foreign = new ForeignData();
     m_shape.m_foreign->dataId = m_header.id;
     m_shape.m_foreign->dataLevel = m_header.level;
     m_shape.m_foreign->data = binaryData;
@@ -593,6 +592,8 @@ void libvisio::VSDParser::readOLEData(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
+    if (!m_shape.m_foreign)
+      m_shape.m_foreign = new ForeignData();
     // Append data instead of setting it - allows multi-stream OLE objects
     m_shape.m_foreign->data.append(oleData);
     m_shape.m_foreign->dataLevel = m_header.level;
@@ -890,6 +891,8 @@ void libvisio::VSDParser::readForeignDataType(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
+    if (!m_shape.m_foreign)
+      m_shape.m_foreign = new ForeignData();
     m_shape.m_foreign->typeId = m_header.id;
     m_shape.m_foreign->typeLevel = m_header.level;
     m_shape.m_foreign->type = foreignType;

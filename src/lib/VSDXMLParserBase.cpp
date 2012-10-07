@@ -143,7 +143,6 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   xmlChar *lineStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("LineStyle"));
   xmlChar *fillStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("FillStyle"));
   xmlChar *textStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle"));
-  xmlChar *typeString = xmlTextReaderGetAttribute(reader, BAD_CAST("Type"));
 
   unsigned id = (unsigned)(idString ? xmlStringToLong(idString) : -1);
   unsigned masterPage =  (unsigned)(masterPageString ? xmlStringToLong(masterPageString) : -1);
@@ -168,9 +167,6 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   if (m_isStencilStarted)
   {
     m_shape = VSDShape();
-
-    if (typeString && xmlStrEqual(typeString, BAD_CAST(("Foreign"))))
-      m_shape.m_foreign = new ForeignData();
 
     m_shape.m_lineStyleId = lineStyle;
     m_shape.m_fillStyleId = fillStyle;
