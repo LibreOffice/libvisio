@@ -136,12 +136,6 @@ void libvisio::VSDXMLParserBase::readForeignDataType(xmlTextReaderPtr /* reader 
 void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
 {
   m_currentShapeLevel = getElementDepth(reader);
-  unsigned id = (unsigned)-1;
-  unsigned masterPage = (unsigned)-1;
-  unsigned masterShape = (unsigned)-1;
-  unsigned lineStyle = (unsigned)-1;
-  unsigned fillStyle = (unsigned)-1;
-  unsigned textStyle = (unsigned)-1;
 
   xmlChar *idString = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
   xmlChar *masterPageString = xmlTextReaderGetAttribute(reader, BAD_CAST("MasterPage"));
@@ -151,12 +145,12 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   xmlChar *textStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle"));
   xmlChar *typeString = xmlTextReaderGetAttribute(reader, BAD_CAST("Type"));
 
-  id = (unsigned)(idString ? xmlStringToLong(idString) : -1);
-  masterPage =  (unsigned)(masterPageString ? xmlStringToLong(masterPageString) : -1);
-  masterShape =  (unsigned)(masterShapeString ? xmlStringToLong(masterShapeString) : -1);
-  lineStyle =  (unsigned)(lineStyleString ? xmlStringToLong(lineStyleString) : -1);
-  fillStyle =  (unsigned)(fillStyleString ? xmlStringToLong(fillStyleString) : -1);
-  textStyle =  (unsigned)(textStyleString ? xmlStringToLong(textStyleString) : -1);
+  unsigned id = (unsigned)(idString ? xmlStringToLong(idString) : -1);
+  unsigned masterPage =  (unsigned)(masterPageString ? xmlStringToLong(masterPageString) : -1);
+  unsigned masterShape =  (unsigned)(masterShapeString ? xmlStringToLong(masterShapeString) : -1);
+  unsigned lineStyle =  (unsigned)(lineStyleString ? xmlStringToLong(lineStyleString) : -1);
+  unsigned fillStyle =  (unsigned)(fillStyleString ? xmlStringToLong(fillStyleString) : -1);
+  unsigned textStyle =  (unsigned)(textStyleString ? xmlStringToLong(textStyleString) : -1);
 
   if (idString)
     xmlFree(idString);
