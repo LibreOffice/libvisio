@@ -75,20 +75,20 @@ void libvisio::VSDStylesCollector::collectEllipse(unsigned /* id */, unsigned le
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectLine(unsigned /* id */, unsigned level, double /* strokeWidth */, const Colour & /* c */,
+void libvisio::VSDStylesCollector::collectLine(unsigned level, double /* strokeWidth */, const Colour & /* c */,
     unsigned /* linePattern */, unsigned char /*startMarker*/, unsigned char /*endMarker*/, unsigned /* lineCap */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, const Colour & /* colourIndexFG */,
+void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned level, const Colour & /* colourIndexFG */,
     const Colour & /* colourIndexBG */, unsigned /* fillPattern */, double /* fillFGTransparency */, double /* fillBGTransparency */,
     unsigned /* shadowPattern */, const Colour & /* shfgc */, double /* shadowOffsetX */, double /* shadowOffsetY */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned /* id */, unsigned level, const Colour & /* colourIndexFG */,
+void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned level, const Colour & /* colourIndexFG */,
     const Colour & /* colourIndexBG */, unsigned /* fillPattern */, double /* fillFGTransparency */, double /* fillBGTransparency */,
     unsigned /* shadowPattern */, const Colour & /* shfgc */)
 {
@@ -283,7 +283,7 @@ void libvisio::VSDStylesCollector::collectStyleSheet(unsigned id, unsigned level
   m_isStyleStarted = true;
 }
 
-void libvisio::VSDStylesCollector::collectLineStyle(unsigned /* id */, unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
+void libvisio::VSDStylesCollector::collectLineStyle(unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
     unsigned char startMarker, unsigned char endMarker, unsigned char lineCap)
 {
   if (!m_lineStyle)
@@ -299,7 +299,7 @@ void libvisio::VSDStylesCollector::collectLineStyle(unsigned /* id */, unsigned 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectFillStyle(unsigned /*id*/, unsigned level, const Colour &colourFG, const Colour &colourBG,
+void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const Colour &colourFG, const Colour &colourBG,
     unsigned char fillPattern, double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc,
     double shadowOffsetX, double shadowOffsetY)
 {
@@ -320,10 +320,10 @@ void libvisio::VSDStylesCollector::collectFillStyle(unsigned /*id*/, unsigned le
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG,
+void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const Colour &colourFG, const Colour &colourBG,
     unsigned char fillPattern, double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc)
 {
-  collectFillStyle(id, level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
+  collectFillStyle(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
 void libvisio::VSDStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,

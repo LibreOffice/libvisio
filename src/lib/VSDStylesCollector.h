@@ -60,12 +60,12 @@ public:
   }
   void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
-  void collectLine(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker,
+  void collectLine(unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker,
                    unsigned char endMarker, unsigned lineCap);
-  void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
+  void collectFillAndShadow(unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
                             double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc,
                             double shadowOffsetX, double shadowOffsetY);
-  void collectFillAndShadow(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
+  void collectFillAndShadow(unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
                             double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc);
   void collectGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
@@ -112,12 +112,12 @@ public:
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level, unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);
-  void collectLineStyle(unsigned id, unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
+  void collectLineStyle(unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
                         unsigned char startMarker, unsigned char endMarker, unsigned char lineCap);
-  void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
+  void collectFillStyle(unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
                         double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern,
                         const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
-  void collectFillStyle(unsigned id, unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
+  void collectFillStyle(unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned char fillPattern,
                         double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern,
                         const Colour &shfgc);
   void collectCharIXStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,

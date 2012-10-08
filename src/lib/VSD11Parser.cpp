@@ -243,7 +243,7 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
 
 
   if (m_isInStyles)
-    m_collector->collectFillStyle(m_header.id, m_header.level, colourFG, colourBG, fillPattern,
+    m_collector->collectFillStyle(m_header.level, colourFG, colourBG, fillPattern,
                                   fillFGTransparency, fillBGTransparency, shadowPattern, shfgc,
                                   shadowOffsetX, shadowOffsetY);
   else if (m_isStencilStarted)
@@ -254,7 +254,7 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
                                              fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY);
   }
   else
-    m_collector->collectFillAndShadow(m_header.id, m_header.level, colourFG, colourBG, fillPattern,
+    m_collector->collectFillAndShadow(m_header.level, colourFG, colourBG, fillPattern,
                                       fillFGTransparency, fillBGTransparency, shadowPattern, shfgc,
                                       shadowOffsetX, shadowOffsetY);
 }

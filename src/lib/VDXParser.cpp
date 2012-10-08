@@ -343,14 +343,14 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   while ((XML_LINE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(0, level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    m_collector->collectLineStyle(level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
   else if (m_isStencilStarted)
   {
     if (!m_shape.m_lineStyle)
       m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
   }
   else
-    m_collector->collectLine(0, level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    m_collector->collectLine(level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
 }
 
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
@@ -433,7 +433,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   while ((XML_FILL != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (m_isInStyles)
-    m_collector->collectFillStyle(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
+    m_collector->collectFillStyle(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
                                   fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
   else if (m_isStencilStarted)
   {
@@ -444,7 +444,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
                                              shadowOffsetX, shadowOffsetY);
   }
   else
-    m_collector->collectFillAndShadow(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency,
+    m_collector->collectFillAndShadow(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency,
                                       (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
 }
 

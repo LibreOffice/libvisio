@@ -859,8 +859,8 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
 
   if (m_isInStyles)
   {
-    m_collector->collectLineStyle(0, level, strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
-    m_collector->collectFillStyle(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
+    m_collector->collectLineStyle(level, strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    m_collector->collectFillStyle(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
                                   fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
     m_collector->collectTextBlockStyle(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
@@ -879,8 +879,8 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   }
   else
   {
-    m_collector->collectLine(0, level, strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
-    m_collector->collectFillAndShadow(0, level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency,
+    m_collector->collectLine(level, strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    m_collector->collectFillAndShadow(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency,
                                       (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
     m_collector->collectTextBlock(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
                                   (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);

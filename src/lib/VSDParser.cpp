@@ -487,6 +487,32 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
 void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
 {
   m_collector->collectXFormData(m_currentShapeLevel+1, shape.m_xform);
+  if (shape.m_txtxform)
+    m_collector->collectTxtXForm(m_currentShapeLevel+1, *(shape.m_txtxform));
+  if (shape.m_lineStyle)
+    m_collector->collectLine(m_currentShapeLevel+1, shape.m_lineStyle->width, shape.m_lineStyle->colour, shape.m_lineStyle->pattern,
+                             shape.m_lineStyle->startMarker, shape.m_lineStyle->endMarker, shape.m_lineStyle->cap);
+  if (shape.m_fillStyle)
+    m_collector->collectFillAndShadow(m_currentShapeLevel+1, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
+                                      m_shape.m_fillStyle->fgTransparency, m_shape.m_fillStyle->bgTransparency, m_shape.m_fillStyle->shadowPattern,
+                                      m_shape.m_fillStyle->shadowFgColour, m_shape.m_fillStyle->shadowOffsetX, m_shape.m_fillStyle->shadowOffsetY);
+
+#if 0
+  std::vector<VSDGeometryList> m_geometries;
+  VSDFieldList m_fields;
+  ForeignData *m_foreign;
+  unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
+  VSDFillStyle *m_fillStyle;
+  VSDTextBlockStyle *m_textBlockStyle;
+  VSDCharStyle *m_charStyle;
+  VSDParaStyle *m_paraStyle;
+  WPXBinaryData m_text;
+  std::map< unsigned, VSDName > m_names;
+  TextFormat m_textFormat;
+  std::map<unsigned, NURBSData> m_nurbsData;
+  std::map<unsigned, PolylineData> m_polylineData;
+#endif
+
 }
 
 void libvisio::VSDParser::_handleLevelChange(unsigned level)
@@ -644,14 +670,14 @@ void libvisio::VSDParser::readLine(WPXInputStream *input)
   unsigned char lineCap = readU8(input);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(m_header.id, m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   else if (m_isStencilStarted)
   {
     if (!m_shape.m_lineStyle)
       m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   }
   else
-    m_collector->collectLine(m_header.id, m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectLine(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
 }
 
 void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
