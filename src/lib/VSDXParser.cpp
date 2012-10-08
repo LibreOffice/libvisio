@@ -958,7 +958,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
   }
   while ((XML_SHAPE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
-  m_collector->collectXFormData(0, level, xform);
+  m_collector->collectXFormData(level, xform);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

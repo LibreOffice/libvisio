@@ -174,14 +174,14 @@ void libvisio::VSDStylesCollector::collectShapeData(unsigned /* id */, unsigned 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
+void libvisio::VSDStylesCollector::collectXFormData(unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);
   if (m_isShapeStarted)
     m_groupXForms[m_currentShapeId] = xform;
 }
 
-void libvisio::VSDStylesCollector::collectTxtXForm(unsigned /* id */, unsigned level, const XForm & /* txtxform */)
+void libvisio::VSDStylesCollector::collectTxtXForm(unsigned level, const XForm & /* txtxform */)
 {
   _handleLevelChange(level);
 }

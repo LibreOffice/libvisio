@@ -510,7 +510,7 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
   }
   while ((XML_XFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
-  m_collector->collectXFormData(0, level, xform);
+  m_collector->collectXFormData(level, xform);
 }
 
 void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr /* reader */)

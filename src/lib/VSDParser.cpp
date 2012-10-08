@@ -484,6 +484,11 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
   }
 }
 
+void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
+{
+  m_collector->collectXFormData(m_currentShapeLevel+1, shape.m_xform);
+}
+
 void libvisio::VSDParser::_handleLevelChange(unsigned level)
 {
   if (level == m_currentLevel)
@@ -821,7 +826,7 @@ void libvisio::VSDParser::readXFormData(WPXInputStream *input)
   if (m_isStencilStarted)
     m_shape.m_xform = xform;
   else
-    m_collector->collectXFormData(m_header.id, m_header.level, xform);
+    m_collector->collectXFormData(m_header.level, xform);
 }
 
 void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
@@ -849,7 +854,7 @@ void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
     m_shape.m_txtxform = new XForm(txtxform);
   }
   else
-    m_collector->collectTxtXForm(m_header.id, m_header.level, txtxform);
+    m_collector->collectTxtXForm(m_header.level, txtxform);
 }
 
 void libvisio::VSDParser::readShapeId(WPXInputStream *input)

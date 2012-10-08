@@ -1786,13 +1786,13 @@ void libvisio::VSDContentCollector::collectShapeData(unsigned id, unsigned level
   m_polylineData[id] = data;
 }
 
-void libvisio::VSDContentCollector::collectXFormData(unsigned /* id */, unsigned level, const XForm &xform)
+void libvisio::VSDContentCollector::collectXFormData(unsigned level, const XForm &xform)
 {
   _handleLevelChange(level);
   m_xform = xform;
 }
 
-void libvisio::VSDContentCollector::collectTxtXForm(unsigned /* id */, unsigned level, const XForm &txtxform)
+void libvisio::VSDContentCollector::collectTxtXForm(unsigned level, const XForm &txtxform)
 {
   _handleLevelChange(level);
   if (m_txtxform)
