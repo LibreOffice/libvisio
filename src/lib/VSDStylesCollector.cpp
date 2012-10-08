@@ -131,7 +131,7 @@ void libvisio::VSDStylesCollector::collectNURBSTo(unsigned /* id */, unsigned le
 
 void libvisio::VSDStylesCollector::collectPolylineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */,
     unsigned char /* xType */, unsigned char /* yType */,
-    std::vector<std::pair<double, double> > & /* points */)
+    const std::vector<std::pair<double, double> > & /* points */)
 {
   _handleLevelChange(level);
 }

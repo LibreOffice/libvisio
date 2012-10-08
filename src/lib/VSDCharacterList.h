@@ -52,7 +52,7 @@ public:
                  bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                  bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   void clear();
   bool empty() const
   {

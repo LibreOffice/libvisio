@@ -83,7 +83,7 @@ public:
                       std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);
   void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID);
   void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
-                         std::vector<std::pair<double, double> > &points);
+                         const std::vector<std::pair<double, double> > &points);
   void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID);
   void collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, unsigned degree, double lastKnot,
                         std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);

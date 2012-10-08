@@ -32,7 +32,7 @@
 #include "VSDCollector.h"
 #include "VSDFieldList.h"
 
-void libvisio::VSDTextField::handle(VSDCollector *collector)
+void libvisio::VSDTextField::handle(VSDCollector *collector) const
 {
   collector->collectTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
@@ -57,7 +57,7 @@ void libvisio::VSDTextField::setNameId(int nameId)
 }
 
 
-void libvisio::VSDNumericField::handle(VSDCollector *collector)
+void libvisio::VSDNumericField::handle(VSDCollector *collector) const
 {
   collector->collectNumericField(m_id, m_level, m_format, m_number, m_formatStringId);
 }
@@ -241,13 +241,13 @@ void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsign
   m_elements[id] = new VSDNumericField(id, level, format, number, formatStringId);
 }
 
-void libvisio::VSDFieldList::handle(VSDCollector *collector)
+void libvisio::VSDFieldList::handle(VSDCollector *collector) const
 {
   if (empty())
     return;
 
   collector->collectFieldList(m_id, m_level);
-  std::map<unsigned, VSDFieldListElement *>::iterator iter;
+  std::map<unsigned, VSDFieldListElement *>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)

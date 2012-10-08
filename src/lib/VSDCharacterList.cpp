@@ -39,7 +39,7 @@ class VSDCharacterListElement
 public:
   VSDCharacterListElement() {}
   virtual ~VSDCharacterListElement() {}
-  virtual void handle(VSDCollector *collector) = 0;
+  virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDCharacterListElement *clone() = 0;
 };
 
@@ -54,7 +54,7 @@ public:
     m_doublestrikeout(doublestrikeout), m_allcaps(allcaps), m_initcaps(initcaps), m_smallcaps(smallcaps),
     m_superscript(superscript), m_subscript(subscript), m_fontFace(fontFace) {}
   ~VSDCharIX() {}
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   VSDCharacterListElement *clone();
 private:
   unsigned m_id, m_level;
@@ -69,7 +69,7 @@ private:
 } // namespace libvisio
 
 
-void libvisio::VSDCharIX::handle(VSDCollector *collector)
+void libvisio::VSDCharIX::handle(VSDCollector *collector) const
 {
   collector->collectVSDCharStyle(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
                                  m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
@@ -129,11 +129,11 @@ void libvisio::VSDCharacterList::setElementsOrder(const std::vector<unsigned> &e
     m_elementsOrder.push_back(elementsOrder[i]);
 }
 
-void libvisio::VSDCharacterList::handle(VSDCollector *collector)
+void libvisio::VSDCharacterList::handle(VSDCollector *collector) const
 {
   if (empty())
     return;
-  std::map<unsigned, VSDCharacterListElement *>::iterator iter;
+  std::map<unsigned, VSDCharacterListElement *>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)

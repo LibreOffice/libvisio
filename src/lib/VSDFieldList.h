@@ -47,7 +47,7 @@ class VSDFieldListElement
 public:
   VSDFieldListElement() {}
   virtual ~VSDFieldListElement() {}
-  virtual void handle(VSDCollector *collector) = 0;
+  virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDFieldListElement *clone() = 0;
   virtual WPXString getString(const std::map<unsigned, WPXString>&) = 0;
   virtual void setNameId(int) = 0;
@@ -64,7 +64,7 @@ public:
       m_nameId(nameId),
       m_formatStringId(formatStringId) {}
   ~VSDTextField() {}
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   VSDFieldListElement *clone();
   WPXString getString(const std::map<unsigned, WPXString> &strVec);
   void setNameId(int nameId);
@@ -85,7 +85,7 @@ public:
       m_number(number),
       m_formatStringId(formatStringId) {}
   ~VSDNumericField() {}
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   VSDFieldListElement *clone();
   WPXString getString(const std::map<unsigned, WPXString> &);
   void setNameId(int) {}
@@ -111,7 +111,7 @@ public:
   void addTextField(unsigned id, unsigned level, int nameId, int formatStringId);
   void addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId);
   void addClonedField(unsigned id);
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   void clear();
   unsigned long size() const
   {

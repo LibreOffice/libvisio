@@ -1689,23 +1689,24 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
     _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > &points)
+void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned char xType, unsigned char yType, const std::vector<std::pair<double, double> > &points)
 {
   _handleLevelChange(level);
 
   WPXPropertyList polyline;
+  std::vector<std::pair<double, double> > tmpPoints(points);
   for (unsigned i = 0; i< points.size(); i++)
   {
     polyline.clear();
     if (xType == 0)
-      points[i].first *= m_xform.width;
+      tmpPoints[i].first *= m_xform.width;
     if (yType == 0)
-      points[i].second *= m_xform.height;
+      tmpPoints[i].second *= m_xform.height;
 
-    transformPoint(points[i].first, points[i].second);
+    transformPoint(tmpPoints[i].first, tmpPoints[i].second);
     polyline.insert("libwpg:path-action", "L");
-    polyline.insert("svg:x", m_scale*points[i].first);
-    polyline.insert("svg:y", m_scale*points[i].second);
+    polyline.insert("svg:x", m_scale*tmpPoints[i].first);
+    polyline.insert("svg:y", m_scale*tmpPoints[i].second);
     if (!m_noFill && !m_noShow)
       m_currentFillGeometry.push_back(polyline);
     if (!m_noLine && !m_noShow)

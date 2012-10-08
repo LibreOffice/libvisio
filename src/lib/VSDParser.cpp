@@ -503,8 +503,21 @@ void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
                                   m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
 
 
+
+  for (std::vector<VSDGeometryList>::const_iterator iter = shape.m_geometries.begin(); iter != shape.m_geometries.end(); ++iter)
+    iter->handle(m_collector);
+
+  for (std::vector<VSDCharacterList>::const_iterator iter2 = shape.m_charListVector.begin(); iter2 != shape.m_charListVector.end(); ++iter2)
+    iter2->handle(m_collector);
+
+  for (std::vector<VSDParagraphList>::const_iterator iter3 = shape.m_paraListVector.begin(); iter3 != shape.m_paraListVector.end(); ++iter3)
+    iter3->handle(m_collector);
+
+  if (!m_fieldList.empty())
+    m_fieldList.handle(m_collector);
+
+
 #if 0
-  std::vector<VSDGeometryList> m_geometries;
   VSDFieldList m_fields;
   ForeignData *m_foreign;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;

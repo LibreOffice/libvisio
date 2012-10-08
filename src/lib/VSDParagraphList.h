@@ -51,7 +51,7 @@ public:
                  double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
 
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   void clear();
   bool empty() const
   {

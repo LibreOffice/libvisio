@@ -39,7 +39,7 @@ class VSDParagraphListElement
 public:
   VSDParagraphListElement() {}
   virtual ~VSDParagraphListElement() {}
-  virtual void handle(VSDCollector *collector) = 0;
+  virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDParagraphListElement *clone() = 0;
 };
 
@@ -51,7 +51,7 @@ public:
     m_id(id), m_level(level), m_charCount(charCount), m_indFirst(indFirst), m_indLeft(indLeft), m_indRight(indRight),
     m_spLine(spLine), m_spBefore(spBefore), m_spAfter(spAfter), m_align(align), m_flags(flags) {}
   ~VSDParaIX() {}
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   VSDParagraphListElement *clone();
 private:
   unsigned m_id, m_level;
@@ -68,7 +68,7 @@ private:
 } // namespace libvisio
 
 
-void libvisio::VSDParaIX::handle(VSDCollector *collector)
+void libvisio::VSDParaIX::handle(VSDCollector *collector) const
 {
   collector->collectVSDParaStyle(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
                                  m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
@@ -124,11 +124,11 @@ void libvisio::VSDParagraphList::setElementsOrder(const std::vector<unsigned> &e
     m_elementsOrder.push_back(elementsOrder[i]);
 }
 
-void libvisio::VSDParagraphList::handle(VSDCollector *collector)
+void libvisio::VSDParagraphList::handle(VSDCollector *collector) const
 {
   if (empty())
     return;
-  std::map<unsigned, VSDParagraphListElement *>::iterator iter;
+  std::map<unsigned, VSDParagraphListElement *>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)

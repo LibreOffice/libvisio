@@ -87,7 +87,7 @@ class VSDGeometryListElement
 public:
   VSDGeometryListElement() {}
   virtual ~VSDGeometryListElement() {}
-  virtual void handle(VSDCollector *collector) = 0;
+  virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDGeometryListElement *clone() = 0;
 };
 
@@ -97,7 +97,7 @@ public:
   VSDPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
     m_dataID(dataID), m_id(id), m_level(level), m_x(x), m_y(y) {}
   ~VSDPolylineTo2() {}
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
   unsigned m_dataID;
 private:
@@ -111,7 +111,7 @@ public:
   VSDNURBSTo2(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) :
     m_dataID(dataID), m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev) {}
   ~VSDNURBSTo2() {}
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
   unsigned m_dataID;
 private:

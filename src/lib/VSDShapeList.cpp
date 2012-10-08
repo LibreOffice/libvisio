@@ -39,7 +39,7 @@ class VSDShapeListElement
 public:
   VSDShapeListElement() {}
   virtual ~VSDShapeListElement() {}
-  virtual void handle(VSDCollector *collector) = 0;
+  virtual void handle(VSDCollector *collector) const = 0;
 };
 
 class VSDShapeId : public VSDShapeListElement
@@ -48,7 +48,7 @@ public:
   VSDShapeId(unsigned id, unsigned level, unsigned shapeId) :
     m_id(id), m_level(level), m_shapeId(shapeId) {}
   ~VSDShapeId() {}
-  void handle(VSDCollector *collector);
+  void handle(VSDCollector *collector) const;
 private:
   unsigned m_id;
   unsigned m_level;
@@ -58,7 +58,7 @@ private:
 } // namespace libvisio
 
 
-void libvisio::VSDShapeId::handle(VSDCollector *collector)
+void libvisio::VSDShapeId::handle(VSDCollector *collector) const
 {
   collector->collectShapeId(m_id, m_level, m_shapeId);
 }
@@ -86,11 +86,11 @@ void libvisio::VSDShapeList::setElementsOrder(const std::vector<unsigned> &eleme
     m_elementsOrder.push_back(elementsOrder[i]);
 }
 
-void libvisio::VSDShapeList::handle(VSDCollector *collector)
+void libvisio::VSDShapeList::handle(VSDCollector *collector) const
 {
   if (empty())
     return;
-  std::map<unsigned, VSDShapeListElement *>::iterator iter;
+  std::map<unsigned, VSDShapeListElement *>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
