@@ -862,7 +862,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     m_collector->collectLineStyle(level, strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
     m_collector->collectFillStyle(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
                                   fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
-    m_collector->collectTextBlockStyle(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
+    m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   }
   else if (m_isStencilStarted)
@@ -882,7 +882,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     m_collector->collectLine(level, strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
     m_collector->collectFillAndShadow(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency,
                                       (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
-    m_collector->collectTextBlock(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
+    m_collector->collectTextBlock(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                   (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   }
 }

@@ -2166,7 +2166,7 @@ void libvisio::VSDContentCollector::collectVSDCharStyle(unsigned /*id*/ , unsign
   m_charFormats.push_back(format);
 }
 
-void libvisio::VSDContentCollector::collectTextBlock(unsigned /* id */, unsigned level, double leftMargin, double rightMargin,
+void libvisio::VSDContentCollector::collectTextBlock(unsigned level, double leftMargin, double rightMargin,
     double topMargin, double bottomMargin,  unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour,
     double defaultTabStop,  unsigned char textDirection)
 {
@@ -2242,7 +2242,7 @@ void libvisio::VSDContentCollector::collectParaIXStyle(unsigned /* id */, unsign
 }
 
 
-void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
+void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned level, double /* leftMargin */, double /* rightMargin */,
     double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, bool /* isBgFilled */,
     const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {

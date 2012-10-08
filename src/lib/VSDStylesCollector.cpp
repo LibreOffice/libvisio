@@ -248,7 +248,7 @@ void libvisio::VSDStylesCollector::collectVSDCharStyle(unsigned /*id*/ , unsigne
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectTextBlock(unsigned /* id */, unsigned level, double /* leftMargin */, double /* rightMargin */,
+void libvisio::VSDStylesCollector::collectTextBlock(unsigned level, double /* leftMargin */, double /* rightMargin */,
     double /* topMargin */, double /* bottomMargin */,  unsigned char /* verticalAlign */, bool /* isBgFilled */,
     const Colour & /* colour */, double /* defaultTabStop */,  unsigned char /* textDirection */)
 {
@@ -346,7 +346,7 @@ void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned
                                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
-void libvisio::VSDStylesCollector::collectTextBlockStyle(unsigned /* id */, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
+void libvisio::VSDStylesCollector::collectTextBlockStyle(unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
     unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection)
 {
   _handleLevelChange(level);

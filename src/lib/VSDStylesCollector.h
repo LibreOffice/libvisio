@@ -101,7 +101,7 @@ public:
                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
   void collectVSDParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                            double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
-  void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
+  void collectTextBlock(unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                         unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
   void collectNameList(unsigned id, unsigned level)
   {
@@ -125,7 +125,7 @@ public:
                           bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
   void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                           double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
-  void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
+  void collectTextBlockStyle(unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                              unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
 
   // Field list

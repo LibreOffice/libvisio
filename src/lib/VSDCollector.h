@@ -86,7 +86,7 @@ public:
                                    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;
   virtual void collectVSDParaStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
-  virtual void collectTextBlock(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
+  virtual void collectTextBlock(unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                                 unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection) = 0;
   virtual void collectNameList(unsigned id, unsigned level) = 0;
   virtual void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format) = 0;
@@ -106,7 +106,7 @@ public:
                                   bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;
   virtual void collectParaIXStyle(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
                                   double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
-  virtual void collectTextBlockStyle(unsigned id, unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
+  virtual void collectTextBlockStyle(unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
                                      unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop,
                                      unsigned char textDirection) = 0;
   // Field list

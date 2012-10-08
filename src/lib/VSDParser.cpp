@@ -496,14 +496,18 @@ void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
     m_collector->collectFillAndShadow(m_currentShapeLevel+1, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
                                       m_shape.m_fillStyle->fgTransparency, m_shape.m_fillStyle->bgTransparency, m_shape.m_fillStyle->shadowPattern,
                                       m_shape.m_fillStyle->shadowFgColour, m_shape.m_fillStyle->shadowOffsetX, m_shape.m_fillStyle->shadowOffsetY);
+  if (shape.m_textBlockStyle)
+    m_collector->collectTextBlock(m_currentShapeLevel+1, m_shape.m_textBlockStyle->leftMargin, m_shape.m_textBlockStyle->rightMargin,
+                                  m_shape.m_textBlockStyle->topMargin, m_shape.m_textBlockStyle->bottomMargin, m_shape.m_textBlockStyle->verticalAlign,
+                                  m_shape.m_textBlockStyle->isTextBkgndFilled, m_shape.m_textBlockStyle->textBkgndColour,
+                                  m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
+
 
 #if 0
   std::vector<VSDGeometryList> m_geometries;
   VSDFieldList m_fields;
   ForeignData *m_foreign;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
-  VSDFillStyle *m_fillStyle;
-  VSDTextBlockStyle *m_textBlockStyle;
   VSDCharStyle *m_charStyle;
   VSDParaStyle *m_paraStyle;
   WPXBinaryData m_text;
@@ -703,7 +707,7 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
   unsigned char textDirection = readU8(input);
 
   if (m_isInStyles)
-    m_collector->collectTextBlockStyle(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
+    m_collector->collectTextBlockStyle(m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
   else if (m_isStencilStarted)
   {
@@ -712,7 +716,7 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
           verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
   }
   else
-    m_collector->collectTextBlock(m_header.id, m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
+    m_collector->collectTextBlock(m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
                                   verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
 }
 

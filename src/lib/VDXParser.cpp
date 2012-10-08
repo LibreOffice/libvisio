@@ -695,7 +695,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   }
 
   if (m_isInStyles)
-    m_collector->collectTextBlockStyle(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
+    m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   else if (m_isStencilStarted)
   {
@@ -704,7 +704,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
           (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   }
   else
-    m_collector->collectTextBlock(0, level, leftMargin, rightMargin, topMargin, bottomMargin,
+    m_collector->collectTextBlock(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                   (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
 }
 
