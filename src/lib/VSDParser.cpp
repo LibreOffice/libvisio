@@ -624,15 +624,13 @@ void libvisio::VSDParser::readForeignData(WPXInputStream *input)
     return;
   WPXBinaryData binaryData(buffer, tmpBytesRead);
 
-  if (m_isStencilStarted)
-  {
-    if (!m_shape.m_foreign)
-      m_shape.m_foreign = new ForeignData();
-    m_shape.m_foreign->dataId = m_header.id;
-    m_shape.m_foreign->dataLevel = m_header.level;
-    m_shape.m_foreign->data = binaryData;
-  }
-  else
+  if (!m_shape.m_foreign)
+    m_shape.m_foreign = new ForeignData();
+  m_shape.m_foreign->dataId = m_header.id;
+  m_shape.m_foreign->dataLevel = m_header.level;
+  m_shape.m_foreign->data = binaryData;
+
+  if (!m_isStencilStarted)
     m_collector->collectForeignData(m_header.level, binaryData);
 }
 
@@ -649,15 +647,13 @@ void libvisio::VSDParser::readOLEData(WPXInputStream *input)
     return;
   WPXBinaryData oleData(buffer, tmpBytesRead);
 
-  if (m_isStencilStarted)
-  {
-    if (!m_shape.m_foreign)
-      m_shape.m_foreign = new ForeignData();
-    // Append data instead of setting it - allows multi-stream OLE objects
-    m_shape.m_foreign->data.append(oleData);
-    m_shape.m_foreign->dataLevel = m_header.level;
-  }
-  else
+  if (!m_shape.m_foreign)
+    m_shape.m_foreign = new ForeignData();
+  // Append data instead of setting it - allows multi-stream OLE objects
+  m_shape.m_foreign->data.append(oleData);
+  m_shape.m_foreign->dataLevel = m_header.level;
+
+  if (!m_isStencilStarted)
     m_collector->collectOLEData(m_header.id, m_header.level, oleData);
 }
 
@@ -700,13 +696,14 @@ void libvisio::VSDParser::readLine(WPXInputStream *input)
 
   if (m_isInStyles)
     m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
-  else if (m_isStencilStarted)
-  {
-    if (!m_shape.m_lineStyle)
-      m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
-  }
   else
-    m_collector->collectLine(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+  {
+    if (m_shape.m_lineStyle)
+      delete m_shape.m_lineStyle;
+    m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+    if (!m_isStencilStarted)
+      m_collector->collectLine(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+  }
 }
 
 void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
@@ -734,15 +731,16 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
   if (m_isInStyles)
     m_collector->collectTextBlockStyle(m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
-  else if (m_isStencilStarted)
-  {
-    if (!m_shape.m_textBlockStyle)
-      m_shape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-          verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
-  }
   else
-    m_collector->collectTextBlock(m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                  verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
+  {
+    if (m_shape.m_textBlockStyle)
+      delete m_shape.m_textBlockStyle;
+    m_shape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
+        verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
+    if (!m_isStencilStarted)
+      m_collector->collectTextBlock(m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
+                                    verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
+  }
 }
 
 void libvisio::VSDParser::readGeomList(WPXInputStream *input)
@@ -948,20 +946,18 @@ void libvisio::VSDParser::readForeignDataType(WPXInputStream *input)
   input->seek(0xb, WPX_SEEK_CUR);
   unsigned foreignFormat = readU32(input);
 
-  if (m_isStencilStarted)
-  {
-    if (!m_shape.m_foreign)
-      m_shape.m_foreign = new ForeignData();
-    m_shape.m_foreign->typeId = m_header.id;
-    m_shape.m_foreign->typeLevel = m_header.level;
-    m_shape.m_foreign->type = foreignType;
-    m_shape.m_foreign->format = foreignFormat;
-    m_shape.m_foreign->offsetX = imgOffsetX;
-    m_shape.m_foreign->offsetY = imgOffsetY;
-    m_shape.m_foreign->width = imgWidth;
-    m_shape.m_foreign->height = imgHeight;
-  }
-  else
+  if (!m_shape.m_foreign)
+    m_shape.m_foreign = new ForeignData();
+  m_shape.m_foreign->typeId = m_header.id;
+  m_shape.m_foreign->typeLevel = m_header.level;
+  m_shape.m_foreign->type = foreignType;
+  m_shape.m_foreign->format = foreignFormat;
+  m_shape.m_foreign->offsetX = imgOffsetX;
+  m_shape.m_foreign->offsetY = imgOffsetY;
+  m_shape.m_foreign->width = imgWidth;
+  m_shape.m_foreign->height = imgHeight;
+
+  if (!m_isStencilStarted)
     m_collector->collectForeignDataType(m_header.level, foreignType, foreignFormat, imgOffsetX, imgOffsetY, imgWidth, imgHeight);
 }
 
@@ -986,8 +982,7 @@ void libvisio::VSDParser::readPageProps(WPXInputStream *input)
     m_currentStencil->m_shadowOffsetX = shadowOffsetX;
     m_currentStencil->m_shadowOffsetY = shadowOffsetY;
   }
-  else
-    m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale);
+  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale);
 }
 
 void libvisio::VSDParser::readShape(WPXInputStream *input)
