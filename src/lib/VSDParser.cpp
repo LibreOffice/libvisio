@@ -93,6 +93,7 @@ bool libvisio::VSDParser::parseMain()
 
   VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
   m_collector = &stylesCollector;
+  m_stencils.clear();
   if (!parseDocument(&trailerStream))
     return false;
 
@@ -240,8 +241,6 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   case VSD_SHAPE_SHAPE:
   case VSD_SHAPE_FOREIGN:
     m_currentShapeID = idx;
-    if (m_isStencilStarted)
-      m_shape = VSDShape();
     break;
   case VSD_OLE_LIST:
     if (m_isStencilStarted)
@@ -959,13 +958,17 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
   {
   }
 
-  if (m_isStencilStarted)
-  {
-    m_shape.m_lineStyleId = lineStyle;
-    m_shape.m_fillStyleId = fillStyle;
-    m_shape.m_textStyleId = textStyle;
-  }
+  const VSDShape *tmpShape = m_stencils.getStencilShape(masterPage, masterShape);
+  if (tmpShape)
+    m_shape = *tmpShape;
   else
+    m_shape = VSDShape();
+
+  m_shape.m_lineStyleId = lineStyle;
+  m_shape.m_fillStyleId = fillStyle;
+  m_shape.m_textStyleId = textStyle;
+
+  if (!m_isStencilStarted)
     m_collector->collectShape(m_currentShapeID, m_header.level, masterPage, masterShape, lineStyle, fillStyle, textStyle);
   m_currentShapeID = (unsigned)-1;
 }

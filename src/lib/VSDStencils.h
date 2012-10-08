@@ -93,6 +93,7 @@ public:
   {
     return m_stencils.size();
   }
+  void clear();
 private:
   std::map<unsigned, VSDStencil> m_stencils;
 };
