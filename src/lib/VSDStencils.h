@@ -37,6 +37,8 @@
 #include "VSDGeometryList.h"
 #include "VSDFieldList.h"
 #include "VSDTypes.h"
+#include "VSDParagraphList.h"
+#include "VSDCharacterList.h"
 
 namespace libvisio
 {
@@ -57,7 +59,9 @@ public:
   VSDFillStyle *m_fillStyle;
   VSDTextBlockStyle *m_textBlockStyle;
   VSDCharStyle *m_charStyle;
+  VSDCharacterList m_charList;
   VSDParaStyle *m_paraStyle;
+  VSDParagraphList m_paraList;
   WPXBinaryData m_text;
   std::map< unsigned, VSDName > m_names;
   TextFormat m_textFormat;

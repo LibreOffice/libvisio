@@ -34,9 +34,9 @@
 libvisio::VSDShape::VSDShape()
   : m_geometries(), m_fields(), m_foreign(0),
     m_lineStyleId((unsigned)-1), m_fillStyleId((unsigned)-1), m_textStyleId((unsigned)-1),
-    m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
-    m_text(), m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(),
-    m_xform(), m_txtxform(0)
+    m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_charList(),
+    m_paraStyle(0), m_paraList(), m_text(), m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16),
+    m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(0)
 {
 }
 
@@ -47,8 +47,8 @@ libvisio::VSDShape::VSDShape(const libvisio::VSDShape &shape)
     m_lineStyle(shape.m_lineStyle ? new VSDLineStyle(*(shape.m_lineStyle)) : 0),
     m_fillStyle(shape.m_fillStyle ? new VSDFillStyle(*(shape.m_fillStyle)) : 0),
     m_textBlockStyle(shape.m_textBlockStyle ? new VSDTextBlockStyle(*(shape.m_textBlockStyle)) : 0),
-    m_charStyle(shape.m_charStyle ? new VSDCharStyle(*(shape.m_charStyle)) : 0),
-    m_paraStyle(shape.m_paraStyle ? new VSDParaStyle(*(shape.m_paraStyle)) : 0),
+    m_charStyle(shape.m_charStyle ? new VSDCharStyle(*(shape.m_charStyle)) : 0), m_charList(shape.m_charList),
+    m_paraStyle(shape.m_paraStyle ? new VSDParaStyle(*(shape.m_paraStyle)) : 0), m_paraList(shape.m_paraList),
     m_text(shape.m_text), m_names(shape.m_names), m_textFormat(shape.m_textFormat),
     m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData),
     m_xform(shape.m_xform), m_txtxform(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : 0) {}
@@ -95,9 +95,11 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
     if (m_charStyle)
       delete m_charStyle;
     m_charStyle = shape.m_charStyle ? new VSDCharStyle(*(shape.m_charStyle)) : 0;
+    m_charList = shape.m_charList;
     if (m_paraStyle)
       delete m_paraStyle;
     m_paraStyle = shape.m_paraStyle ? new VSDParaStyle(*(shape.m_paraStyle)) : 0;
+    m_paraList = shape.m_paraList;
     m_text = shape.m_text;
     m_names = shape.m_names;
     m_textFormat = shape.m_textFormat;
