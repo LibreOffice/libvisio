@@ -1308,7 +1308,7 @@ void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const C
   collectFillAndShadow(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
-void libvisio::VSDContentCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData &binaryData)
+void libvisio::VSDContentCollector::collectForeignData(unsigned level, const WPXBinaryData &binaryData)
 {
   _handleLevelChange(level);
   _handleForeignData(binaryData);
@@ -1909,7 +1909,7 @@ void libvisio::VSDContentCollector::collectShapeId(unsigned /* id */, unsigned l
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height)
+void libvisio::VSDContentCollector::collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height)
 {
   _handleLevelChange(level);
   m_foreignType = foreignType;
@@ -2139,7 +2139,7 @@ void libvisio::VSDContentCollector::collectSplineEnd()
 }
 
 
-void libvisio::VSDContentCollector::collectText(unsigned /*id*/, unsigned level, const WPXBinaryData &textStream, TextFormat format)
+void libvisio::VSDContentCollector::collectText(unsigned level, const WPXBinaryData &textStream, TextFormat format)
 {
   _handleLevelChange(level);
 

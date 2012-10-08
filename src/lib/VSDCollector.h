@@ -44,7 +44,7 @@ public:
   virtual ~VSDCollector() {}
 
   virtual void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) = 0;
-  virtual void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData) = 0;
+  virtual void collectForeignData(unsigned level, const WPXBinaryData &binaryData) = 0;
   virtual void collectOLEList(unsigned id, unsigned level) = 0;
   virtual void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData) = 0;
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
@@ -68,7 +68,7 @@ public:
   virtual void collectXFormData(unsigned level, const XForm &xform) = 0;
   virtual void collectTxtXForm(unsigned level, const XForm &txtxform) = 0;
   virtual void collectShapeId(unsigned id, unsigned level, unsigned shapeId) = 0;
-  virtual void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height) = 0;
+  virtual void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height) = 0;
   virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale) = 0;
   virtual void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage) = 0;
   virtual void collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) = 0;
@@ -80,7 +80,7 @@ public:
   virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;
 
   virtual void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format) = 0;
-  virtual void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format) = 0;
+  virtual void collectText(unsigned level, const ::WPXBinaryData &textStream, TextFormat format) = 0;
   virtual void collectVSDCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
                                    bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                                    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;

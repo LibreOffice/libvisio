@@ -99,7 +99,7 @@ void libvisio::VSD6Parser::readText(WPXInputStream *input)
     m_shape.m_textFormat = libvisio::VSD_TEXT_ANSI;
   }
   else
-    m_collector->collectText(m_header.id, m_header.level, textStream, libvisio::VSD_TEXT_ANSI);
+    m_collector->collectText(m_header.level, textStream, libvisio::VSD_TEXT_ANSI);
 }
 
 void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)

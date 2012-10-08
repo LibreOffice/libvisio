@@ -59,7 +59,7 @@ void libvisio::VSDStylesCollector::collectEllipticalArcTo(unsigned /* id */, uns
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectForeignData(unsigned /* id */, unsigned level, const WPXBinaryData & /* binaryData */)
+void libvisio::VSDStylesCollector::collectForeignData(unsigned level, const WPXBinaryData & /* binaryData */)
 {
   _handleLevelChange(level);
 }
@@ -194,7 +194,7 @@ void libvisio::VSDStylesCollector::collectShapeId(unsigned /* id */, unsigned le
   m_shapeList.push_back(shapeId);
 }
 
-void libvisio::VSDStylesCollector::collectForeignDataType(unsigned /* id */, unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */,
+void libvisio::VSDStylesCollector::collectForeignDataType(unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */,
     double /* offsetX */, double /* offsetY */, double /* width */, double /* height */)
 {
   _handleLevelChange(level);
@@ -229,7 +229,7 @@ void libvisio::VSDStylesCollector::collectFont(unsigned short /* fontID */, cons
 {
 }
 
-void libvisio::VSDStylesCollector::collectText(unsigned /*id*/, unsigned level, const ::WPXBinaryData & /*textStream*/, TextFormat /*format*/)
+void libvisio::VSDStylesCollector::collectText(unsigned level, const ::WPXBinaryData & /*textStream*/, TextFormat /*format*/)
 {
   _handleLevelChange(level);
 }

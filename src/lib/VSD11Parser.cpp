@@ -118,7 +118,7 @@ void libvisio::VSD11Parser::readText(WPXInputStream *input)
     m_shape.m_textFormat = libvisio::VSD_TEXT_UTF16;
   }
   else
-    m_collector->collectText(m_header.id, m_header.level, textStream, libvisio::VSD_TEXT_UTF16);
+    m_collector->collectText(m_header.level, textStream, libvisio::VSD_TEXT_UTF16);
 }
 
 void libvisio::VSD11Parser::readCharIX(WPXInputStream *input)

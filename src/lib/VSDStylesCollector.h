@@ -53,7 +53,7 @@ public:
   virtual ~VSDStylesCollector() {};
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
-  void collectForeignData(unsigned id, unsigned level, const WPXBinaryData &binaryData);
+  void collectForeignData(unsigned level, const WPXBinaryData &binaryData);
   void collectOLEList(unsigned id, unsigned level)
   {
     collectUnhandledChunk(id, level);
@@ -83,7 +83,7 @@ public:
   void collectXFormData(unsigned level, const XForm &xform);
   void collectTxtXForm(unsigned level, const XForm &txtxform);
   void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
-  void collectForeignDataType(unsigned id, unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height);
+  void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale);
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage);
   void collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle);
@@ -95,7 +95,7 @@ public:
 
   void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format);
 
-  void collectText(unsigned id, unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
+  void collectText(unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
   void collectVSDCharStyle(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
                            double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
                            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);

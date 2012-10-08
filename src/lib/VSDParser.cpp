@@ -502,34 +502,46 @@ void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
                                   m_shape.m_textBlockStyle->isTextBkgndFilled, m_shape.m_textBlockStyle->textBkgndColour,
                                   m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
 
+  if (m_shape.m_foreign)
+  {
+    m_collector->collectForeignDataType(m_currentShapeLevel+1, m_shape.m_foreign->type, m_shape.m_foreign->format,
+                                        m_shape.m_foreign->offsetX, m_shape.m_foreign->offsetY, m_shape.m_foreign->width, m_shape.m_foreign->height);
+    m_collector->collectForeignData(m_currentShapeLevel+1, m_shape.m_foreign->data);
+  }
 
 
-  for (std::vector<VSDGeometryList>::const_iterator iter = shape.m_geometries.begin(); iter != shape.m_geometries.end(); ++iter)
-    iter->handle(m_collector);
+  for (std::map<unsigned, NURBSData>::const_iterator iterNurbs = shape.m_nurbsData.begin(); iterNurbs != shape.m_nurbsData.end(); ++iterNurbs)
+    m_collector->collectShapeData(iterNurbs->first, m_currentShapeLevel+1, iterNurbs->second.xType, iterNurbs->second.yType,
+                                  iterNurbs->second.degree, iterNurbs->second.lastKnot, iterNurbs->second.points,
+                                  iterNurbs->second.knots, iterNurbs->second.weights);
 
-  for (std::vector<VSDCharacterList>::const_iterator iter2 = shape.m_charListVector.begin(); iter2 != shape.m_charListVector.end(); ++iter2)
-    iter2->handle(m_collector);
+  for (std::map<unsigned, PolylineData>::const_iterator iterPoly = shape.m_polylineData.begin(); iterPoly != shape.m_polylineData.end(); ++iterPoly)
+    m_collector->collectShapeData(iterPoly->first, m_currentShapeLevel+1, iterPoly->second.xType, iterPoly->second.yType, iterPoly->second.points);
 
-  for (std::vector<VSDParagraphList>::const_iterator iter3 = shape.m_paraListVector.begin(); iter3 != shape.m_paraListVector.end(); ++iter3)
-    iter3->handle(m_collector);
+  for (std::map<unsigned, VSDName>::const_iterator iterName = shape.m_names.begin(); iterName != shape.m_names.end(); ++iterName)
+    m_collector->collectName(iterName->first, m_currentShapeLevel+1, iterName->second.m_data, iterName->second.m_format);
 
-  if (!m_fieldList.empty())
-    m_fieldList.handle(m_collector);
 
+  m_collector->collectText(m_currentShapeLevel+1, shape.m_text, shape.m_textFormat);
+
+
+  for (std::vector<VSDGeometryList>::const_iterator iterGeom = shape.m_geometries.begin(); iterGeom != shape.m_geometries.end(); ++iterGeom)
+    iterGeom->handle(m_collector);
+
+  for (std::vector<VSDCharacterList>::const_iterator iterChar = shape.m_charListVector.begin(); iterChar != shape.m_charListVector.end(); ++iterChar)
+    iterChar->handle(m_collector);
+
+  for (std::vector<VSDParagraphList>::const_iterator iterPara = shape.m_paraListVector.begin(); iterPara != shape.m_paraListVector.end(); ++iterPara)
+    iterPara->handle(m_collector);
+
+  if (!shape.m_fields.empty())
+    shape.m_fields.handle(m_collector);
 
 #if 0
-  VSDFieldList m_fields;
-  ForeignData *m_foreign;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
   VSDCharStyle *m_charStyle;
   VSDParaStyle *m_paraStyle;
-  WPXBinaryData m_text;
-  std::map< unsigned, VSDName > m_names;
-  TextFormat m_textFormat;
-  std::map<unsigned, NURBSData> m_nurbsData;
-  std::map<unsigned, PolylineData> m_polylineData;
 #endif
-
 }
 
 void libvisio::VSDParser::_handleLevelChange(unsigned level)
@@ -557,18 +569,18 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
       delete *iter;
     }
     m_geomListVector.clear();
-    for (std::vector<VSDCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); ++iter2)
+    for (std::vector<VSDCharacterList *>::iterator iterChar = m_charListVector.begin(); iterChar != m_charListVector.end(); ++iterChar)
     {
-      (*iter2)->handle(m_collector);
-      (*iter2)->clear();
-      delete *iter2;
+      (*iterChar)->handle(m_collector);
+      (*iterChar)->clear();
+      delete *iterChar;
     }
     m_charListVector.clear();
-    for (std::vector<VSDParagraphList *>::iterator iter3 = m_paraListVector.begin(); iter3 != m_paraListVector.end(); ++iter3)
+    for (std::vector<VSDParagraphList *>::iterator iterPara = m_paraListVector.begin(); iterPara != m_paraListVector.end(); ++iterPara)
     {
-      (*iter3)->handle(m_collector);
-      (*iter3)->clear();
-      delete *iter3;
+      (*iterPara)->handle(m_collector);
+      (*iterPara)->clear();
+      delete *iterPara;
     }
     m_paraListVector.clear();
     if (!m_fieldList.empty())
@@ -621,7 +633,7 @@ void libvisio::VSDParser::readForeignData(WPXInputStream *input)
     m_shape.m_foreign->data = binaryData;
   }
   else
-    m_collector->collectForeignData(m_header.id, m_header.level, binaryData);
+    m_collector->collectForeignData(m_header.level, binaryData);
 }
 
 void libvisio::VSDParser::readOLEList(WPXInputStream * /* input */)
@@ -950,7 +962,7 @@ void libvisio::VSDParser::readForeignDataType(WPXInputStream *input)
     m_shape.m_foreign->height = imgHeight;
   }
   else
-    m_collector->collectForeignDataType(m_header.id, m_header.level, foreignType, foreignFormat, imgOffsetX, imgOffsetY, imgWidth, imgHeight);
+    m_collector->collectForeignDataType(m_header.level, foreignType, foreignFormat, imgOffsetX, imgOffsetY, imgWidth, imgHeight);
 }
 
 void libvisio::VSDParser::readPageProps(WPXInputStream *input)
