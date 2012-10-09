@@ -1458,7 +1458,7 @@ void libvisio::VSDContentCollector::collectGeometry(unsigned /* id */, unsigned 
     m_styleProps.insert("draw:fill", m_fillType);
     m_styleProps.insert("svg:fill-rule", "evenodd");
   }
-  VSD_DEBUG_MSG(("Flag: %d NoFill: %d NoLine: %d NoShow: %d\n", geomFlags, m_noFill, m_noLine, m_noShow));
+  VSD_DEBUG_MSG(("NoFill: %d NoLine: %d NoShow: %d\n", m_noFill, m_noLine, m_noShow));
   m_currentGeometryCount++;
 }
 
