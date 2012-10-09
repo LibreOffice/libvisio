@@ -398,7 +398,8 @@ void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, double x2,
   m_elements[id] = new VSDArcTo(id, level, x2, y2, bow);
 }
 
-void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
+    const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector, const std::vector<double> &weights)
 {
   m_elements[id] = new VSDNURBSTo1(id, level, x2, y2, xType, yType, degree, controlPoints, knotVector, weights);
 }
@@ -408,7 +409,8 @@ void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x
   m_elements[id] = new VSDNURBSTo2(id, level, x2, y2, knot, knotPrev, weight, weightPrev, dataID);
 }
 
-void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points)
+void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
+    const std::vector<std::pair<double, double> > &points)
 {
   m_elements[id] = new VSDPolylineTo1(id, level, x, y, xType, yType, points);
 }

@@ -52,9 +52,12 @@ public:
   void addMoveTo(unsigned id, unsigned level, double x, double y);
   void addLineTo(unsigned id, unsigned level, double x, double y);
   void addArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
-  void addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);
+  void addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
+                  const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector,
+                  const std::vector<double> &weights);
   void addNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID);
-  void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points);
+  void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
+                     const std::vector<std::pair<double, double> > &points);
   void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID);
   void addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);

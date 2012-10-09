@@ -77,7 +77,6 @@ bool libvisio::VSDParser::parseMain()
 
   VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
   m_collector = &stylesCollector;
-  m_stencils.clear();
   if (!parseDocument(&trailerStream))
     return false;
 
@@ -545,24 +544,26 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
   }
   if (level <= m_currentShapeLevel)
   {
-    for (std::vector<VSDGeometryList>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
+    m_shape.m_geometries = m_geomListVector;
+    m_shape.m_charListVector = m_charListVector;
+    m_shape.m_paraListVector = m_paraListVector;
+	
+    if (!m_isStencilStarted)
     {
-      iter->handle(m_collector);
-      iter->clear();
+      for (std::vector<VSDGeometryList>::const_iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
+        iter->handle(m_collector);
+
+      for (std::vector<VSDCharacterList>::const_iterator iterChar = m_charListVector.begin(); iterChar != m_charListVector.end(); ++iterChar)
+        iterChar->handle(m_collector);
+
+      for (std::vector<VSDParagraphList>::const_iterator iterPara = m_paraListVector.begin(); iterPara != m_paraListVector.end(); ++iterPara)
+        iterPara->handle(m_collector);
     }
+
     m_geomListVector.clear();
-    for (std::vector<VSDCharacterList>::iterator iterChar = m_charListVector.begin(); iterChar != m_charListVector.end(); ++iterChar)
-    {
-      iterChar->handle(m_collector);
-      iterChar->clear();
-    }
     m_charListVector.clear();
-    for (std::vector<VSDParagraphList>::iterator iterPara = m_paraListVector.begin(); iterPara != m_paraListVector.end(); ++iterPara)
-    {
-      iterPara->handle(m_collector);
-      iterPara->clear();
-    }
     m_paraListVector.clear();
+
     if (!m_fieldList.empty())
     {
       m_fieldList.handle(m_collector);
@@ -589,10 +590,7 @@ void libvisio::VSDParser::readEllipticalArcTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double ecc = readDouble(input); // Eccentricity
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
-  else
-    m_geomList.addEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
+  m_geomList.addEllipticalArcTo(m_header.id, m_header.level, x3, y3, x2, y2, angle, ecc);
 }
 
 
@@ -652,10 +650,7 @@ void libvisio::VSDParser::readEllipse(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double ytop = readDouble(input);
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
-  else
-    m_geomList.addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
+  m_geomList.addEllipse(m_header.id, m_header.level, cx, cy, xleft, yleft, xtop, ytop);
 }
 
 void libvisio::VSDParser::readLine(WPXInputStream *input)
@@ -725,8 +720,6 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
 
 void libvisio::VSDParser::readGeomList(WPXInputStream *input)
 {
-  if (m_isStencilStarted)
-    m_shape.m_geometries.push_back(VSDGeometryList());
   uint32_t subHeaderLength = readU32(input);
   uint32_t childrenListLength = readU32(input);
   input->seek(subHeaderLength, WPX_SEEK_CUR);
@@ -735,14 +728,11 @@ void libvisio::VSDParser::readGeomList(WPXInputStream *input)
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     geometryOrder.push_back(readU32(input));
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().setElementsOrder(geometryOrder);
-  else
-  {
-    m_geomList.setElementsOrder(geometryOrder);
-    // We want the collectors to still get the level information
+  m_geomList.setElementsOrder(geometryOrder);
+
+  // We want the collectors to still get the level information
+  if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-  }
 }
 
 void libvisio::VSDParser::readCharList(WPXInputStream *input)
@@ -756,8 +746,10 @@ void libvisio::VSDParser::readCharList(WPXInputStream *input)
     characterOrder.push_back(readU32(input));
 
   m_charList.setElementsOrder(characterOrder);
+
   // We want the collectors to still get the level information
-  m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
 void libvisio::VSDParser::readParaList(WPXInputStream *input)
@@ -771,8 +763,10 @@ void libvisio::VSDParser::readParaList(WPXInputStream *input)
     paragraphOrder.push_back(readU32(input));
 
   m_paraList.setElementsOrder(paragraphOrder);
+
   // We want the collectors to still get the level information
-  m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
 void libvisio::VSDParser::readPage(WPXInputStream *input)
@@ -789,10 +783,7 @@ void libvisio::VSDParser::readGeometry(WPXInputStream *input)
   bool noLine = (!!(geomFlags & 2));
   bool noShow = (!!(geomFlags & 4));
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addGeometry(m_header.id, m_header.level, noFill, noLine, noShow);
-  else
-    m_geomList.addGeometry(m_header.id, m_header.level, noFill, noLine, noShow);
+  m_geomList.addGeometry(m_header.id, m_header.level, noFill, noLine, noShow);
 }
 
 void libvisio::VSDParser::readMoveTo(WPXInputStream *input)
@@ -802,10 +793,7 @@ void libvisio::VSDParser::readMoveTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double y = readDouble(input);
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addMoveTo(m_header.id, m_header.level, x, y);
-  else
-    m_geomList.addMoveTo(m_header.id, m_header.level, x, y);
+  m_geomList.addMoveTo(m_header.id, m_header.level, x, y);
 }
 
 void libvisio::VSDParser::readLineTo(WPXInputStream *input)
@@ -815,10 +803,7 @@ void libvisio::VSDParser::readLineTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double y = readDouble(input);
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addLineTo(m_header.id, m_header.level, x, y);
-  else
-    m_geomList.addLineTo(m_header.id, m_header.level, x, y);
+  m_geomList.addLineTo(m_header.id, m_header.level, x, y);
 }
 
 void libvisio::VSDParser::readArcTo(WPXInputStream *input)
@@ -830,10 +815,7 @@ void libvisio::VSDParser::readArcTo(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double bow = readDouble(input);
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addArcTo(m_header.id, m_header.level, x2, y2, bow);
-  else
-    m_geomList.addArcTo(m_header.id, m_header.level, x2, y2, bow);
+  m_geomList.addArcTo(m_header.id, m_header.level, x2, y2, bow);
 }
 
 void libvisio::VSDParser::readXFormData(WPXInputStream *input)
@@ -856,9 +838,8 @@ void libvisio::VSDParser::readXFormData(WPXInputStream *input)
   xform.flipX = (readU8(input) != 0);
   xform.flipY = (readU8(input) != 0);
 
-  if (m_isStencilStarted)
-    m_shape.m_xform = xform;
-  else
+  m_shape.m_xform = xform;
+  if (!m_isStencilStarted)
     m_collector->collectXFormData(m_header.level, xform);
 }
 
@@ -880,13 +861,11 @@ void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   txtxform.angle = readDouble(input);
 
-  if (m_isStencilStarted)
-  {
-    if (m_shape.m_txtxform)
-      delete (m_shape.m_txtxform);
-    m_shape.m_txtxform = new XForm(txtxform);
-  }
-  else
+  if (m_shape.m_txtxform)
+    delete (m_shape.m_txtxform);
+  m_shape.m_txtxform = new XForm(txtxform);
+
+  if (!m_isStencilStarted)
     m_collector->collectTxtXForm(m_header.level, txtxform);
 }
 
@@ -1027,10 +1006,7 @@ void libvisio::VSDParser::readNURBSTo(WPXInputStream *input)
     input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
 
-    if (m_isStencilStarted)
-      m_shape.m_geometries.back().addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
-    else
-      m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
+    m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, knot, knotPrev, weight, weightPrev, dataId);
     return;
   }
 
@@ -1158,18 +1134,12 @@ void libvisio::VSDParser::readNURBSTo(WPXInputStream *input)
     knotVector.push_back(lastKnot);
     weights.push_back(weight);
 
-    if (m_isStencilStarted)
-      m_shape.m_geometries.back().addNURBSTo(m_header.id, m_header.level, x, y, xType, yType, degree, controlPoints, knotVector, weights);
-    else
-      m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType,
-                            yType, degree, controlPoints, knotVector, weights);
+    m_geomList.addNURBSTo(m_header.id, m_header.level, x, y, xType,
+                          yType, degree, controlPoints, knotVector, weights);
   }
   else // No formula found, use line
   {
-    if (m_isStencilStarted)
-      m_shape.m_geometries.back().addLineTo(m_header.id, m_header.level, x,  y);
-    else
-      m_geomList.addLineTo(m_header.id, m_header.level, x,  y);
+    m_geomList.addLineTo(m_header.id, m_header.level, x,  y);
   }
 }
 
@@ -1188,10 +1158,7 @@ void libvisio::VSDParser::readPolylineTo(WPXInputStream *input)
     input->seek(3, WPX_SEEK_CUR);
     unsigned dataId = readU32(input);
 
-    if (m_isStencilStarted)
-      m_shape.m_geometries.back().addPolylineTo(m_header.id, m_header.level, x, y, dataId);
-    else
-      m_geomList.addPolylineTo(m_header.id, m_header.level, x, y, dataId);
+    m_geomList.addPolylineTo(m_header.id, m_header.level, x, y, dataId);
     return;
   }
 
@@ -1263,18 +1230,12 @@ void libvisio::VSDParser::readPolylineTo(WPXInputStream *input)
       blockBytesRead += input->tell() - inputPos;
     }
 
-    if (m_isStencilStarted)
-      m_shape.m_geometries.back().addPolylineTo(m_header.id, m_header.level, x, y, xType, yType, points);
-    else
-      m_geomList.addPolylineTo(m_header.id, m_header.level, x, y, xType,
-                               yType, points);
+    m_geomList.addPolylineTo(m_header.id, m_header.level, x, y, xType,
+                             yType, points);
   }
   else
   {
-    if (m_isStencilStarted)
-      m_shape.m_geometries.back().addLineTo(m_header.id, m_header.level, x, y);
-    else
-      m_geomList.addLineTo(m_header.id, m_header.level, x, y);
+    m_geomList.addLineTo(m_header.id, m_header.level, x, y);
   }
 }
 
@@ -1288,10 +1249,7 @@ void libvisio::VSDParser::readInfiniteLine(WPXInputStream *input)
   double x2 = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   double y2 = readDouble(input);
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addInfiniteLine(m_header.id, m_header.level, x1, y1, x2, y2);
-  else
-    m_geomList.addInfiniteLine(m_header.id, m_header.level, x1, y1, x2, y2);
+  m_geomList.addInfiniteLine(m_header.id, m_header.level, x1, y1, x2, y2);
 }
 
 void libvisio::VSDParser::readShapeData(WPXInputStream *input)
@@ -1314,15 +1272,13 @@ void libvisio::VSDParser::readShapeData(WPXInputStream *input)
       points.push_back(std::pair<double, double>(x, y));
     }
 
-    if (m_isStencilStarted)
-    {
-      PolylineData data;
-      data.xType = xType;
-      data.yType = yType;
-      data.points = points;
-      m_shape.m_polylineData[m_header.id] = data;
-    }
-    else
+    PolylineData data;
+    data.xType = xType;
+    data.yType = yType;
+    data.points = points;
+    m_shape.m_polylineData[m_header.id] = data;
+
+    if (!m_isStencilStarted)
       m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, points);
   }
 
@@ -1351,19 +1307,18 @@ void libvisio::VSDParser::readShapeData(WPXInputStream *input)
       weights.push_back(weight);
       controlPoints.push_back(std::pair<double, double>(controlX, controlY));
     }
-    if (m_isStencilStarted)
-    {
-      NURBSData data;
-      data.lastKnot = lastKnot;
-      data.degree = degree;
-      data.xType = xType;
-      data.yType = yType;
-      data.knots = knotVector;
-      data.weights = weights;
-      data.points = controlPoints;
-      m_shape.m_nurbsData[m_header.id] = data;
-    }
-    else
+
+    NURBSData data;
+    data.lastKnot = lastKnot;
+    data.degree = degree;
+    data.xType = xType;
+    data.yType = yType;
+    data.knots = knotVector;
+    data.weights = weights;
+    data.points = controlPoints;
+    m_shape.m_nurbsData[m_header.id] = data;
+
+    if (!m_isStencilStarted)
       m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, degree, lastKnot, controlPoints, knotVector, weights);
   }
 }
@@ -1379,10 +1334,7 @@ void libvisio::VSDParser::readSplineStart(WPXInputStream *input)
   double lastKnot = readDouble(input);
   unsigned degree = readU8(input);
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addSplineStart(m_header.id, m_header.level, x, y, secondKnot, firstKnot, lastKnot, degree);
-  else
-    m_geomList.addSplineStart(m_header.id, m_header.level, x, y, secondKnot, firstKnot, lastKnot, degree);
+  m_geomList.addSplineStart(m_header.id, m_header.level, x, y, secondKnot, firstKnot, lastKnot, degree);
 }
 
 void libvisio::VSDParser::readSplineKnot(WPXInputStream *input)
@@ -1393,17 +1345,13 @@ void libvisio::VSDParser::readSplineKnot(WPXInputStream *input)
   double y = readDouble(input);
   double knot = readDouble(input);
 
-  if (m_isStencilStarted)
-    m_shape.m_geometries.back().addSplineKnot(m_header.id, m_header.level, x, y, knot);
-  else
-    m_geomList.addSplineKnot(m_header.id, m_header.level, x, y, knot);
+  m_geomList.addSplineKnot(m_header.id, m_header.level, x, y, knot);
 }
 
 void libvisio::VSDParser::readNameList(WPXInputStream * /* input */)
 {
-  if (m_isStencilStarted)
-    m_shape.m_names.clear();
-  else
+  m_shape.m_names.clear();
+  if (!m_isStencilStarted)
     m_collector->collectNameList(m_header.id, m_header.level);
 }
 
