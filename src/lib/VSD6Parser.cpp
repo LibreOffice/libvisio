@@ -158,9 +158,9 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
                                             allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   }
   else
-    m_charList->addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
-                          bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                          allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+    m_charList.addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
+                         bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                         allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
 }
 
 void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
@@ -191,8 +191,8 @@ void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
                                             spLine, spBefore, spAfter, align, 0);
   }
   else
-    m_paraList->addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-                          spLine, spBefore, spAfter, align, 0);
+    m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
+                         spLine, spBefore, spAfter, align, 0);
 }
 
 
