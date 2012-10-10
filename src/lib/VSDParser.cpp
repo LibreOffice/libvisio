@@ -274,6 +274,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     }
     else
     {
+      _handleLevelChange(0);
       m_stencils.addStencil(idx, *m_currentStencil);
       m_currentStencil = 0;
     }
@@ -533,12 +534,15 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     return;
   if (level <= m_currentShapeLevel+1)
   {
-    m_geomListVector.push_back(m_geomList);
-    m_geomList = VSDGeometryList();
-    m_charListVector.push_back(m_charList);
-    m_charList = VSDCharacterList();
-    m_paraListVector.push_back(m_paraList);
-    m_paraList = VSDParagraphList();
+    if (!m_geomList.empty())
+      m_geomListVector.push_back(m_geomList);
+    m_geomList.clear();
+    if (!m_charList.empty())
+      m_charListVector.push_back(m_charList);
+    m_charList.clear();
+    if (!m_paraList.empty())
+      m_paraListVector.push_back(m_paraList);
+    m_paraList.clear();
     m_shapeList.handle(m_collector);
     m_shapeList.clear();
   }
@@ -547,7 +551,7 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     m_shape.m_geometries = m_geomListVector;
     m_shape.m_charListVector = m_charListVector;
     m_shape.m_paraListVector = m_paraListVector;
-	
+
     if (!m_isStencilStarted)
     {
       for (std::vector<VSDGeometryList>::const_iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
