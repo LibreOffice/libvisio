@@ -92,37 +92,14 @@ public:
   virtual ~VSDGeometryListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDGeometryListElement *clone() = 0;
-};
-
-class VSDPolylineTo2 : public VSDGeometryListElement
-{
-public:
-  VSDPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
-    m_dataID(dataID), m_id(id), m_level(level), m_x(x), m_y(y) {}
-  ~VSDPolylineTo2() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
-  unsigned m_dataID;
-private:
-  unsigned m_id, m_level;
-  double m_x, m_y;
-};
-
-class VSDNURBSTo2 : public VSDGeometryListElement
-{
-public:
-  VSDNURBSTo2(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) :
-    m_dataID(dataID), m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev) {}
-  ~VSDNURBSTo2() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
-  unsigned m_dataID;
-private:
-  unsigned m_id, m_level;
-  double m_x2, m_y2;
-  double m_knot, m_knotPrev;
-  double m_weight, m_weightPrev;
-
+  virtual const unsigned *getNURBSDataID() const
+  {
+    return 0;
+  }
+  virtual const unsigned *getPolylineDataID() const
+  {
+    return 0;
+  }
 };
 
 } // namespace libvisio

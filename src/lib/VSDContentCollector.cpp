@@ -1659,13 +1659,13 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
 
     // Get stencil geometry so as to find stencil NURBS data ID
     VSDGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
-    VSDNURBSTo2 *tmpElement = dynamic_cast<VSDNURBSTo2 *>(element);
-    if (!tmpElement)
+    const unsigned *tmpDataID = element->getNURBSDataID();
+    if (!tmpDataID)
     {
       _handleLevelChange(level);
       return;
     }
-    dataID = tmpElement->m_dataID;
+    dataID = *tmpDataID;
     iter = m_stencilShape->m_nurbsData.find(dataID);
     iterEnd =  m_stencilShape->m_nurbsData.end();
   }
@@ -1742,7 +1742,13 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned leve
 
     // Get stencil geometry so as to find stencil polyline data ID
     VSDGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
-    dataID = dynamic_cast<VSDPolylineTo2 *>(element)->m_dataID;
+    const unsigned *tmpDataID = element->getPolylineDataID();
+    if (!tmpDataID)
+    {
+      _handleLevelChange(level);
+      return;
+    }
+    dataID = *tmpDataID;
     iter = m_stencilShape->m_polylineData.find(dataID);
     iterEnd = m_stencilShape->m_polylineData.end();
   }

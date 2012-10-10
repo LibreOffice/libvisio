@@ -134,6 +134,25 @@ private:
   std::vector<double> m_knotVector, m_weights;
 };
 
+class VSDNURBSTo2 : public VSDGeometryListElement
+{
+public:
+  VSDNURBSTo2(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) :
+    m_dataID(dataID), m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev) {}
+  ~VSDNURBSTo2() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+  const unsigned *getNURBSDataID() const;
+
+private:
+  unsigned m_dataID;
+  unsigned m_id, m_level;
+  double m_x2, m_y2;
+  double m_knot, m_knotPrev;
+  double m_weight, m_weightPrev;
+
+};
+
 class VSDPolylineTo1 : public VSDGeometryListElement
 {
 public:
@@ -147,6 +166,22 @@ private:
   double m_x, m_y;
   unsigned m_xType, m_yType;
   std::vector<std::pair<double, double> > m_points;
+};
+
+class VSDPolylineTo2 : public VSDGeometryListElement
+{
+public:
+  VSDPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
+    m_dataID(dataID), m_id(id), m_level(level), m_x(x), m_y(y) {}
+  ~VSDPolylineTo2() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+  const unsigned *getPolylineDataID() const;
+
+private:
+  unsigned m_dataID;
+  unsigned m_id, m_level;
+  double m_x, m_y;
 };
 
 class VSDSplineStart : public VSDGeometryListElement
@@ -289,6 +324,11 @@ libvisio::VSDGeometryListElement *libvisio::VSDNURBSTo2::clone()
   return new VSDNURBSTo2(m_id, m_level, m_x2, m_y2, m_knot, m_knotPrev, m_weight, m_weightPrev, m_dataID);
 }
 
+const unsigned *libvisio::VSDNURBSTo2::getNURBSDataID() const
+{
+  return &m_dataID;
+}
+
 
 void libvisio::VSDPolylineTo1::handle(VSDCollector *collector) const
 {
@@ -311,6 +351,11 @@ void libvisio::VSDPolylineTo2::handle(VSDCollector *collector) const
 libvisio::VSDGeometryListElement *libvisio::VSDPolylineTo2::clone()
 {
   return new VSDPolylineTo2(m_id, m_level, m_x, m_y, m_dataID);
+}
+
+const unsigned *libvisio::VSDPolylineTo2::getPolylineDataID() const
+{
+  return &m_dataID;
 }
 
 
