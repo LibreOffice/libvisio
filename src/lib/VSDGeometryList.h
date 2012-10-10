@@ -37,8 +37,20 @@
 namespace libvisio
 {
 
-class VSDGeometryListElement;
 class VSDCollector;
+
+class VSDGeometryListElement
+{
+public:
+  VSDGeometryListElement() {}
+  virtual ~VSDGeometryListElement() {}
+  virtual void handle(VSDCollector *collector) const = 0;
+  virtual VSDGeometryListElement *clone() = 0;
+  virtual unsigned getDataID() const
+  {
+    return (unsigned)-1;
+  }
+};
 
 class VSDGeometryList
 {
@@ -85,22 +97,6 @@ private:
   std::vector<unsigned> m_elementsOrder;
 };
 
-class VSDGeometryListElement
-{
-public:
-  VSDGeometryListElement() {}
-  virtual ~VSDGeometryListElement() {}
-  virtual void handle(VSDCollector *collector) const = 0;
-  virtual VSDGeometryListElement *clone() = 0;
-  virtual const unsigned *getNURBSDataID() const
-  {
-    return 0;
-  }
-  virtual const unsigned *getPolylineDataID() const
-  {
-    return 0;
-  }
-};
 
 } // namespace libvisio
 

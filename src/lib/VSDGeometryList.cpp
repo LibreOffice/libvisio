@@ -142,7 +142,7 @@ public:
   ~VSDNURBSTo2() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-  const unsigned *getNURBSDataID() const;
+  unsigned getDataID() const;
 
 private:
   unsigned m_dataID;
@@ -176,7 +176,7 @@ public:
   ~VSDPolylineTo2() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-  const unsigned *getPolylineDataID() const;
+  unsigned getDataID() const;
 
 private:
   unsigned m_dataID;
@@ -324,9 +324,9 @@ libvisio::VSDGeometryListElement *libvisio::VSDNURBSTo2::clone()
   return new VSDNURBSTo2(m_id, m_level, m_x2, m_y2, m_knot, m_knotPrev, m_weight, m_weightPrev, m_dataID);
 }
 
-const unsigned *libvisio::VSDNURBSTo2::getNURBSDataID() const
+unsigned libvisio::VSDNURBSTo2::getDataID() const
 {
-  return &m_dataID;
+  return m_dataID;
 }
 
 
@@ -353,9 +353,9 @@ libvisio::VSDGeometryListElement *libvisio::VSDPolylineTo2::clone()
   return new VSDPolylineTo2(m_id, m_level, m_x, m_y, m_dataID);
 }
 
-const unsigned *libvisio::VSDPolylineTo2::getPolylineDataID() const
+unsigned libvisio::VSDPolylineTo2::getDataID() const
 {
-  return &m_dataID;
+  return m_dataID;
 }
 
 
