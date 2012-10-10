@@ -211,7 +211,7 @@ void libvisio::VSDStylesCollector::collectPage(unsigned /* id */, unsigned level
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectShape(unsigned id, unsigned level, unsigned /*masterPage*/, unsigned /*masterShape*/,
+void libvisio::VSDStylesCollector::collectShape(unsigned id, unsigned level, unsigned /*paent*/, unsigned /*masterPage*/, unsigned /*masterShape*/,
     unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
 {
   _handleLevelChange(level);

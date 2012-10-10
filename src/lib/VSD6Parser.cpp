@@ -89,17 +89,18 @@ void libvisio::VSD6Parser::readText(WPXInputStream *input)
   input->seek(8, WPX_SEEK_CUR);
   ::WPXBinaryData  textStream;
 
-  for (unsigned bytesRead = 8; bytesRead < m_header.dataLength; bytesRead++)
-    textStream.append(readU8(input));
-
-  if (m_isStencilStarted)
+  unsigned long numBytesRead = 0;
+  const unsigned char *tmpBuffer = input->read(m_header.dataLength - 8, numBytesRead);
+  if (numBytesRead)
   {
-    VSD_DEBUG_MSG(("Found stencil text\n"));
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil text\n"));
+    }
+    textStream.append(tmpBuffer, numBytesRead);
     m_shape.m_text = textStream;
     m_shape.m_textFormat = libvisio::VSD_TEXT_ANSI;
   }
-  else
-    m_collector->collectText(m_header.level, textStream, libvisio::VSD_TEXT_ANSI);
 }
 
 void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
@@ -149,18 +150,21 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
     m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
                                     bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                     allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
-  else if (m_isStencilStarted)
+  else
   {
-    VSD_DEBUG_MSG(("Found stencil character style\n"));
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil character style\n"));
+    }
+
     if (!m_shape.m_charStyle)
       m_shape.m_charStyle= new VSDCharStyle(charCount, fontID, fontColour, fontSize,
                                             bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                             allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
-  }
-  else
     m_charList.addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
                          bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                          allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  }
 }
 
 void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
@@ -183,16 +187,19 @@ void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
   if (m_isInStyles)
     m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
                                     spLine, spBefore, spAfter, align, 0);
-  else if (m_isStencilStarted)
+  else
   {
-    VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
+    }
+
     if (!m_shape.m_paraStyle)
       m_shape.m_paraStyle= new VSDParaStyle(charCount, indFirst, indLeft, indRight,
                                             spLine, spBefore, spAfter, align, 0);
-  }
-  else
     m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
                          spLine, spBefore, spAfter, align, 0);
+  }
 }
 
 
@@ -213,35 +220,40 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
   shfgc.a = readU8(input);
   input->seek(5, WPX_SEEK_CUR); // Shadow Background Colour skipped
   unsigned char shadowPattern = readU8(input);
+  double shadowOffsetX = 0.0;
+  double shadowOffsetY = 0.0;
 
   if (m_isInStyles)
     m_collector->collectFillStyle(m_header.level, colourFG, colourBG, fillPattern,
                                   fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
-  else if (m_isStencilStarted)
-  {
-    if (!m_shape.m_fillStyle)
-      m_shape.m_fillStyle = new VSDFillStyle(colourFG, colourBG, fillPattern,
-                                             fillFGTransparency, fillBGTransparency, shfgc, shadowPattern,
-                                             m_currentStencil->m_shadowOffsetX, m_currentStencil->m_shadowOffsetY);
-  }
   else
-    m_collector->collectFillAndShadow(m_header.level, colourFG, colourBG, fillPattern,
-                                      fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
+  {
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil fill\n"));
+      shadowOffsetX = m_currentStencil->m_shadowOffsetX;
+      shadowOffsetY = m_currentStencil->m_shadowOffsetY;
+    }
+    else
+    {
+      shadowOffsetX = m_shadowOffsetX;
+      shadowOffsetY = m_shadowOffsetY;
+    }
+    if (!m_shape.m_fillStyle)
+      m_shape.m_fillStyle = new VSDFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
+                                             fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY);
+  }
 }
 
 void libvisio::VSD6Parser::readName(WPXInputStream *input)
 {
-  ::WPXBinaryData name;
-
-  for (unsigned bytesRead = 0; bytesRead < m_header.dataLength; bytesRead++)
-    name.append(readU8(input));
-
-  if (m_isStencilStarted)
+  unsigned long numBytesRead = 0;
+  const unsigned char *tmpBuffer = input->read(m_header.dataLength, numBytesRead);
+  if (numBytesRead)
   {
+    ::WPXBinaryData name(tmpBuffer, numBytesRead);
     m_shape.m_names[m_header.id] = VSDName(name, libvisio::VSD_TEXT_ANSI);
   }
-  else
-    m_collector->collectName(m_header.id, m_header.level, name, libvisio::VSD_TEXT_ANSI);
 }
 
 void libvisio::VSD6Parser::readTextField(WPXInputStream *input)
@@ -254,10 +266,7 @@ void libvisio::VSD6Parser::readTextField(WPXInputStream *input)
     int nameId = (int)readU32(input);
     input->seek(6, WPX_SEEK_CUR);
     int formatStringId = (int)readU32(input);
-    if (m_isStencilStarted)
-      m_shape.m_fields.addTextField(m_header.id, m_header.level, nameId, formatStringId);
-    else
-      m_fieldList.addTextField(m_header.id, m_header.level, nameId, formatStringId);
+    m_fieldList.addTextField(m_header.id, m_header.level, nameId, formatStringId);
   }
   else
   {
@@ -312,10 +321,7 @@ void libvisio::VSD6Parser::readTextField(WPXInputStream *input)
         formatNumber = 0xffff;
     }
 
-    if (m_isStencilStarted)
-      m_shape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
-    else
-      m_fieldList.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
+    m_fieldList.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
   }
 }
 

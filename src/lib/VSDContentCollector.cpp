@@ -1026,7 +1026,7 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
   if (angle != 0.0)
     m_currentForeignProps.insert("libwpg:rotate", angle * 180 / M_PI, WPX_GENERIC);
 
-  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && !m_noShow)
+  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0 && !m_noShow)
   {
     m_shapeOutputDrawing->addStyle(styleProps, WPXPropertyListVector());
     m_shapeOutputDrawing->addGraphicObject(m_currentForeignProps, m_currentForeignData);
@@ -1932,7 +1932,7 @@ void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned leve
   m_isBackgroundPage = isBackgroundPage;
 }
 
-void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
+void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, unsigned /*parent*/, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
 {
   _handleLevelChange(level);
   m_currentShapeLevel = level;
@@ -2378,6 +2378,8 @@ void libvisio::VSDContentCollector::startPage(unsigned pageId)
     _flushCurrentPath();
     _flushCurrentForeignData();
     m_isShapeStarted = false;
+    if (m_textStream.size())
+      _flushText();
   }
   m_originalX = 0.0;
   m_originalY = 0.0;
@@ -2676,6 +2678,12 @@ void libvisio::VSDContentCollector::appendCharacters(WPXString &text, const std:
       ++iter;
     }
     else if (*iter == 0x0e)
+    {
+      ++iter;
+      if (iter != characters.end())
+        ucs4Character = '\n';
+    }
+    else if (*iter == 0x0a)
     {
       ++iter;
       if (iter != characters.end())

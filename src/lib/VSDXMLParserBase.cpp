@@ -173,7 +173,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
     m_shape.m_textStyleId = textStyle;
   }
   else
-    m_collector->collectShape(id, m_currentShapeLevel, masterPage, masterShape, lineStyle, fillStyle, textStyle);
+    m_collector->collectShape(id, m_currentShapeLevel, 0, masterPage, masterShape, lineStyle, fillStyle, textStyle);
 }
 
 void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)

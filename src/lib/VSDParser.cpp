@@ -46,7 +46,8 @@ libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface 
     m_geomListVector(), m_fieldList(), m_charList(), m_paraList(), m_charListVector(),
     m_paraListVector(), m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_shape(), m_isStencilStarted(false), m_isInStyles(false), m_currentShapeLevel(0),
-    m_currentShapeID((unsigned)-1), m_extractStencils(false), m_colours(), m_isBackgroundPage(false)
+    m_currentShapeID((unsigned)-1), m_extractStencils(false), m_colours(), m_isBackgroundPage(false),
+    m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0)
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -226,12 +227,9 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     m_currentShapeID = idx;
     break;
   case VSD_OLE_LIST:
-    if (m_isStencilStarted)
-    {
-      if (!m_shape.m_foreign)
-        m_shape.m_foreign = new ForeignData();
-      m_shape.m_foreign->dataId = idx;
-    }
+    if (!m_shape.m_foreign)
+      m_shape.m_foreign = new ForeignData();
+    m_shape.m_foreign->dataId = idx;
     break;
   default:
     break;
@@ -286,7 +284,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     if (m_isStencilStarted)
     {
       _handleLevelChange(0);
-      m_currentStencil->addStencilShape(idx, m_shape);
+      m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
     }
     break;
   default:
@@ -471,42 +469,45 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
 void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
 {
   m_collector->collectXFormData(m_currentShapeLevel+2, shape.m_xform);
+
   if (shape.m_txtxform)
     m_collector->collectTxtXForm(m_currentShapeLevel+2, *(shape.m_txtxform));
   if (shape.m_lineStyle)
     m_collector->collectLine(m_currentShapeLevel+2, shape.m_lineStyle->width, shape.m_lineStyle->colour, shape.m_lineStyle->pattern,
                              shape.m_lineStyle->startMarker, shape.m_lineStyle->endMarker, shape.m_lineStyle->cap);
   if (shape.m_fillStyle)
-    m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
-                                      m_shape.m_fillStyle->fgTransparency, m_shape.m_fillStyle->bgTransparency, m_shape.m_fillStyle->shadowPattern,
-                                      m_shape.m_fillStyle->shadowFgColour, m_shape.m_fillStyle->shadowOffsetX, m_shape.m_fillStyle->shadowOffsetY);
+    m_collector->collectFillAndShadow(m_currentShapeLevel+2, shape.m_fillStyle->fgColour, shape.m_fillStyle->bgColour, shape.m_fillStyle->pattern,
+                                      shape.m_fillStyle->fgTransparency, shape.m_fillStyle->bgTransparency, shape.m_fillStyle->shadowPattern,
+                                      shape.m_fillStyle->shadowFgColour, shape.m_fillStyle->shadowOffsetX, shape.m_fillStyle->shadowOffsetY);
   if (shape.m_textBlockStyle)
-    m_collector->collectTextBlock(m_currentShapeLevel+1, m_shape.m_textBlockStyle->leftMargin, m_shape.m_textBlockStyle->rightMargin,
-                                  m_shape.m_textBlockStyle->topMargin, m_shape.m_textBlockStyle->bottomMargin, m_shape.m_textBlockStyle->verticalAlign,
-                                  m_shape.m_textBlockStyle->isTextBkgndFilled, m_shape.m_textBlockStyle->textBkgndColour,
-                                  m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
+    m_collector->collectTextBlock(m_currentShapeLevel+2, shape.m_textBlockStyle->leftMargin, shape.m_textBlockStyle->rightMargin,
+                                  shape.m_textBlockStyle->topMargin, shape.m_textBlockStyle->bottomMargin, shape.m_textBlockStyle->verticalAlign,
+                                  shape.m_textBlockStyle->isTextBkgndFilled, shape.m_textBlockStyle->textBkgndColour,
+                                  shape.m_textBlockStyle->defaultTabStop, shape.m_textBlockStyle->textDirection);
 
-  if (m_shape.m_foreign)
-  {
-    m_collector->collectForeignDataType(m_currentShapeLevel+1, m_shape.m_foreign->type, m_shape.m_foreign->format,
-                                        m_shape.m_foreign->offsetX, m_shape.m_foreign->offsetY, m_shape.m_foreign->width, m_shape.m_foreign->height);
-    m_collector->collectForeignData(m_currentShapeLevel+1, m_shape.m_foreign->data);
-  }
-
+  if (shape.m_foreign && shape.m_foreign->typeLevel)
+    m_collector->collectForeignDataType(shape.m_foreign->typeLevel, shape.m_foreign->type, shape.m_foreign->format,
+                                        shape.m_foreign->offsetX, shape.m_foreign->offsetY, shape.m_foreign->width, shape.m_foreign->height);
 
   for (std::map<unsigned, NURBSData>::const_iterator iterNurbs = shape.m_nurbsData.begin(); iterNurbs != shape.m_nurbsData.end(); ++iterNurbs)
-    m_collector->collectShapeData(iterNurbs->first, m_currentShapeLevel+1, iterNurbs->second.xType, iterNurbs->second.yType,
+    m_collector->collectShapeData(iterNurbs->first, m_currentShapeLevel+2, iterNurbs->second.xType, iterNurbs->second.yType,
                                   iterNurbs->second.degree, iterNurbs->second.lastKnot, iterNurbs->second.points,
                                   iterNurbs->second.knots, iterNurbs->second.weights);
 
   for (std::map<unsigned, PolylineData>::const_iterator iterPoly = shape.m_polylineData.begin(); iterPoly != shape.m_polylineData.end(); ++iterPoly)
-    m_collector->collectShapeData(iterPoly->first, m_currentShapeLevel+1, iterPoly->second.xType, iterPoly->second.yType, iterPoly->second.points);
+    m_collector->collectShapeData(iterPoly->first, m_currentShapeLevel+2, iterPoly->second.xType, iterPoly->second.yType, iterPoly->second.points);
 
   for (std::map<unsigned, VSDName>::const_iterator iterName = shape.m_names.begin(); iterName != shape.m_names.end(); ++iterName)
-    m_collector->collectName(iterName->first, m_currentShapeLevel+1, iterName->second.m_data, iterName->second.m_format);
+    m_collector->collectName(iterName->first, m_currentShapeLevel+2, iterName->second.m_data, iterName->second.m_format);
 
+  if (shape.m_foreign && shape.m_foreign->dataLevel)
+    m_collector->collectForeignData(shape.m_foreign->dataLevel, shape.m_foreign->data);
 
-  m_collector->collectText(m_currentShapeLevel+1, shape.m_text, shape.m_textFormat);
+  if (!shape.m_fields.empty())
+    shape.m_fields.handle(m_collector);
+
+  if (shape.m_text.size())
+    m_collector->collectText(m_currentShapeLevel+1, shape.m_text, shape.m_textFormat);
 
 
   for (std::vector<VSDGeometryList>::const_iterator iterGeom = shape.m_geometries.begin(); iterGeom != shape.m_geometries.end(); ++iterGeom)
@@ -518,14 +519,6 @@ void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
   for (std::vector<VSDParagraphList>::const_iterator iterPara = shape.m_paraListVector.begin(); iterPara != shape.m_paraListVector.end(); ++iterPara)
     iterPara->handle(m_collector);
 
-  if (!shape.m_fields.empty())
-    shape.m_fields.handle(m_collector);
-
-#if 0
-  unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
-  VSDCharStyle *m_charStyle;
-  VSDParaStyle *m_paraStyle;
-#endif
 }
 
 void libvisio::VSDParser::_handleLevelChange(unsigned level)
@@ -551,28 +544,19 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     m_shape.m_geometries = m_geomListVector;
     m_shape.m_charListVector = m_charListVector;
     m_shape.m_paraListVector = m_paraListVector;
+    m_shape.m_fields = m_fieldList;
 
     if (!m_isStencilStarted)
-    {
-      for (std::vector<VSDGeometryList>::const_iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
-        iter->handle(m_collector);
-
-      for (std::vector<VSDCharacterList>::const_iterator iterChar = m_charListVector.begin(); iterChar != m_charListVector.end(); ++iterChar)
-        iterChar->handle(m_collector);
-
-      for (std::vector<VSDParagraphList>::const_iterator iterPara = m_paraListVector.begin(); iterPara != m_paraListVector.end(); ++iterPara)
-        iterPara->handle(m_collector);
-    }
+      _flushShape(m_shape);
+    m_isShapeStarted = false;
 
     m_geomListVector.clear();
     m_charListVector.clear();
     m_paraListVector.clear();
 
-    if (!m_fieldList.empty())
-    {
-      m_fieldList.handle(m_collector);
-      m_fieldList.clear();
-    }
+    m_fieldList.clear();
+    m_currentShapeLevel = 0;
+
   }
   m_currentLevel = level;
 }
@@ -611,14 +595,10 @@ void libvisio::VSDParser::readForeignData(WPXInputStream *input)
   m_shape.m_foreign->dataId = m_header.id;
   m_shape.m_foreign->dataLevel = m_header.level;
   m_shape.m_foreign->data = binaryData;
-
-  if (!m_isStencilStarted)
-    m_collector->collectForeignData(m_header.level, binaryData);
 }
 
 void libvisio::VSDParser::readOLEList(WPXInputStream * /* input */)
 {
-  m_collector->collectOLEList(m_header.id, m_header.level);
 }
 
 void libvisio::VSDParser::readOLEData(WPXInputStream *input)
@@ -635,8 +615,6 @@ void libvisio::VSDParser::readOLEData(WPXInputStream *input)
   m_shape.m_foreign->data.append(oleData);
   m_shape.m_foreign->dataLevel = m_header.level;
 
-  if (!m_isStencilStarted)
-    m_collector->collectOLEData(m_header.id, m_header.level, oleData);
 }
 
 void libvisio::VSDParser::readEllipse(WPXInputStream *input)
@@ -680,8 +658,6 @@ void libvisio::VSDParser::readLine(WPXInputStream *input)
     if (m_shape.m_lineStyle)
       delete m_shape.m_lineStyle;
     m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
-    if (!m_isStencilStarted)
-      m_collector->collectLine(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   }
 }
 
@@ -716,9 +692,6 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
       delete m_shape.m_textBlockStyle;
     m_shape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
         verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
-    if (!m_isStencilStarted)
-      m_collector->collectTextBlock(m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                    verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
   }
 }
 
@@ -843,8 +816,6 @@ void libvisio::VSDParser::readXFormData(WPXInputStream *input)
   xform.flipY = (readU8(input) != 0);
 
   m_shape.m_xform = xform;
-  if (!m_isStencilStarted)
-    m_collector->collectXFormData(m_header.level, xform);
 }
 
 void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
@@ -869,8 +840,6 @@ void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
     delete (m_shape.m_txtxform);
   m_shape.m_txtxform = new XForm(txtxform);
 
-  if (!m_isStencilStarted)
-    m_collector->collectTxtXForm(m_header.level, txtxform);
 }
 
 void libvisio::VSDParser::readShapeId(WPXInputStream *input)
@@ -891,6 +860,7 @@ void libvisio::VSDParser::readShapeList(WPXInputStream *input)
     shapeOrder.push_back(readU32(input));
 
   m_shapeList.setElementsOrder(shapeOrder);
+
   // We want the collectors to still get the level information
   m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
@@ -919,9 +889,6 @@ void libvisio::VSDParser::readForeignDataType(WPXInputStream *input)
   m_shape.m_foreign->offsetY = imgOffsetY;
   m_shape.m_foreign->width = imgWidth;
   m_shape.m_foreign->height = imgHeight;
-
-  if (!m_isStencilStarted)
-    m_collector->collectForeignDataType(m_header.level, foreignType, foreignFormat, imgOffsetX, imgOffsetY, imgWidth, imgHeight);
 }
 
 void libvisio::VSDParser::readPageProps(WPXInputStream *input)
@@ -932,9 +899,9 @@ void libvisio::VSDParser::readPageProps(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double pageHeight = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  double shadowOffsetX = readDouble(input);
+  m_shadowOffsetX = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  double shadowOffsetY = -readDouble(input);
+  m_shadowOffsetY = -readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   double scale = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
@@ -942,17 +909,20 @@ void libvisio::VSDParser::readPageProps(WPXInputStream *input)
 
   if (m_isStencilStarted)
   {
-    m_currentStencil->m_shadowOffsetX = shadowOffsetX;
-    m_currentStencil->m_shadowOffsetY = shadowOffsetY;
+    m_currentStencil->m_shadowOffsetX = m_shadowOffsetX;
+    m_currentStencil->m_shadowOffsetY = m_shadowOffsetY;
   }
-  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale);
+  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, m_shadowOffsetX, m_shadowOffsetY, scale);
 }
 
 void libvisio::VSDParser::readShape(WPXInputStream *input)
 {
+  m_isShapeStarted = true;
+  m_shapeList.clear();
   if (m_header.id != (unsigned)-1)
     m_currentShapeID = m_header.id;
   m_currentShapeLevel = m_header.level;
+  unsigned parent = 0;
   unsigned masterPage = (unsigned)-1;
   unsigned masterShape = (unsigned)-1;
   unsigned lineStyle = (unsigned)-1;
@@ -961,7 +931,9 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
 
   try
   {
-    input->seek(0x12, WPX_SEEK_CUR);
+    input->seek(10, WPX_SEEK_CUR);
+    parent = readU32(input);
+    input->seek(4, WPX_SEEK_CUR);
     masterPage = readU32(input);
     input->seek(4, WPX_SEEK_CUR);
     masterShape = readU32(input);
@@ -976,18 +948,20 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
   {
   }
 
+  m_shape = VSDShape();
   const VSDShape *tmpShape = m_stencils.getStencilShape(masterPage, masterShape);
-  if (tmpShape)
-    m_shape = *tmpShape;
-  else
-    m_shape = VSDShape();
+  if (tmpShape && tmpShape->m_foreign)
+    m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
 
   m_shape.m_lineStyleId = lineStyle;
   m_shape.m_fillStyleId = fillStyle;
   m_shape.m_textStyleId = textStyle;
-
+  m_shape.m_parent = parent;
+  m_shape.m_masterPage = masterPage;
+  m_shape.m_masterShape = masterShape;
+  m_shape.m_shapeId = m_currentShapeID;
   if (!m_isStencilStarted)
-    m_collector->collectShape(m_currentShapeID, m_header.level, masterPage, masterShape, lineStyle, fillStyle, textStyle);
+    m_collector->collectShape(m_shape.m_shapeId, m_header.level, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
   m_currentShapeID = (unsigned)-1;
 }
 
@@ -1281,9 +1255,6 @@ void libvisio::VSDParser::readShapeData(WPXInputStream *input)
     data.yType = yType;
     data.points = points;
     m_shape.m_polylineData[m_header.id] = data;
-
-    if (!m_isStencilStarted)
-      m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, points);
   }
 
   // NURBS data
@@ -1321,9 +1292,6 @@ void libvisio::VSDParser::readShapeData(WPXInputStream *input)
     data.weights = weights;
     data.points = controlPoints;
     m_shape.m_nurbsData[m_header.id] = data;
-
-    if (!m_isStencilStarted)
-      m_collector->collectShapeData(m_header.id, m_header.level, xType, yType, degree, lastKnot, controlPoints, knotVector, weights);
   }
 }
 
@@ -1355,8 +1323,6 @@ void libvisio::VSDParser::readSplineKnot(WPXInputStream *input)
 void libvisio::VSDParser::readNameList(WPXInputStream * /* input */)
 {
   m_shape.m_names.clear();
-  if (!m_isStencilStarted)
-    m_collector->collectNameList(m_header.id, m_header.level);
 }
 
 void libvisio::VSDParser::readFieldList(WPXInputStream *input)
@@ -1369,18 +1335,8 @@ void libvisio::VSDParser::readFieldList(WPXInputStream *input)
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     fieldOrder.push_back(readU32(input));
 
-  if (m_isStencilStarted)
-  {
-    m_shape.m_fields.clear();
-    m_shape.m_fields.setElementsOrder(fieldOrder);
-  }
-  else
-  {
-    m_fieldList.setElementsOrder(fieldOrder);
-    m_fieldList.addFieldList(m_header.id, m_header.level);
-    // We want the collectors to still get the level information
-    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-  }
+  m_fieldList.setElementsOrder(fieldOrder);
+  m_fieldList.addFieldList(m_header.id, m_header.level);
 }
 
 void libvisio::VSDParser::readColours(WPXInputStream *input)

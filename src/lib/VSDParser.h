@@ -164,6 +164,10 @@ protected:
   std::vector<Colour> m_colours;
 
   bool m_isBackgroundPage;
+  bool m_isShapeStarted;
+
+  double m_shadowOffsetX;
+  double m_shadowOffsetY;
 
 private:
   VSDParser();
