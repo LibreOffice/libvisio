@@ -470,14 +470,14 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
 
 void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
 {
-  m_collector->collectXFormData(m_currentShapeLevel+1, shape.m_xform);
+  m_collector->collectXFormData(m_currentShapeLevel+2, shape.m_xform);
   if (shape.m_txtxform)
-    m_collector->collectTxtXForm(m_currentShapeLevel+1, *(shape.m_txtxform));
+    m_collector->collectTxtXForm(m_currentShapeLevel+2, *(shape.m_txtxform));
   if (shape.m_lineStyle)
-    m_collector->collectLine(m_currentShapeLevel+1, shape.m_lineStyle->width, shape.m_lineStyle->colour, shape.m_lineStyle->pattern,
+    m_collector->collectLine(m_currentShapeLevel+2, shape.m_lineStyle->width, shape.m_lineStyle->colour, shape.m_lineStyle->pattern,
                              shape.m_lineStyle->startMarker, shape.m_lineStyle->endMarker, shape.m_lineStyle->cap);
   if (shape.m_fillStyle)
-    m_collector->collectFillAndShadow(m_currentShapeLevel+1, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
+    m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
                                       m_shape.m_fillStyle->fgTransparency, m_shape.m_fillStyle->bgTransparency, m_shape.m_fillStyle->shadowPattern,
                                       m_shape.m_fillStyle->shadowFgColour, m_shape.m_fillStyle->shadowOffsetX, m_shape.m_fillStyle->shadowOffsetY);
   if (shape.m_textBlockStyle)

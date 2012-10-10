@@ -32,8 +32,8 @@
 #include "libvisio_utils.h"
 
 libvisio::VSDShape::VSDShape()
-  : m_geometries(), m_fields(), m_foreign(0),
-    m_lineStyleId((unsigned)-1), m_fillStyleId((unsigned)-1), m_textStyleId((unsigned)-1),
+  : m_geometries(), m_fields(), m_foreign(0), m_masterPage((unsigned)-1), m_masterShape((unsigned)-1),
+    m_shapeId((unsigned)-1), m_lineStyleId((unsigned)-1), m_fillStyleId((unsigned)-1), m_textStyleId((unsigned)-1),
     m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_charListVector(),
     m_paraStyle(0), m_paraListVector(), m_text(), m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16),
     m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(0)
@@ -43,6 +43,7 @@ libvisio::VSDShape::VSDShape()
 libvisio::VSDShape::VSDShape(const libvisio::VSDShape &shape)
   : m_geometries(shape.m_geometries), m_fields(shape.m_fields),
     m_foreign(shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0),
+    m_masterPage(shape.m_masterPage), m_masterShape(shape.m_masterShape), m_shapeId(shape.m_shapeId),
     m_lineStyleId(shape.m_lineStyleId), m_fillStyleId(shape.m_fillStyleId), m_textStyleId(shape.m_textStyleId),
     m_lineStyle(shape.m_lineStyle ? new VSDLineStyle(*(shape.m_lineStyle)) : 0),
     m_fillStyle(shape.m_fillStyle ? new VSDFillStyle(*(shape.m_fillStyle)) : 0),
@@ -80,6 +81,9 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
     if (m_foreign)
       delete m_foreign;
     m_foreign = shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0;
+    m_masterPage = shape.m_masterPage;
+    m_masterShape = shape.m_masterShape;
+    m_shapeId = shape.m_shapeId;
     m_lineStyleId = shape.m_lineStyleId;
     m_fillStyleId = shape.m_fillStyleId;
     m_textStyleId = shape.m_textStyleId;

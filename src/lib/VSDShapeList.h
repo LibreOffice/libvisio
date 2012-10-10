@@ -43,7 +43,9 @@ class VSDShapeList
 {
 public:
   VSDShapeList();
+  VSDShapeList(const VSDShapeList &shapeList);
   ~VSDShapeList();
+  VSDShapeList &operator=(const VSDShapeList &shapeList);
   void addShapeId(unsigned id, unsigned level, unsigned shapeId);
   void setElementsOrder(const std::vector<unsigned> &elementsOrder);
   void handle(VSDCollector *collector) const;

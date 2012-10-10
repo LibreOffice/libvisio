@@ -54,6 +54,7 @@ public:
   std::vector<VSDGeometryList> m_geometries;
   VSDFieldList m_fields;
   ForeignData *m_foreign;
+  unsigned m_masterPage, m_masterShape, m_shapeId;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
   VSDLineStyle *m_lineStyle;
   VSDFillStyle *m_fillStyle;
