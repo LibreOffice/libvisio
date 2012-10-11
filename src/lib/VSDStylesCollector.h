@@ -50,7 +50,7 @@ public:
     std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
     std::vector<std::list<unsigned> > &documentPageShapeOrders
   );
-  virtual ~VSDStylesCollector() {};
+  virtual ~VSDStylesCollector() {}
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned level, const WPXBinaryData &binaryData);
@@ -82,7 +82,7 @@ public:
   void collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points);
   void collectXFormData(unsigned level, const XForm &xform);
   void collectTxtXForm(unsigned level, const XForm &txtxform);
-  void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
+  void collectShapesOrder(unsigned id, unsigned level, const std::vector<unsigned> &shapeIds);
   void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale);
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage);

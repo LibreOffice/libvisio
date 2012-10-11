@@ -90,7 +90,7 @@ public:
   void collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points);
   void collectXFormData(unsigned level, const XForm &xform);
   void collectTxtXForm(unsigned level, const XForm &txtxform);
-  void collectShapeId(unsigned id, unsigned level, unsigned shapeId);
+  void collectShapesOrder(unsigned id, unsigned level, const std::vector<unsigned> &shapeIds);
   void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height);
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale);
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage);

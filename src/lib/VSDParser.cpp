@@ -532,7 +532,8 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
       m_shape.m_charListVector.pop_back();
     if (!m_shape.m_paraListVector.empty() && m_shape.m_paraListVector.back().empty())
       m_shape.m_paraListVector.pop_back();
-    m_shapeList.handle(m_collector);
+    for (unsigned i = 0; i < m_shapeList.getShapesOrder().size(); ++i)
+      m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
     m_shapeList.clear();
   }
   if (level <= m_currentShapeLevel)
@@ -543,10 +544,10 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
       m_shape.clear();
     }
     m_isShapeStarted = false;
-
     m_currentShapeLevel = 0;
   }
   m_currentLevel = level;
+  m_collector->collectUnhandledChunk(0, m_currentLevel);
 }
 
 // --- READERS ---

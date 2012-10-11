@@ -31,68 +31,12 @@
 #include "VSDCollector.h"
 #include "VSDShapeList.h"
 
-namespace libvisio
-{
-
-class VSDShapeListElement
-{
-public:
-  VSDShapeListElement() {}
-  virtual ~VSDShapeListElement() {}
-  virtual void handle(VSDCollector *collector) const = 0;
-  virtual VSDShapeListElement *clone() const = 0;
-};
-
-class VSDShapeId : public VSDShapeListElement
-{
-public:
-  VSDShapeId(unsigned id, unsigned level, unsigned shapeId) :
-    m_id(id), m_level(level), m_shapeId(shapeId) {}
-  ~VSDShapeId() {}
-  void handle(VSDCollector *collector) const;
-  VSDShapeListElement *clone() const;
-private:
-  unsigned m_id;
-  unsigned m_level;
-  unsigned m_shapeId;
-};
-
-} // namespace libvisio
-
-
-void libvisio::VSDShapeId::handle(VSDCollector *collector) const
-{
-  collector->collectShapeId(m_id, m_level, m_shapeId);
-}
-
-libvisio::VSDShapeListElement *libvisio::VSDShapeId::clone() const
-{
-  return new VSDShapeId(m_id, m_level, m_shapeId);
-}
 
 libvisio::VSDShapeList::VSDShapeList() :
   m_elements(),
-  m_elementsOrder()
+  m_elementsOrder(),
+  m_shapesOrder()
 {
-}
-
-libvisio::VSDShapeList::VSDShapeList(const VSDShapeList &shapeList) :
-  m_elements(),
-  m_elementsOrder(shapeList.m_elementsOrder)
-{
-  std::map<unsigned, VSDShapeListElement *>::const_iterator iter = shapeList.m_elements.begin();
-  for (; iter != shapeList.m_elements.end(); ++iter)
-    m_elements[iter->first] = iter->second->clone();
-}
-
-libvisio::VSDShapeList &libvisio::VSDShapeList::operator=(const VSDShapeList &shapeList)
-{
-  clear();
-  std::map<unsigned, VSDShapeListElement *>::const_iterator iter = shapeList.m_elements.begin();
-  for (; iter != shapeList.m_elements.end(); ++iter)
-    m_elements[iter->first] = iter->second->clone();
-  m_elementsOrder = shapeList.m_elementsOrder;
-  return *this;
 }
 
 libvisio::VSDShapeList::~VSDShapeList()
@@ -100,44 +44,48 @@ libvisio::VSDShapeList::~VSDShapeList()
   clear();
 }
 
-void libvisio::VSDShapeList::addShapeId(unsigned id, unsigned level, unsigned shapeId)
+void libvisio::VSDShapeList::addShapeId(unsigned id, unsigned /*level*/, unsigned shapeId)
 {
-  m_elements[id] = new VSDShapeId(id, level, shapeId);
+  m_elements[id] = shapeId;
 }
 
 void libvisio::VSDShapeList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
-  m_elementsOrder.clear();
-  for (unsigned i = 0; i<elementsOrder.size(); i++)
-    m_elementsOrder.push_back(elementsOrder[i]);
+  m_elementsOrder = elementsOrder;
 }
 
-void libvisio::VSDShapeList::handle(VSDCollector *collector) const
+const std::vector<unsigned> &libvisio::VSDShapeList::getShapesOrder()
 {
   if (empty())
-    return;
-  std::map<unsigned, VSDShapeListElement *>::const_iterator iter;
+  {
+    m_shapesOrder.clear();
+    return m_shapesOrder;
+  }
+  if (!m_shapesOrder.empty())
+    return m_shapesOrder;
+
+  std::map<unsigned, unsigned>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned i = 0; i < m_elementsOrder.size(); i++)
     {
       iter = m_elements.find(m_elementsOrder[i]);
       if (iter != m_elements.end())
-        iter->second->handle(collector);
+        m_shapesOrder.push_back(iter->second);
     }
   }
   else
   {
     for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-      iter->second->handle(collector);
+      m_shapesOrder.push_back(iter->second);
   }
+  return m_shapesOrder;
 }
 
 void libvisio::VSDShapeList::clear()
 {
-  for (std::map<unsigned, VSDShapeListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    delete iter->second;
   m_elements.clear();
   m_elementsOrder.clear();
+  m_shapesOrder.clear();
 }
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -67,7 +67,7 @@ public:
   virtual void collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points) = 0;
   virtual void collectXFormData(unsigned level, const XForm &xform) = 0;
   virtual void collectTxtXForm(unsigned level, const XForm &txtxform) = 0;
-  virtual void collectShapeId(unsigned id, unsigned level, unsigned shapeId) = 0;
+  virtual void collectShapesOrder(unsigned id, unsigned level, const std::vector<unsigned> &shapeIds) = 0;
   virtual void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height) = 0;
   virtual void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale) = 0;
   virtual void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage) = 0;

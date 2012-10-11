@@ -186,12 +186,12 @@ void libvisio::VSDStylesCollector::collectTxtXForm(unsigned level, const XForm &
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned shapeId)
+void libvisio::VSDStylesCollector::collectShapesOrder(unsigned /* id */, unsigned level, const std::vector<unsigned> &shapeIds)
 {
   _handleLevelChange(level);
-  if (m_isShapeStarted)
-    m_groupMemberships[shapeId] = m_currentShapeId;
-  m_shapeList.push_back(shapeId);
+  m_shapeList.clear();
+  for (unsigned i = 0; i < shapeIds.size(); ++i)
+    m_shapeList.push_back(shapeIds[i]);
 }
 
 void libvisio::VSDStylesCollector::collectForeignDataType(unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */,
@@ -211,13 +211,15 @@ void libvisio::VSDStylesCollector::collectPage(unsigned /* id */, unsigned level
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectShape(unsigned id, unsigned level, unsigned /*paent*/, unsigned /*masterPage*/, unsigned /*masterShape*/,
+void libvisio::VSDStylesCollector::collectShape(unsigned id, unsigned level, unsigned parent, unsigned /*masterPage*/, unsigned /*masterShape*/,
     unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
 {
   _handleLevelChange(level);
   m_currentShapeLevel = level;
   m_currentShapeId = id;
   m_isShapeStarted = true;
+  if (parent && parent != (unsigned)-1)
+    m_groupMemberships[m_currentShapeId] = parent;
 }
 
 void libvisio::VSDStylesCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)

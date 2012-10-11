@@ -1896,7 +1896,7 @@ void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
   }
 }
 
-void libvisio::VSDContentCollector::collectShapeId(unsigned /* id */, unsigned level, unsigned /* shapeId */)
+void libvisio::VSDContentCollector::collectShapesOrder(unsigned /* id */, unsigned level, const std::vector<unsigned> & /* shapeIds */)
 {
   _handleLevelChange(level);
 }

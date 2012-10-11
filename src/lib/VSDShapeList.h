@@ -37,26 +37,25 @@
 namespace libvisio
 {
 
-class VSDShapeListElement;
-
 class VSDShapeList
 {
 public:
   VSDShapeList();
-  VSDShapeList(const VSDShapeList &shapeList);
   ~VSDShapeList();
-  VSDShapeList &operator=(const VSDShapeList &shapeList);
   void addShapeId(unsigned id, unsigned level, unsigned shapeId);
   void setElementsOrder(const std::vector<unsigned> &elementsOrder);
-  void handle(VSDCollector *collector) const;
   void clear();
   bool empty() const
   {
     return (m_elements.empty());
   }
+  const std::vector<unsigned> &getShapesOrder();
 private:
-  std::map<unsigned, VSDShapeListElement *> m_elements;
+  VSDShapeList(const VSDShapeList &);
+  VSDShapeList &operator=(const VSDShapeList &);
+  std::map<unsigned, unsigned> m_elements;
   std::vector<unsigned> m_elementsOrder;
+  std::vector<unsigned> m_shapesOrder;
 };
 
 } // namespace libvisio

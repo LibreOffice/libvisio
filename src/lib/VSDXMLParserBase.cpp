@@ -379,7 +379,7 @@ void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)
     m_geomList = new VSDGeometryList();
     m_charList = new VSDCharacterList();
     m_paraList = new VSDParagraphList();
-    m_shapeList.handle(m_collector);
+    m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
     m_shapeList.clear();
   }
   if (level <= m_currentShapeLevel)
