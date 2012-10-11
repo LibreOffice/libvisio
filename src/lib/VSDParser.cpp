@@ -797,56 +797,48 @@ void libvisio::VSDParser::readArcTo(WPXInputStream *input)
 
 void libvisio::VSDParser::readXFormData(WPXInputStream *input)
 {
-  XForm xform;
   input->seek(1, WPX_SEEK_CUR);
-  xform.pinX = readDouble(input);
+  m_shape.m_xform.pinX = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  xform.pinY = readDouble(input);
+  m_shape.m_xform.pinY = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  xform.width = readDouble(input);
+  m_shape.m_xform.width = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  xform.height = readDouble(input);
+  m_shape.m_xform.height = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  xform.pinLocX = readDouble(input);
+  m_shape.m_xform.pinLocX = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  xform.pinLocY = readDouble(input);
+  m_shape.m_xform.pinLocY = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  xform.angle = readDouble(input);
-  xform.flipX = (readU8(input) != 0);
-  xform.flipY = (readU8(input) != 0);
-
-  m_shape.m_xform = xform;
+  m_shape.m_xform.angle = readDouble(input);
+  m_shape.m_xform.flipX = (readU8(input) != 0);
+  m_shape.m_xform.flipY = (readU8(input) != 0);
 }
 
 void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
 {
-  XForm txtxform;
-  input->seek(1, WPX_SEEK_CUR);
-  txtxform.pinX = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  txtxform.pinY = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  txtxform.width = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  txtxform.height = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  txtxform.pinLocX = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  txtxform.pinLocY = readDouble(input);
-  input->seek(1, WPX_SEEK_CUR);
-  txtxform.angle = readDouble(input);
-
   if (m_shape.m_txtxform)
     delete (m_shape.m_txtxform);
-  m_shape.m_txtxform = new XForm(txtxform);
-
+  m_shape.m_txtxform = new XForm();
+  input->seek(1, WPX_SEEK_CUR);
+  m_shape.m_txtxform->pinX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_shape.m_txtxform->pinY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_shape.m_txtxform->width = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_shape.m_txtxform->height = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_shape.m_txtxform->pinLocX = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_shape.m_txtxform->pinLocY = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_shape.m_txtxform->angle = readDouble(input);
 }
 
 void libvisio::VSDParser::readShapeId(WPXInputStream *input)
 {
-  unsigned shapeId = readU32(input);
-
-  m_shapeList.addShapeId(m_header.id, m_header.level, shapeId);
+  m_shapeList.addShapeId(m_header.id, m_header.level, readU32(input));
 }
 
 void libvisio::VSDParser::readShapeList(WPXInputStream *input)

@@ -961,7 +961,7 @@ void libvisio::VSDContentCollector::_flushText()
         {
           while (!tmpBuffer.empty() && tmpBuffer.back() == 0)
             tmpBuffer.pop_back();
-          if (!tmpBuffer.empty() && tmpBuffer.back() == '\n')
+          if (!tmpBuffer.empty() && (tmpBuffer.back() == 0x0a || tmpBuffer.back() == '\n' || tmpBuffer.back() == 0x0e))
             tmpBuffer.back() = 0;
         }
         if (!tmpBuffer.empty())
@@ -2669,81 +2669,80 @@ void libvisio::VSDContentCollector::appendCharacters(WPXString &text, const std:
   while (iter != characters.end())
   {
     uint32_t ucs4Character = 0;
-    if (*iter == 0x1e)
+    switch (*iter)
     {
+    case 0:
+      ++iter;
+      break;
+    case 0x09:
+      ucs4Character = '\t';
+      ++iter;
+      break;
+    case 0x0a:
+    case 0x0e:
+      ucs4Character = '\n';
+      ++iter;
+      break;
+    case 0x1e:
       if (m_fieldIndex < m_fields.size())
         text.append(m_fields[m_fieldIndex++].cstr());
       else
         m_fieldIndex++;
       ++iter;
-    }
-    else if (*iter == 0x0e)
-    {
-      ++iter;
-      if (iter != characters.end())
-        ucs4Character = '\n';
-    }
-    else if (*iter == 0x0a)
-    {
-      ++iter;
-      if (iter != characters.end())
-        ucs4Character = '\n';
-    }
-    else if (*iter == 0x09)
-    {
-      ucs4Character = '\t';
-      ++iter;
-    }
-    else if (*iter < 0x20)
-    {
-      ucs4Character = 0x20;
-      ++iter;
-    }
-    else if (*iter >= 0x20 && *iter < 0x7f)
-      ucs4Character = *iter++;
-    else if (*iter == 0x7f)
-    {
-      ucs4Character = 0x20;
-      ++iter;
-    }
-    else
-    {
-      switch (format)
+      continue;
+    default:
+      if (*iter < 0x20)
       {
-      case VSD_TEXT_ANSI:
-        ucs4Character = cp1252map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_GREEK:
-        ucs4Character = cp1253map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_TURKISH:
-        ucs4Character = cp1254map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_VIETNAMESE:
-        ucs4Character = cp1258map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_HEBREW:
-        ucs4Character = cp1255map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_ARABIC:
-        ucs4Character = cp1256map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_BALTIC:
-        ucs4Character = cp1257map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_RUSSIAN:
-        ucs4Character = cp1251map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_THAI:
-        ucs4Character = cp874map[*iter++ - 0x80];
-        break;
-      case VSD_TEXT_CENTRAL_EUROPE:
-        ucs4Character = cp1250map[*iter++ - 0x80];
-        break;
-      default:
-        ucs4Character = *iter++;
-        break;
+        ucs4Character = 0x20;
+        ++iter;
       }
+      else if (*iter >= 0x20 && *iter < 0x7f)
+        ucs4Character = *iter++;
+      else if (*iter == 0x7f)
+      {
+        ucs4Character = 0x20;
+        ++iter;
+      }
+      else
+      {
+        switch (format)
+        {
+        case VSD_TEXT_ANSI:
+          ucs4Character = cp1252map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_GREEK:
+          ucs4Character = cp1253map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_TURKISH:
+          ucs4Character = cp1254map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_VIETNAMESE:
+          ucs4Character = cp1258map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_HEBREW:
+          ucs4Character = cp1255map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_ARABIC:
+          ucs4Character = cp1256map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_BALTIC:
+          ucs4Character = cp1257map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_RUSSIAN:
+          ucs4Character = cp1251map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_THAI:
+          ucs4Character = cp874map[*iter++ - 0x80];
+          break;
+        case VSD_TEXT_CENTRAL_EUROPE:
+          ucs4Character = cp1250map[*iter++ - 0x80];
+          break;
+        default:
+          ucs4Character = *iter++;
+          break;
+        }
+      }
+      break;
     }
     _appendUCS4(text, ucs4Character);
   }
@@ -2772,6 +2771,7 @@ void libvisio::VSDContentCollector::appendCharacters(WPXString &text, const std:
           text.append(m_fields[m_fieldIndex++].cstr());
         else
           m_fieldIndex++;
+        continue;
       }
       else if (character >= 0xdc00 && character < 0xe000) /* low surrogate */
       {
