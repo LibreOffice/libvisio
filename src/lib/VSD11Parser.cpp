@@ -287,7 +287,7 @@ void libvisio::VSD11Parser::readTextField(WPXInputStream *input)
     int nameId = (int)readU32(input);
     input->seek(6, WPX_SEEK_CUR);
     int formatStringId = (int)readU32(input);
-    m_fieldList.addTextField(m_header.id, m_header.level, nameId, formatStringId);
+    m_shape.m_fields.addTextField(m_header.id, m_header.level, nameId, formatStringId);
   }
   else
   {
@@ -342,7 +342,7 @@ void libvisio::VSD11Parser::readTextField(WPXInputStream *input)
         formatNumber = 0xffff;
     }
 
-    m_fieldList.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
+    m_shape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
   }
 }
 

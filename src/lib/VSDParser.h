@@ -144,7 +144,6 @@ protected:
   VSDCollector *m_collector;
   VSDGeometryList m_geomList;
   std::vector<VSDGeometryList> m_geomListVector;
-  VSDFieldList m_fieldList;
   VSDCharacterList m_charList;
   VSDParagraphList m_paraList;
   std::vector<VSDCharacterList> m_charListVector;

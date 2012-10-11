@@ -43,7 +43,7 @@
 
 libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_geomList(),
-    m_geomListVector(), m_fieldList(), m_charList(), m_paraList(), m_charListVector(),
+    m_geomListVector(), m_charList(), m_paraList(), m_charListVector(),
     m_paraListVector(), m_shapeList(), m_currentLevel(0), m_stencils(), m_currentStencil(0),
     m_shape(), m_isStencilStarted(false), m_isInStyles(false), m_currentShapeLevel(0),
     m_currentShapeID((unsigned)-1), m_extractStencils(false), m_colours(), m_isBackgroundPage(false),
@@ -544,7 +544,6 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     m_shape.m_geometries = m_geomListVector;
     m_shape.m_charListVector = m_charListVector;
     m_shape.m_paraListVector = m_paraListVector;
-    m_shape.m_fields = m_fieldList;
 
     if (!m_isStencilStarted)
       _flushShape(m_shape);
@@ -554,7 +553,6 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     m_charListVector.clear();
     m_paraListVector.clear();
 
-    m_fieldList.clear();
     m_currentShapeLevel = 0;
 
   }
@@ -1332,8 +1330,8 @@ void libvisio::VSDParser::readFieldList(WPXInputStream *input)
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     fieldOrder.push_back(readU32(input));
 
-  m_fieldList.setElementsOrder(fieldOrder);
-  m_fieldList.addFieldList(m_header.id, m_header.level);
+  m_shape.m_fields.setElementsOrder(fieldOrder);
+  m_shape.m_fields.addFieldList(m_header.id, m_header.level);
 }
 
 void libvisio::VSDParser::readColours(WPXInputStream *input)
