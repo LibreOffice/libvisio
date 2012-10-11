@@ -187,6 +187,8 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
     input->seek(0, WPX_SEEK_SET);
   }
 
+  if (stream)
+    delete stream;
   return true;
 }
 
@@ -536,10 +538,19 @@ int libvisio::VSDXParser::readLongData(long &value, xmlTextReaderPtr reader)
   if (stringValue)
   {
     VSD_DEBUG_MSG(("VSDXParser::readLongData stringValue %s\n", (const char *)stringValue));
-    value = xmlStringToLong(stringValue);
+    try
+    {
+      value = xmlStringToLong(stringValue);
+    }
+    catch (const XmlParserException &e)
+    {
+      xmlFree(stringValue);
+      throw e;
+    }
     xmlFree(stringValue);
     return 1;
   }
+  xmlFree(stringValue);
   return -1;
 }
 
