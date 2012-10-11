@@ -2281,13 +2281,7 @@ void libvisio::VSDContentCollector::collectTextField(unsigned id, unsigned level
     else
     {
       if (nameId >= 0)
-      {
-        std::map<unsigned, WPXString>::const_iterator iter = m_names.find(nameId);
-        if (iter != m_names.end())
-          m_fields.push_back(iter->second);
-        else
-          m_fields.push_back(WPXString());
-      }
+        m_fields.push_back(m_names[nameId]);
       else
         m_fields.push_back(WPXString());
     }
