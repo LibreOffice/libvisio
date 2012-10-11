@@ -142,12 +142,6 @@ protected:
   libwpg::WPGPaintInterface *m_painter;
   ChunkHeader m_header;
   VSDCollector *m_collector;
-  VSDGeometryList m_geomList;
-  std::vector<VSDGeometryList> m_geomListVector;
-  VSDCharacterList m_charList;
-  VSDParagraphList m_paraList;
-  std::vector<VSDCharacterList> m_charListVector;
-  std::vector<VSDParagraphList> m_paraListVector;
   VSDShapeList m_shapeList;
   unsigned m_currentLevel;
 
