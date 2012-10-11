@@ -235,7 +235,7 @@ private:
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
   WPXBinaryData m_textStream;
-  std::map<unsigned, WPXString> m_names, m_stencilNames;
+  std::map<unsigned, WPXString> m_names;
   std::vector<WPXString> m_fields;
   VSDFieldList m_stencilFields;
   unsigned m_fieldIndex;

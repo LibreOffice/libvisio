@@ -125,7 +125,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_NURBSData(), m_polylineData(),
-  m_textStream(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
+  m_textStream(), m_names(), m_fields(), m_stencilFields(), m_fieldIndex(0),
   m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
@@ -1991,7 +1991,6 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_isFirstGeometry = true;
 
   m_names.clear();
-  m_stencilNames.clear();
   m_fields.clear();
   m_stencilFields.clear();
 
@@ -2019,7 +2018,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
     {
       WPXString nameString;
       _convertDataToString(nameString, iterData->second.m_data, iterData->second.m_format);
-      m_stencilNames[iterData->first] = nameString;
+      m_names[iterData->first] = nameString;
     }
 
     m_stencilFields = m_stencilShape->m_fields;
@@ -2027,7 +2026,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
     {
       VSDFieldListElement *elem = m_stencilFields.getElement(i);
       if (elem)
-        m_fields.push_back(elem->getString(m_stencilNames));
+        m_fields.push_back(elem->getString(m_names));
       else
         m_fields.push_back(WPXString());
     }
@@ -2278,11 +2277,17 @@ void libvisio::VSDContentCollector::collectTextField(unsigned id, unsigned level
   if (element)
   {
     if (nameId == -2)
-      m_fields.push_back(element->getString(m_stencilNames));
+      m_fields.push_back(element->getString(m_names));
     else
     {
-      if (nameId >= 0 && (unsigned)nameId < m_names.size())
-        m_fields.push_back(m_names[nameId]);
+      if (nameId >= 0)
+      {
+        std::map<unsigned, WPXString>::const_iterator iter = m_names.find(nameId);
+        if (iter != m_names.end())
+          m_fields.push_back(iter->second);
+        else
+          m_fields.push_back(WPXString());
+      }
       else
         m_fields.push_back(WPXString());
     }

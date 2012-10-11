@@ -942,8 +942,13 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
 
   m_shape = VSDShape();
   const VSDShape *tmpShape = m_stencils.getStencilShape(masterPage, masterShape);
-  if (tmpShape && tmpShape->m_foreign)
-    m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
+  if (tmpShape)
+  {
+    if (tmpShape->m_foreign)
+      m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
+    m_shape.m_text = tmpShape->m_text;
+    m_shape.m_textFormat = tmpShape->m_textFormat;
+  }
 
   m_shape.m_lineStyleId = lineStyle;
   m_shape.m_fillStyleId = fillStyle;
