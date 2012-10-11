@@ -50,6 +50,7 @@ public:
   VSDShape(const VSDShape &shape);
   ~VSDShape();
   VSDShape &operator=(const VSDShape &shape);
+  void clear();
 
   std::vector<VSDGeometryList> m_geometries;
   VSDFieldList m_fields;

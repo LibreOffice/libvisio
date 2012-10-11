@@ -56,20 +56,7 @@ libvisio::VSDShape::VSDShape(const libvisio::VSDShape &shape)
 
 libvisio::VSDShape::~VSDShape()
 {
-  if (m_foreign)
-    delete m_foreign;
-  if (m_lineStyle)
-    delete m_lineStyle;
-  if (m_fillStyle)
-    delete m_fillStyle;
-  if (m_textBlockStyle)
-    delete m_textBlockStyle;
-  if (m_charStyle)
-    delete m_charStyle;
-  if (m_paraStyle)
-    delete m_paraStyle;
-  if (m_txtxform)
-    delete m_txtxform;
+  clear();
 }
 
 libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shape)
@@ -118,6 +105,48 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
   return *this;
 }
 
+void libvisio::VSDShape::clear()
+{
+  if (m_foreign)
+    delete m_foreign;
+  m_foreign = 0;
+  if (m_lineStyle)
+    delete m_lineStyle;
+  m_lineStyle = 0;
+  if (m_fillStyle)
+    delete m_fillStyle;
+  m_fillStyle = 0;
+  if (m_textBlockStyle)
+    delete m_textBlockStyle;
+  m_textBlockStyle = 0;
+  if (m_charStyle)
+    delete m_charStyle;
+  m_charStyle = 0;
+  if (m_paraStyle)
+    delete m_paraStyle;
+  m_paraStyle = 0;
+  if (m_txtxform)
+    delete m_txtxform;
+  m_txtxform = 0;
+
+  m_geometries.clear();
+  m_fields.clear();
+  m_charListVector.clear();
+  m_paraListVector.clear();
+  m_text.clear();
+  m_names.clear();
+  m_nurbsData.clear();
+  m_polylineData.clear();
+  m_xform = XForm();
+  m_parent = 0;
+  m_masterPage = (unsigned)-1;
+  m_masterShape = (unsigned)-1;
+  m_shapeId = (unsigned)-1;
+  m_lineStyleId = (unsigned)-1;
+  m_fillStyleId = (unsigned)-1;
+  m_textStyleId = (unsigned)-1;
+  m_textFormat = libvisio::VSD_TEXT_UTF16;
+}
 
 libvisio::VSDStencil::VSDStencil()
   : m_shapes(), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0)
