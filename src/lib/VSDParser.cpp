@@ -77,13 +77,17 @@ bool libvisio::VSDParser::parseMain()
 
   VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
   m_collector = &stylesCollector;
+  VSD_DEBUG_MSG(("VSDParser::parseMain 1st pass\n"));
   if (!parseDocument(&trailerStream))
     return false;
+
+  _handleLevelChange(0);
 
   VSDStyles styles = stylesCollector.getStyleSheets();
 
   VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
   m_collector = &contentCollector;
+  VSD_DEBUG_MSG(("VSDParser::parseMain 2nd pass\n"));
   if (!parseDocument(&trailerStream))
     return false;
 

@@ -192,6 +192,7 @@ void libvisio::VSDStylesCollector::collectShapesOrder(unsigned /* id */, unsigne
   m_shapeList.clear();
   for (unsigned i = 0; i < shapeIds.size(); ++i)
     m_shapeList.push_back(shapeIds[i]);
+  _flushShapeList();
 }
 
 void libvisio::VSDStylesCollector::collectForeignDataType(unsigned level, unsigned /* foreignType */, unsigned /* foreignFormat */,
@@ -404,8 +405,6 @@ void libvisio::VSDStylesCollector::_handleLevelChange(unsigned level)
 {
   if (m_currentLevel == level)
     return;
-  if (level <= m_currentShapeLevel+1)
-    _flushShapeList();
   if (level <= m_currentShapeLevel)
   {
     m_isShapeStarted = false;
