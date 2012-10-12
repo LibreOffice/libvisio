@@ -42,6 +42,8 @@ class VSDShapeList
 public:
   VSDShapeList();
   ~VSDShapeList();
+  VSDShapeList(const VSDShapeList &shapeList);
+  VSDShapeList &operator=(const VSDShapeList &shapeList);
   void addShapeId(unsigned id, unsigned level, unsigned shapeId);
   void setElementsOrder(const std::vector<unsigned> &elementsOrder);
   void clear();
@@ -51,8 +53,6 @@ public:
   }
   const std::vector<unsigned> &getShapesOrder();
 private:
-  VSDShapeList(const VSDShapeList &);
-  VSDShapeList &operator=(const VSDShapeList &);
   std::map<unsigned, unsigned> m_elements;
   std::vector<unsigned> m_elementsOrder;
   std::vector<unsigned> m_shapesOrder;

@@ -39,6 +39,24 @@ libvisio::VSDShapeList::VSDShapeList() :
 {
 }
 
+libvisio::VSDShapeList::VSDShapeList(const VSDShapeList &shapeList) :
+  m_elements(shapeList.m_elements),
+  m_elementsOrder(shapeList.m_elementsOrder),
+  m_shapesOrder(shapeList.m_shapesOrder)
+{
+}
+
+libvisio::VSDShapeList &libvisio::VSDShapeList::operator=(const libvisio::VSDShapeList &shapeList)
+{
+  if (this != &shapeList)
+  {
+    m_elements = shapeList.m_elements;
+    m_elementsOrder = shapeList.m_elementsOrder;
+    m_shapesOrder = shapeList.m_shapesOrder;
+  }
+  return *this;
+}
+
 libvisio::VSDShapeList::~VSDShapeList()
 {
   clear();

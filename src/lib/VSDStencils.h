@@ -39,6 +39,7 @@
 #include "VSDTypes.h"
 #include "VSDParagraphList.h"
 #include "VSDCharacterList.h"
+#include "VSDShapeList.h"
 
 namespace libvisio
 {
@@ -53,6 +54,7 @@ public:
   void clear();
 
   std::vector<VSDGeometryList> m_geometries;
+  VSDShapeList m_shapeList;
   VSDFieldList m_fields;
   ForeignData *m_foreign;
   unsigned m_parent, m_masterPage, m_masterShape, m_shapeId;
