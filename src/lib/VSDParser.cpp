@@ -536,9 +536,13 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
       m_shape.m_charListVector.pop_back();
     if (!m_shape.m_paraListVector.empty() && m_shape.m_paraListVector.back().empty())
       m_shape.m_paraListVector.pop_back();
-    if (!m_shapeList.empty())
+    if (!m_isShapeStarted && !m_shapeList.empty())
       m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
     m_shapeList.clear();
+    if (m_isShapeStarted && !m_shape.m_shapeList.empty())
+      m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
+    m_shape.m_shapeList.clear();
+
   }
   if (level <= m_currentShapeLevel)
   {
@@ -835,7 +839,10 @@ void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
 
 void libvisio::VSDParser::readShapeId(WPXInputStream *input)
 {
-  m_shapeList.addShapeId(m_header.id, m_header.level, readU32(input));
+  if (!m_isShapeStarted)
+    m_shapeList.addShapeId(m_header.id, m_header.level, readU32(input));
+  else
+    m_shape.m_shapeList.addShapeId(m_header.id, m_header.level, readU32(input));
 }
 
 void libvisio::VSDParser::readShapeList(WPXInputStream *input)
@@ -848,7 +855,10 @@ void libvisio::VSDParser::readShapeList(WPXInputStream *input)
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     shapeOrder.push_back(readU32(input));
 
-  m_shapeList.setElementsOrder(shapeOrder);
+  if (!m_isShapeStarted)
+    m_shapeList.setElementsOrder(shapeOrder);
+  else
+    m_shape.m_shapeList.setElementsOrder(shapeOrder);
 
   // We want the collectors to still get the level information
   m_collector->collectUnhandledChunk(m_header.id, m_header.level);
