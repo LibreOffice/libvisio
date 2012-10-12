@@ -131,6 +131,7 @@ void libvisio::VSDShape::clear()
   m_txtxform = 0;
 
   m_geometries.clear();
+  m_shapeList.clear();
   m_fields.clear();
   m_charListVector.clear();
   m_paraListVector.clear();

@@ -42,11 +42,10 @@
 #include "VSDStylesCollector.h"
 
 libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_shapeList(),
-    m_currentLevel(0), m_stencils(), m_currentStencil(0),
-    m_shape(), m_isStencilStarted(false), m_isInStyles(false), m_currentShapeLevel(0),
-    m_currentShapeID((unsigned)-1), m_extractStencils(false), m_colours(), m_isBackgroundPage(false),
-    m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0)
+  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_shapeList(), m_currentLevel(0),
+    m_stencils(), m_currentStencil(0), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
+    m_currentShapeLevel(0), m_currentShapeID((unsigned)-1), m_extractStencils(false), m_colours(),
+    m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0)
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -259,23 +258,22 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     m_collector->endPage();
     break;
   case VSD_PAGES:
+    _handleLevelChange(0);
     m_collector->endPages();
     break;
   case VSD_STENCILS:
+    _handleLevelChange(0);
     if (m_extractStencils)
       m_collector->endPages();
     else
       m_isStencilStarted = false;
     break;
   case VSD_STENCIL_PAGE:
+    _handleLevelChange(0);
     if (m_extractStencils)
-    {
-      _handleLevelChange(0);
       m_collector->endPage();
-    }
     else
     {
-      _handleLevelChange(0);
       m_stencils.addStencil(idx, *m_currentStencil);
       m_currentStencil = 0;
     }
@@ -471,6 +469,13 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
 
 void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
 {
+  if (!m_isShapeStarted)
+    return;
+
+  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
+
+  m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
+
   m_collector->collectXFormData(m_currentShapeLevel+2, shape.m_xform);
 
   if (shape.m_txtxform)
@@ -536,12 +541,8 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
       m_shape.m_charListVector.pop_back();
     if (!m_shape.m_paraListVector.empty() && m_shape.m_paraListVector.back().empty())
       m_shape.m_paraListVector.pop_back();
-    if (!m_isShapeStarted && !m_shapeList.empty())
-      m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
+    m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
     m_shapeList.clear();
-    if (m_isShapeStarted && !m_shape.m_shapeList.empty())
-      m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
-    m_shape.m_shapeList.clear();
 
   }
   if (level <= m_currentShapeLevel)
@@ -964,8 +965,6 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
   m_shape.m_masterPage = masterPage;
   m_shape.m_masterShape = masterShape;
   m_shape.m_shapeId = m_currentShapeID;
-  if (!m_isStencilStarted)
-    m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
   m_currentShapeID = (unsigned)-1;
 }
 
