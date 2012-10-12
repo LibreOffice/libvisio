@@ -1053,7 +1053,7 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
       }
       else if (iterGroup->second != groupTextStack.top().first)
       {
-        while (groupTextStack.top().first != iterGroup->second && !groupTextStack.empty())
+        while (!groupTextStack.empty() && groupTextStack.top().first != iterGroup->second)
         {
           m_currentPage.append(groupTextStack.top().second);
           groupTextStack.pop();
