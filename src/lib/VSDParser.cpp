@@ -536,7 +536,7 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
       m_shape.m_charListVector.pop_back();
     if (!m_shape.m_paraListVector.empty() && m_shape.m_paraListVector.back().empty())
       m_shape.m_paraListVector.pop_back();
-    for (unsigned i = 0; i < m_shapeList.getShapesOrder().size(); ++i)
+    if (!m_shapeList.empty())
       m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
     m_shapeList.clear();
   }
@@ -551,7 +551,6 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     m_currentShapeLevel = 0;
   }
   m_currentLevel = level;
-  m_collector->collectUnhandledChunk(0, m_currentLevel);
 }
 
 // --- READERS ---
@@ -956,7 +955,7 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
   m_shape.m_masterShape = masterShape;
   m_shape.m_shapeId = m_currentShapeID;
   if (!m_isStencilStarted)
-    m_collector->collectShape(m_shape.m_shapeId, m_header.level, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
+    m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
   m_currentShapeID = (unsigned)-1;
 }
 
