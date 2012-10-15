@@ -32,8 +32,8 @@
 #ifndef __VSDINTERNALSTREAM_H__
 #define __VSDINTERNALSTREAM_H__
 
+#include <stddef.h>
 #include <vector>
-
 #include <libwpd-stream/libwpd-stream.h>
 
 class VSDInternalStream : public WPXInputStream
@@ -41,6 +41,7 @@ class VSDInternalStream : public WPXInputStream
 public:
   VSDInternalStream(WPXInputStream *input, unsigned long size, bool compressed=false);
   VSDInternalStream(const std::vector<unsigned char> &buffer);
+  VSDInternalStream(const unsigned char *buffer, size_t bufferLength);
   ~VSDInternalStream() {}
 
   bool isOLEStream()

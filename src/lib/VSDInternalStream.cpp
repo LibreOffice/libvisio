@@ -29,6 +29,7 @@
  */
 
 
+#include <string.h>
 #include "VSDInternalStream.h"
 
 
@@ -38,6 +39,15 @@ VSDInternalStream::VSDInternalStream(const std::vector<unsigned char> &buffer) :
   m_buffer(buffer)
 {
 }
+
+VSDInternalStream::VSDInternalStream(const unsigned char *buffer, size_t bufferLength) :
+  WPXInputStream(),
+  m_offset(0),
+  m_buffer(bufferLength)
+{
+  memcpy(&m_buffer[0], buffer, bufferLength);
+}
+
 
 VSDInternalStream::VSDInternalStream(WPXInputStream *input, unsigned long size, bool compressed) :
   WPXInputStream(),

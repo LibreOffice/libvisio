@@ -63,6 +63,7 @@ typedef unsigned __int64 uint64_t;
 
 #endif /* _MSC_VER */
 
+#include <libwpd/libwpd.h>
 #include <libwpd-stream/libwpd-stream.h>
 
 // debug message includes source file and line number
@@ -91,6 +92,8 @@ uint32_t readU32(WPXInputStream *input);
 uint64_t readU64(WPXInputStream *input);
 
 double readDouble(WPXInputStream *input);
+
+void appendFromBase64(WPXBinaryData &data, const unsigned char *base64String, size_t base64StringLength);
 
 class EndOfStreamException
 {

@@ -28,6 +28,8 @@
  * instead of those above.
  */
 
+#include <string>
+#include "VSDInternalStream.h"
 #include "libvisio_utils.h"
 
 #define VSD_NUM_ELEMENTS(array) sizeof(array)/sizeof(array[0])
@@ -107,6 +109,52 @@ double libvisio::readDouble(WPXInputStream *input)
   tmpUnion.u = readU64(input);
 
   return tmpUnion.d;
+}
+
+void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64String, size_t base64StringLength)
+{
+  static const std::string base64Chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789+/";
+
+
+  VSDInternalStream tmpStream(base64String, base64StringLength);
+
+  unsigned i = 0;
+  char tmpCharsToDecode[4];
+  while (!tmpStream.atEOS())
+  {
+    const char tmpChar = (char)readU8(&tmpStream);
+    if (!isalnum(tmpChar) && (tmpChar != '+') && (tmpChar != '/') && (tmpChar != '='))
+      continue;
+    if (tmpChar == '=')
+      break;
+    tmpCharsToDecode[i++] = tmpChar;
+    if (i == 4)
+    {
+      for (unsigned k = 0; k < 4; i++)
+        tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
+
+      data.append((unsigned char)((tmpCharsToDecode[0] << 2) + ((tmpCharsToDecode[1] & 0x30) >> 4)));
+      data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) + ((tmpCharsToDecode[2] & 0x3c) >> 2)));
+      data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) + tmpCharsToDecode[3]));
+    }
+    i = 0;
+  }
+
+  if (i)
+  {
+    while (i < 4)
+      tmpCharsToDecode[i++] = 0;
+
+    for (unsigned k = 0; k < 4; i++)
+      tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
+
+    data.append((unsigned char)((tmpCharsToDecode[0] << 2) + ((tmpCharsToDecode[1] & 0x30) >> 4)));
+    data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) + ((tmpCharsToDecode[2] & 0x3c) >> 2)));
+    data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) + tmpCharsToDecode[3]));
+  }
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
