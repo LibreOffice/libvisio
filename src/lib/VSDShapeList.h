@@ -44,7 +44,8 @@ public:
   ~VSDShapeList();
   VSDShapeList(const VSDShapeList &shapeList);
   VSDShapeList &operator=(const VSDShapeList &shapeList);
-  void addShapeId(unsigned id, unsigned level, unsigned shapeId);
+  void addShapeId(unsigned id, unsigned shapeId);
+  void addShapeId(unsigned shapeId);
   void setElementsOrder(const std::vector<unsigned> &elementsOrder);
   void clear();
   bool empty() const

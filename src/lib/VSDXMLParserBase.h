@@ -31,6 +31,7 @@
 #define __VSDXMLPARSERBASE_H__
 
 #include <map>
+#include <stack>
 #include <string>
 #include "VSDXMLHelper.h"
 #include "VSDCharacterList.h"
@@ -74,6 +75,7 @@ protected:
   std::vector<VSDParagraphList *> m_paraListVector;
   VSDShapeList m_shapeList;
   WPXBinaryData m_currentBinaryData;
+  std::stack<VSDShape> m_shapeStack;
 
   // Helper functions
 

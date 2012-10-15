@@ -841,9 +841,9 @@ void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
 void libvisio::VSDParser::readShapeId(WPXInputStream *input)
 {
   if (!m_isShapeStarted)
-    m_shapeList.addShapeId(m_header.id, m_header.level, readU32(input));
+    m_shapeList.addShapeId(m_header.id, readU32(input));
   else
-    m_shape.m_shapeList.addShapeId(m_header.id, m_header.level, readU32(input));
+    m_shape.m_shapeList.addShapeId(m_header.id, readU32(input));
 }
 
 void libvisio::VSDParser::readShapeList(WPXInputStream *input)
