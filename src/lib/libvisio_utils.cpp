@@ -136,24 +136,30 @@ void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64
       for (unsigned k = 0; k < 4; i++)
         tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
 
-      data.append((unsigned char)((tmpCharsToDecode[0] << 2) + ((tmpCharsToDecode[1] & 0x30) >> 4)));
-      data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) + ((tmpCharsToDecode[2] & 0x3c) >> 2)));
-      data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) + tmpCharsToDecode[3]));
+      data.append((unsigned char)((tmpCharsToDecode[0] << 2) | ((tmpCharsToDecode[1] & 0x30) >> 4)));
+      data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) | ((tmpCharsToDecode[2] & 0x3c) >> 2)));
+      data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) | tmpCharsToDecode[3]));
     }
     i = 0;
   }
 
   if (i)
   {
-    while (i < 4)
-      tmpCharsToDecode[i++] = 0;
+    for (unsigned k = 0; k < 4; k++)
+    {
+      if (k < i)
+        tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
+      else
+        tmpCharsToDecode[k] = 0;
+    }
 
-    for (unsigned k = 0; k < 4; i++)
-      tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
-
-    data.append((unsigned char)((tmpCharsToDecode[0] << 2) + ((tmpCharsToDecode[1] & 0x30) >> 4)));
-    data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) + ((tmpCharsToDecode[2] & 0x3c) >> 2)));
-    data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) + tmpCharsToDecode[3]));
+    data.append((unsigned char)((tmpCharsToDecode[0] << 2) | ((tmpCharsToDecode[1] & 0x30) >> 4)));
+    if (i > 1)
+    {
+      data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) | ((tmpCharsToDecode[2] & 0x3c) >> 2)));
+      if (i > 2)
+        data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) | tmpCharsToDecode[3]));
+    }
   }
 }
 
