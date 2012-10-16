@@ -164,16 +164,28 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   if (textStyleString)
     xmlFree(textStyleString);
 
-  if (m_isStencilStarted)
+  m_shape.clear();
+  const VSDShape *tmpShape = m_stencils.getStencilShape(masterPage, masterShape);
+  if (tmpShape)
   {
-    m_shape = VSDShape();
-
-    m_shape.m_lineStyleId = lineStyle;
-    m_shape.m_fillStyleId = fillStyle;
-    m_shape.m_textStyleId = textStyle;
+    if (tmpShape->m_foreign)
+      m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
+    m_shape.m_text = tmpShape->m_text;
+    m_shape.m_textFormat = tmpShape->m_textFormat;
   }
+
+  if (!m_shapeStack.empty())
+    m_shapeStack.top().m_shapeList.addShapeId(id);
   else
-    m_collector->collectShape(id, m_currentShapeLevel, 0, masterPage, masterShape, lineStyle, fillStyle, textStyle);
+    m_shapeList.addShapeId(id);
+
+  m_shape.m_lineStyleId = lineStyle;
+  m_shape.m_fillStyleId = fillStyle;
+  m_shape.m_textStyleId = textStyle;
+  m_shape.m_parent = m_shapeStack.empty() ? (unsigned)-1 : m_shapeStack.top().m_shapeId;
+  m_shape.m_masterPage = masterPage;
+  m_shape.m_masterShape = masterShape;
+  m_shape.m_shapeId = id;
 }
 
 void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)

@@ -344,13 +344,11 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
 
   if (m_isInStyles)
     m_collector->collectLineStyle(level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
-  else if (m_isStencilStarted)
+  else
   {
     if (!m_shape.m_lineStyle)
       m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
   }
-  else
-    m_collector->collectLine(level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
 }
 
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
@@ -435,17 +433,17 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   if (m_isInStyles)
     m_collector->collectFillStyle(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
                                   fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
-  else if (m_isStencilStarted)
+  else
   {
-    VSD_DEBUG_MSG(("Found stencil fill\n"));
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil fill\n"));
+    }
     if (!m_shape.m_fillStyle)
       m_shape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
                                              fillFGTransparency, fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
                                              shadowOffsetX, shadowOffsetY);
   }
-  else
-    m_collector->collectFillAndShadow(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency,
-                                      (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
 }
 
 void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
@@ -697,15 +695,12 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   if (m_isInStyles)
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
-  else if (m_isStencilStarted)
+  else
   {
     if (!m_shape.m_textBlockStyle)
       m_shape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
           (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   }
-  else
-    m_collector->collectTextBlock(level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                  (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
 }
 
 int libvisio::VDXParser::readLongData(long &value, xmlTextReaderPtr reader)
