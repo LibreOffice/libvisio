@@ -493,7 +493,7 @@ void libvisio::VSDParser::_flushShape()
                                   m_shape.m_textBlockStyle->isTextBkgndFilled, m_shape.m_textBlockStyle->textBkgndColour,
                                   m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
 
-  if (m_shape.m_foreign && m_shape.m_foreign->typeLevel)
+  if (m_shape.m_foreign)
     m_collector->collectForeignDataType(m_shape.m_foreign->typeLevel, m_shape.m_foreign->type, m_shape.m_foreign->format,
                                         m_shape.m_foreign->offsetX, m_shape.m_foreign->offsetY, m_shape.m_foreign->width, m_shape.m_foreign->height);
 
@@ -508,7 +508,7 @@ void libvisio::VSDParser::_flushShape()
   for (std::map<unsigned, VSDName>::const_iterator iterName = m_shape.m_names.begin(); iterName != m_shape.m_names.end(); ++iterName)
     m_collector->collectName(iterName->first, m_currentShapeLevel+2, iterName->second.m_data, iterName->second.m_format);
 
-  if (m_shape.m_foreign && m_shape.m_foreign->dataLevel)
+  if (m_shape.m_foreign)
     m_collector->collectForeignData(m_shape.m_foreign->dataLevel, m_shape.m_foreign->data);
 
   if (!m_shape.m_fields.empty())
@@ -526,7 +526,6 @@ void libvisio::VSDParser::_flushShape()
 
   for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
     iterPara->handle(m_collector);
-
 }
 
 void libvisio::VSDParser::_handleLevelChange(unsigned level)

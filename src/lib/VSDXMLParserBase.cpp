@@ -371,6 +371,67 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextRea
   return readExtendedColourData(value, idx, reader);
 }
 
+void libvisio::VSDXMLParserBase::_flushShape()
+{
+  if (!m_isShapeStarted)
+    return;
+
+  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
+
+  m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
+
+  m_collector->collectXFormData(m_currentShapeLevel+2, m_shape.m_xform);
+
+  if (m_shape.m_txtxform)
+    m_collector->collectTxtXForm(m_currentShapeLevel+2, *(m_shape.m_txtxform));
+  if (m_shape.m_lineStyle)
+    m_collector->collectLine(m_currentShapeLevel+2, m_shape.m_lineStyle->width, m_shape.m_lineStyle->colour, m_shape.m_lineStyle->pattern,
+                             m_shape.m_lineStyle->startMarker, m_shape.m_lineStyle->endMarker, m_shape.m_lineStyle->cap);
+  if (m_shape.m_fillStyle)
+    m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
+                                      m_shape.m_fillStyle->fgTransparency, m_shape.m_fillStyle->bgTransparency, m_shape.m_fillStyle->shadowPattern,
+                                      m_shape.m_fillStyle->shadowFgColour, m_shape.m_fillStyle->shadowOffsetX, m_shape.m_fillStyle->shadowOffsetY);
+  if (m_shape.m_textBlockStyle)
+    m_collector->collectTextBlock(m_currentShapeLevel+2, m_shape.m_textBlockStyle->leftMargin, m_shape.m_textBlockStyle->rightMargin,
+                                  m_shape.m_textBlockStyle->topMargin, m_shape.m_textBlockStyle->bottomMargin, m_shape.m_textBlockStyle->verticalAlign,
+                                  m_shape.m_textBlockStyle->isTextBkgndFilled, m_shape.m_textBlockStyle->textBkgndColour,
+                                  m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
+
+  if (m_shape.m_foreign)
+    m_collector->collectForeignDataType(m_shape.m_foreign->typeLevel, m_shape.m_foreign->type, m_shape.m_foreign->format,
+                                        m_shape.m_foreign->offsetX, m_shape.m_foreign->offsetY, m_shape.m_foreign->width, m_shape.m_foreign->height);
+
+  for (std::map<unsigned, NURBSData>::const_iterator iterNurbs = m_shape.m_nurbsData.begin(); iterNurbs != m_shape.m_nurbsData.end(); ++iterNurbs)
+    m_collector->collectShapeData(iterNurbs->first, m_currentShapeLevel+2, iterNurbs->second.xType, iterNurbs->second.yType,
+                                  iterNurbs->second.degree, iterNurbs->second.lastKnot, iterNurbs->second.points,
+                                  iterNurbs->second.knots, iterNurbs->second.weights);
+
+  for (std::map<unsigned, PolylineData>::const_iterator iterPoly = m_shape.m_polylineData.begin(); iterPoly != m_shape.m_polylineData.end(); ++iterPoly)
+    m_collector->collectShapeData(iterPoly->first, m_currentShapeLevel+2, iterPoly->second.xType, iterPoly->second.yType, iterPoly->second.points);
+
+  for (std::map<unsigned, VSDName>::const_iterator iterName = m_shape.m_names.begin(); iterName != m_shape.m_names.end(); ++iterName)
+    m_collector->collectName(iterName->first, m_currentShapeLevel+2, iterName->second.m_data, iterName->second.m_format);
+
+  if (m_shape.m_foreign)
+    m_collector->collectForeignData(m_shape.m_foreign->dataLevel, m_shape.m_foreign->data);
+
+  if (!m_shape.m_fields.empty())
+    m_shape.m_fields.handle(m_collector);
+
+  if (m_shape.m_text.size())
+    m_collector->collectText(m_currentShapeLevel+1, m_shape.m_text, m_shape.m_textFormat);
+
+
+  for (std::vector<VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
+    iterGeom->handle(m_collector);
+
+  for (std::vector<VSDCharacterList>::const_iterator iterChar = m_shape.m_charListVector.begin(); iterChar != m_shape.m_charListVector.end(); ++iterChar)
+    iterChar->handle(m_collector);
+
+  for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
+    iterPara->handle(m_collector);
+}
+
 void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)
 {
   if (level == m_currentLevel)

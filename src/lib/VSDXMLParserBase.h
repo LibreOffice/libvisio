@@ -88,6 +88,7 @@ protected:
   int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   virtual void _handleLevelChange(unsigned level);
+  void _flushShape();
 
   virtual int getElementToken(xmlTextReaderPtr reader) = 0;
   virtual int getElementDepth(xmlTextReaderPtr reader) = 0;
