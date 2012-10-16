@@ -365,6 +365,44 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, long &idx,
   return ret;
 }
 
+void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
+{
+  VSD_DEBUG_MSG(("VSDXParser::readForeignData\n"));
+  if (!m_shape.m_foreign)
+    m_shape.m_foreign = new ForeignData();
+
+  xmlChar *foreignTypeString = xmlTextReaderGetAttribute(reader, BAD_CAST("ForeignType"));
+  if (foreignTypeString)
+  {
+    if (xmlStrEqual(foreignTypeString, BAD_CAST("Bitmap")))
+      m_shape.m_foreign->type = 1;
+    else if (xmlStrEqual(foreignTypeString, BAD_CAST("Object")))
+      m_shape.m_foreign->type = 2;
+    else if (xmlStrEqual(foreignTypeString, BAD_CAST("EnhMetaFile")))
+      m_shape.m_foreign->type = 4;
+    xmlFree(foreignTypeString);
+  }
+  xmlChar *foreignFormatString = xmlTextReaderGetAttribute(reader, BAD_CAST("CompressionType"));
+  if (foreignFormatString)
+  {
+    if (xmlStrEqual(foreignFormatString, BAD_CAST("JPEG")))
+      m_shape.m_foreign->format = 1;
+    else if (xmlStrEqual(foreignFormatString, BAD_CAST("GIF")))
+      m_shape.m_foreign->format = 2;
+    else if (xmlStrEqual(foreignFormatString, BAD_CAST("TIFF")))
+      m_shape.m_foreign->format = 3;
+    else if (xmlStrEqual(foreignFormatString, BAD_CAST("PNG")))
+      m_shape.m_foreign->format = 4;
+    else
+      m_shape.m_foreign->format = 0;
+    xmlFree(foreignFormatString);
+  }
+  else
+    m_shape.m_foreign->format = 255;
+
+  getBinaryData(reader);
+}
+
 int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
 {
   long idx = -1;
@@ -398,7 +436,7 @@ void libvisio::VSDXMLParserBase::_flushShape()
                                   m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
 
   if (m_shape.m_foreign)
-    m_collector->collectForeignDataType(m_shape.m_foreign->typeLevel, m_shape.m_foreign->type, m_shape.m_foreign->format,
+    m_collector->collectForeignDataType(m_currentShapeLevel+2, m_shape.m_foreign->type, m_shape.m_foreign->format,
                                         m_shape.m_foreign->offsetX, m_shape.m_foreign->offsetY, m_shape.m_foreign->width, m_shape.m_foreign->height);
 
   for (std::map<unsigned, NURBSData>::const_iterator iterNurbs = m_shape.m_nurbsData.begin(); iterNurbs != m_shape.m_nurbsData.end(); ++iterNurbs)
@@ -413,7 +451,7 @@ void libvisio::VSDXMLParserBase::_flushShape()
     m_collector->collectName(iterName->first, m_currentShapeLevel+2, iterName->second.m_data, iterName->second.m_format);
 
   if (m_shape.m_foreign)
-    m_collector->collectForeignData(m_shape.m_foreign->dataLevel, m_shape.m_foreign->data);
+    m_collector->collectForeignData(m_currentShapeLevel+1, m_shape.m_foreign->data);
 
   if (!m_shape.m_fields.empty())
     m_shape.m_fields.handle(m_collector);
@@ -430,8 +468,6 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
     iterPara->handle(m_collector);
-
-  m_collector->collectUnhandledChunk(0,0);
 }
 
 void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)

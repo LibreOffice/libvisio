@@ -1363,6 +1363,7 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
       switch(m_foreignFormat)
       {
       case 0:
+      case 255:
         filename.sprintf("binarydump%i.bmp", bitmapId++);
         break;
       case 1:
@@ -1397,6 +1398,7 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
       switch(m_foreignFormat)
       {
       case 0:
+      case 255:
         m_currentForeignProps.insert("libwpg:mime-type", "image/bmp");
         break;
       case 1:

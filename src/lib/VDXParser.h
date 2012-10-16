@@ -78,7 +78,7 @@ private:
   void readTextBlock(xmlTextReaderPtr reader);
   void readForeignInfo(xmlTextReaderPtr reader);
 
-  void readForeignData(xmlTextReaderPtr reader);
+  void getBinaryData(xmlTextReaderPtr reader);
 
   // Private data
 

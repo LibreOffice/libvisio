@@ -77,19 +77,20 @@ private:
 
   void extractBinaryData(WPXInputStream *input, const char *name);
 
-  void readForeignData(xmlTextReaderPtr reader);
-
   void readPageSheetProperties(xmlTextReaderPtr reader);
 
   void readStyleProperties(xmlTextReaderPtr reader);
 
   void readShapeProperties(xmlTextReaderPtr reader);
 
+  void getBinaryData(xmlTextReaderPtr reader);
+
   // Private data
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
   int m_currentDepth;
+  VSDXRelationships *m_rels;
 };
 
 } // namespace libvisio

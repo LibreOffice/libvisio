@@ -202,9 +202,8 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     {
       m_isShapeStarted = false;
       _handleLevelChange(0);
-      m_collector->collectUnhandledChunk(0,0);
       m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
-	  m_shapeList.clear();
+      m_shapeList.clear();
       m_collector->endPage();
     }
     break;
@@ -237,7 +236,6 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       if (m_isShapeStarted)
       {
         m_shapeStack.push(m_shape);
-        m_shape.clear();
         m_shapeLevelStack.push(m_currentShapeLevel);
         m_currentShapeLevel = 0;
       }
@@ -287,6 +285,14 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       _handleLevelChange(0);
       m_isInStyles = false;
     }
+    break;
+  case XML_FOREIGN:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readForeignInfo(reader);
+    break;
+  case XML_FOREIGNDATA:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readForeignData(reader);
     break;
   case XML_XFORM:
     if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -811,41 +817,8 @@ int libvisio::VDXParser::getElementDepth(xmlTextReaderPtr reader)
   return xmlTextReaderDepth(reader);
 }
 
-void libvisio::VDXParser::readForeignData(xmlTextReaderPtr reader)
+void libvisio::VDXParser::getBinaryData(xmlTextReaderPtr reader)
 {
-  VSD_DEBUG_MSG(("VSDXParser::readForeignData\n"));
-  if (!m_shape.m_foreign)
-    m_shape.m_foreign = new ForeignData();
-
-  xmlChar *foreignTypeString = xmlTextReaderGetAttribute(reader, BAD_CAST("ForeignType"));
-  if (foreignTypeString)
-  {
-    if (xmlStrEqual(foreignTypeString, BAD_CAST("Bitmap")))
-      m_shape.m_foreign->type = 1;
-    else if (xmlStrEqual(foreignTypeString, BAD_CAST("Object")))
-      m_shape.m_foreign->type = 2;
-    else if (xmlStrEqual(foreignTypeString, BAD_CAST("EnhMetaFile")))
-      m_shape.m_foreign->type = 4;
-    xmlFree(foreignTypeString);
-  }
-  xmlChar *foreignFormatString = xmlTextReaderGetAttribute(reader, BAD_CAST("CompressionType"));
-  if (foreignFormatString)
-  {
-    if (xmlStrEqual(foreignFormatString, BAD_CAST("JPEG")))
-      m_shape.m_foreign->format = 1;
-    else if (xmlStrEqual(foreignFormatString, BAD_CAST("GIF")))
-      m_shape.m_foreign->format = 2;
-    else if (xmlStrEqual(foreignFormatString, BAD_CAST("TIFF")))
-      m_shape.m_foreign->format = 3;
-    else if (xmlStrEqual(foreignFormatString, BAD_CAST("PNG")))
-      m_shape.m_foreign->format = 4;
-    else
-      m_shape.m_foreign->format = 0;
-    xmlFree(foreignFormatString);
-  }
-  else
-    m_shape.m_foreign->format = 0;
-
   xmlTextReaderRead(reader);
   if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
   {
@@ -895,7 +868,7 @@ void libvisio::VDXParser::readForeignInfo(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_foreign)
           m_shape.m_foreign = new ForeignData();
-        ret = readDoubleData(m_shape.m_foreign->height, reader);
+        ret = readDoubleData(m_shape.m_foreign->width, reader);
       }
       break;
     case XML_IMGHEIGHT:
@@ -903,7 +876,7 @@ void libvisio::VDXParser::readForeignInfo(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_foreign)
           m_shape.m_foreign = new ForeignData();
-        ret = readDoubleData(m_shape.m_foreign->width, reader);
+        ret = readDoubleData(m_shape.m_foreign->height, reader);
       }
       break;
     default:

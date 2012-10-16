@@ -494,7 +494,7 @@ void libvisio::VSDParser::_flushShape()
                                   m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
 
   if (m_shape.m_foreign)
-    m_collector->collectForeignDataType(m_shape.m_foreign->typeLevel, m_shape.m_foreign->type, m_shape.m_foreign->format,
+    m_collector->collectForeignDataType(m_currentShapeLevel+2, m_shape.m_foreign->type, m_shape.m_foreign->format,
                                         m_shape.m_foreign->offsetX, m_shape.m_foreign->offsetY, m_shape.m_foreign->width, m_shape.m_foreign->height);
 
   for (std::map<unsigned, NURBSData>::const_iterator iterNurbs = m_shape.m_nurbsData.begin(); iterNurbs != m_shape.m_nurbsData.end(); ++iterNurbs)
@@ -509,7 +509,7 @@ void libvisio::VSDParser::_flushShape()
     m_collector->collectName(iterName->first, m_currentShapeLevel+2, iterName->second.m_data, iterName->second.m_format);
 
   if (m_shape.m_foreign)
-    m_collector->collectForeignData(m_shape.m_foreign->dataLevel, m_shape.m_foreign->data);
+    m_collector->collectForeignData(m_currentShapeLevel+1, m_shape.m_foreign->data);
 
   if (!m_shape.m_fields.empty())
     m_shape.m_fields.handle(m_collector);
@@ -589,7 +589,6 @@ void libvisio::VSDParser::readForeignData(WPXInputStream *input)
   if (!m_shape.m_foreign)
     m_shape.m_foreign = new ForeignData();
   m_shape.m_foreign->dataId = m_header.id;
-  m_shape.m_foreign->dataLevel = m_header.level;
   m_shape.m_foreign->data = binaryData;
 }
 
@@ -609,7 +608,6 @@ void libvisio::VSDParser::readOLEData(WPXInputStream *input)
     m_shape.m_foreign = new ForeignData();
   // Append data instead of setting it - allows multi-stream OLE objects
   m_shape.m_foreign->data.append(oleData);
-  m_shape.m_foreign->dataLevel = m_header.level;
 
 }
 
@@ -881,7 +879,6 @@ void libvisio::VSDParser::readForeignDataType(WPXInputStream *input)
   if (!m_shape.m_foreign)
     m_shape.m_foreign = new ForeignData();
   m_shape.m_foreign->typeId = m_header.id;
-  m_shape.m_foreign->typeLevel = m_header.level;
   m_shape.m_foreign->type = foreignType;
   m_shape.m_foreign->format = foreignFormat;
   m_shape.m_foreign->offsetX = imgOffsetX;

@@ -116,8 +116,6 @@ struct ForeignData
 {
   unsigned typeId;
   unsigned dataId;
-  unsigned typeLevel;
-  unsigned dataLevel;
   unsigned type;
   unsigned format;
   double offsetX;
@@ -128,8 +126,6 @@ struct ForeignData
   ForeignData()
     : typeId(0),
       dataId(0),
-      typeLevel(0),
-      dataLevel(0),
       type(0),
       format(0),
       offsetX(0.0),

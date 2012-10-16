@@ -126,32 +126,29 @@ void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64
   while (!tmpStream.atEOS())
   {
     const char tmpChar = (char)readU8(&tmpStream);
-    if (!isalnum(tmpChar) && (tmpChar != '+') && (tmpChar != '/') && (tmpChar != '='))
+    if (std::string::npos == base64Chars.find(tmpChar) && (tmpChar != '='))
       continue;
     if (tmpChar == '=')
       break;
     tmpCharsToDecode[i++] = tmpChar;
-    if (i == 4)
+    i %= 4;
+    if (!i)
     {
-      for (unsigned k = 0; k < 4; i++)
+      for (unsigned k = 0; k < 4; k++)
         tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
 
       data.append((unsigned char)((tmpCharsToDecode[0] << 2) | ((tmpCharsToDecode[1] & 0x30) >> 4)));
       data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) | ((tmpCharsToDecode[2] & 0x3c) >> 2)));
       data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) | tmpCharsToDecode[3]));
     }
-    i = 0;
   }
 
   if (i)
   {
+    for (unsigned j = i; j < 4; j++)
+      tmpCharsToDecode[j] = 0;
     for (unsigned k = 0; k < 4; k++)
-    {
-      if (k < i)
-        tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
-      else
-        tmpCharsToDecode[k] = 0;
-    }
+      tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
 
     data.append((unsigned char)((tmpCharsToDecode[0] << 2) | ((tmpCharsToDecode[1] & 0x30) >> 4)));
     if (i > 1)

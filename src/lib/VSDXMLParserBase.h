@@ -108,7 +108,8 @@ protected:
   void readShapeData(xmlTextReaderPtr reader);
   void readShapeId(xmlTextReaderPtr reader);
   void readShapeList(xmlTextReaderPtr reader);
-  virtual void readForeignData(xmlTextReaderPtr reader) = 0;
+  void readForeignData(xmlTextReaderPtr reader);
+  virtual void getBinaryData(xmlTextReaderPtr reader) = 0;
   void readShape(xmlTextReaderPtr reader);
   void readColours(xmlTextReaderPtr reader);
   void readCharList(xmlTextReaderPtr reader);

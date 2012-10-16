@@ -67,7 +67,7 @@ std::string getRelationshipsForTarget(const char *target)
 
 
 libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
-  : VSDXMLParserBase(), m_input(input), m_painter(painter), m_currentDepth(0)
+  : VSDXMLParserBase(), m_input(input), m_painter(painter), m_currentDepth(0), m_rels(0)
 {
   input->seek(0, WPX_SEEK_CUR);
   m_input = new VSDZipStream(input);
@@ -312,6 +312,8 @@ void libvisio::VSDXParser::processXmlDocument(WPXInputStream *input, VSDXRelatio
   if (!input)
     return;
 
+  m_rels = &rels;
+
   xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
   if (!reader)
     return;
@@ -441,7 +443,10 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     else if (tokenType == XML_READER_TYPE_END_ELEMENT && !m_extractStencils)
     {
+      m_isShapeStarted = false;
       _handleLevelChange(0);
+      m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
+      m_shapeList.clear();
       m_collector->endPage();
     }
     break;
@@ -472,6 +477,47 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     {
       _handleLevelChange(0);
       m_isInStyles = false;
+    }
+    break;
+  case XML_SHAPE:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+    {
+      readShape(reader);
+      readShapeProperties(reader);
+    }
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
+    {
+      _flushShape();
+      m_shape.clear();
+    }
+    break;
+  case XML_SHAPES:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+    {
+      if (m_isShapeStarted)
+      {
+        m_shapeStack.push(m_shape);
+        m_shapeLevelStack.push(m_currentShapeLevel);
+        m_currentShapeLevel = 0;
+      }
+    }
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
+    {
+      if (!m_shapeStack.empty() && !m_shapeLevelStack.empty())
+      {
+        m_shape = m_shapeStack.top();
+        m_shapeStack.pop();
+        m_currentShapeLevel = m_shapeLevelStack.top();
+        m_shapeLevelStack.pop();
+      }
+      else
+      {
+        m_isShapeStarted = false;
+        while (!m_shapeLevelStack.empty())
+          m_shapeLevelStack.pop();
+        while (!m_shapeStack.empty())
+          m_shapeStack.pop();
+      }
     }
     break;
   default:
@@ -947,9 +993,47 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readBoolData(m_shape.m_xform.flipY, reader);
       break;
+    case XML_IMGOFFSETX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_foreign)
+          m_shape.m_foreign = new ForeignData();
+        ret = readDoubleData(m_shape.m_foreign->offsetX, reader);
+      }
+      break;
+    case XML_IMGOFFSETY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_foreign)
+          m_shape.m_foreign = new ForeignData();
+        ret = readDoubleData(m_shape.m_foreign->offsetY, reader);
+      }
+      break;
+    case XML_IMGWIDTH:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_foreign)
+          m_shape.m_foreign = new ForeignData();
+        ret = readDoubleData(m_shape.m_foreign->width, reader);
+      }
+      break;
+    case XML_IMGHEIGHT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_foreign)
+          m_shape.m_foreign = new ForeignData();
+        ret = readDoubleData(m_shape.m_foreign->height, reader);
+      }
+      break;
     case XML_GEOMETRY:
       break;
     case XML_FOREIGNDATA:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readForeignData(reader);
+      break;
+    case XML_SHAPES:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        processXmlNode(reader);
       break;
     case XML_RESIZEMODE:
     default:
@@ -957,12 +1041,36 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
     }
   }
   while ((XML_SHAPE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+
+  if (XML_SHAPE == tokenId && XML_READER_TYPE_END_ELEMENT == tokenType)
+  {
+    _flushShape();
+    m_shape.clear();
+  }
 }
 
-void libvisio::VSDXParser::readForeignData(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
 {
+  xmlTextReaderRead(reader);
+  int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+  int tokenType = xmlTextReaderNodeType(reader);
+
+  m_currentBinaryData.clear();
+  if (XML_REL == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
+  {
+    xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("r:id"));
+    if (id)
+    {
+      const VSDXRelationship *rel = m_rels->getRelationshipById((char *)id);
+      if (rel)
+      {
+        if ("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" == rel->getType())
+          extractBinaryData(m_input, rel->getTarget().c_str());
+      }
+      xmlFree(id);
+    }
+  }
+  m_shape.m_foreign->data = m_currentBinaryData;
 }
-
-
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
