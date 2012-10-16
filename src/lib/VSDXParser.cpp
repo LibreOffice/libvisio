@@ -485,11 +485,6 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
       readShape(reader);
       readShapeProperties(reader);
     }
-    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
-    {
-      _flushShape();
-      m_shape.clear();
-    }
     break;
   case XML_SHAPES:
     if (XML_READER_TYPE_ELEMENT == tokenType)
