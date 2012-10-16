@@ -467,7 +467,7 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
   }
 }
 
-void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
+void libvisio::VSDParser::_flushShape()
 {
   if (!m_isShapeStarted)
     return;
@@ -476,55 +476,55 @@ void libvisio::VSDParser::_flushShape(const libvisio::VSDShape &shape)
 
   m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
 
-  m_collector->collectXFormData(m_currentShapeLevel+2, shape.m_xform);
+  m_collector->collectXFormData(m_currentShapeLevel+2, m_shape.m_xform);
 
-  if (shape.m_txtxform)
-    m_collector->collectTxtXForm(m_currentShapeLevel+2, *(shape.m_txtxform));
-  if (shape.m_lineStyle)
-    m_collector->collectLine(m_currentShapeLevel+2, shape.m_lineStyle->width, shape.m_lineStyle->colour, shape.m_lineStyle->pattern,
-                             shape.m_lineStyle->startMarker, shape.m_lineStyle->endMarker, shape.m_lineStyle->cap);
-  if (shape.m_fillStyle)
-    m_collector->collectFillAndShadow(m_currentShapeLevel+2, shape.m_fillStyle->fgColour, shape.m_fillStyle->bgColour, shape.m_fillStyle->pattern,
-                                      shape.m_fillStyle->fgTransparency, shape.m_fillStyle->bgTransparency, shape.m_fillStyle->shadowPattern,
-                                      shape.m_fillStyle->shadowFgColour, shape.m_fillStyle->shadowOffsetX, shape.m_fillStyle->shadowOffsetY);
-  if (shape.m_textBlockStyle)
-    m_collector->collectTextBlock(m_currentShapeLevel+2, shape.m_textBlockStyle->leftMargin, shape.m_textBlockStyle->rightMargin,
-                                  shape.m_textBlockStyle->topMargin, shape.m_textBlockStyle->bottomMargin, shape.m_textBlockStyle->verticalAlign,
-                                  shape.m_textBlockStyle->isTextBkgndFilled, shape.m_textBlockStyle->textBkgndColour,
-                                  shape.m_textBlockStyle->defaultTabStop, shape.m_textBlockStyle->textDirection);
+  if (m_shape.m_txtxform)
+    m_collector->collectTxtXForm(m_currentShapeLevel+2, *(m_shape.m_txtxform));
+  if (m_shape.m_lineStyle)
+    m_collector->collectLine(m_currentShapeLevel+2, m_shape.m_lineStyle->width, m_shape.m_lineStyle->colour, m_shape.m_lineStyle->pattern,
+                             m_shape.m_lineStyle->startMarker, m_shape.m_lineStyle->endMarker, m_shape.m_lineStyle->cap);
+  if (m_shape.m_fillStyle)
+    m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
+                                      m_shape.m_fillStyle->fgTransparency, m_shape.m_fillStyle->bgTransparency, m_shape.m_fillStyle->shadowPattern,
+                                      m_shape.m_fillStyle->shadowFgColour, m_shape.m_fillStyle->shadowOffsetX, m_shape.m_fillStyle->shadowOffsetY);
+  if (m_shape.m_textBlockStyle)
+    m_collector->collectTextBlock(m_currentShapeLevel+2, m_shape.m_textBlockStyle->leftMargin, m_shape.m_textBlockStyle->rightMargin,
+                                  m_shape.m_textBlockStyle->topMargin, m_shape.m_textBlockStyle->bottomMargin, m_shape.m_textBlockStyle->verticalAlign,
+                                  m_shape.m_textBlockStyle->isTextBkgndFilled, m_shape.m_textBlockStyle->textBkgndColour,
+                                  m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
 
-  if (shape.m_foreign && shape.m_foreign->typeLevel)
-    m_collector->collectForeignDataType(shape.m_foreign->typeLevel, shape.m_foreign->type, shape.m_foreign->format,
-                                        shape.m_foreign->offsetX, shape.m_foreign->offsetY, shape.m_foreign->width, shape.m_foreign->height);
+  if (m_shape.m_foreign && m_shape.m_foreign->typeLevel)
+    m_collector->collectForeignDataType(m_shape.m_foreign->typeLevel, m_shape.m_foreign->type, m_shape.m_foreign->format,
+                                        m_shape.m_foreign->offsetX, m_shape.m_foreign->offsetY, m_shape.m_foreign->width, m_shape.m_foreign->height);
 
-  for (std::map<unsigned, NURBSData>::const_iterator iterNurbs = shape.m_nurbsData.begin(); iterNurbs != shape.m_nurbsData.end(); ++iterNurbs)
+  for (std::map<unsigned, NURBSData>::const_iterator iterNurbs = m_shape.m_nurbsData.begin(); iterNurbs != m_shape.m_nurbsData.end(); ++iterNurbs)
     m_collector->collectShapeData(iterNurbs->first, m_currentShapeLevel+2, iterNurbs->second.xType, iterNurbs->second.yType,
                                   iterNurbs->second.degree, iterNurbs->second.lastKnot, iterNurbs->second.points,
                                   iterNurbs->second.knots, iterNurbs->second.weights);
 
-  for (std::map<unsigned, PolylineData>::const_iterator iterPoly = shape.m_polylineData.begin(); iterPoly != shape.m_polylineData.end(); ++iterPoly)
+  for (std::map<unsigned, PolylineData>::const_iterator iterPoly = m_shape.m_polylineData.begin(); iterPoly != m_shape.m_polylineData.end(); ++iterPoly)
     m_collector->collectShapeData(iterPoly->first, m_currentShapeLevel+2, iterPoly->second.xType, iterPoly->second.yType, iterPoly->second.points);
 
-  for (std::map<unsigned, VSDName>::const_iterator iterName = shape.m_names.begin(); iterName != shape.m_names.end(); ++iterName)
+  for (std::map<unsigned, VSDName>::const_iterator iterName = m_shape.m_names.begin(); iterName != m_shape.m_names.end(); ++iterName)
     m_collector->collectName(iterName->first, m_currentShapeLevel+2, iterName->second.m_data, iterName->second.m_format);
 
-  if (shape.m_foreign && shape.m_foreign->dataLevel)
-    m_collector->collectForeignData(shape.m_foreign->dataLevel, shape.m_foreign->data);
+  if (m_shape.m_foreign && m_shape.m_foreign->dataLevel)
+    m_collector->collectForeignData(m_shape.m_foreign->dataLevel, m_shape.m_foreign->data);
 
-  if (!shape.m_fields.empty())
-    shape.m_fields.handle(m_collector);
+  if (!m_shape.m_fields.empty())
+    m_shape.m_fields.handle(m_collector);
 
-  if (shape.m_text.size())
-    m_collector->collectText(m_currentShapeLevel+1, shape.m_text, shape.m_textFormat);
+  if (m_shape.m_text.size())
+    m_collector->collectText(m_currentShapeLevel+1, m_shape.m_text, m_shape.m_textFormat);
 
 
-  for (std::vector<VSDGeometryList>::const_iterator iterGeom = shape.m_geometries.begin(); iterGeom != shape.m_geometries.end(); ++iterGeom)
+  for (std::vector<VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
     iterGeom->handle(m_collector);
 
-  for (std::vector<VSDCharacterList>::const_iterator iterChar = shape.m_charListVector.begin(); iterChar != shape.m_charListVector.end(); ++iterChar)
+  for (std::vector<VSDCharacterList>::const_iterator iterChar = m_shape.m_charListVector.begin(); iterChar != m_shape.m_charListVector.end(); ++iterChar)
     iterChar->handle(m_collector);
 
-  for (std::vector<VSDParagraphList>::const_iterator iterPara = shape.m_paraListVector.begin(); iterPara != shape.m_paraListVector.end(); ++iterPara)
+  for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
     iterPara->handle(m_collector);
 
 }
@@ -549,7 +549,7 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
   {
     if (!m_isStencilStarted)
     {
-      _flushShape(m_shape);
+      _flushShape();
       m_shape.clear();
     }
     m_isShapeStarted = false;

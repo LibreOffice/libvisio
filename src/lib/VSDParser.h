@@ -136,7 +136,7 @@ protected:
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);
   Colour _colourFromIndex(unsigned idx);
-  void _flushShape(const VSDShape &shape);
+  void _flushShape();
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
