@@ -430,53 +430,12 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
     iterPara->handle(m_collector);
+
+  m_collector->collectUnhandledChunk(0,0);
 }
 
 void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)
 {
-  if (level == m_currentLevel)
-    return;
-  if (level <= m_currentShapeLevel+1)
-  {
-    m_geomListVector.push_back(m_geomList);
-    m_charListVector.push_back(m_charList);
-    m_paraListVector.push_back(m_paraList);
-    // reinitialize, but don't clear, because we want those pointers to be valid until we handle the whole vector
-    m_geomList = new VSDGeometryList();
-    m_charList = new VSDCharacterList();
-    m_paraList = new VSDParagraphList();
-    m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
-    m_shapeList.clear();
-  }
-  if (level <= m_currentShapeLevel)
-  {
-    for (std::vector<VSDGeometryList *>::iterator iter = m_geomListVector.begin(); iter != m_geomListVector.end(); ++iter)
-    {
-      (*iter)->handle(m_collector);
-      (*iter)->clear();
-      delete *iter;
-    }
-    m_geomListVector.clear();
-    for (std::vector<VSDCharacterList *>::iterator iter2 = m_charListVector.begin(); iter2 != m_charListVector.end(); ++iter2)
-    {
-      (*iter2)->handle(m_collector);
-      (*iter2)->clear();
-      delete *iter2;
-    }
-    m_charListVector.clear();
-    for (std::vector<VSDParagraphList *>::iterator iter3 = m_paraListVector.begin(); iter3 != m_paraListVector.end(); ++iter3)
-    {
-      (*iter3)->handle(m_collector);
-      (*iter3)->clear();
-      delete *iter3;
-    }
-    m_paraListVector.clear();
-    if (!m_fieldList.empty())
-    {
-      m_fieldList.handle(m_collector);
-      m_fieldList.clear();
-    }
-  }
   m_currentLevel = level;
 }
 

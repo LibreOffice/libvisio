@@ -200,7 +200,11 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     else if (tokenType == XML_READER_TYPE_END_ELEMENT && !m_extractStencils)
     {
+      m_isShapeStarted = false;
       _handleLevelChange(0);
+      m_collector->collectUnhandledChunk(0,0);
+      m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
+	  m_shapeList.clear();
       m_collector->endPage();
     }
     break;
@@ -221,6 +225,41 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_SHAPE:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readShape(reader);
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
+    {
+      _flushShape();
+      m_shape.clear();
+    }
+    break;
+  case XML_SHAPES:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+    {
+      if (m_isShapeStarted)
+      {
+        m_shapeStack.push(m_shape);
+        m_shape.clear();
+        m_shapeLevelStack.push(m_currentShapeLevel);
+        m_currentShapeLevel = 0;
+      }
+    }
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
+    {
+      if (!m_shapeStack.empty() && !m_shapeLevelStack.empty())
+      {
+        m_shape = m_shapeStack.top();
+        m_shapeStack.pop();
+        m_currentShapeLevel = m_shapeLevelStack.top();
+        m_shapeLevelStack.pop();
+      }
+      else
+      {
+        m_isShapeStarted = false;
+        while (!m_shapeLevelStack.empty())
+          m_shapeLevelStack.pop();
+        while (!m_shapeStack.empty())
+          m_shapeStack.pop();
+      }
+    }
     break;
   case XML_SOLUTIONXML:
     if (XML_READER_TYPE_ELEMENT == tokenType)
