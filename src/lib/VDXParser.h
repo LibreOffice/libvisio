@@ -76,6 +76,7 @@ private:
   void readPageProps(xmlTextReaderPtr reader);
   void readFonts(xmlTextReaderPtr reader);
   void readTextBlock(xmlTextReaderPtr reader);
+  void readForeignInfo(xmlTextReaderPtr reader);
 
   void readForeignData(xmlTextReaderPtr reader);
 

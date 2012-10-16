@@ -46,7 +46,7 @@ libvisio::VSDXMLParserBase::VSDXMLParserBase()
     m_isStencilStarted(false), m_currentStencilID((unsigned)-1), m_extractStencils(false), m_isInStyles(false),
     m_currentLevel(0), m_currentShapeLevel(0), m_colours(), m_charList(new VSDCharacterList()), m_charListVector(),
     m_fieldList(), m_geomList(new VSDGeometryList()), m_geomListVector(), m_paraList(new VSDParagraphList()),
-    m_paraListVector(), m_shapeList(), m_currentBinaryData(), m_shapeStack()
+    m_paraListVector(), m_shapeList(), m_currentBinaryData(), m_shapeStack(), m_shapeLevelStack(), m_isShapeStarted(false)
 {
 }
 
@@ -127,6 +127,7 @@ void libvisio::VSDXMLParserBase::readShapeList(xmlTextReaderPtr /* reader */)
 
 void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
 {
+  m_isShapeStarted = true;
   m_currentShapeLevel = getElementDepth(reader);
 
   xmlChar *idString = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));

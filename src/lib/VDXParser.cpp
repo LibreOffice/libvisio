@@ -772,8 +772,106 @@ int libvisio::VDXParser::getElementDepth(xmlTextReaderPtr reader)
   return xmlTextReaderDepth(reader);
 }
 
-void libvisio::VDXParser::readForeignData(xmlTextReaderPtr /* reader */)
+void libvisio::VDXParser::readForeignData(xmlTextReaderPtr reader)
 {
+  VSD_DEBUG_MSG(("VSDXParser::readForeignData\n"));
+  if (!m_shape.m_foreign)
+    m_shape.m_foreign = new ForeignData();
+
+  xmlChar *foreignTypeString = xmlTextReaderGetAttribute(reader, BAD_CAST("ForeignType"));
+  if (foreignTypeString)
+  {
+    if (xmlStrEqual(foreignTypeString, BAD_CAST("Bitmap")))
+      m_shape.m_foreign->type = 1;
+    else if (xmlStrEqual(foreignTypeString, BAD_CAST("Object")))
+      m_shape.m_foreign->type = 2;
+    else if (xmlStrEqual(foreignTypeString, BAD_CAST("EnhMetaFile")))
+      m_shape.m_foreign->type = 4;
+    xmlFree(foreignTypeString);
+  }
+  xmlChar *foreignFormatString = xmlTextReaderGetAttribute(reader, BAD_CAST("CompressionType"));
+  if (foreignFormatString)
+  {
+    if (xmlStrEqual(foreignFormatString, BAD_CAST("JPEG")))
+      m_shape.m_foreign->format = 1;
+    else if (xmlStrEqual(foreignFormatString, BAD_CAST("GIF")))
+      m_shape.m_foreign->format = 2;
+    else if (xmlStrEqual(foreignFormatString, BAD_CAST("TIFF")))
+      m_shape.m_foreign->format = 3;
+    else if (xmlStrEqual(foreignFormatString, BAD_CAST("PNG")))
+      m_shape.m_foreign->format = 4;
+    else
+      m_shape.m_foreign->format = 0;
+    xmlFree(foreignFormatString);
+  }
+  else
+    m_shape.m_foreign->format = 0;
+
+  xmlTextReaderRead(reader);
+  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
+  {
+    const xmlChar *data = xmlTextReaderConstValue(reader);
+    if (data)
+    {
+      m_shape.m_foreign->data.clear();
+      appendFromBase64(m_shape.m_foreign->data, data, xmlStrlen(data));
+    }
+  }
+}
+
+void libvisio::VDXParser::readForeignInfo(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readForeignInfo: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_IMGOFFSETX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_foreign)
+          m_shape.m_foreign = new ForeignData();
+        ret = readDoubleData(m_shape.m_foreign->offsetX, reader);
+      }
+      break;
+    case XML_IMGOFFSETY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_foreign)
+          m_shape.m_foreign = new ForeignData();
+        ret = readDoubleData(m_shape.m_foreign->offsetY, reader);
+      }
+      break;
+    case XML_IMGWIDTH:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_foreign)
+          m_shape.m_foreign = new ForeignData();
+        ret = readDoubleData(m_shape.m_foreign->height, reader);
+      }
+      break;
+    case XML_IMGHEIGHT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_foreign)
+          m_shape.m_foreign = new ForeignData();
+        ret = readDoubleData(m_shape.m_foreign->width, reader);
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  while ((XML_FOREIGN != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 
