@@ -701,7 +701,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
 int libvisio::VDXParser::readLongData(long &value, xmlTextReaderPtr reader)
 {
   int ret = xmlTextReaderRead(reader);
-  if (3 == xmlTextReaderNodeType(reader))
+  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
   {
     const xmlChar *stringValue = xmlTextReaderConstValue(reader);
     if (stringValue)
@@ -717,7 +717,7 @@ int libvisio::VDXParser::readLongData(long &value, xmlTextReaderPtr reader)
 int libvisio::VDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
 {
   int ret = xmlTextReaderRead(reader);
-  if (3 == xmlTextReaderNodeType(reader))
+  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
   {
     const xmlChar *stringValue = xmlTextReaderConstValue(reader);
     if (stringValue)
@@ -733,7 +733,7 @@ int libvisio::VDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
 int libvisio::VDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
 {
   int ret = xmlTextReaderRead(reader);
-  if (3 == xmlTextReaderNodeType(reader))
+  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
   {
     const xmlChar *stringValue = xmlTextReaderConstValue(reader);
     if (stringValue)
@@ -749,7 +749,7 @@ int libvisio::VDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
 int libvisio::VDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
 {
   int ret = xmlTextReaderRead(reader);
-  if (3 == xmlTextReaderNodeType(reader))
+  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
   {
     const xmlChar *stringValue = xmlTextReaderConstValue(reader);
     if (stringValue)
