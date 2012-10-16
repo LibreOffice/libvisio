@@ -77,10 +77,6 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr /* reader 
 {
 }
 
-void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr /* reader */)
-{
-}
-
 void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr /* reader */)
 {
 }
@@ -126,10 +122,6 @@ void libvisio::VSDXMLParserBase::readShapeId(xmlTextReaderPtr /* reader */)
 }
 
 void libvisio::VSDXMLParserBase::readShapeList(xmlTextReaderPtr /* reader */)
-{
-}
-
-void libvisio::VSDXMLParserBase::readForeignDataType(xmlTextReaderPtr /* reader */)
 {
 }
 

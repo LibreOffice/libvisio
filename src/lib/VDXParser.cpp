@@ -448,9 +448,6 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 
 void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
 {
-  XForm xform;
-
-  unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = -1;
   int tokenType = -1;
@@ -467,39 +464,39 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
     {
     case XML_PINX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(xform.pinX, reader);
+        ret = readDoubleData(m_shape.m_xform.pinX, reader);
       break;
     case XML_PINY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(xform.pinY, reader);
+        ret = readDoubleData(m_shape.m_xform.pinY, reader);
       break;
     case XML_WIDTH:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(xform.height, reader);
+        ret = readDoubleData(m_shape.m_xform.height, reader);
       break;
     case XML_HEIGHT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(xform.width, reader);
+        ret = readDoubleData(m_shape.m_xform.width, reader);
       break;
     case XML_LOCPINX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(xform.pinLocX, reader);
+        ret = readDoubleData(m_shape.m_xform.pinLocX, reader);
       break;
     case XML_LOCPINY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(xform.pinLocY, reader);
+        ret = readDoubleData(m_shape.m_xform.pinLocY, reader);
       break;
     case XML_ANGLE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(xform.angle, reader);
+        ret = readDoubleData(m_shape.m_xform.angle, reader);
       break;
     case XML_FLIPX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readBoolData(xform.flipX, reader);
+        ret = readBoolData(m_shape.m_xform.flipX, reader);
       break;
     case XML_FLIPY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readBoolData(xform.flipY, reader);
+        ret = readBoolData(m_shape.m_xform.flipY, reader);
       break;
     case XML_RESIZEMODE:
     default:
@@ -507,8 +504,6 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
     }
   }
   while ((XML_XFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
-
-  m_collector->collectXFormData(level, xform);
 }
 
 void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr /* reader */)
@@ -776,5 +771,11 @@ int libvisio::VDXParser::getElementDepth(xmlTextReaderPtr reader)
 {
   return xmlTextReaderDepth(reader);
 }
+
+void libvisio::VDXParser::readForeignData(xmlTextReaderPtr /* reader */)
+{
+}
+
+
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

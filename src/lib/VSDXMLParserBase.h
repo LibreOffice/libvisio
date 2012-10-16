@@ -93,7 +93,6 @@ protected:
   // Functions reading the DiagramML document content
 
   void readEllipticalArcTo(xmlTextReaderPtr reader);
-  void readForeignData(xmlTextReaderPtr reader);
   void readEllipse(xmlTextReaderPtr reader);
   void readGeomList(xmlTextReaderPtr reader);
   void readGeometry(xmlTextReaderPtr reader);
@@ -106,7 +105,7 @@ protected:
   void readShapeData(xmlTextReaderPtr reader);
   void readShapeId(xmlTextReaderPtr reader);
   void readShapeList(xmlTextReaderPtr reader);
-  void readForeignDataType(xmlTextReaderPtr reader);
+  virtual void readForeignData(xmlTextReaderPtr reader) = 0;
   void readShape(xmlTextReaderPtr reader);
   void readColours(xmlTextReaderPtr reader);
   void readCharList(xmlTextReaderPtr reader);
