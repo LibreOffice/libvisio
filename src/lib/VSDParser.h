@@ -162,6 +162,9 @@ protected:
   double m_shadowOffsetX;
   double m_shadowOffsetY;
 
+  VSDGeometryList *m_currentGeometryList;
+  unsigned m_currentGeomListCount;
+
 private:
   VSDParser();
   VSDParser(const VSDParser &);

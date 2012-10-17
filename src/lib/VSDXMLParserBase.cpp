@@ -477,8 +477,8 @@ void libvisio::VSDXMLParserBase::_flushShape()
     m_collector->collectText(m_currentShapeLevel+1, m_shape.m_text, m_shape.m_textFormat);
 
 
-  for (std::vector<VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
-    iterGeom->handle(m_collector);
+  for (std::map<unsigned, VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
+    iterGeom->second.handle(m_collector);
 
   for (std::vector<VSDCharacterList>::const_iterator iterChar = m_shape.m_charListVector.begin(); iterChar != m_shape.m_charListVector.end(); ++iterChar)
     iterChar->handle(m_collector);

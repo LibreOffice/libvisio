@@ -53,7 +53,7 @@ public:
   VSDShape &operator=(const VSDShape &shape);
   void clear();
 
-  std::vector<VSDGeometryList> m_geometries;
+  std::map<unsigned, VSDGeometryList> m_geometries;
   VSDShapeList m_shapeList;
   VSDFieldList m_fields;
   ForeignData *m_foreign;

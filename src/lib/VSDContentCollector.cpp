@@ -1653,14 +1653,21 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
   NURBSData data;
   if (dataID == 0xFFFFFFFE) // Use stencil NURBS data
   {
-    if (!m_stencilShape || m_stencilShape->m_geometries.size() < m_currentGeometryCount)
+    if (!m_stencilShape)
     {
       _handleLevelChange(level);
       return;
     }
 
     // Get stencil geometry so as to find stencil NURBS data ID
-    VSDGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
+    std::map<unsigned, VSDGeometryList>::const_iterator cstiter = m_stencilShape->m_geometries.find(m_currentGeometryCount-1);
+    VSDGeometryListElement *element = 0;
+    if (cstiter == m_stencilShape->m_geometries.end())
+    {
+      _handleLevelChange(level);
+      return;
+    }
+    element = cstiter->second.getElement(id);
     iter = m_stencilShape->m_nurbsData.find(element ? element->getDataID() : (unsigned)-1);
     iterEnd =  m_stencilShape->m_nurbsData.end();
   }
@@ -1736,7 +1743,14 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned leve
     }
 
     // Get stencil geometry so as to find stencil polyline data ID
-    VSDGeometryListElement *element = m_stencilShape->m_geometries[m_currentGeometryCount-1].getElement(id);
+    std::map<unsigned, VSDGeometryList>::const_iterator cstiter = m_stencilShape->m_geometries.find(m_currentGeometryCount-1);
+    VSDGeometryListElement *element = 0;
+    if (cstiter == m_stencilShape->m_geometries.end())
+    {
+      _handleLevelChange(level);
+      return;
+    }
+    element = cstiter->second.getElement(id);
     iter = m_stencilShape->m_polylineData.find(element ? element->getDataID() : (unsigned)-1);
     iterEnd = m_stencilShape->m_polylineData.end();
   }
@@ -2342,11 +2356,12 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
 
         if (m_currentFillGeometry.empty() && m_currentLineGeometry.empty() && !m_noShow)
         {
-          for (unsigned i = 0; i < m_stencilShape->m_geometries.size(); i++)
+          for (std::map<unsigned, VSDGeometryList>::const_iterator cstiter = m_stencilShape->m_geometries.begin();
+               cstiter != m_stencilShape->m_geometries.end(); ++cstiter)
           {
             m_x = 0.0;
             m_y = 0.0;
-            m_stencilShape->m_geometries[i].handle(this);
+            cstiter->second.handle(this);
           }
         }
         m_isStencilStarted = false;
