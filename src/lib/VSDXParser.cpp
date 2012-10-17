@@ -637,6 +637,14 @@ int libvisio::VSDXParser::readLongData(long &value, xmlTextReaderPtr reader)
   return -1;
 }
 
+int libvisio::VSDXParser::readByteData(unsigned char &value, xmlTextReaderPtr reader)
+{
+  long longValue = 0;
+  int ret = readLongData(longValue, reader);
+  value = (unsigned char) longValue;
+  return ret;
+}
+
 int libvisio::VSDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
 {
   xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));

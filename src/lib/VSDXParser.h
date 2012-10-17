@@ -55,6 +55,7 @@ private:
   // Helper functions
 
   int readLongData(long &value, xmlTextReaderPtr reader);
+  int readByteData(unsigned char &value, xmlTextReaderPtr reader);
   int readDoubleData(double &value, xmlTextReaderPtr reader);
   int readBoolData(bool &value, xmlTextReaderPtr reader);
   int readColourData(Colour &value, xmlTextReaderPtr reader);
