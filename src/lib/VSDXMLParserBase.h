@@ -78,6 +78,7 @@ protected:
   std::stack<VSDShape> m_shapeStack;
   std::stack<unsigned> m_shapeLevelStack;
   bool m_isShapeStarted;
+  VSDGeometryList *m_currentGeometryList;
 
   // Helper functions
 
