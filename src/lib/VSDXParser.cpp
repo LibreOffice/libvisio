@@ -381,6 +381,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
       readColours(reader);
     break;
   case XML_MASTER:
+    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       if (m_extractStencils)
@@ -408,12 +409,28 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     break;
   case XML_MASTERS:
+    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
-      if (m_extractStencils)
-        m_isStencilStarted = false;
+      if (m_stencils.count())
+      {
+        // This skips page, because we are spitting out the stencils only
+        int ret = 1;
+        do
+        {
+          ret = xmlTextReaderRead(reader);
+          tokenId = getElementToken(reader);
+          tokenType = xmlTextReaderNodeType(reader);
+        }
+        while ((XML_MASTERS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+      }
       else
-        m_isStencilStarted = true;
+      {
+        if (m_extractStencils)
+          m_isStencilStarted = false;
+        else
+          m_isStencilStarted = true;
+      }
     }
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
@@ -424,6 +441,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     break;
   case XML_PAGE:
+    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       if (m_extractStencils)
@@ -443,7 +461,6 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     else if (tokenType == XML_READER_TYPE_END_ELEMENT && !m_extractStencils)
     {
-      m_isShapeStarted = false;
       _handleLevelChange(0);
       m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
       m_shapeList.clear();
@@ -451,6 +468,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     break;
   case XML_PAGES:
+    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
       m_isStencilStarted = false;
     else if (XML_READER_TYPE_END_ELEMENT == tokenType && !m_extractStencils)
@@ -483,7 +501,24 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       readShape(reader);
-      readShapeProperties(reader);
+      if (!xmlTextReaderIsEmptyElement(reader))
+        readShapeProperties(reader);
+      else
+      {
+        if (m_isStencilStarted)
+          m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
+        else
+          _flushShape();
+        m_shape.clear();
+      }
+    }
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
+    {
+      if (m_isStencilStarted)
+        m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
+      else
+        _flushShape();
+      m_shape.clear();
     }
     break;
   case XML_SHAPES:
@@ -493,7 +528,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
       {
         m_shapeStack.push(m_shape);
         m_shapeLevelStack.push(m_currentShapeLevel);
-        m_currentShapeLevel = 0;
+        _handleLevelChange(0);
       }
     }
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
@@ -1026,22 +1061,23 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readForeignData(reader);
       break;
-    case XML_SHAPES:
-      if (XML_READER_TYPE_ELEMENT == tokenType)
-        processXmlNode(reader);
-      break;
     case XML_RESIZEMODE:
     default:
       break;
     }
   }
-  while ((XML_SHAPE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_SHAPES != tokenId) && (XML_SHAPE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (XML_SHAPE == tokenId && XML_READER_TYPE_END_ELEMENT == tokenType)
   {
-    _flushShape();
+    if (m_isStencilStarted)
+      m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
+    else
+      _flushShape();
     m_shape.clear();
   }
+  else if (XML_SHAPES == tokenId)
+    processXmlNode(reader);
 }
 
 void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
@@ -1059,7 +1095,8 @@ void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
       const VSDXRelationship *rel = m_rels->getRelationshipById((char *)id);
       if (rel)
       {
-        if ("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" == rel->getType())
+        if ("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" == rel->getType()
+            || "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" == rel->getType())
           extractBinaryData(m_input, rel->getTarget().c_str());
       }
       xmlFree(id);

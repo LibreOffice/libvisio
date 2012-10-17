@@ -132,18 +132,23 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
 
   xmlChar *idString = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
   xmlChar *masterPageString = xmlTextReaderGetAttribute(reader, BAD_CAST("MasterPage"));
+  if (!masterPageString)
+    masterPageString = xmlTextReaderGetAttribute(reader, BAD_CAST("Master"));
   xmlChar *masterShapeString = xmlTextReaderGetAttribute(reader, BAD_CAST("MasterShape"));
   xmlChar *lineStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("LineStyle"));
   xmlChar *fillStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("FillStyle"));
   xmlChar *textStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle"));
 
   unsigned id = (unsigned)(idString ? xmlStringToLong(idString) : -1);
-  unsigned masterPage =  (unsigned)(masterPageString ? xmlStringToLong(masterPageString) : -1);
+  unsigned masterPage = (unsigned)-1;
+  if (!m_shapeStack.empty())
+    masterPage = m_shapeStack.top().m_masterPage;
+  if (masterPageString)
+    masterPage = xmlStringToLong(masterPageString);
   unsigned masterShape =  (unsigned)(masterShapeString ? xmlStringToLong(masterShapeString) : -1);
   unsigned lineStyle =  (unsigned)(lineStyleString ? xmlStringToLong(lineStyleString) : -1);
   unsigned fillStyle =  (unsigned)(fillStyleString ? xmlStringToLong(fillStyleString) : -1);
   unsigned textStyle =  (unsigned)(textStyleString ? xmlStringToLong(textStyleString) : -1);
-
   if (idString)
     xmlFree(idString);
   if (masterPageString)
@@ -158,20 +163,26 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
     xmlFree(textStyleString);
 
   m_shape.clear();
-  const VSDShape *tmpShape = m_stencils.getStencilShape(masterPage, masterShape);
-  if (tmpShape)
+  const VSDStencil *tmpStencil = m_stencils.getStencil(masterPage);
+  if (tmpStencil)
   {
-    if (tmpShape->m_foreign)
-      m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
-    m_shape.m_text = tmpShape->m_text;
-    m_shape.m_textFormat = tmpShape->m_textFormat;
-    if (tmpShape->m_lineStyle)
-      m_shape.m_lineStyle = new VSDLineStyle(*(tmpShape->m_lineStyle));
-    if (tmpShape->m_fillStyle)
-      m_shape.m_fillStyle = new VSDFillStyle(*(tmpShape->m_fillStyle));
-    m_shape.m_xform = tmpShape->m_xform;
-    if (tmpShape->m_txtxform)
-      m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
+    if ((unsigned)-1 == masterShape)
+      masterShape = tmpStencil->m_firstShapeId;
+    const VSDShape *tmpShape = tmpStencil->getStencilShape(masterShape);
+    if (tmpShape)
+    {
+      if (tmpShape->m_foreign)
+        m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
+      m_shape.m_text = tmpShape->m_text;
+      m_shape.m_textFormat = tmpShape->m_textFormat;
+      if (tmpShape->m_lineStyle)
+        m_shape.m_lineStyle = new VSDLineStyle(*(tmpShape->m_lineStyle));
+      if (tmpShape->m_fillStyle)
+        m_shape.m_fillStyle = new VSDFillStyle(*(tmpShape->m_fillStyle));
+      m_shape.m_xform = tmpShape->m_xform;
+      if (tmpShape->m_txtxform)
+        m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
+    }
   }
 
   if (!m_shapeStack.empty())
@@ -326,14 +337,13 @@ void libvisio::VSDXMLParserBase::readStencil(xmlTextReaderPtr reader)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
     m_currentStencilID = nId;
+    xmlFree(id);
   }
   else
     m_currentStencilID = (unsigned)-1;
   if (m_currentStencil)
     delete m_currentStencil;
   m_currentStencil = new VSDStencil();
-  if (id)
-    xmlFree(id);
 }
 
 void libvisio::VSDXMLParserBase::readStencilShape(xmlTextReaderPtr /* reader */)
@@ -480,6 +490,7 @@ void libvisio::VSDXMLParserBase::_flushShape()
 void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)
 {
   m_currentLevel = level;
+  m_collector->collectUnhandledChunk(0, m_currentLevel);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

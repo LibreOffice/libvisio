@@ -151,12 +151,13 @@ void libvisio::VSDShape::clear()
 }
 
 libvisio::VSDStencil::VSDStencil()
-  : m_shapes(), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0)
+  : m_shapes(), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0), m_firstShapeId((unsigned)-1)
 {
 }
 
 libvisio::VSDStencil::VSDStencil(const libvisio::VSDStencil &stencil)
-  : m_shapes(stencil.m_shapes), m_shadowOffsetX(stencil.m_shadowOffsetX), m_shadowOffsetY(stencil.m_shadowOffsetY)
+  : m_shapes(stencil.m_shapes), m_shadowOffsetX(stencil.m_shadowOffsetX),
+    m_shadowOffsetY(stencil.m_shadowOffsetY), m_firstShapeId(stencil.m_firstShapeId)
 {
 }
 
@@ -171,12 +172,15 @@ libvisio::VSDStencil &libvisio::VSDStencil::operator=(const libvisio::VSDStencil
     m_shapes = stencil.m_shapes;
     m_shadowOffsetX = stencil.m_shadowOffsetX;
     m_shadowOffsetY = stencil.m_shadowOffsetY;
+    m_firstShapeId = stencil.m_firstShapeId;
   }
   return *this;
 }
 
 void libvisio::VSDStencil::addStencilShape(unsigned id, const VSDShape &shape)
 {
+  if (m_shapes.empty())
+    m_firstShapeId = shape.m_shapeId;
   m_shapes[id] = shape;
 }
 
@@ -216,11 +220,13 @@ const libvisio::VSDStencil *libvisio::VSDStencils::getStencil(unsigned idx) cons
 
 const libvisio::VSDShape *libvisio::VSDStencils::getStencilShape(unsigned pageId, unsigned shapeId) const
 {
-  if ((unsigned)-1 == pageId || (unsigned)-1 == shapeId)
+  if ((unsigned)-1 == pageId)
     return 0;
   const libvisio::VSDStencil *tmpStencil = getStencil(pageId);
   if (!tmpStencil)
     return 0;
+  if ((unsigned)-1 == shapeId)
+    shapeId = tmpStencil->m_firstShapeId;
   return tmpStencil->getStencilShape(shapeId);
 }
 

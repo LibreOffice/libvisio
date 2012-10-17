@@ -87,6 +87,7 @@ public:
   std::map<unsigned, VSDShape> m_shapes;
   double m_shadowOffsetX;
   double m_shadowOffsetY;
+  unsigned m_firstShapeId;
 };
 
 class VSDStencils
