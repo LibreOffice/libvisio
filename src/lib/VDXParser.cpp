@@ -644,7 +644,7 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
     tokenId = getElementToken(reader);
     if (-1 == tokenId)
     {
-      VSD_DEBUG_MSG(("VDXParser::readColours: unknown token %s\n", xmlTextReaderConstName(reader)));
+      VSD_DEBUG_MSG(("VDXParser::readFonts: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
     tokenType = xmlTextReaderNodeType(reader);
 

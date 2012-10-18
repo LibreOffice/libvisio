@@ -44,9 +44,7 @@ libvisio::VSDStylesCollector::VSDStylesCollector(
   m_groupMembershipsSequence(groupMembershipsSequence),
   m_pageShapeOrder(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_groupShapeOrder(), m_shapeList(), m_currentStyleSheet(0), m_styles(),
-  m_lineStyle(0), m_fillStyle(0), m_textBlockStyle(0), m_charStyle(0), m_paraStyle(0),
-  m_lineStyleMaster((unsigned)-1), m_fillStyleMaster((unsigned)-1), m_textStyleMaster((unsigned)-1),
-  m_isStyleStarted(false), m_currentShapeLevel(0)
+  m_currentShapeLevel(0)
 {
   m_groupXFormsSequence.clear();
   m_groupMembershipsSequence.clear();
@@ -274,53 +272,26 @@ void libvisio::VSDStylesCollector::collectStyleSheet(unsigned id, unsigned level
   _handleLevelChange(level);
   // reusing the shape level for style sheet to avoid another variable
   m_currentShapeLevel = level;
-  m_lineStyle = 0;
-  m_fillStyle = 0;
-  m_textBlockStyle = 0;
-  m_charStyle = 0;
-  m_paraStyle = 0;
   m_currentStyleSheet = id;
   m_styles.addLineStyleMaster(m_currentStyleSheet, lineStyleParent);
   m_styles.addFillStyleMaster(m_currentStyleSheet, fillStyleParent);
   m_styles.addTextStyleMaster(m_currentStyleSheet, textStyleParent);
-  m_isStyleStarted = true;
 }
 
-void libvisio::VSDStylesCollector::collectLineStyle(unsigned level, double strokeWidth, const Colour &c, unsigned char linePattern,
+void libvisio::VSDStylesCollector::collectLineStyle(unsigned /* level */, double strokeWidth, const Colour &c, unsigned char linePattern,
     unsigned char startMarker, unsigned char endMarker, unsigned char lineCap)
 {
-  if (!m_lineStyle)
-    m_lineStyle = new VSDLineStyle();
-
-  m_lineStyle->width = strokeWidth;
-  m_lineStyle->colour = c;
-  m_lineStyle->pattern = linePattern;
-  m_lineStyle->startMarker = startMarker;
-  m_lineStyle->endMarker = endMarker;
-  m_lineStyle->cap = lineCap;
-
-  _handleLevelChange(level);
+  VSDLineStyle lineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+  m_styles.addLineStyle(m_currentStyleSheet, &lineStyle);
 }
 
-void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const Colour &colourFG, const Colour &colourBG,
+void libvisio::VSDStylesCollector::collectFillStyle(unsigned /* level */, const Colour &colourFG, const Colour &colourBG,
     unsigned char fillPattern, double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc,
     double shadowOffsetX, double shadowOffsetY)
 {
-  if (!m_fillStyle)
-    m_fillStyle = new VSDFillStyle();
+  VSDFillStyle fillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY);
+  m_styles.addFillStyle(m_currentStyleSheet, &fillStyle);
 
-  m_fillStyle->fgColour = colourFG;
-  m_fillStyle->bgColour = colourBG;
-  m_fillStyle->pattern = fillPattern;
-  m_fillStyle->fgTransparency = fillFGTransparency;
-  m_fillStyle->bgTransparency = fillBGTransparency;
-
-  m_fillStyle->shadowPattern = shadowPattern;
-  m_fillStyle->shadowFgColour = shfgc;
-  m_fillStyle->shadowOffsetX = shadowOffsetX;
-  m_fillStyle->shadowOffsetY = shadowOffsetY;
-
-  _handleLevelChange(level);
 }
 
 void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const Colour &colourFG, const Colour &colourBG,
@@ -329,32 +300,29 @@ void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const Colour
   collectFillStyle(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
-void libvisio::VSDStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
+void libvisio::VSDStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned /* level */, unsigned charCount, double indFirst, double indLeft, double indRight,
     double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags)
 {
-  _handleLevelChange(level);
-  if (!m_paraStyle)
-    m_paraStyle = new VSDParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
+  VSDParaStyle paraStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
+  m_styles.addParaStyle(m_currentStyleSheet, &paraStyle);
 }
 
 
-void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned level, unsigned charCount, unsigned short fontID,
+void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned /* level */, unsigned charCount, unsigned short fontID,
     Colour fontColour, double fontSize, bool bold, bool italic, bool underline, bool doubleunderline,
     bool strikeout, bool doublestrikeout, bool allcaps, bool initcaps, bool smallcaps,
     bool superscript, bool subscript, VSDFont fontFace)
 {
-  _handleLevelChange(level);
-  if (!m_charStyle)
-    m_charStyle = new VSDCharStyle(charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                   allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  VSDCharStyle charStyle(charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                         allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  m_styles.addCharStyle(m_currentStyleSheet, &charStyle);
 }
 
-void libvisio::VSDStylesCollector::collectTextBlockStyle(unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
+void libvisio::VSDStylesCollector::collectTextBlockStyle(unsigned /* level */, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
     unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection)
 {
-  _handleLevelChange(level);
-  if (!m_textBlockStyle)
-    m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, isBgFilled, bgColour, defaultTabStop, textDirection);
+  VSDTextBlockStyle textBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, isBgFilled, bgColour, defaultTabStop, textDirection);
+  m_styles.addTextBlockStyle(m_currentStyleSheet, &textBlockStyle);
 }
 
 void libvisio::VSDStylesCollector::collectFieldList(unsigned /* id */, unsigned level)
@@ -406,38 +374,7 @@ void libvisio::VSDStylesCollector::_handleLevelChange(unsigned level)
   if (m_currentLevel == level)
     return;
   if (level <= m_currentShapeLevel)
-  {
     m_isShapeStarted = false;
-    if (m_isStyleStarted)
-    {
-      m_isStyleStarted = false;
-      m_styles.addLineStyle(m_currentStyleSheet, m_lineStyle);
-      m_styles.addFillStyle(m_currentStyleSheet, m_fillStyle);
-      m_styles.addTextBlockStyle(m_currentStyleSheet, m_textBlockStyle);
-      m_styles.addCharStyle(m_currentStyleSheet, m_charStyle);
-      m_styles.addParaStyle(m_currentStyleSheet, m_paraStyle);
-
-      if (m_lineStyle)
-        delete m_lineStyle;
-      m_lineStyle = 0;
-
-      if (m_fillStyle)
-        delete m_fillStyle;
-      m_fillStyle = 0;
-
-      if (m_textBlockStyle)
-        delete m_textBlockStyle;
-      m_textBlockStyle = 0;
-
-      if (m_charStyle)
-        delete m_charStyle;
-      m_charStyle = 0;
-
-      if (m_paraStyle)
-        delete m_paraStyle;
-      m_paraStyle = 0;
-    }
-  }
 
   m_currentLevel = level;
 }

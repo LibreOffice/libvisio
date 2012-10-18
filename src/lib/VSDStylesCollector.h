@@ -169,16 +169,7 @@ private:
 
   unsigned m_currentStyleSheet;
   VSDStyles m_styles;
-  VSDLineStyle *m_lineStyle;
-  VSDFillStyle *m_fillStyle;
-  VSDTextBlockStyle *m_textBlockStyle;
-  VSDCharStyle *m_charStyle;
-  VSDParaStyle *m_paraStyle;
 
-  unsigned m_lineStyleMaster;
-  unsigned m_fillStyleMaster;
-  unsigned m_textStyleMaster;
-  bool m_isStyleStarted;
   unsigned m_currentShapeLevel;
 };
 
