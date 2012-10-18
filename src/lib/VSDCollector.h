@@ -76,6 +76,11 @@ public:
   virtual void collectSplineKnot(unsigned id, unsigned level, double x, double y, double knot) = 0;
   virtual void collectSplineEnd() = 0;
   virtual void collectInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2) = 0;
+  virtual void collectRelCubBezTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d) = 0;
+  virtual void collectRelEllipticalArcTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d) = 0;
+  virtual void collectRelLineTo(unsigned id, unsigned level, double x, double y) = 0;
+  virtual void collectRelMoveTo(unsigned id, unsigned level, double x, double y) = 0;
+  virtual void collectRelQuadBezTo(unsigned id, unsigned level, double x, double y, double a, double b) = 0;
 
   virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;
 

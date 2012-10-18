@@ -91,6 +91,11 @@ public:
   void collectSplineKnot(unsigned id, unsigned level, double x, double y, double knot);
   void collectSplineEnd();
   void collectInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2);
+  void collectRelCubBezTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d);
+  void collectRelEllipticalArcTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d);
+  void collectRelLineTo(unsigned id, unsigned level, double x, double y);
+  void collectRelMoveTo(unsigned id, unsigned level, double x, double y);
+  void collectRelQuadBezTo(unsigned id, unsigned level, double x, double y, double a, double b);
   void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format);

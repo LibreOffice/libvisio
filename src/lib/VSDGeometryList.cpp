@@ -226,6 +226,71 @@ private:
   double m_x1, m_y1, m_x2, m_y2;
 };
 
+class VSDRelCubBezTo : public VSDGeometryListElement
+{
+public:
+  VSDRelCubBezTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d) :
+    m_id(id), m_level(level), m_x(x), m_y(y), m_a(a), m_b(b), m_c(c), m_d(d) {}
+  ~VSDRelCubBezTo() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+private:
+  unsigned m_id, m_level;
+  double m_x, m_y, m_a, m_b, m_c, m_d;
+};
+
+class VSDRelEllipticalArcTo : public VSDGeometryListElement
+{
+public:
+  VSDRelEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) :
+    m_id(id), m_level(level), m_x3(x3), m_y3(y3), m_x2(x2), m_y2(y2), m_angle(angle), m_ecc(ecc) {}
+  ~VSDRelEllipticalArcTo() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+private:
+  unsigned m_id, m_level;
+  double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
+};
+
+class VSDRelMoveTo : public VSDGeometryListElement
+{
+public:
+  VSDRelMoveTo(unsigned id, unsigned level, double x, double y) :
+    m_id(id), m_level(level), m_x(x), m_y(y) {}
+  ~VSDRelMoveTo() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+private:
+  unsigned m_id, m_level;
+  double m_x, m_y;
+};
+
+class VSDRelLineTo : public VSDGeometryListElement
+{
+public:
+  VSDRelLineTo(unsigned id, unsigned level, double x, double y) :
+    m_id(id), m_level(level), m_x(x), m_y(y) {}
+  ~VSDRelLineTo() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+private:
+  unsigned m_id, m_level;
+  double m_x, m_y;
+};
+
+class VSDRelQuadBezTo : public VSDGeometryListElement
+{
+public:
+  VSDRelQuadBezTo(unsigned id, unsigned level, double x, double y, double a, double b) :
+    m_id(id), m_level(level), m_x(x), m_y(y), m_a(a), m_b(b) {}
+  ~VSDRelQuadBezTo() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+private:
+  unsigned m_id, m_level;
+  double m_x, m_y, m_a, m_b;
+};
+
 } // namespace libvisio
 
 
@@ -393,6 +458,66 @@ libvisio::VSDGeometryListElement *libvisio::VSDInfiniteLine::clone()
 }
 
 
+void libvisio::VSDRelCubBezTo::handle(VSDCollector *collector) const
+{
+  collector->collectSplineEnd();
+  collector->collectRelCubBezTo(m_id, m_level, m_x, m_y, m_a, m_b, m_c, m_d);
+}
+
+libvisio::VSDGeometryListElement *libvisio::VSDRelCubBezTo::clone()
+{
+  return new VSDRelCubBezTo(m_id, m_level, m_x, m_y, m_a, m_b, m_c, m_d);
+}
+
+
+void libvisio::VSDRelEllipticalArcTo::handle(VSDCollector *collector) const
+{
+  collector->collectSplineEnd();
+  collector->collectRelEllipticalArcTo(m_id, m_level, m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc);
+}
+
+libvisio::VSDGeometryListElement *libvisio::VSDRelEllipticalArcTo::clone()
+{
+  return new VSDRelEllipticalArcTo(m_id, m_level, m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc);
+}
+
+
+void libvisio::VSDRelMoveTo::handle(VSDCollector *collector) const
+{
+  collector->collectSplineEnd();
+  collector->collectRelMoveTo(m_id, m_level, m_x, m_y);
+}
+
+libvisio::VSDGeometryListElement *libvisio::VSDRelMoveTo::clone()
+{
+  return new VSDRelMoveTo(m_id, m_level, m_x, m_y);
+}
+
+
+void libvisio::VSDRelLineTo::handle(VSDCollector *collector) const
+{
+  collector->collectSplineEnd();
+  collector->collectRelLineTo(m_id, m_level, m_x, m_y);
+}
+
+libvisio::VSDGeometryListElement *libvisio::VSDRelLineTo::clone()
+{
+  return new VSDRelLineTo(m_id, m_level, m_x, m_y);
+}
+
+
+void libvisio::VSDRelQuadBezTo::handle(VSDCollector *collector) const
+{
+  collector->collectSplineEnd();
+  collector->collectRelQuadBezTo(m_id, m_level, m_x, m_y, m_a, m_b);
+}
+
+libvisio::VSDGeometryListElement *libvisio::VSDRelQuadBezTo::clone()
+{
+  return new VSDRelQuadBezTo(m_id, m_level, m_x, m_y, m_a, m_b);
+}
+
+
 libvisio::VSDGeometryList::VSDGeometryList() :
   m_elements(),
   m_elementsOrder()
@@ -488,6 +613,31 @@ void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, doubl
 void libvisio::VSDGeometryList::addInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2)
 {
   m_elements[id] = new VSDInfiniteLine(id, level, x1, y1, x2, y2);
+}
+
+void libvisio::VSDGeometryList::addRelCubBezTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d)
+{
+  m_elements[id] = new VSDRelCubBezTo(id, level, x, y, a, b, c, d);
+}
+
+void libvisio::VSDGeometryList::addRelEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
+{
+  m_elements[id] = new VSDRelEllipticalArcTo(id, level, x3, y3, x2, y2, angle, ecc);
+}
+
+void libvisio::VSDGeometryList::addRelMoveTo(unsigned id, unsigned level, double x, double y)
+{
+  m_elements[id] = new VSDRelMoveTo(id, level, x, y);
+}
+
+void libvisio::VSDGeometryList::addRelLineTo(unsigned id, unsigned level, double x, double y)
+{
+  m_elements[id] = new VSDRelLineTo(id, level, x, y);
+}
+
+void libvisio::VSDGeometryList::addRelQuadBezTo(unsigned id, unsigned level, double x, double y, double a, double b)
+{
+  m_elements[id] = new VSDRelQuadBezTo(id, level, x, y, a, b);
 }
 
 void libvisio::VSDGeometryList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

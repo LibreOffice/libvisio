@@ -159,6 +159,31 @@ void libvisio::VSDStylesCollector::collectInfiniteLine(unsigned /* id */, unsign
   _handleLevelChange(level);
 }
 
+void libvisio::VSDStylesCollector::collectRelCubBezTo(unsigned /* id */, unsigned level, double /* x */, double /* y */, double /* a */, double /* b */, double /* c */, double /* d */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDStylesCollector::collectRelEllipticalArcTo(unsigned /* id */, unsigned level, double /* x */, double /* y */, double /* a */, double /* b */, double /* c */, double /* d */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDStylesCollector::collectRelLineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDStylesCollector::collectRelMoveTo(unsigned /* id */, unsigned level, double /* x */, double /* y */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDStylesCollector::collectRelQuadBezTo(unsigned /* id */, unsigned level, double /* x */, double /* y */, double /* a */, double /* b */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDStylesCollector::collectShapeData(unsigned /* id */, unsigned level, unsigned char /* xType */, unsigned char /* yType */,
     unsigned /* degree */, double /*lastKnot*/, std::vector<std::pair<double, double> > /* controlPoints */,
     std::vector<double> /* knotVector */, std::vector<double> /* weights */)

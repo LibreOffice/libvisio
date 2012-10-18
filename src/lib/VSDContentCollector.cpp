@@ -1289,6 +1289,79 @@ void libvisio::VSDContentCollector::collectInfiniteLine(unsigned /* id */, unsig
     m_currentLineGeometry.push_back(infLine);
 }
 
+void libvisio::VSDContentCollector::collectRelCubBezTo(unsigned /* id */, unsigned level, double x, double y, double a, double b, double c, double d)
+{
+  _handleLevelChange(level);
+  x *= m_xform.width;
+  y *= m_xform.height;
+  a *= m_xform.width;
+  b *= m_xform.height;
+  c *= m_xform.width;
+  d *= m_xform.height;
+  transformPoint(x, y);
+  transformPoint(a, b);
+  transformPoint(c, d);
+  WPXPropertyList node;
+  node.insert("svg:x",m_scale*x);
+  node.insert("svg:y",m_scale*x);
+  node.insert("svg:x1",m_scale*a);
+  node.insert("svg:y1",m_scale*b);
+  node.insert("svg:x2",m_scale*c);
+  node.insert("svg:y2",m_scale*d);
+  node.insert("libwpg:path-action", "C");
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(node);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(node);
+}
+
+void libvisio::VSDContentCollector::collectRelEllipticalArcTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d)
+{
+  x *= m_xform.width;
+  y *= m_xform.height;
+  a *= m_xform.width;
+  b *= m_xform.height;
+  c *= m_xform.width;
+  d *= m_xform.height;
+  collectEllipticalArcTo(id, level, x, y, a, b, c, d);
+}
+
+void libvisio::VSDContentCollector::collectRelLineTo(unsigned id, unsigned level, double x, double y)
+{
+  x *= m_xform.width;
+  y *= m_xform.height;
+  collectLineTo(id, level, x, y);
+}
+
+void libvisio::VSDContentCollector::collectRelMoveTo(unsigned id, unsigned level, double x, double y)
+{
+  x *= m_xform.width;
+  y *= m_xform.height;
+  collectMoveTo(id, level, x, y);
+}
+
+void libvisio::VSDContentCollector::collectRelQuadBezTo(unsigned /* id */, unsigned level, double x, double y, double a, double b)
+{
+  _handleLevelChange(level);
+  _handleLevelChange(level);
+  x *= m_xform.width;
+  y *= m_xform.height;
+  a *= m_xform.width;
+  b *= m_xform.height;
+  transformPoint(x, y);
+  transformPoint(a, b);
+  WPXPropertyList node;
+  node.insert("svg:x",m_scale*x);
+  node.insert("svg:y",m_scale*x);
+  node.insert("svg:x1",m_scale*a);
+  node.insert("svg:y1",m_scale*b);
+  node.insert("libwpg:path-action", "Q");
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(node);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(node);
+}
+
 void libvisio::VSDContentCollector::collectLine(unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap)
 {
   _handleLevelChange(level);
