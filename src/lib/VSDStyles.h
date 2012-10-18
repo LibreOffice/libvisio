@@ -222,11 +222,11 @@ public:
   const VSDParaStyle *getParaStyle(unsigned textStyleIndex) const;
 
 private:
-  std::map<unsigned, VSDLineStyle *> m_lineStyles;
-  std::map<unsigned, VSDFillStyle *> m_fillStyles;
-  std::map<unsigned, VSDTextBlockStyle *> m_textBlockStyles;
-  std::map<unsigned, VSDCharStyle *> m_charStyles;
-  std::map<unsigned, VSDParaStyle *> m_paraStyles;
+  std::map<unsigned, VSDLineStyle> m_lineStyles;
+  std::map<unsigned, VSDFillStyle> m_fillStyles;
+  std::map<unsigned, VSDTextBlockStyle> m_textBlockStyles;
+  std::map<unsigned, VSDCharStyle> m_charStyles;
+  std::map<unsigned, VSDParaStyle> m_paraStyles;
   std::map<unsigned, unsigned> m_lineStyleMasters;
   std::map<unsigned, unsigned> m_fillStyleMasters;
   std::map<unsigned, unsigned> m_textStyleMasters;

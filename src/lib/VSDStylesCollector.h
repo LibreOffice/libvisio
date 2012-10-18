@@ -138,7 +138,7 @@ public:
   void endPage();
   void endPages() {}
 
-  VSDStyles getStyleSheets() const
+  const VSDStyles &getStyleSheets() const
   {
     return m_styles;
   }

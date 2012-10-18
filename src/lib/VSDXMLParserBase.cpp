@@ -729,7 +729,7 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, long &idx,
     idx = -1;
     ret = readColourData(value, reader);
   }
-  if (idx > 0)
+  if (idx >= 0)
   {
     std::map<unsigned, Colour>::const_iterator iter = m_colours.find((unsigned)idx);
     if (iter != m_colours.end())
