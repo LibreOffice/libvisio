@@ -513,6 +513,8 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
         else
           _flushShape();
         m_shape.clear();
+        if (m_shapeStack.empty())
+          m_isShapeStarted = false;
       }
     }
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)

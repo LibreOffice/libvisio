@@ -238,6 +238,8 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       else
         _flushShape();
       m_shape.clear();
+      if (m_shapeStack.empty())
+        m_isShapeStarted = false;
     }
     break;
   case XML_SHAPES:
