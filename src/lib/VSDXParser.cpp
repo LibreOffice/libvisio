@@ -1007,6 +1007,9 @@ int libvisio::VSDXParser::getElementDepth(xmlTextReaderPtr reader)
 
 void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
 {
+  // Text block properties
+  long bgClrId = 0;
+
   int ret = 1;
   int tokenId = -1;
   int tokenType = -1;
@@ -1110,7 +1113,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_lineStyle)
           m_shape.m_lineStyle = new VSDLineStyle();
-        readExtendedColourData(m_shape.m_lineStyle->colour, reader);
+        ret = readExtendedColourData(m_shape.m_lineStyle->colour, reader);
       }
       break;
     case XML_LINEPATTERN:
@@ -1118,9 +1121,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_lineStyle)
           m_shape.m_lineStyle = new VSDLineStyle();
-        long linePattern = 0;
-        ret = readLongData(linePattern, reader);
-        m_shape.m_lineStyle->pattern = (unsigned char)linePattern;
+        ret = readByteData(m_shape.m_lineStyle->pattern, reader);
       }
       break;
     case XML_BEGINARROW:
@@ -1128,9 +1129,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_lineStyle)
           m_shape.m_lineStyle = new VSDLineStyle();
-        long startMarker = 0;
-        ret = readLongData(startMarker, reader);
-        m_shape.m_lineStyle->startMarker = (unsigned char)startMarker;
+        ret = readByteData(m_shape.m_lineStyle->startMarker, reader);
       }
       break;
     case XML_ENDARROW:
@@ -1138,9 +1137,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_lineStyle)
           m_shape.m_lineStyle = new VSDLineStyle();
-        long endMarker = 0;
-        ret = readLongData(endMarker, reader);
-        m_shape.m_lineStyle->endMarker = (unsigned char)endMarker;
+        ret = readByteData(m_shape.m_lineStyle->endMarker, reader);
       }
       break;
     case XML_LINECAP:
@@ -1148,9 +1145,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_lineStyle)
           m_shape.m_lineStyle = new VSDLineStyle();
-        long lineCap = 0;
-        ret = readLongData(lineCap, reader);
-        m_shape.m_lineStyle->cap = (unsigned char)lineCap;
+        ret = readByteData(m_shape.m_lineStyle->cap, reader);
       }
       break;
     case XML_FILLFOREGND:
@@ -1174,9 +1169,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_fillStyle)
           m_shape.m_fillStyle = new VSDFillStyle();
-        long fillPattern = 0;
-        ret = readLongData(fillPattern, reader);
-        m_shape.m_fillStyle->pattern = (unsigned char)fillPattern;
+        ret = readByteData(m_shape.m_fillStyle->pattern, reader);
       }
       break;
     case XML_SHDWFOREGND:
@@ -1187,24 +1180,14 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
         ret = readExtendedColourData(m_shape.m_fillStyle->shadowFgColour, reader);
       }
       break;
-#if 0
-    case XML_SHDWBKGND:
-      if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readExtendedColourData(shadowColourBG, reader);
-      }
+    case XML_SHDWBKGND: /* unsupported */
       break;
-#endif
     case XML_SHDWPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_fillStyle)
           m_shape.m_fillStyle = new VSDFillStyle();
-        long shadowPattern = 0;
-        ret = readLongData(shadowPattern, reader);
-        m_shape.m_fillStyle->shadowPattern = (unsigned char)shadowPattern;
+        ret = readByteData(m_shape.m_fillStyle->shadowPattern, reader);
       }
       break;
     case XML_FILLFOREGNDTRANS:
@@ -1277,9 +1260,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_textBlockStyle)
           m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        long verticalAlign = 0;
-        ret = readLongData(verticalAlign, reader);
-        m_shape.m_textBlockStyle->verticalAlign = (unsigned char)verticalAlign;
+        ret = readByteData(m_shape.m_textBlockStyle->verticalAlign, reader);
       }
       break;
     case XML_TEXTBKGND:
@@ -1287,9 +1268,16 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_textBlockStyle)
           m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        long textBkgndFilled = 0;
-        ret = readExtendedColourData(m_shape.m_textBlockStyle->textBkgndColour, textBkgndFilled, reader);
-        m_shape.m_textBlockStyle->isTextBkgndFilled = !!textBkgndFilled;
+        ret = readExtendedColourData(m_shape.m_textBlockStyle->textBkgndColour, bgClrId, reader);
+        if (bgClrId < 0) bgClrId = 0;
+        if (bgClrId)
+        {
+          std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId-1);
+          if (iter != m_colours.end())
+            m_shape.m_textBlockStyle->textBkgndColour = iter->second;
+          else
+            m_shape.m_textBlockStyle->textBkgndColour = Colour();
+        }
       }
       break;
     case XML_DEFAULTTABSTOP:
@@ -1305,9 +1293,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       {
         if (!m_shape.m_textBlockStyle)
           m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        long textDirection = 0;
-        ret = readLongData(textDirection, reader);
-        m_shape.m_textBlockStyle->textDirection = (unsigned char)textDirection;
+        ret = readByteData(m_shape.m_textBlockStyle->textDirection, reader);
       }
       break;
     case XML_GEOM:
