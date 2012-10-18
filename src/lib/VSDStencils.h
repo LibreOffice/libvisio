@@ -83,6 +83,7 @@ public:
   ~VSDStencil();
   VSDStencil &operator=(const VSDStencil &stencil);
   void addStencilShape(unsigned id, const VSDShape &shape);
+  void setFirstShape(unsigned id);
   const VSDShape *getStencilShape(unsigned id) const;
   std::map<unsigned, VSDShape> m_shapes;
   double m_shadowOffsetX;

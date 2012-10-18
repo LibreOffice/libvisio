@@ -179,9 +179,13 @@ libvisio::VSDStencil &libvisio::VSDStencil::operator=(const libvisio::VSDStencil
 
 void libvisio::VSDStencil::addStencilShape(unsigned id, const VSDShape &shape)
 {
-  if (m_shapes.empty())
-    m_firstShapeId = shape.m_shapeId;
   m_shapes[id] = shape;
+}
+
+void libvisio::VSDStencil::setFirstShape(unsigned id)
+{
+  if (m_firstShapeId == (unsigned)-1)
+    m_firstShapeId = id;
 }
 
 const libvisio::VSDShape *libvisio::VSDStencil::getStencilShape(unsigned id) const

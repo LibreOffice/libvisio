@@ -870,6 +870,9 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
 
   m_shape.clear();
 
+  if (m_isStencilStarted)
+    m_currentStencil->setFirstShape(id);
+
   const VSDStencil *tmpStencil = m_stencils.getStencil(masterPage);
   if (tmpStencil)
   {
