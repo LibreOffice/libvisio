@@ -138,6 +138,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       readLine(reader);
     break;
   case XML_MASTER:
+    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       if (m_extractStencils)
@@ -147,6 +148,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     else if (tokenType == XML_READER_TYPE_END_ELEMENT)
     {
+      m_isPageStarted = false;
       if (m_extractStencils)
       {
         _handleLevelChange(0);
@@ -165,6 +167,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     break;
   case XML_MASTERS:
+    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       if (m_extractStencils)
@@ -181,6 +184,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     break;
   case XML_PAGE:
+    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       if (m_extractStencils)
@@ -198,13 +202,16 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       else
         readPage(reader);
     }
-    else if (tokenType == XML_READER_TYPE_END_ELEMENT && !m_extractStencils)
+    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
     {
-      m_isShapeStarted = false;
-      _handleLevelChange(0);
-      m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
-      m_shapeList.clear();
-      m_collector->endPage();
+      if (!m_extractStencils)
+      {
+        m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
+        _handleLevelChange(0);
+        m_shapeList.clear();
+        m_isPageStarted = false;
+        m_collector->endPage();
+      }
     }
     break;
   case XML_PAGEPROPS:
@@ -226,7 +233,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       readShape(reader);
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
-      _flushShape();
+      if (m_isStencilStarted)
+        m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
+      else
+        _flushShape();
       m_shape.clear();
     }
     break;
@@ -340,7 +350,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
 void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
 {
   double strokeWidth = 0;
-  Colour colour;
+  Colour colour = m_colours.empty() ? Colour() : m_colours[0];
   long linePattern = 0;
   long startMarker = 0;
   long endMarker = 0;
@@ -403,13 +413,13 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
 
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 {
-  Colour fillColourFG;
+  Colour fillColourFG = m_colours.empty() ? Colour() : m_colours[0];
   double fillFGTransparency = 0.0;
-  Colour fillColourBG;
+  Colour fillColourBG = m_colours.empty() ? Colour() : m_colours[1];
   double fillBGTransparency = 0.0;
   long fillPattern = 0;
-  Colour shadowColourFG;
-  Colour shadowColourBG;
+  Colour shadowColourFG = m_colours.empty() ? Colour() : m_colours[0];
+  Colour shadowColourBG = m_colours.empty() ? Colour() : m_colours[1];
   long shadowPattern = 0;
   double shadowOffsetX = 0;
   double shadowOffsetY = 0;
@@ -468,6 +478,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
     case XML_SHAPESHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetY, reader);
+      shadowOffsetY *= -1.0;
       break;
     case XML_SHDWFOREGNDTRANS:
     case XML_SHDWBKGNDTRANS:
@@ -627,9 +638,10 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
     m_currentStencil->m_shadowOffsetX = shadowOffsetX;
     m_currentStencil->m_shadowOffsetY = shadowOffsetY;
   }
-  else
+  else if (m_isPageStarted)
   {
-    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, pageScale/drawingScale);
+    double scale = drawingScale > 0 || drawingScale < 0 ? pageScale/drawingScale : 1.0;
+    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale);
   }
 }
 
@@ -806,8 +818,9 @@ int libvisio::VDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
     const xmlChar *stringValue = xmlTextReaderConstValue(reader);
     if (stringValue)
     {
-      VSD_DEBUG_MSG(("VDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
-      value = xmlStringToColour(stringValue);
+      VSD_DEBUG_MSG(("VDXParser::readColourData stringValue %s\n", (const char *)stringValue));
+      Colour tmpValue = xmlStringToColour(stringValue);
+      value = tmpValue;
     }
     ret = xmlTextReaderRead(reader);
   }

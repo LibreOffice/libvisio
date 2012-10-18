@@ -1321,8 +1321,6 @@ void libvisio::VSDContentCollector::collectRelEllipticalArcTo(unsigned id, unsig
   y *= m_xform.height;
   a *= m_xform.width;
   b *= m_xform.height;
-  c *= m_xform.width;
-  d *= m_xform.height;
   collectEllipticalArcTo(id, level, x, y, a, b, c, d);
 }
 

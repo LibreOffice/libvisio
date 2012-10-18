@@ -66,18 +66,13 @@ protected:
   unsigned m_currentLevel;
   unsigned m_currentShapeLevel;
   std::map<unsigned, Colour> m_colours;
-  VSDCharacterList *m_charList;
-  std::vector<VSDCharacterList *> m_charListVector;
   VSDFieldList m_fieldList;
-  VSDGeometryList *m_geomList;
-  std::vector<VSDGeometryList *> m_geomListVector;
-  VSDParagraphList *m_paraList;
-  std::vector<VSDParagraphList *> m_paraListVector;
   VSDShapeList m_shapeList;
   WPXBinaryData m_currentBinaryData;
   std::stack<VSDShape> m_shapeStack;
   std::stack<unsigned> m_shapeLevelStack;
   bool m_isShapeStarted;
+  bool m_isPageStarted;
   VSDGeometryList *m_currentGeometryList;
 
   // Helper functions
@@ -105,6 +100,11 @@ protected:
   void readNURBSTo(xmlTextReaderPtr reader);
   void readPolylineTo(xmlTextReaderPtr reader);
   void readInfiniteLine(xmlTextReaderPtr reader);
+  void readRelCubBezTo(xmlTextReaderPtr reader);
+  void readRelEllipticalArcTo(xmlTextReaderPtr reader);
+  void readRelLineTo(xmlTextReaderPtr reader);
+  void readRelMoveTo(xmlTextReaderPtr reader);
+  void readRelQuadBezTo(xmlTextReaderPtr reader);
   void readForeignData(xmlTextReaderPtr reader);
   virtual void getBinaryData(xmlTextReaderPtr reader) = 0;
   void readShape(xmlTextReaderPtr reader);

@@ -113,16 +113,17 @@ void libvisio::VSDStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned t
 
 const libvisio::VSDLineStyle *libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex) const
 {
-  unsigned tmpIndex = lineStyleIndex;
+  if ((unsigned)-1 == lineStyleIndex)
+    return 0;
   std::map<unsigned, VSDLineStyle>::const_iterator iterStyle;
   while (true)
   {
-    iterStyle = m_lineStyles.find(tmpIndex);
+    iterStyle = m_lineStyles.find(lineStyleIndex);
     if (iterStyle != m_lineStyles.end())
       return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_lineStyleMasters.find(tmpIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_lineStyleMasters.find(lineStyleIndex);
     if (iter != m_lineStyleMasters.end() && iter->second != NOMASTER)
-      tmpIndex = iter->second;
+      lineStyleIndex = iter->second;
     else
       break;
   }
@@ -132,16 +133,17 @@ const libvisio::VSDLineStyle *libvisio::VSDStyles::getLineStyle(unsigned lineSty
 
 const libvisio::VSDFillStyle *libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
 {
-  unsigned tmpIndex = fillStyleIndex;
+  if ((unsigned)-1 == fillStyleIndex)
+    return 0;
   std::map<unsigned, VSDFillStyle>::const_iterator iterStyle;
   while (true)
   {
-    iterStyle = m_fillStyles.find(tmpIndex);
+    iterStyle = m_fillStyles.find(fillStyleIndex);
     if (iterStyle != m_fillStyles.end())
       return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_fillStyleMasters.find(tmpIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_fillStyleMasters.find(fillStyleIndex);
     if (iter != m_fillStyleMasters.end() && iter->second != NOMASTER)
-      tmpIndex = iter->second;
+      fillStyleIndex = iter->second;
     else
       break;
   }
@@ -151,16 +153,17 @@ const libvisio::VSDFillStyle *libvisio::VSDStyles::getFillStyle(unsigned fillSty
 
 const libvisio::VSDTextBlockStyle *libvisio::VSDStyles::getTextBlockStyle(unsigned textStyleIndex) const
 {
-  unsigned tmpIndex = textStyleIndex;
+  if ((unsigned)-1 == textStyleIndex)
+    return 0;
   std::map<unsigned, VSDTextBlockStyle>::const_iterator iterStyle;
   while (true)
   {
-    iterStyle = m_textBlockStyles.find(tmpIndex);
+    iterStyle = m_textBlockStyles.find(textStyleIndex);
     if (iterStyle != m_textBlockStyles.end())
       return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(tmpIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(textStyleIndex);
     if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
-      tmpIndex = iter->second;
+      textStyleIndex = iter->second;
     else
       break;
   }
@@ -170,16 +173,17 @@ const libvisio::VSDTextBlockStyle *libvisio::VSDStyles::getTextBlockStyle(unsign
 
 const libvisio::VSDCharStyle *libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex) const
 {
-  unsigned tmpIndex = textStyleIndex;
+  if ((unsigned)-1 == textStyleIndex)
+    return 0;
   std::map<unsigned, VSDCharStyle>::const_iterator iterStyle;
   while (true)
   {
-    iterStyle = m_charStyles.find(tmpIndex);
+    iterStyle = m_charStyles.find(textStyleIndex);
     if (iterStyle != m_charStyles.end())
       return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(tmpIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(textStyleIndex);
     if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
-      tmpIndex = iter->second;
+      textStyleIndex = iter->second;
     else
       break;
   }
@@ -189,16 +193,17 @@ const libvisio::VSDCharStyle *libvisio::VSDStyles::getCharStyle(unsigned textSty
 
 const libvisio::VSDParaStyle *libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex) const
 {
-  unsigned tmpIndex = textStyleIndex;
+  if ((unsigned)-1 == textStyleIndex)
+    return 0;
   std::map<unsigned, VSDParaStyle>::const_iterator iterStyle;
   while (true)
   {
-    iterStyle = m_paraStyles.find(tmpIndex);
+    iterStyle = m_paraStyles.find(textStyleIndex);
     if (iterStyle != m_paraStyles.end())
       return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(tmpIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(textStyleIndex);
     if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
-      tmpIndex = iter->second;
+      textStyleIndex = iter->second;
     else
       break;
   }

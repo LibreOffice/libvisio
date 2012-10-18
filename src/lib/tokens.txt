@@ -368,6 +368,11 @@ RefreshableData
 RefreshConflict
 Rel
 Relationships
+RelCubBezTo
+RelEllipticalArcTo
+RelLineTo
+RelMoveTo
+RelQuadBezTo
 ResizeMode
 ResizePage
 Reviewer

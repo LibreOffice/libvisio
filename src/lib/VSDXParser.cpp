@@ -394,6 +394,8 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
       if (m_extractStencils)
       {
         _handleLevelChange(0);
+        m_isPageStarted = false;
+        m_isShapeStarted = false;
         m_collector->endPage();
       }
       else
@@ -464,6 +466,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
       _handleLevelChange(0);
       m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
       m_shapeList.clear();
+      m_isPageStarted = false;
       m_collector->endPage();
     }
     break;
@@ -517,7 +520,11 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
       if (m_isStencilStarted)
         m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
       else
+      {
         _flushShape();
+        if (m_shapeStack.empty())
+          m_isShapeStarted = false;
+      }
       m_shape.clear();
     }
     break;
@@ -662,7 +669,16 @@ int libvisio::VSDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
   if (stringValue)
   {
     VSD_DEBUG_MSG(("VSDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
-    value = xmlStringToColour(stringValue);
+    try
+    {
+      Colour tmpColour = xmlStringToColour(stringValue);
+      value = tmpColour;
+    }
+    catch (const XmlParserException &)
+    {
+      xmlFree(stringValue);
+      throw XmlParserException();
+    }
     xmlFree(stringValue);
     return 1;
   }
@@ -777,8 +793,11 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
     m_currentStencil->m_shadowOffsetX = shadowOffsetX;
     m_currentStencil->m_shadowOffsetY = shadowOffsetY;
   }
-  else
-    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, pageScale/drawingScale);
+  else if (m_isPageStarted)
+  {
+    double scale = drawingScale > 0 || drawingScale < 0 ? pageScale/drawingScale : 1.0;
+    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale);
+  }
 }
 
 void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
@@ -892,6 +911,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     case XML_SHAPESHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetY, reader);
+      shadowOffsetY *= -1.0;
       break;
     case XML_LEFTMARGIN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1209,6 +1229,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
         if (!m_shape.m_fillStyle)
           m_shape.m_fillStyle = new VSDFillStyle();
         ret = readDoubleData(m_shape.m_fillStyle->shadowOffsetY, reader);
+        m_shape.m_fillStyle->shadowOffsetY *= -1.0;
       }
       break;
     case XML_LEFTMARGIN:
