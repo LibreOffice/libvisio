@@ -672,7 +672,11 @@ int libvisio::VSDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
 int libvisio::VSDXParser::getElementToken(xmlTextReaderPtr reader)
 {
   int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+  if (XML_READER_TYPE_END_ELEMENT == xmlTextReaderNodeType(reader))
+    return tokenId;
+
   xmlChar *stringValue = 0;
+
   switch (tokenId)
   {
   case XML_CELL:
@@ -955,14 +959,16 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   else
   {
     if (!m_shape.m_lineStyle)
-      m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+      m_shape.m_lineStyle = new VSDLineStyle();
+    *(m_shape.m_lineStyle) = VSDLineStyle(strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
     if (!m_shape.m_fillStyle)
-      m_shape.m_fillStyle = new VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
-                                             fillFGTransparency, fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
-                                             shadowOffsetX, shadowOffsetY);
+      m_shape.m_fillStyle = new VSDFillStyle();
+    *(m_shape.m_fillStyle) = VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency, shadowColourFG,
+                                          (unsigned char)shadowPattern, shadowOffsetX, shadowOffsetY);
     if (!m_shape.m_textBlockStyle)
-      m_shape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-          (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
+      m_shape.m_textBlockStyle = new VSDTextBlockStyle();
+    *(m_shape.m_textBlockStyle) = VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, (unsigned char)verticalAlign, !!bgClrId, bgColour,
+                                  defaultTabStop, (unsigned char)textDirection);
   }
 }
 
@@ -1056,6 +1062,8 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       }
       break;
     case XML_GEOMETRY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readGeometry(reader);
       break;
     case XML_FOREIGNDATA:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1273,7 +1281,10 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
         m_shape.m_textBlockStyle->textDirection = (unsigned char)textDirection;
       }
       break;
-
+    case XML_GEOM:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readGeometry(reader);
+      break;
     case XML_RESIZEMODE:
     default:
       break;

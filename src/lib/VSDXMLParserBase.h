@@ -98,7 +98,6 @@ protected:
 
   void readEllipticalArcTo(xmlTextReaderPtr reader);
   void readEllipse(xmlTextReaderPtr reader);
-  void readGeomList(xmlTextReaderPtr reader);
   void readGeometry(xmlTextReaderPtr reader);
   void readMoveTo(xmlTextReaderPtr reader);
   void readLineTo(xmlTextReaderPtr reader);
@@ -106,9 +105,6 @@ protected:
   void readNURBSTo(xmlTextReaderPtr reader);
   void readPolylineTo(xmlTextReaderPtr reader);
   void readInfiniteLine(xmlTextReaderPtr reader);
-  void readShapeData(xmlTextReaderPtr reader);
-  void readShapeId(xmlTextReaderPtr reader);
-  void readShapeList(xmlTextReaderPtr reader);
   void readForeignData(xmlTextReaderPtr reader);
   virtual void getBinaryData(xmlTextReaderPtr reader) = 0;
   void readShape(xmlTextReaderPtr reader);

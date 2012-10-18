@@ -74,32 +74,348 @@ libvisio::VSDXMLParserBase::~VSDXMLParserBase()
 
 // Common functions
 
-void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
 {
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  bool noFill = false;
+  bool noLine = false;
+  bool noShow = false;
+
+  unsigned ix = 0;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  m_currentGeometryList = &m_shape.m_geometries[ix];
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readGeometry: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_NOFILL:
+      ret = readBoolData(noFill, reader);
+      break;
+    case XML_NOLINE:
+      ret = readBoolData(noLine, reader);
+      break;
+    case XML_NOSHOW:
+      ret = readBoolData(noShow, reader);
+      break;
+    case XML_MOVETO:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readMoveTo(reader);
+      break;
+    case XML_LINETO:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readLineTo(reader);
+      break;
+    case XML_ARCTO:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readArcTo(reader);
+      break;
+    case XML_NURBSTO:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readNURBSTo(reader);
+      break;
+    case XML_POLYLINETO:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readPolylineTo(reader);
+      break;
+    case XML_INFINITELINE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readInfiniteLine(reader);
+      break;
+    case XML_ELLIPTICALARCTO:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readEllipticalArcTo(reader);
+      break;
+    case XML_ELLIPSE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readEllipse(reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_GEOM != tokenId && XML_SECTION != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addGeometry(0, level, noFill, noLine, noShow);
 }
 
-void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
 {
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  unsigned ix = 0;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  double x = 0;
+  double y = 0;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readMoveTo: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_X:
+      ret = readDoubleData(x, reader);
+      break;
+    case XML_Y:
+      ret = readDoubleData(y, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_MOVETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addMoveTo(ix, level, x, y);
 }
 
-void libvisio::VSDXMLParserBase::readGeomList(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
 {
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  unsigned ix = 0;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  double x = 0;
+  double y = 0;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readLineTo: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_X:
+      ret = readDoubleData(x, reader);
+      break;
+    case XML_Y:
+      ret = readDoubleData(y, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_LINETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addLineTo(ix, level, x, y);
 }
 
-void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
 {
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  unsigned ix = 0;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  double x = 0.0;
+  double y = 0.0;
+  double a = 0.0;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readArcTo: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_X:
+      ret = readDoubleData(x, reader);
+      break;
+    case XML_Y:
+      ret = readDoubleData(y, reader);
+      break;
+    case XML_A:
+      ret = readDoubleData(a, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_ARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addArcTo(ix, level, x, y, a);
 }
 
-void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
 {
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  unsigned ix = 0;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  double x = 0.0;
+  double y = 0.0;
+  double a = 0.0;
+  double b = 0.0;
+  double c = 0.0;
+  double d = 0.0;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readEllipticalArcTo: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_X:
+      ret = readDoubleData(x, reader);
+      break;
+    case XML_Y:
+      ret = readDoubleData(y, reader);
+      break;
+    case XML_A:
+      ret = readDoubleData(a, reader);
+      break;
+    case XML_B:
+      ret = readDoubleData(b, reader);
+      break;
+    case XML_C:
+      ret = readDoubleData(c, reader);
+      break;
+    case XML_D:
+      ret = readDoubleData(d, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_ELLIPTICALARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addEllipticalArcTo(ix, level, x, y, a, b, c, d);
 }
 
-void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
 {
-}
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
 
-void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr /* reader */)
-{
+  unsigned ix = 0;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  double x = 0.0;
+  double y = 0.0;
+  double a = 0.0;
+  double b = 0.0;
+  double c = 0.0;
+  double d = 0.0;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readEllipse: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_X:
+      ret = readDoubleData(x, reader);
+      break;
+    case XML_Y:
+      ret = readDoubleData(y, reader);
+      break;
+    case XML_A:
+      ret = readDoubleData(a, reader);
+      break;
+    case XML_B:
+      ret = readDoubleData(b, reader);
+      break;
+    case XML_C:
+      ret = readDoubleData(c, reader);
+      break;
+    case XML_D:
+      ret = readDoubleData(d, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_ELLIPSE != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addEllipse(ix, level, x, y, a, b, c, d);
 }
 
 void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr /* reader */)
@@ -110,20 +426,57 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr /* reader */)
 {
 }
 
-void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
 {
-}
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
 
-void libvisio::VSDXMLParserBase::readShapeData(xmlTextReaderPtr /* reader */)
-{
-}
+  unsigned ix = 0;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
 
-void libvisio::VSDXMLParserBase::readShapeId(xmlTextReaderPtr /* reader */)
-{
-}
+  double x = 0.0;
+  double y = 0.0;
+  double a = 0.0;
+  double b = 0.0;
 
-void libvisio::VSDXMLParserBase::readShapeList(xmlTextReaderPtr /* reader */)
-{
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readInfiniteLine: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_X:
+      ret = readDoubleData(x, reader);
+      break;
+    case XML_Y:
+      ret = readDoubleData(y, reader);
+      break;
+    case XML_A:
+      ret = readDoubleData(a, reader);
+      break;
+    case XML_B:
+      ret = readDoubleData(b, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_INFINITELINE != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addInfiniteLine(ix, level, x, y, a, b);
 }
 
 void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
@@ -184,6 +537,9 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
       m_shape.m_geometries = tmpShape->m_geometries;
+      m_shape.m_lineStyleId = tmpShape->m_lineStyleId;
+      m_shape.m_fillStyleId = tmpShape->m_fillStyleId;
+      m_shape.m_textStyleId = tmpShape->m_textStyleId;;
     }
   }
 
@@ -192,9 +548,9 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   else
     m_shapeList.addShapeId(id);
 
-  m_shape.m_lineStyleId = lineStyle;
-  m_shape.m_fillStyleId = fillStyle;
-  m_shape.m_textStyleId = textStyle;
+  m_shape.m_lineStyleId = lineStyle != (unsigned)-1 ? lineStyle : m_shape.m_lineStyleId;
+  m_shape.m_fillStyleId = fillStyle != (unsigned)-1 ? fillStyle : m_shape.m_fillStyleId;
+  m_shape.m_textStyleId = textStyle != (unsigned)-1 ? textStyle : m_shape.m_textStyleId;;
   m_shape.m_parent = m_shapeStack.empty() ? (unsigned)-1 : m_shapeStack.top().m_shapeId;
   m_shape.m_masterPage = masterPage;
   m_shape.m_masterShape = masterShape;

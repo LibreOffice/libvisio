@@ -298,6 +298,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readXFormData(reader);
     break;
+  case XML_GEOM:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readGeometry(reader);
+    break;
   default:
     break;
   }
