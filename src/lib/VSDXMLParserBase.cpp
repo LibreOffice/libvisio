@@ -43,9 +43,11 @@
 
 libvisio::VSDXMLParserBase::VSDXMLParserBase()
   : m_collector(), m_stencils(), m_currentStencil(0), m_shape(),
-    m_isStencilStarted(false), m_currentStencilID((unsigned)-1), m_extractStencils(false), m_isInStyles(false),
-    m_currentLevel(0), m_currentShapeLevel(0), m_colours(), m_fieldList(), m_shapeList(), m_currentBinaryData(),
-    m_shapeStack(), m_shapeLevelStack(), m_isShapeStarted(false), m_currentGeometryList(0)
+    m_isStencilStarted(false), m_currentStencilID((unsigned)-1),
+    m_extractStencils(false), m_isInStyles(false), m_currentLevel(0),
+    m_currentShapeLevel(0), m_colours(), m_fieldList(), m_shapeList(),
+    m_currentBinaryData(), m_shapeStack(), m_shapeLevelStack(),
+    m_isShapeStarted(false), m_isPageStarted(false), m_currentGeometryList(0)
 {
 }
 
