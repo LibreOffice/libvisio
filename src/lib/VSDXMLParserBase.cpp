@@ -181,6 +181,12 @@ void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    m_currentGeometryList->addEmpty(ix, level);
+    return;
+  }
+
   double x = 0.0;
   double y = 0.0;
 
@@ -226,6 +232,12 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    m_currentGeometryList->addEmpty(ix, level);
+    return;
+  }
+
   double x = 0.0;
   double y = 0.0;
 
@@ -269,6 +281,12 @@ void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
   {
     ix = xmlStringToLong(ixString);
     xmlFree(ixString);
+  }
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    m_currentGeometryList->addEmpty(ix, level);
+    return;
   }
 
   double x = 0.0;
@@ -318,6 +336,12 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
   {
     ix = xmlStringToLong(ixString);
     xmlFree(ixString);
+  }
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    m_currentGeometryList->addEmpty(ix, level);
+    return;
   }
 
   double x = 0.0;

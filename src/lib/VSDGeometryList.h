@@ -269,6 +269,7 @@ public:
   VSDGeometryList &operator=(const VSDGeometryList &geomList);
 
   void addGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow);
+  void addEmpty(unsigned id, unsigned level);
   void addMoveTo(unsigned id, unsigned level, double x, double y);
   void addLineTo(unsigned id, unsigned level, double x, double y);
   void addArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
