@@ -536,11 +536,11 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
       break;
     case XML_WIDTH:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(m_shape.m_xform.height, reader);
+        ret = readDoubleData(m_shape.m_xform.width, reader);
       break;
     case XML_HEIGHT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(m_shape.m_xform.width, reader);
+        ret = readDoubleData(m_shape.m_xform.height, reader);
       break;
     case XML_LOCPINX:
       if (XML_READER_TYPE_ELEMENT == tokenType)

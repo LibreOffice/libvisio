@@ -1074,11 +1074,11 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       break;
     case XML_WIDTH:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(m_shape.m_xform.height, reader);
+        ret = readDoubleData(m_shape.m_xform.width, reader);
       break;
     case XML_HEIGHT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(m_shape.m_xform.width, reader);
+        ret = readDoubleData(m_shape.m_xform.height, reader);
       break;
     case XML_LOCPINX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1131,10 +1131,6 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
           m_shape.m_foreign = new ForeignData();
         ret = readDoubleData(m_shape.m_foreign->height, reader);
       }
-      break;
-    case XML_GEOMETRY:
-      if (XML_READER_TYPE_ELEMENT == tokenType)
-        readGeometry(reader);
       break;
     case XML_FOREIGNDATA:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1337,6 +1333,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       }
       break;
     case XML_GEOM:
+    case XML_GEOMETRY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readGeometry(reader);
       break;

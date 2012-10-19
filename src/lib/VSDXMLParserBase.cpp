@@ -70,7 +70,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
   bool noLine = false;
   bool noShow = false;
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -93,13 +93,16 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
     switch (tokenId)
     {
     case XML_NOFILL:
-      ret = readBoolData(noFill, reader);
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readBoolData(noFill, reader);
       break;
     case XML_NOLINE:
-      ret = readBoolData(noLine, reader);
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readBoolData(noLine, reader);
       break;
     case XML_NOSHOW:
-      ret = readBoolData(noShow, reader);
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readBoolData(noShow, reader);
       break;
     case XML_MOVETO:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -159,7 +162,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
   }
   while (((XML_GEOM != tokenId && XML_SECTION != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
   if (ret == 1)
-    m_currentGeometryList->addGeometry(0, level, noFill, noLine, noShow);
+    m_currentGeometryList->addGeometry(0, level+1, noFill, noLine, noShow);
 }
 
 void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
@@ -169,7 +172,7 @@ void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -214,7 +217,7 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -259,7 +262,7 @@ void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -308,7 +311,7 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -369,7 +372,7 @@ void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -430,7 +433,7 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -475,7 +478,7 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -520,7 +523,7 @@ void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -573,7 +576,7 @@ void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -634,7 +637,7 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -695,7 +698,7 @@ void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -740,7 +743,7 @@ void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -785,7 +788,7 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = 0;
+  unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -892,7 +895,6 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
-      m_shape.m_geometries = tmpShape->m_geometries;
       m_shape.m_lineStyleId = tmpShape->m_lineStyleId;
       m_shape.m_fillStyleId = tmpShape->m_fillStyleId;
       m_shape.m_textStyleId = tmpShape->m_textStyleId;;
