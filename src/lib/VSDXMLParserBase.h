@@ -74,6 +74,7 @@ protected:
   bool m_isShapeStarted;
   bool m_isPageStarted;
   VSDGeometryList *m_currentGeometryList;
+  unsigned m_currentGeometryListIndex;
 
   // Helper functions
 

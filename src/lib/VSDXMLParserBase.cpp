@@ -47,7 +47,8 @@ libvisio::VSDXMLParserBase::VSDXMLParserBase()
     m_extractStencils(false), m_isInStyles(false), m_currentLevel(0),
     m_currentShapeLevel(0), m_colours(), m_fieldList(), m_shapeList(),
     m_currentBinaryData(), m_shapeStack(), m_shapeLevelStack(),
-    m_isShapeStarted(false), m_isPageStarted(false), m_currentGeometryList(0)
+    m_isShapeStarted(false), m_isPageStarted(false), m_currentGeometryList(0),
+    m_currentGeometryListIndex((unsigned)-1)
 {
 }
 
@@ -1162,6 +1163,23 @@ void libvisio::VSDXMLParserBase::_flushShape()
   for (std::map<unsigned, VSDName>::const_iterator iterName = m_shape.m_names.begin(); iterName != m_shape.m_names.end(); ++iterName)
     m_collector->collectName(iterName->first, m_currentShapeLevel+2, iterName->second.m_data, iterName->second.m_format);
 
+  if (!m_shape.m_geometries.empty())
+  {
+    libvisio::sorted_vector<unsigned> tmpVector;
+    for (std::map<unsigned, VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
+      tmpVector.insert(iterGeom->first);
+
+    for (unsigned i = 0; i < tmpVector.size(); i++)
+    {
+      std::map<unsigned, VSDGeometryList>::const_iterator iter = m_shape.m_geometries.find(tmpVector[i]);
+      if (iter != m_shape.m_geometries.end())
+      {
+        iter->second.handle(m_collector);
+        m_collector->collectUnhandledChunk(0, m_currentShapeLevel+1);
+      }
+    }
+  }
+
   if (m_shape.m_foreign)
     m_collector->collectForeignData(m_currentShapeLevel+1, m_shape.m_foreign->data);
 
@@ -1172,16 +1190,11 @@ void libvisio::VSDXMLParserBase::_flushShape()
     m_collector->collectText(m_currentShapeLevel+1, m_shape.m_text, m_shape.m_textFormat);
 
 
-  for (std::map<unsigned, VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
-    iterGeom->second.handle(m_collector);
-
   for (std::vector<VSDCharacterList>::const_iterator iterChar = m_shape.m_charListVector.begin(); iterChar != m_shape.m_charListVector.end(); ++iterChar)
     iterChar->handle(m_collector);
 
   for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
     iterPara->handle(m_collector);
-
-  m_collector->collectUnhandledChunk(m_shape.m_shapeId, m_currentShapeLevel);
 }
 
 void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)
