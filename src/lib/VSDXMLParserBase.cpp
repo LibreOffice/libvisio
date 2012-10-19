@@ -1075,29 +1075,6 @@ void libvisio::VSDXMLParserBase::readOLEData(xmlTextReaderPtr /* reader */)
 {
 }
 
-int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader)
-{
-  int ret = 1;
-  idx = -1;
-  try
-  {
-    ret = readColourData(value, reader);
-  }
-  catch (const XmlParserException &)
-  {
-    ret = readLongData(idx, reader);
-  }
-  if (idx >= 0)
-  {
-    std::map<unsigned, Colour>::const_iterator iter = m_colours.find((unsigned)idx);
-    if (iter != m_colours.end())
-      value = iter->second;
-    else
-      idx = -1;
-  }
-  return ret;
-}
-
 void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
 {
   VSD_DEBUG_MSG(("VSDXParser::readForeignData\n"));

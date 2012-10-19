@@ -41,6 +41,7 @@ class VSDCollector;
 
 class VSDXParser : public VSDXMLParserBase
 {
+  using VSDXMLParserBase::readExtendedColourData;
 public:
   explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   virtual ~VSDXParser();
@@ -59,6 +60,7 @@ private:
   int readDoubleData(double &value, xmlTextReaderPtr reader);
   int readBoolData(bool &value, xmlTextReaderPtr reader);
   int readColourData(Colour &value, xmlTextReaderPtr reader);
+  int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
 
   int getElementToken(xmlTextReaderPtr reader);
   int getElementDepth(xmlTextReaderPtr reader);

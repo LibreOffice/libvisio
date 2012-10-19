@@ -81,7 +81,7 @@ protected:
   virtual int readDoubleData(double &value, xmlTextReaderPtr reader) = 0;
   virtual int readBoolData(bool &value, xmlTextReaderPtr reader) = 0;
   virtual int readColourData(Colour &value, xmlTextReaderPtr reader) = 0;
-  int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
+  virtual int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader) = 0;
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   virtual void _handleLevelChange(unsigned level);
   void _flushShape();

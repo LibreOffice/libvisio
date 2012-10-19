@@ -829,6 +829,38 @@ int libvisio::VDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
   return ret;
 }
 
+int libvisio::VDXParser::readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader)
+{
+  int ret = xmlTextReaderRead(reader);
+  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
+  {
+    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
+    if (stringValue)
+    {
+      VSD_DEBUG_MSG(("VSDXParser::readExtendedColourData stringValue %s\n", (const char *)stringValue));
+      try
+      {
+        Colour tmpColour = xmlStringToColour(stringValue);
+        value = tmpColour;
+      }
+      catch (const XmlParserException &)
+      {
+        idx = xmlStringToLong(stringValue);
+      }
+      if (idx >= 0)
+      {
+        std::map<unsigned, Colour>::const_iterator iter = m_colours.find((unsigned)idx);
+        if (iter != m_colours.end())
+          value = iter->second;
+        else
+          idx = -1;
+      }
+      ret = xmlTextReaderRead(reader);
+    }
+  }
+  return ret;
+}
+
 int libvisio::VDXParser::getElementToken(xmlTextReaderPtr reader)
 {
   return VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
