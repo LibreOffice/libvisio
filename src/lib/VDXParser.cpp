@@ -613,6 +613,7 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
     case XML_SHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetY, reader);
+      shadowOffsetY *= -1.0;
       break;
     case XML_PAGESCALE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
