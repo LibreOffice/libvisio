@@ -275,9 +275,10 @@ public:
 
   void addGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow);
   void addEmpty(unsigned id, unsigned level);
-  void addMoveTo(unsigned id, unsigned level, double x, double y);
-  void addLineTo(unsigned id, unsigned level, double x, double y);
-  void addArcTo(unsigned id, unsigned level, double x2, double y2, double bow);
+  void addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
+  void addLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
+  void addArcTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2,
+                const boost::optional<double> &bow);
   void addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
                   const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector,
                   const std::vector<double> &weights);
@@ -285,8 +286,12 @@ public:
   void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
                      const std::vector<std::pair<double, double> > &points);
   void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID);
-  void addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
-  void addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
+  void addEllipse(unsigned id, unsigned level, const boost::optional<double> &cx, const boost::optional<double> &cy,
+                  const boost::optional<double> &xleft, const boost::optional<double> &yleft,
+                  const boost::optional<double> &xtop, const boost::optional<double> &ytop);
+  void addEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3, const boost::optional<double> &y3,
+                          const boost::optional<double> &x2, const boost::optional<double> &y2,
+                          const boost::optional<double> &angle, const boost::optional<double> &ecc);
   void addSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree);
   void addSplineKnot(unsigned id, unsigned level, double x, double y, double knot);
   void addInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2);

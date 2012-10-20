@@ -33,6 +33,7 @@
 #include <map>
 #include <stack>
 #include <string>
+#include <boost/optional.hpp>
 #include "VSDXMLHelper.h"
 #include "VSDCharacterList.h"
 #include "VSDParagraphList.h"
@@ -79,6 +80,7 @@ protected:
   // Helper functions
 
   virtual int readLongData(long &value, xmlTextReaderPtr reader) = 0;
+  int readDoubleData(boost::optional<double> &value, xmlTextReaderPtr reader);
   virtual int readDoubleData(double &value, xmlTextReaderPtr reader) = 0;
   virtual int readBoolData(bool &value, xmlTextReaderPtr reader) = 0;
   virtual int readColourData(Colour &value, xmlTextReaderPtr reader) = 0;

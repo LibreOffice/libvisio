@@ -32,6 +32,9 @@
 #include "VSDGeometryList.h"
 #include "libvisio_utils.h"
 
+#define FROM_OPTIONAL(t, u) t.is_initialized() ? t.get() : u
+#define ASSIGN_OPTIONAL(t, u) if(t.is_initialized()) u = t.get()
+
 namespace libvisio
 {
 
@@ -63,60 +66,62 @@ public:
 class VSDMoveTo : public VSDGeometryListElement
 {
 public:
-  VSDMoveTo(unsigned id, unsigned level, double x, double y) :
-    VSDGeometryListElement(id, level), m_x(x), m_y(y) {}
+  VSDMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
+    VSDGeometryListElement(id, level), m_x(FROM_OPTIONAL(x, 0.0)), m_y(FROM_OPTIONAL(y, 0.0)) {}
   virtual ~VSDMoveTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
   double m_x, m_y;
 };
 
 class VSDLineTo : public VSDGeometryListElement
 {
 public:
-  VSDLineTo(unsigned id, unsigned level, double x, double y) :
-    VSDGeometryListElement(id, level), m_x(x), m_y(y) {}
+  VSDLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
+    VSDGeometryListElement(id, level), m_x(FROM_OPTIONAL(x, 0.0)), m_y(FROM_OPTIONAL(y, 0.0)) {}
   virtual ~VSDLineTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
   double m_x, m_y;
 };
 
 class VSDArcTo : public VSDGeometryListElement
 {
 public:
-  VSDArcTo(unsigned id, unsigned level, double x2, double y2, double bow) :
-    VSDGeometryListElement(id, level), m_x2(x2), m_y2(y2), m_bow(bow) {}
+  VSDArcTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2, const boost::optional<double> &bow) :
+    VSDGeometryListElement(id, level), m_x2(FROM_OPTIONAL(x2, 0.0)), m_y2(FROM_OPTIONAL(y2, 0.0)), m_bow(FROM_OPTIONAL(bow, 0.0)) {}
   virtual ~VSDArcTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
   double m_x2, m_y2, m_bow;
 };
 
 class VSDEllipse : public VSDGeometryListElement
 {
 public:
-  VSDEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) :
-    VSDGeometryListElement(id, level), m_cx(cx), m_cy(cy), m_xleft(xleft), m_yleft(yleft), m_xtop(xtop), m_ytop(ytop) {}
+  VSDEllipse(unsigned id, unsigned level, const boost::optional<double> &cx, const boost::optional<double> &cy,
+             const boost::optional<double> &xleft, const boost::optional<double> &yleft,
+             const boost::optional<double> &xtop, const boost::optional<double> &ytop) :
+    VSDGeometryListElement(id, level), m_cx(FROM_OPTIONAL(cx, 0.0)), m_cy(FROM_OPTIONAL(cy, 0.0)),
+    m_xleft(FROM_OPTIONAL(xleft, 0.0)), m_yleft(FROM_OPTIONAL(yleft, 0.0)), m_xtop(FROM_OPTIONAL(xtop, 0.0)),
+    m_ytop(FROM_OPTIONAL(ytop, 0.0)) {}
   virtual ~VSDEllipse() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
   double m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop;
 };
 
 class VSDEllipticalArcTo : public VSDGeometryListElement
 {
 public:
-  VSDEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) :
-    VSDGeometryListElement(id, level), m_x3(x3), m_y3(y3), m_x2(x2), m_y2(y2), m_angle(angle), m_ecc(ecc) {}
+  VSDEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3, const boost::optional<double> &y3,
+                     const boost::optional<double> &x2, const boost::optional<double> &y2,
+                     const boost::optional<double> &angle, const boost::optional<double> &ecc) :
+    VSDGeometryListElement(id, level), m_x3(FROM_OPTIONAL(x3, 0.0)), m_y3(FROM_OPTIONAL(y3, 0.0)), m_x2(FROM_OPTIONAL(x2, 0.0)),
+    m_y2(FROM_OPTIONAL(y2, 0.0)), m_angle(FROM_OPTIONAL(angle, 0.0)), m_ecc(FROM_OPTIONAL(ecc, 0.0)) {}
   virtual ~VSDEllipticalArcTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
   double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
 };
 
@@ -563,22 +568,51 @@ void libvisio::VSDGeometryList::addEmpty(unsigned id, unsigned level)
   m_elements[id] = new VSDEmpty(id, level);
 }
 
-void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, double x, double y)
+void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
 {
-  clearElement(id);
-  m_elements[id] = new VSDMoveTo(id, level, x, y);
+  VSDMoveTo *tmpElement = dynamic_cast<VSDMoveTo *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDMoveTo(id, level, x, y);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(x, tmpElement->m_x);
+    ASSIGN_OPTIONAL(y, tmpElement->m_y);
+  }
 }
 
-void libvisio::VSDGeometryList::addLineTo(unsigned id, unsigned level, double x, double y)
+void libvisio::VSDGeometryList::addLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
 {
-  clearElement(id);
-  m_elements[id] = new VSDLineTo(id, level, x, y);
+  VSDLineTo *tmpElement = dynamic_cast<VSDLineTo *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDLineTo(id, level, x, y);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(x, tmpElement->m_x);
+    ASSIGN_OPTIONAL(y, tmpElement->m_y);
+  }
 }
 
-void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, double x2, double y2, double bow)
+void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, const boost::optional<double> &x2,
+    const boost::optional<double> &y2, const boost::optional<double> &bow)
 {
-  clearElement(id);
-  m_elements[id] = new VSDArcTo(id, level, x2, y2, bow);
+  VSDArcTo *tmpElement = dynamic_cast<VSDArcTo *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDArcTo(id, level, x2, y2, bow);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(x2, tmpElement->m_x2);
+    ASSIGN_OPTIONAL(y2, tmpElement->m_y2);
+    ASSIGN_OPTIONAL(bow, tmpElement->m_bow);
+  }
 }
 
 void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
@@ -607,16 +641,46 @@ void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, doub
   m_elements[id] = new VSDPolylineTo2(id, level, x, y, dataID);
 }
 
-void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)
+void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, const boost::optional<double> &cx,
+    const boost::optional<double> &cy,const boost::optional<double> &xleft, const boost::optional<double> &yleft,
+    const boost::optional<double> &xtop, const boost::optional<double> &ytop)
 {
-  clearElement(id);
-  m_elements[id] = new VSDEllipse(id, level, cx, cy, xleft, yleft, xtop, ytop);
+  VSDEllipse *tmpElement = dynamic_cast<VSDEllipse *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDEllipse(id, level, cx, cy, xleft, yleft, xtop, ytop);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(cx, tmpElement->m_cx);
+    ASSIGN_OPTIONAL(cy, tmpElement->m_cy);
+    ASSIGN_OPTIONAL(xleft, tmpElement->m_xleft);
+    ASSIGN_OPTIONAL(yleft, tmpElement->m_yleft);
+    ASSIGN_OPTIONAL(xtop, tmpElement->m_xtop);
+    ASSIGN_OPTIONAL(ytop, tmpElement->m_ytop);
+  }
 }
 
-void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
+void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3,
+    const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
+    const boost::optional<double> &angle, const boost::optional<double> &ecc)
 {
-  clearElement(id);
-  m_elements[id] = new VSDEllipticalArcTo(id, level, x3, y3, x2, y2, angle, ecc);
+  VSDEllipticalArcTo *tmpElement = dynamic_cast<VSDEllipticalArcTo *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDEllipticalArcTo(id, level, x3, y3, x2, y2, angle, ecc);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(x3, tmpElement->m_x3);
+    ASSIGN_OPTIONAL(y3, tmpElement->m_y3);
+    ASSIGN_OPTIONAL(x2, tmpElement->m_x2);
+    ASSIGN_OPTIONAL(y2, tmpElement->m_y2);
+    ASSIGN_OPTIONAL(angle, tmpElement->m_angle);
+    ASSIGN_OPTIONAL(ecc, tmpElement->m_ecc);
+  }
 }
 
 void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree)

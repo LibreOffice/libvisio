@@ -183,12 +183,18 @@ void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
 
   if (xmlTextReaderIsEmptyElement(reader))
   {
-    m_currentGeometryList->addEmpty(ix, level);
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
     return;
   }
 
-  double x = 0.0;
-  double y = 0.0;
+  boost::optional<double> x;
+  boost::optional<double> y;
 
   do
   {
@@ -234,12 +240,18 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
 
   if (xmlTextReaderIsEmptyElement(reader))
   {
-    m_currentGeometryList->addEmpty(ix, level);
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
     return;
   }
 
-  double x = 0.0;
-  double y = 0.0;
+  boost::optional<double> x;
+  boost::optional<double> y;
 
   do
   {
@@ -285,13 +297,19 @@ void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
 
   if (xmlTextReaderIsEmptyElement(reader))
   {
-    m_currentGeometryList->addEmpty(ix, level);
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
     return;
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  double a = 0.0;
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
 
   do
   {
@@ -340,16 +358,22 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
 
   if (xmlTextReaderIsEmptyElement(reader))
   {
-    m_currentGeometryList->addEmpty(ix, level);
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
     return;
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  double a = 0.0;
-  double b = 0.0;
-  double c = 0.0;
-  double d = 0.0;
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
+  boost::optional<double> b;
+  boost::optional<double> c;
+  boost::optional<double> d;
 
   do
   {
@@ -405,12 +429,24 @@ void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  double a = 0.0;
-  double b = 0.0;
-  double c = 0.0;
-  double d = 0.0;
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
+  boost::optional<double> b;
+  boost::optional<double> c;
+  boost::optional<double> d;
 
   do
   {
@@ -609,6 +645,18 @@ void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
   double x = 0.0;
   double y = 0.0;
   double a = 0.0;
@@ -668,6 +716,18 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
   {
     ix = xmlStringToLong(ixString);
     xmlFree(ixString);
+  }
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
   }
 
   double x = 0.0;
@@ -731,6 +791,18 @@ void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
   double x = 0;
   double y = 0;
 
@@ -774,6 +846,18 @@ void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
   {
     ix = xmlStringToLong(ixString);
     xmlFree(ixString);
+  }
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
   }
 
   double x = 0;
@@ -1250,6 +1334,21 @@ void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)
 {
   m_currentLevel = level;
   m_collector->collectUnhandledChunk(0, m_currentLevel);
+}
+
+int libvisio::VSDXMLParserBase::readDoubleData(boost::optional<double> &value, xmlTextReaderPtr reader)
+{
+  double tmpValue = 0.0;
+  int ret = 1;
+  try
+  {
+    ret = readDoubleData(tmpValue, reader);
+    value = tmpValue;
+  }
+  catch (const XmlParserException &)
+  {
+  }
+  return ret;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -42,6 +42,9 @@ class VSDCollector;
 class VSDXParser : public VSDXMLParserBase
 {
   using VSDXMLParserBase::readExtendedColourData;
+  using VSDXMLParserBase::readDoubleData;
+  using VSDXMLParserBase::readBoolData;
+
 public:
   explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   virtual ~VSDXParser();
