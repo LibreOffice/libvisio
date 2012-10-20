@@ -920,6 +920,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
+      m_shape.m_geometries = tmpShape->m_geometries;
       m_shape.m_lineStyleId = tmpShape->m_lineStyleId;
       m_shape.m_fillStyleId = tmpShape->m_fillStyleId;
       m_shape.m_textStyleId = tmpShape->m_textStyleId;;
@@ -943,6 +944,30 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
 {
   m_colours.clear();
+  m_colours[0] = Colour(0x00, 0x00, 0x00, 0);
+  m_colours[1] = Colour(0xFF, 0xFF, 0xFF, 0);
+  m_colours[2] = Colour(0xFF, 0x00, 0x00, 0);
+  m_colours[3] = Colour(0x00, 0xFF, 0x00, 0);
+  m_colours[4] = Colour(0x00, 0x00, 0xFF, 0);
+  m_colours[5] = Colour(0xFF, 0xFF, 0x00, 0);
+  m_colours[6] = Colour(0xFF, 0x00, 0xFF, 0);
+  m_colours[7] = Colour(0x00, 0xFF, 0xFF, 0);
+  m_colours[8] = Colour(0x80, 0x00, 0x00, 0);
+  m_colours[9] = Colour(0x00, 0x80, 0x00, 0);
+  m_colours[10] = Colour(0x00, 0x00, 0x80, 0);
+  m_colours[11] = Colour(0x80, 0x80, 0x00, 0);
+  m_colours[12] = Colour(0x80, 0x00, 0x80, 0);
+  m_colours[13] = Colour(0x00, 0x80, 0x80, 0);
+  m_colours[14] = Colour(0xC0, 0xC0, 0xC0, 0);
+  m_colours[15] = Colour(0xE6, 0xE6, 0xE6, 0);
+  m_colours[16] = Colour(0xCD, 0xCD, 0xCD, 0);
+  m_colours[17] = Colour(0xB3, 0xB3, 0xB3, 0);
+  m_colours[18] = Colour(0x9A, 0x9A, 0x9A, 0);
+  m_colours[19] = Colour(0x80, 0x80, 0x80, 0);
+  m_colours[20] = Colour(0x66, 0x66, 0x66, 0);
+  m_colours[21] = Colour(0x4D, 0x4D, 0x4D, 0);
+  m_colours[22] = Colour(0x33, 0x33, 0x33, 0);
+  m_colours[23] = Colour(0x1A, 0x1A, 0x1A, 0);
 
   int ret = 1;
   int tokenId = -1;
