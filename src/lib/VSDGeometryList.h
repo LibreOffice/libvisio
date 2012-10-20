@@ -36,6 +36,7 @@
 #include <vector>
 #include <functional>
 #include <algorithm>
+#include <boost/optional.hpp>
 
 namespace libvisio
 {
@@ -250,7 +251,8 @@ class VSDCollector;
 class VSDGeometryListElement
 {
 public:
-  VSDGeometryListElement() {}
+  VSDGeometryListElement(unsigned id, unsigned level)
+    : m_id(id), m_level(level) {}
   virtual ~VSDGeometryListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDGeometryListElement *clone() = 0;
@@ -258,6 +260,9 @@ public:
   {
     return (unsigned)-1;
   }
+protected:
+  unsigned m_id;
+  unsigned m_level;
 };
 
 class VSDGeometryList

@@ -40,13 +40,11 @@ class VSDGeometry : public VSDGeometryListElement
 {
 public:
   VSDGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow) :
-    m_id(id), m_level(level), m_noFill(noFill), m_noLine(noLine), m_noShow(noShow) {}
+    VSDGeometryListElement(id, level), m_noFill(noFill), m_noLine(noLine), m_noShow(noShow) {}
   virtual ~VSDGeometry() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id;
-  unsigned m_level;
   bool m_noFill;
   bool m_noLine;
   bool m_noShow;
@@ -56,25 +54,21 @@ class VSDEmpty : public VSDGeometryListElement
 {
 public:
   VSDEmpty(unsigned id, unsigned level) :
-    m_id(id), m_level(level) {}
+    VSDGeometryListElement(id, level) {}
   virtual ~VSDEmpty() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
-  unsigned m_id;
-  unsigned m_level;
 };
 
 class VSDMoveTo : public VSDGeometryListElement
 {
 public:
   VSDMoveTo(unsigned id, unsigned level, double x, double y) :
-    m_id(id), m_level(level), m_x(x), m_y(y) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y) {}
   virtual ~VSDMoveTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y;
 };
 
@@ -82,12 +76,11 @@ class VSDLineTo : public VSDGeometryListElement
 {
 public:
   VSDLineTo(unsigned id, unsigned level, double x, double y) :
-    m_id(id), m_level(level), m_x(x), m_y(y) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y) {}
   virtual ~VSDLineTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y;
 };
 
@@ -95,12 +88,11 @@ class VSDArcTo : public VSDGeometryListElement
 {
 public:
   VSDArcTo(unsigned id, unsigned level, double x2, double y2, double bow) :
-    m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_bow(bow) {}
+    VSDGeometryListElement(id, level), m_x2(x2), m_y2(y2), m_bow(bow) {}
   virtual ~VSDArcTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x2, m_y2, m_bow;
 };
 
@@ -108,12 +100,11 @@ class VSDEllipse : public VSDGeometryListElement
 {
 public:
   VSDEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) :
-    m_id(id), m_level(level), m_cx(cx), m_cy(cy), m_xleft(xleft), m_yleft(yleft), m_xtop(xtop), m_ytop(ytop) {}
+    VSDGeometryListElement(id, level), m_cx(cx), m_cy(cy), m_xleft(xleft), m_yleft(yleft), m_xtop(xtop), m_ytop(ytop) {}
   virtual ~VSDEllipse() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop;
 };
 
@@ -121,12 +112,11 @@ class VSDEllipticalArcTo : public VSDGeometryListElement
 {
 public:
   VSDEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) :
-    m_id(id), m_level(level), m_x3(x3), m_y3(y3), m_x2(x2), m_y2(y2), m_angle(angle), m_ecc(ecc) {}
+    VSDGeometryListElement(id, level), m_x3(x3), m_y3(y3), m_x2(x2), m_y2(y2), m_angle(angle), m_ecc(ecc) {}
   virtual ~VSDEllipticalArcTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
 };
 
@@ -134,7 +124,7 @@ class VSDNURBSTo1 : public VSDGeometryListElement
 {
 public:
   VSDNURBSTo1(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) :
-    m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_xType(xType), m_yType(yType), m_degree(degree), m_controlPoints(controlPoints), m_knotVector(knotVector), m_weights(weights) {}
+    VSDGeometryListElement(id, level), m_x2(x2), m_y2(y2), m_xType(xType), m_yType(yType), m_degree(degree), m_controlPoints(controlPoints), m_knotVector(knotVector), m_weights(weights) {}
   virtual ~VSDNURBSTo1() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
@@ -151,7 +141,7 @@ class VSDNURBSTo2 : public VSDGeometryListElement
 {
 public:
   VSDNURBSTo2(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) :
-    m_dataID(dataID), m_id(id), m_level(level), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev) {}
+    VSDGeometryListElement(id, level), m_dataID(dataID), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev) {}
   virtual ~VSDNURBSTo2() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
@@ -159,7 +149,6 @@ public:
 
 private:
   unsigned m_dataID;
-  unsigned m_id, m_level;
   double m_x2, m_y2;
   double m_knot, m_knotPrev;
   double m_weight, m_weightPrev;
@@ -170,12 +159,11 @@ class VSDPolylineTo1 : public VSDGeometryListElement
 {
 public:
   VSDPolylineTo1(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points) :
-    m_id(id), m_level(level), m_x(x), m_y(y), m_xType(xType), m_yType(yType), m_points(points) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_xType(xType), m_yType(yType), m_points(points) {}
   virtual ~VSDPolylineTo1() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y;
   unsigned m_xType, m_yType;
   std::vector<std::pair<double, double> > m_points;
@@ -185,7 +173,7 @@ class VSDPolylineTo2 : public VSDGeometryListElement
 {
 public:
   VSDPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
-    m_dataID(dataID), m_id(id), m_level(level), m_x(x), m_y(y) {}
+    VSDGeometryListElement(id, level), m_dataID(dataID), m_x(x), m_y(y) {}
   virtual ~VSDPolylineTo2() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
@@ -193,7 +181,6 @@ public:
 
 private:
   unsigned m_dataID;
-  unsigned m_id, m_level;
   double m_x, m_y;
 };
 
@@ -201,12 +188,11 @@ class VSDSplineStart : public VSDGeometryListElement
 {
 public:
   VSDSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree) :
-    m_id(id), m_level(level), m_x(x), m_y(y), m_secondKnot(secondKnot), m_firstKnot(firstKnot), m_lastKnot(lastKnot), m_degree(degree) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_secondKnot(secondKnot), m_firstKnot(firstKnot), m_lastKnot(lastKnot), m_degree(degree) {}
   virtual ~VSDSplineStart() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y;
   double m_secondKnot, m_firstKnot, m_lastKnot;
   unsigned m_degree;
@@ -216,12 +202,11 @@ class VSDSplineKnot : public VSDGeometryListElement
 {
 public:
   VSDSplineKnot(unsigned id, unsigned level, double x, double y, double knot) :
-    m_id(id), m_level(level), m_x(x), m_y(y), m_knot(knot) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_knot(knot) {}
   virtual ~VSDSplineKnot() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y;
   double m_knot;
 };
@@ -230,12 +215,11 @@ class VSDInfiniteLine : public VSDGeometryListElement
 {
 public:
   VSDInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2) :
-    m_id(id), m_level(level), m_x1(x1), m_y1(y1), m_x2(x2), m_y2(y2) {}
+    VSDGeometryListElement(id, level), m_x1(x1), m_y1(y1), m_x2(x2), m_y2(y2) {}
   virtual ~VSDInfiniteLine() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x1, m_y1, m_x2, m_y2;
 };
 
@@ -243,12 +227,11 @@ class VSDRelCubBezTo : public VSDGeometryListElement
 {
 public:
   VSDRelCubBezTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d) :
-    m_id(id), m_level(level), m_x(x), m_y(y), m_a(a), m_b(b), m_c(c), m_d(d) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_a(a), m_b(b), m_c(c), m_d(d) {}
   virtual ~VSDRelCubBezTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y, m_a, m_b, m_c, m_d;
 };
 
@@ -256,12 +239,11 @@ class VSDRelEllipticalArcTo : public VSDGeometryListElement
 {
 public:
   VSDRelEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) :
-    m_id(id), m_level(level), m_x3(x3), m_y3(y3), m_x2(x2), m_y2(y2), m_angle(angle), m_ecc(ecc) {}
+    VSDGeometryListElement(id, level), m_x3(x3), m_y3(y3), m_x2(x2), m_y2(y2), m_angle(angle), m_ecc(ecc) {}
   virtual ~VSDRelEllipticalArcTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
 };
 
@@ -269,12 +251,11 @@ class VSDRelMoveTo : public VSDGeometryListElement
 {
 public:
   VSDRelMoveTo(unsigned id, unsigned level, double x, double y) :
-    m_id(id), m_level(level), m_x(x), m_y(y) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y) {}
   virtual ~VSDRelMoveTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y;
 };
 
@@ -282,12 +263,11 @@ class VSDRelLineTo : public VSDGeometryListElement
 {
 public:
   VSDRelLineTo(unsigned id, unsigned level, double x, double y) :
-    m_id(id), m_level(level), m_x(x), m_y(y) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y) {}
   virtual ~VSDRelLineTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y;
 };
 
@@ -295,12 +275,11 @@ class VSDRelQuadBezTo : public VSDGeometryListElement
 {
 public:
   VSDRelQuadBezTo(unsigned id, unsigned level, double x, double y, double a, double b) :
-    m_id(id), m_level(level), m_x(x), m_y(y), m_a(a), m_b(b) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_a(a), m_b(b) {}
   virtual ~VSDRelQuadBezTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x, m_y, m_a, m_b;
 };
 
