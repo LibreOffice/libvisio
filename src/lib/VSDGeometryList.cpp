@@ -42,12 +42,13 @@ namespace libvisio
 class VSDGeometry : public VSDGeometryListElement
 {
 public:
-  VSDGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow) :
-    VSDGeometryListElement(id, level), m_noFill(noFill), m_noLine(noLine), m_noShow(noShow) {}
+  VSDGeometry(unsigned id, unsigned level, const boost::optional<bool> &noFill,
+              const boost::optional<bool> &noLine, const boost::optional<bool> &noShow) :
+    VSDGeometryListElement(id, level), m_noFill(FROM_OPTIONAL(noFill, false)),
+    m_noLine(FROM_OPTIONAL(noLine, false)), m_noShow(FROM_OPTIONAL(noShow, false)) {}
   virtual ~VSDGeometry() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
   bool m_noFill;
   bool m_noLine;
   bool m_noShow;
@@ -561,10 +562,21 @@ libvisio::VSDGeometryList::~VSDGeometryList()
   clear();
 }
 
-void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow)
+void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, const boost::optional<bool> &noFill,
+    const boost::optional<bool> &noLine, const boost::optional<bool> &noShow)
 {
-  clearElement(id);
-  m_elements[id] = new VSDGeometry(id, level, noFill, noLine, noShow);
+  VSDGeometry *tmpElement = dynamic_cast<VSDGeometry *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDGeometry(id, level, noFill, noLine, noShow);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(noFill, tmpElement->m_noFill);
+    ASSIGN_OPTIONAL(noLine, tmpElement->m_noLine);
+    ASSIGN_OPTIONAL(noShow, tmpElement->m_noShow);
+  }
 }
 
 void libvisio::VSDGeometryList::addEmpty(unsigned id, unsigned level)
@@ -573,7 +585,8 @@ void libvisio::VSDGeometryList::addEmpty(unsigned id, unsigned level)
   m_elements[id] = new VSDEmpty(id, level);
 }
 
-void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
+void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x,
+    const boost::optional<double> &y)
 {
   VSDMoveTo *tmpElement = dynamic_cast<VSDMoveTo *>(m_elements[id]);
   if (!tmpElement)

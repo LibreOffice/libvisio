@@ -273,7 +273,8 @@ public:
   ~VSDGeometryList();
   VSDGeometryList &operator=(const VSDGeometryList &geomList);
 
-  void addGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow);
+  void addGeometry(unsigned id, unsigned level, const boost::optional<bool> &noFill,
+                   const boost::optional<bool> &noLine, const boost::optional<bool> &noShow);
   void addEmpty(unsigned id, unsigned level);
   void addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
   void addLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);

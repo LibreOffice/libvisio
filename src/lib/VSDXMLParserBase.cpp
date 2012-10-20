@@ -67,10 +67,6 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  bool noFill = false;
-  bool noLine = false;
-  bool noShow = false;
-
   unsigned ix = (unsigned)-1;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
@@ -87,11 +83,18 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
     if (delString)
     {
       if (xmlStringToBool(delString))
-        m_currentGeometryList->addEmpty(ix, level);
+      {
+        m_currentGeometryList->clear();
+        m_shape.m_geometries.erase(ix);
+      }
       xmlFree(delString);
     }
     return;
   }
+
+  boost::optional<bool> noFill;
+  boost::optional<bool> noLine;
+  boost::optional<bool> noShow;
 
   do
   {
@@ -1408,6 +1411,23 @@ int libvisio::VSDXMLParserBase::readDoubleData(boost::optional<double> &value, x
   }
   catch (const XmlParserException &)
   {
+    return -1;
+  }
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readBoolData(boost::optional<bool> &value, xmlTextReaderPtr reader)
+{
+  bool tmpValue = false;
+  int ret = 1;
+  try
+  {
+    ret = readBoolData(tmpValue, reader);
+    value = tmpValue;
+  }
+  catch (const XmlParserException &)
+  {
+    return -1;
   }
   return ret;
 }
