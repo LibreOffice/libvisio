@@ -294,12 +294,18 @@ public:
                           const boost::optional<double> &angle, const boost::optional<double> &ecc);
   void addSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree);
   void addSplineKnot(unsigned id, unsigned level, double x, double y, double knot);
-  void addInfiniteLine(unsigned id, unsigned level, double x1, double y1, double x2, double y2);
-  void addRelCubBezTo(unsigned id, unsigned level, double x, double y, double a, double b, double c, double d);
-  void addRelEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
-  void addRelMoveTo(unsigned id, unsigned level, double x, double y);
-  void addRelLineTo(unsigned id, unsigned level, double x, double y);
-  void addRelQuadBezTo(unsigned id, unsigned level, double x, double y, double a, double b);
+  void addInfiniteLine(unsigned id, unsigned level, const boost::optional<double> &x1, const boost::optional<double> &y1,
+                       const boost::optional<double> &x2, const boost::optional<double> &y2);
+  void addRelCubBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
+                      const boost::optional<double> &a, const boost::optional<double> &b,
+                      const boost::optional<double> &c, const boost::optional<double> &d);
+  void addRelEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3, const boost::optional<double> &y3,
+                             const boost::optional<double> &x2, const boost::optional<double> &y2,
+                             const boost::optional<double> &angle, const boost::optional<double> &ecc);
+  void addRelMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
+  void addRelLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
+  void addRelQuadBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
+                       const boost::optional<double> &a, const boost::optional<double> &b);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDCollector *collector) const;
   void clear();

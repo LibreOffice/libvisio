@@ -81,6 +81,18 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
 
   m_currentGeometryList = &m_shape.m_geometries[ix];
 
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
   do
   {
     ret = xmlTextReaderRead(reader);
@@ -502,8 +514,20 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
-  double x = 0.0;
-  double y = 0.0;
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
+  boost::optional<double> x;
+  boost::optional<double> y;
 
   do
   {
@@ -547,8 +571,20 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
-  double x = 0.0;
-  double y = 0.0;
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
+  boost::optional<double> x;
+  boost::optional<double> y;
 
   do
   {
@@ -592,10 +628,22 @@ void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  double a = 0.0;
-  double b = 0.0;
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
+  boost::optional<double> b;
 
   do
   {
@@ -657,12 +705,12 @@ void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
     return;
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  double a = 0.0;
-  double b = 0.0;
-  double c = 0.0;
-  double d = 0.0;
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
+  boost::optional<double> b;
+  boost::optional<double> c;
+  boost::optional<double> d;
 
   do
   {
@@ -730,12 +778,12 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
     return;
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  double a = 0.0;
-  double b = 0.0;
-  double c = 0.0;
-  double d = 0.0;
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
+  boost::optional<double> b;
+  boost::optional<double> c;
+  boost::optional<double> d;
 
   do
   {
@@ -803,8 +851,8 @@ void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
     return;
   }
 
-  double x = 0;
-  double y = 0;
+  boost::optional<double> x;
+  boost::optional<double> y;
 
   do
   {
@@ -860,8 +908,8 @@ void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
     return;
   }
 
-  double x = 0;
-  double y = 0;
+  boost::optional<double> x;
+  boost::optional<double> y;
 
   do
   {
@@ -905,10 +953,23 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
     xmlFree(ixString);
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  double a = 0.0;
-  double b = 0.0;
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
+  boost::optional<double> b;
+  boost::optional<double> d;
 
   do
   {
