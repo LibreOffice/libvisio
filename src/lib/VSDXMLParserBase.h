@@ -86,6 +86,7 @@ protected:
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   virtual void _handleLevelChange(unsigned level);
   void _flushShape();
+  virtual void copy_optional(std::map<unsigned, VSDGeometryList> &dest, const std::map<unsigned, VSDGeometryList> &source) = 0;
 
   virtual int getElementToken(xmlTextReaderPtr reader) = 0;
   virtual int getElementDepth(xmlTextReaderPtr reader) = 0;

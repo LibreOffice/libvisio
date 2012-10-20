@@ -920,7 +920,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
-      m_shape.m_geometries = tmpShape->m_geometries;
+      copy_optional(m_shape.m_geometries, tmpShape->m_geometries);
       m_shape.m_lineStyleId = tmpShape->m_lineStyleId;
       m_shape.m_fillStyleId = tmpShape->m_fillStyleId;
       m_shape.m_textStyleId = tmpShape->m_textStyleId;;

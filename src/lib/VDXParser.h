@@ -64,6 +64,8 @@ private:
   int getElementToken(xmlTextReaderPtr reader);
   int getElementDepth(xmlTextReaderPtr reader);
 
+  void copy_optional(std::map<unsigned, VSDGeometryList> &, const std::map<unsigned, VSDGeometryList> &) {}
+
   // Functions to read the DatadiagramML document structure
 
   bool processXmlDocument(WPXInputStream *input);
