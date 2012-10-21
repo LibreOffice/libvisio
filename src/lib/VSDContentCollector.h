@@ -69,12 +69,17 @@ public:
   void collectOLEList(unsigned id, unsigned level);
   void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
-  void collectLine(unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap);
-  void collectFillAndShadow(unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-                            double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc,
-                            double shadowOffsetX, double shadowOffsetY);
-  void collectFillAndShadow(unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern,
-                            double fillFGTransparency, double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc);
+  void collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
+                   const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
+                   const boost::optional<unsigned char> &lineCap);
+  void collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
+                            const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
+                            const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
+                            const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX, const boost::optional<double> &shadowOffsetY);
+  void collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
+                            const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
+                            const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
+                            const boost::optional<Colour> &shfgc);
   void collectGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
@@ -109,13 +114,21 @@ public:
 
   void collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format);
   void collectText(unsigned level, const WPXBinaryData &textStream, TextFormat format);
-  void collectCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-                     bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                     bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
-  void collectParaIX(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                     double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
-  void collectTextBlock(unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                        unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection);
+  void collectCharIX(unsigned id , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+                     const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
+                     const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
+                     const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
+                     const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
+                     const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace);
+  void collectParaIX(unsigned id , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+                     const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
+                     const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
+                     const boost::optional<unsigned> &flags);
+  void collectTextBlock(unsigned level, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,
+                        const boost::optional<double> &topMargin, const boost::optional<double> &bottomMargin,
+                        const boost::optional<unsigned char> &verticalAlign, const boost::optional<bool> &isBgFilled,
+                        const boost::optional<Colour> &bgColour, const boost::optional<double> &defaultTabStop,
+                        const boost::optional<unsigned char> &textDirection);
   void collectNameList(unsigned id, unsigned level);
   void collectName(unsigned id, unsigned level,  const WPXBinaryData &name, TextFormat format);
   void collectPageSheet(unsigned id, unsigned level);
@@ -182,16 +195,18 @@ private:
 
   void _handleForeignData(const WPXBinaryData &data);
 
+  void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
   void _lineProperties(const VSDLineStyle &style);
+  void _lineProperties(const VSDOptionalLineStyle &style);
+  void _fillAndShadowProperties(const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
+                                double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
   void _fillAndShadowProperties(const VSDFillStyle &style);
+  void _fillAndShadowProperties(const VSDOptionalFillStyle &style);
 
   void _applyLinePattern();
-  void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
   const char *_linePropertiesMarkerViewbox(unsigned marker);
   const char *_linePropertiesMarkerPath(unsigned marker);
   double _linePropertiesMarkerScale(unsigned marker);
-  void _fillAndShadowProperties(const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
-                                double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
 
   void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
   void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
@@ -258,6 +273,8 @@ private:
   std::vector<VSDCharStyle> m_charFormats;
   std::vector<VSDParaStyle> m_paraFormats;
 
+  VSDLineStyle m_lineStyle;
+  VSDFillStyle m_fillStyle;
   VSDTextBlockStyle m_textBlockStyle;
 
   VSDCharStyle m_defaultCharStyle;

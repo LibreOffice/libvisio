@@ -32,6 +32,7 @@
 #define VSDCOLLECTOR_H
 
 #include <vector>
+#include <boost/optional.hpp>
 #include "VSDParser.h"
 
 namespace libvisio
@@ -48,11 +49,17 @@ public:
   virtual void collectOLEList(unsigned id, unsigned level) = 0;
   virtual void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData) = 0;
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
-  virtual void collectLine(unsigned level, double strokeWidth, const Colour &c, unsigned linePattern, unsigned char startMarker, unsigned char endMarker, unsigned lineCap) = 0;
-  virtual void collectFillAndShadow(unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
-                                    double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY) = 0;
-  virtual void collectFillAndShadow(unsigned level, const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
-                                    double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc) = 0;
+  virtual void collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
+                           const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
+                           const boost::optional<unsigned char> &lineCap) = 0;
+  virtual void collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
+                                    const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
+                                    const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
+                                    const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX, const boost::optional<double> &shadowOffsetY) = 0;
+  virtual void collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
+                                    const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
+                                    const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
+                                    const boost::optional<Colour> &shfgc) = 0;
   virtual void collectGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow) = 0;
   virtual void collectMoveTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectLineTo(unsigned id, unsigned level, double x, double y) = 0;
@@ -86,13 +93,21 @@ public:
 
   virtual void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format) = 0;
   virtual void collectText(unsigned level, const ::WPXBinaryData &textStream, TextFormat format) = 0;
-  virtual void collectCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-                             bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                             bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) = 0;
-  virtual void collectParaIX(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                             double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) = 0;
-  virtual void collectTextBlock(unsigned level, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-                                unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection) = 0;
+  virtual void collectCharIX(unsigned id , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+                             const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
+                             const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
+                             const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
+                             const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
+                             const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace) = 0;
+  virtual void collectParaIX(unsigned id , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+                             const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
+                             const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
+                             const boost::optional<unsigned> &flags) = 0;
+  virtual void collectTextBlock(unsigned level, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,
+                                const boost::optional<double> &topMargin, const boost::optional<double> &bottomMargin,
+                                const boost::optional<unsigned char> &verticalAlign, const boost::optional<bool> &isBgFilled,
+                                const boost::optional<Colour> &bgColour, const boost::optional<double> &defaultTabStop,
+                                const boost::optional<unsigned char> &textDirection) = 0;
   virtual void collectNameList(unsigned id, unsigned level) = 0;
   virtual void collectName(unsigned id, unsigned level,  const ::WPXBinaryData &name, TextFormat format) = 0;
   virtual void collectPageSheet(unsigned id, unsigned level) = 0;

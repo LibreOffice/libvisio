@@ -406,11 +406,7 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   if (m_isInStyles)
     m_collector->collectLineStyle(level, strokeWidth, colour, linePattern, startMarker, endMarker, lineCap);
   else
-  {
-    if (!m_shape.m_lineStyle)
-      m_shape.m_lineStyle = new VSDLineStyle();
-    m_shape.m_lineStyle->override(VSDOptionalLineStyle(strokeWidth, colour, linePattern, startMarker, endMarker, lineCap));
-  }
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, colour, linePattern, startMarker, endMarker, lineCap));
 }
 
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
@@ -505,10 +501,8 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
     {
       VSD_DEBUG_MSG(("Found stencil fill\n"));
     }
-    if (!m_shape.m_fillStyle)
-      m_shape.m_fillStyle = new VSDFillStyle();
-    m_shape.m_fillStyle->override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
-                                  shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY));
+    m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
+                                 shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY));
   }
 }
 
@@ -759,12 +753,8 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
   else
-  {
-    if (!m_shape.m_textBlockStyle)
-      m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-    *(m_shape.m_textBlockStyle) = VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-                                  (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
-  }
+    m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
+                                      (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection));
 }
 
 int libvisio::VDXParser::readLongData(long &value, xmlTextReaderPtr reader)

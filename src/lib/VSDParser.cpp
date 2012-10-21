@@ -481,18 +481,18 @@ void libvisio::VSDParser::_flushShape()
 
   if (m_shape.m_txtxform)
     m_collector->collectTxtXForm(m_currentShapeLevel+2, *(m_shape.m_txtxform));
-  if (m_shape.m_lineStyle)
-    m_collector->collectLine(m_currentShapeLevel+2, m_shape.m_lineStyle->width, m_shape.m_lineStyle->colour, m_shape.m_lineStyle->pattern,
-                             m_shape.m_lineStyle->startMarker, m_shape.m_lineStyle->endMarker, m_shape.m_lineStyle->cap);
-  if (m_shape.m_fillStyle)
-    m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
-                                      m_shape.m_fillStyle->fgTransparency, m_shape.m_fillStyle->bgTransparency, m_shape.m_fillStyle->shadowPattern,
-                                      m_shape.m_fillStyle->shadowFgColour, m_shape.m_fillStyle->shadowOffsetX, m_shape.m_fillStyle->shadowOffsetY);
-  if (m_shape.m_textBlockStyle)
-    m_collector->collectTextBlock(m_currentShapeLevel+2, m_shape.m_textBlockStyle->leftMargin, m_shape.m_textBlockStyle->rightMargin,
-                                  m_shape.m_textBlockStyle->topMargin, m_shape.m_textBlockStyle->bottomMargin, m_shape.m_textBlockStyle->verticalAlign,
-                                  m_shape.m_textBlockStyle->isTextBkgndFilled, m_shape.m_textBlockStyle->textBkgndColour,
-                                  m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
+
+  m_collector->collectLine(m_currentShapeLevel+2, m_shape.m_lineStyle.width, m_shape.m_lineStyle.colour, m_shape.m_lineStyle.pattern,
+                           m_shape.m_lineStyle.startMarker, m_shape.m_lineStyle.endMarker, m_shape.m_lineStyle.cap);
+
+  m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle.fgColour, m_shape.m_fillStyle.bgColour, m_shape.m_fillStyle.pattern,
+                                    m_shape.m_fillStyle.fgTransparency, m_shape.m_fillStyle.bgTransparency, m_shape.m_fillStyle.shadowPattern,
+                                    m_shape.m_fillStyle.shadowFgColour, m_shape.m_fillStyle.shadowOffsetX, m_shape.m_fillStyle.shadowOffsetY);
+
+  m_collector->collectTextBlock(m_currentShapeLevel+2, m_shape.m_textBlockStyle.leftMargin, m_shape.m_textBlockStyle.rightMargin,
+                                m_shape.m_textBlockStyle.topMargin, m_shape.m_textBlockStyle.bottomMargin, m_shape.m_textBlockStyle.verticalAlign,
+                                m_shape.m_textBlockStyle.isTextBkgndFilled, m_shape.m_textBlockStyle.textBkgndColour,
+                                m_shape.m_textBlockStyle.defaultTabStop, m_shape.m_textBlockStyle.textDirection);
 
   if (m_shape.m_foreign)
     m_collector->collectForeignDataType(m_currentShapeLevel+2, m_shape.m_foreign->type, m_shape.m_foreign->format,
@@ -649,11 +649,7 @@ void libvisio::VSDParser::readLine(WPXInputStream *input)
   if (m_isInStyles)
     m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
   else
-  {
-    if (m_shape.m_lineStyle)
-      delete m_shape.m_lineStyle;
-    m_shape.m_lineStyle = new VSDLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
-  }
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap));
 }
 
 void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
@@ -682,12 +678,8 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
     m_collector->collectTextBlockStyle(m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
   else
-  {
-    if (m_shape.m_textBlockStyle)
-      delete m_shape.m_textBlockStyle;
-    m_shape.m_textBlockStyle = new VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-        verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
-  }
+    m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
+                                      verticalAlign, isBgFilled, c, defaultTabStop, textDirection));
 }
 
 void libvisio::VSDParser::readGeomList(WPXInputStream *input)

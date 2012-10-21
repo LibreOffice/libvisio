@@ -157,10 +157,9 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
       VSD_DEBUG_MSG(("Found stencil character style\n"));
     }
 
-    if (!m_shape.m_charStyle)
-      m_shape.m_charStyle= new VSDCharStyle(charCount, fontID, fontColour, fontSize,
-                                            bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                            allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+    m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, fontID, fontColour, fontSize,
+                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace));
     m_shape.m_charListVector.back().addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
         bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
         allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
@@ -194,11 +193,10 @@ void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
       VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
     }
 
-    if (!m_shape.m_paraStyle)
-      m_shape.m_paraStyle= new VSDParaStyle(charCount, indFirst, indLeft, indRight,
-                                            spLine, spBefore, spAfter, align, 0);
+    m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
+                                 spLine, spBefore, spAfter, align, (unsigned)0));
     m_shape.m_paraListVector.back().addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-        spLine, spBefore, spAfter, align, 0);
+        spLine, spBefore, spAfter, align, (unsigned)0);
   }
 }
 
@@ -239,9 +237,8 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
       shadowOffsetX = m_shadowOffsetX;
       shadowOffsetY = m_shadowOffsetY;
     }
-    if (!m_shape.m_fillStyle)
-      m_shape.m_fillStyle = new VSDFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
-                                             fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY);
+    m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
+                                 fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY));
   }
 }
 

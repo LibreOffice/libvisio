@@ -59,12 +59,12 @@ public:
   ForeignData *m_foreign;
   unsigned m_parent, m_masterPage, m_masterShape, m_shapeId;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
-  VSDLineStyle *m_lineStyle;
-  VSDFillStyle *m_fillStyle;
-  VSDTextBlockStyle *m_textBlockStyle;
-  VSDCharStyle *m_charStyle;
+  VSDOptionalLineStyle m_lineStyle;
+  VSDOptionalFillStyle m_fillStyle;
+  VSDOptionalTextBlockStyle m_textBlockStyle;
+  VSDOptionalCharStyle m_charStyle;
   std::vector<VSDCharacterList> m_charListVector;
-  VSDParaStyle *m_paraStyle;
+  VSDOptionalParaStyle m_paraStyle;
   std::vector<VSDParagraphList> m_paraListVector;
   WPXBinaryData m_text;
   std::map< unsigned, VSDName > m_names;

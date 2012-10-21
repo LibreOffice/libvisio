@@ -33,10 +33,10 @@
 
 libvisio::VSDShape::VSDShape()
   : m_geometries(), m_shapeList(), m_fields(), m_foreign(0), m_parent(0), m_masterPage(MINUS_ONE),
-    m_masterShape(MINUS_ONE), m_shapeId(MINUS_ONE), m_lineStyleId(MINUS_ONE),
-    m_fillStyleId(MINUS_ONE), m_textStyleId(MINUS_ONE), m_lineStyle(0), m_fillStyle(0),
-    m_textBlockStyle(0), m_charStyle(0), m_charListVector(), m_paraStyle(0), m_paraListVector(), m_text(),
-    m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(0)
+    m_masterShape(MINUS_ONE), m_shapeId(MINUS_ONE), m_lineStyleId(MINUS_ONE), m_fillStyleId(MINUS_ONE),
+    m_textStyleId(MINUS_ONE), m_lineStyle(), m_fillStyle(), m_textBlockStyle(), m_charStyle(), m_charListVector(),
+    m_paraStyle(), m_paraListVector(), m_text(), m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16),
+    m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(0)
 {
 }
 
@@ -45,13 +45,10 @@ libvisio::VSDShape::VSDShape(const libvisio::VSDShape &shape)
     m_foreign(shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0), m_parent(shape.m_parent),
     m_masterPage(shape.m_masterPage), m_masterShape(shape.m_masterShape), m_shapeId(shape.m_shapeId),
     m_lineStyleId(shape.m_lineStyleId), m_fillStyleId(shape.m_fillStyleId), m_textStyleId(shape.m_textStyleId),
-    m_lineStyle(shape.m_lineStyle ? new VSDLineStyle(*(shape.m_lineStyle)) : 0),
-    m_fillStyle(shape.m_fillStyle ? new VSDFillStyle(*(shape.m_fillStyle)) : 0),
-    m_textBlockStyle(shape.m_textBlockStyle ? new VSDTextBlockStyle(*(shape.m_textBlockStyle)) : 0),
-    m_charStyle(shape.m_charStyle ? new VSDCharStyle(*(shape.m_charStyle)) : 0), m_charListVector(shape.m_charListVector),
-    m_paraStyle(shape.m_paraStyle ? new VSDParaStyle(*(shape.m_paraStyle)) : 0), m_paraListVector(shape.m_paraListVector),
-    m_text(shape.m_text), m_names(shape.m_names), m_textFormat(shape.m_textFormat),
-    m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData),
+    m_lineStyle(shape.m_lineStyle), m_fillStyle(shape.m_fillStyle), m_textBlockStyle(shape.m_textBlockStyle),
+    m_charStyle(shape.m_charStyle), m_charListVector(shape.m_charListVector), m_paraStyle(shape.m_paraStyle),
+    m_paraListVector(shape.m_paraListVector), m_text(shape.m_text), m_names(shape.m_names),
+    m_textFormat(shape.m_textFormat), m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData),
     m_xform(shape.m_xform), m_txtxform(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : 0) {}
 
 libvisio::VSDShape::~VSDShape()
@@ -76,22 +73,12 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
     m_lineStyleId = shape.m_lineStyleId;
     m_fillStyleId = shape.m_fillStyleId;
     m_textStyleId = shape.m_textStyleId;
-    if (m_lineStyle)
-      delete m_lineStyle;
-    m_lineStyle = shape.m_lineStyle ? new VSDLineStyle(*(shape.m_lineStyle)) : 0;
-    if (m_fillStyle)
-      delete m_fillStyle;
-    m_fillStyle = shape.m_fillStyle ? new VSDFillStyle(*(shape.m_fillStyle)) : 0;
-    if (m_textBlockStyle)
-      delete m_textBlockStyle;
-    m_textBlockStyle = shape.m_textBlockStyle ? new VSDTextBlockStyle(*(shape.m_textBlockStyle)) : 0;
-    if (m_charStyle)
-      delete m_charStyle;
-    m_charStyle = shape.m_charStyle ? new VSDCharStyle(*(shape.m_charStyle)) : 0;
+    m_lineStyle = shape.m_lineStyle;
+    m_fillStyle = shape.m_fillStyle;
+    m_textBlockStyle = shape.m_textBlockStyle;
+    m_charStyle = shape.m_charStyle;
     m_charListVector = shape.m_charListVector;
-    if (m_paraStyle)
-      delete m_paraStyle;
-    m_paraStyle = shape.m_paraStyle ? new VSDParaStyle(*(shape.m_paraStyle)) : 0;
+    m_paraStyle = shape.m_paraStyle;
     m_paraListVector = shape.m_paraListVector;
     m_text = shape.m_text;
     m_names = shape.m_names;
@@ -111,21 +98,6 @@ void libvisio::VSDShape::clear()
   if (m_foreign)
     delete m_foreign;
   m_foreign = 0;
-  if (m_lineStyle)
-    delete m_lineStyle;
-  m_lineStyle = 0;
-  if (m_fillStyle)
-    delete m_fillStyle;
-  m_fillStyle = 0;
-  if (m_textBlockStyle)
-    delete m_textBlockStyle;
-  m_textBlockStyle = 0;
-  if (m_charStyle)
-    delete m_charStyle;
-  m_charStyle = 0;
-  if (m_paraStyle)
-    delete m_paraStyle;
-  m_paraStyle = 0;
   if (m_txtxform)
     delete m_txtxform;
   m_txtxform = 0;
@@ -133,7 +105,12 @@ void libvisio::VSDShape::clear()
   m_geometries.clear();
   m_shapeList.clear();
   m_fields.clear();
+  m_lineStyle = VSDOptionalLineStyle();
+  m_fillStyle = VSDOptionalFillStyle();
+  m_textBlockStyle = VSDOptionalTextBlockStyle();
+  m_charStyle = VSDOptionalCharStyle();
   m_charListVector.clear();
+  m_paraStyle = VSDOptionalParaStyle();
   m_paraListVector.clear();
   m_text.clear();
   m_names.clear();

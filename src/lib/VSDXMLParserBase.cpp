@@ -1061,10 +1061,8 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
         m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
       m_shape.m_text = tmpShape->m_text;
       m_shape.m_textFormat = tmpShape->m_textFormat;
-      if (tmpShape->m_lineStyle)
-        m_shape.m_lineStyle = new VSDLineStyle(*(tmpShape->m_lineStyle));
-      if (tmpShape->m_fillStyle)
-        m_shape.m_fillStyle = new VSDFillStyle(*(tmpShape->m_fillStyle));
+      m_shape.m_lineStyle = tmpShape->m_lineStyle;
+      m_shape.m_fillStyle = tmpShape->m_fillStyle;
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
@@ -1474,18 +1472,18 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   if (m_shape.m_txtxform)
     m_collector->collectTxtXForm(m_currentShapeLevel+2, *(m_shape.m_txtxform));
-  if (m_shape.m_lineStyle)
-    m_collector->collectLine(m_currentShapeLevel+2, m_shape.m_lineStyle->width, m_shape.m_lineStyle->colour, m_shape.m_lineStyle->pattern,
-                             m_shape.m_lineStyle->startMarker, m_shape.m_lineStyle->endMarker, m_shape.m_lineStyle->cap);
-  if (m_shape.m_fillStyle)
-    m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle->fgColour, m_shape.m_fillStyle->bgColour, m_shape.m_fillStyle->pattern,
-                                      m_shape.m_fillStyle->fgTransparency, m_shape.m_fillStyle->bgTransparency, m_shape.m_fillStyle->shadowPattern,
-                                      m_shape.m_fillStyle->shadowFgColour, m_shape.m_fillStyle->shadowOffsetX, m_shape.m_fillStyle->shadowOffsetY);
-  if (m_shape.m_textBlockStyle)
-    m_collector->collectTextBlock(m_currentShapeLevel+2, m_shape.m_textBlockStyle->leftMargin, m_shape.m_textBlockStyle->rightMargin,
-                                  m_shape.m_textBlockStyle->topMargin, m_shape.m_textBlockStyle->bottomMargin, m_shape.m_textBlockStyle->verticalAlign,
-                                  m_shape.m_textBlockStyle->isTextBkgndFilled, m_shape.m_textBlockStyle->textBkgndColour,
-                                  m_shape.m_textBlockStyle->defaultTabStop, m_shape.m_textBlockStyle->textDirection);
+
+  m_collector->collectLine(m_currentShapeLevel+2, m_shape.m_lineStyle.width, m_shape.m_lineStyle.colour, m_shape.m_lineStyle.pattern,
+                           m_shape.m_lineStyle.startMarker, m_shape.m_lineStyle.endMarker, m_shape.m_lineStyle.cap);
+
+  m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle.fgColour, m_shape.m_fillStyle.bgColour, m_shape.m_fillStyle.pattern,
+                                    m_shape.m_fillStyle.fgTransparency, m_shape.m_fillStyle.bgTransparency, m_shape.m_fillStyle.shadowPattern,
+                                    m_shape.m_fillStyle.shadowFgColour, m_shape.m_fillStyle.shadowOffsetX, m_shape.m_fillStyle.shadowOffsetY);
+
+  m_collector->collectTextBlock(m_currentShapeLevel+2, m_shape.m_textBlockStyle.leftMargin, m_shape.m_textBlockStyle.rightMargin,
+                                m_shape.m_textBlockStyle.topMargin, m_shape.m_textBlockStyle.bottomMargin, m_shape.m_textBlockStyle.verticalAlign,
+                                m_shape.m_textBlockStyle.isTextBkgndFilled, m_shape.m_textBlockStyle.textBkgndColour,
+                                m_shape.m_textBlockStyle.defaultTabStop, m_shape.m_textBlockStyle.textDirection);
 
   if (m_shape.m_foreign)
     m_collector->collectForeignDataType(m_currentShapeLevel+2, m_shape.m_foreign->type, m_shape.m_foreign->format,

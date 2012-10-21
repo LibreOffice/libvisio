@@ -1019,17 +1019,11 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   }
   else
   {
-    if (!m_shape.m_lineStyle)
-      m_shape.m_lineStyle = new VSDLineStyle();
-    *(m_shape.m_lineStyle) = VSDLineStyle(strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
-    if (!m_shape.m_fillStyle)
-      m_shape.m_fillStyle = new VSDFillStyle();
-    *(m_shape.m_fillStyle) = VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency, fillBGTransparency, shadowColourFG,
-                                          (unsigned char)shadowPattern, shadowOffsetX, shadowOffsetY);
-    if (!m_shape.m_textBlockStyle)
-      m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-    *(m_shape.m_textBlockStyle) = VSDTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, (unsigned char)verticalAlign, !!bgClrId, bgColour,
-                                  defaultTabStop, (unsigned char)textDirection);
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap));
+    m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowColourFG,
+                                 shadowPattern, shadowOffsetX, shadowOffsetY));
+    m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, !!bgClrId, bgColour,
+                                      defaultTabStop, textDirection));
   }
 }
 
@@ -1131,199 +1125,114 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       break;
     case XML_LINEWEIGHT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_lineStyle)
-          m_shape.m_lineStyle = new VSDLineStyle();
-        ret = readDoubleData(m_shape.m_lineStyle->width, reader);
-      }
+        ret = readDoubleData(m_shape.m_lineStyle.width, reader);
       break;
     case XML_LINECOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_lineStyle)
-          m_shape.m_lineStyle = new VSDLineStyle();
-        ret = readExtendedColourData(m_shape.m_lineStyle->colour, reader);
-      }
+        ret = readExtendedColourData(m_shape.m_lineStyle.colour, reader);
       break;
     case XML_LINEPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_lineStyle)
-          m_shape.m_lineStyle = new VSDLineStyle();
-        ret = readByteData(m_shape.m_lineStyle->pattern, reader);
-      }
+        ret = readByteData(m_shape.m_lineStyle.pattern, reader);
       break;
     case XML_BEGINARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_lineStyle)
-          m_shape.m_lineStyle = new VSDLineStyle();
-        ret = readByteData(m_shape.m_lineStyle->startMarker, reader);
-      }
+        ret = readByteData(m_shape.m_lineStyle.startMarker, reader);
       break;
     case XML_ENDARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_lineStyle)
-          m_shape.m_lineStyle = new VSDLineStyle();
-        ret = readByteData(m_shape.m_lineStyle->endMarker, reader);
-      }
+        ret = readByteData(m_shape.m_lineStyle.endMarker, reader);
       break;
     case XML_LINECAP:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_lineStyle)
-          m_shape.m_lineStyle = new VSDLineStyle();
-        ret = readByteData(m_shape.m_lineStyle->cap, reader);
-      }
+        ret = readByteData(m_shape.m_lineStyle.cap, reader);
       break;
     case XML_FILLFOREGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readExtendedColourData(m_shape.m_fillStyle->fgColour, reader);
-      }
+        ret = readExtendedColourData(m_shape.m_fillStyle.fgColour, reader);
       break;
     case XML_FILLBKGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readExtendedColourData(m_shape.m_fillStyle->bgColour, reader);
-      }
+        ret = readExtendedColourData(m_shape.m_fillStyle.bgColour, reader);
       break;
     case XML_FILLPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readByteData(m_shape.m_fillStyle->pattern, reader);
-      }
+        ret = readByteData(m_shape.m_fillStyle.pattern, reader);
       break;
     case XML_SHDWFOREGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readExtendedColourData(m_shape.m_fillStyle->shadowFgColour, reader);
-      }
+        ret = readExtendedColourData(m_shape.m_fillStyle.shadowFgColour, reader);
       break;
     case XML_SHDWBKGND: /* unsupported */
       break;
     case XML_SHDWPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readByteData(m_shape.m_fillStyle->shadowPattern, reader);
-      }
+        ret = readByteData(m_shape.m_fillStyle.shadowPattern, reader);
       break;
     case XML_FILLFOREGNDTRANS:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readDoubleData(m_shape.m_fillStyle->fgTransparency, reader);
-      }
+        ret = readDoubleData(m_shape.m_fillStyle.fgTransparency, reader);
       break;
     case XML_FILLBKGNDTRANS:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readDoubleData(m_shape.m_fillStyle->bgTransparency, reader);
-      }
+        ret = readDoubleData(m_shape.m_fillStyle.bgTransparency, reader);
       break;
     case XML_SHAPESHDWOFFSETX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readDoubleData(m_shape.m_fillStyle->shadowOffsetX, reader);
-      }
+        ret = readDoubleData(m_shape.m_fillStyle.shadowOffsetX, reader);
       break;
     case XML_SHAPESHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
-        if (!m_shape.m_fillStyle)
-          m_shape.m_fillStyle = new VSDFillStyle();
-        ret = readDoubleData(m_shape.m_fillStyle->shadowOffsetY, reader);
-        m_shape.m_fillStyle->shadowOffsetY *= -1.0;
+        double shadowOffsetY;
+        ret = readDoubleData(shadowOffsetY, reader);
+        m_shape.m_fillStyle.shadowOffsetY = -shadowOffsetY;
       }
       break;
     case XML_LEFTMARGIN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_textBlockStyle)
-          m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        ret = readDoubleData(m_shape.m_textBlockStyle->leftMargin, reader);
-      }
+        ret = readDoubleData(m_shape.m_textBlockStyle.leftMargin, reader);
       break;
     case XML_RIGHTMARGIN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_textBlockStyle)
-          m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        ret = readDoubleData(m_shape.m_textBlockStyle->rightMargin, reader);
-      }
+        ret = readDoubleData(m_shape.m_textBlockStyle.rightMargin, reader);
       break;
     case XML_TOPMARGIN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_textBlockStyle)
-          m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        ret = readDoubleData(m_shape.m_textBlockStyle->topMargin, reader);
-      }
+        ret = readDoubleData(m_shape.m_textBlockStyle.topMargin, reader);
       break;
     case XML_BOTTOMMARGIN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_textBlockStyle)
-          m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        ret = readDoubleData(m_shape.m_textBlockStyle->bottomMargin, reader);
-      }
+        ret = readDoubleData(m_shape.m_textBlockStyle.bottomMargin, reader);
       break;
     case XML_VERTICALALIGN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_textBlockStyle)
-          m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        ret = readByteData(m_shape.m_textBlockStyle->verticalAlign, reader);
-      }
+        ret = readByteData(m_shape.m_textBlockStyle.verticalAlign, reader);
       break;
     case XML_TEXTBKGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
-        if (!m_shape.m_textBlockStyle)
-          m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        ret = readExtendedColourData(m_shape.m_textBlockStyle->textBkgndColour, bgClrId, reader);
+        Colour textBkgndColour(0xff, 0xff, 0xff, 0);
+        ret = readExtendedColourData(textBkgndColour, bgClrId, reader);
         if (bgClrId < 0) bgClrId = 0;
         if (bgClrId)
         {
           std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId-1);
           if (iter != m_colours.end())
-            m_shape.m_textBlockStyle->textBkgndColour = iter->second;
+            textBkgndColour = iter->second;
           else
-            m_shape.m_textBlockStyle->textBkgndColour = Colour();
+            textBkgndColour = Colour(0xff, 0xff, 0xff, 0);
         }
+        m_shape.m_textBlockStyle.textBkgndColour = textBkgndColour;
       }
       break;
     case XML_DEFAULTTABSTOP:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_textBlockStyle)
-          m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        ret = readDoubleData(m_shape.m_textBlockStyle->defaultTabStop, reader);
-      }
+        ret = readDoubleData(m_shape.m_textBlockStyle.defaultTabStop, reader);
       break;
     case XML_TEXTDIRECTION:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        if (!m_shape.m_textBlockStyle)
-          m_shape.m_textBlockStyle = new VSDTextBlockStyle();
-        ret = readByteData(m_shape.m_textBlockStyle->textDirection, reader);
-      }
+        ret = readByteData(m_shape.m_textBlockStyle.textDirection, reader);
       break;
     case XML_GEOM:
     case XML_GEOMETRY:
