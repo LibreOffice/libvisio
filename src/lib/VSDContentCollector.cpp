@@ -704,32 +704,64 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
   {
     bool firstPoint = true;
     bool wasMove = false;
+    double x = 0.0;
+    double y = 0.0;
+    double prevX = 0.0;
+    double prevY = 0.0;
     for (unsigned i = 0; i < m_currentLineGeometry.size(); i++)
     {
       if (firstPoint)
       {
         firstPoint = false;
         wasMove = true;
+        x = m_currentLineGeometry[i]["svg:x"]->getDouble();
+        y = m_currentLineGeometry[i]["svg:y"]->getDouble();
       }
       else if (m_currentLineGeometry[i]["libwpg:path-action"]->getStr() == "M")
       {
         if (!tmpPath.empty())
         {
-          if (wasMove)
+          if (!wasMove)
+          {
+            if ((x == prevX) && (y == prevY))
+            {
+              WPXPropertyList closedPath;
+              closedPath.insert("libwpg:path-action", "Z");
+              tmpPath.push_back(closedPath);
+            }
+          }
+          else
           {
             tmpPath.pop_back();
           }
         }
+        x = m_currentLineGeometry[i]["svg:x"]->getDouble();
+        y = m_currentLineGeometry[i]["svg:y"]->getDouble();
         wasMove = true;
       }
       else
         wasMove = false;
       tmpPath.push_back(m_currentLineGeometry[i]);
+      if (m_currentLineGeometry[i]["svg:x"])
+        prevX = m_currentLineGeometry[i]["svg:x"]->getDouble();
+      if (m_currentLineGeometry[i]["svg:y"])
+        prevY = m_currentLineGeometry[i]["svg:y"]->getDouble();
     }
     if (!tmpPath.empty())
     {
-      if (wasMove)
+      if (!wasMove)
+      {
+        if ((x == prevX) && (y == prevY))
+        {
+          WPXPropertyList closedPath;
+          closedPath.insert("libwpg:path-action", "Z");
+          tmpPath.push_back(closedPath);
+        }
+      }
+      else
+      {
         tmpPath.pop_back();
+      }
     }
     if (!tmpPath.empty())
     {
