@@ -162,7 +162,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
           delete m_currentStencil;
         }
         m_currentStencil = 0;
-        m_currentStencilID = (unsigned)-1;
+        m_currentStencilID = MINUS_ONE;
       }
     }
     break;

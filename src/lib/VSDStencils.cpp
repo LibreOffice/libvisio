@@ -32,9 +32,9 @@
 #include "libvisio_utils.h"
 
 libvisio::VSDShape::VSDShape()
-  : m_geometries(), m_shapeList(), m_fields(), m_foreign(0), m_parent(0), m_masterPage((unsigned)-1),
-    m_masterShape((unsigned)-1), m_shapeId((unsigned)-1), m_lineStyleId((unsigned)-1),
-    m_fillStyleId((unsigned)-1), m_textStyleId((unsigned)-1), m_lineStyle(0), m_fillStyle(0),
+  : m_geometries(), m_shapeList(), m_fields(), m_foreign(0), m_parent(0), m_masterPage(MINUS_ONE),
+    m_masterShape(MINUS_ONE), m_shapeId(MINUS_ONE), m_lineStyleId(MINUS_ONE),
+    m_fillStyleId(MINUS_ONE), m_textStyleId(MINUS_ONE), m_lineStyle(0), m_fillStyle(0),
     m_textBlockStyle(0), m_charStyle(0), m_charListVector(), m_paraStyle(0), m_paraListVector(), m_text(),
     m_names(), m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(0)
 {
@@ -141,17 +141,17 @@ void libvisio::VSDShape::clear()
   m_polylineData.clear();
   m_xform = XForm();
   m_parent = 0;
-  m_masterPage = (unsigned)-1;
-  m_masterShape = (unsigned)-1;
-  m_shapeId = (unsigned)-1;
-  m_lineStyleId = (unsigned)-1;
-  m_fillStyleId = (unsigned)-1;
-  m_textStyleId = (unsigned)-1;
+  m_masterPage = MINUS_ONE;
+  m_masterShape = MINUS_ONE;
+  m_shapeId = MINUS_ONE;
+  m_lineStyleId = MINUS_ONE;
+  m_fillStyleId = MINUS_ONE;
+  m_textStyleId = MINUS_ONE;
   m_textFormat = libvisio::VSD_TEXT_UTF16;
 }
 
 libvisio::VSDStencil::VSDStencil()
-  : m_shapes(), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0), m_firstShapeId((unsigned)-1)
+  : m_shapes(), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0), m_firstShapeId(MINUS_ONE)
 {
 }
 
@@ -184,7 +184,7 @@ void libvisio::VSDStencil::addStencilShape(unsigned id, const VSDShape &shape)
 
 void libvisio::VSDStencil::setFirstShape(unsigned id)
 {
-  if (m_firstShapeId == (unsigned)-1)
+  if (m_firstShapeId == MINUS_ONE)
     m_firstShapeId = id;
 }
 
@@ -224,12 +224,12 @@ const libvisio::VSDStencil *libvisio::VSDStencils::getStencil(unsigned idx) cons
 
 const libvisio::VSDShape *libvisio::VSDStencils::getStencilShape(unsigned pageId, unsigned shapeId) const
 {
-  if ((unsigned)-1 == pageId)
+  if (MINUS_ONE == pageId)
     return 0;
   const libvisio::VSDStencil *tmpStencil = getStencil(pageId);
   if (!tmpStencil)
     return 0;
-  if ((unsigned)-1 == shapeId)
+  if (MINUS_ONE == shapeId)
     shapeId = tmpStencil->m_firstShapeId;
   return tmpStencil->getStencilShape(shapeId);
 }

@@ -242,7 +242,7 @@ void libvisio::VSDStylesCollector::collectShape(unsigned id, unsigned level, uns
   m_currentShapeLevel = level;
   m_currentShapeId = id;
   m_isShapeStarted = true;
-  if (parent && parent != (unsigned)-1)
+  if (parent && parent != MINUS_ONE)
     m_groupMemberships[m_currentShapeId] = parent;
 }
 

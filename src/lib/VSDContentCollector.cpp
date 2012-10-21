@@ -129,7 +129,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
-  m_backgroundPageID((unsigned)-1), m_currentPageID(0), m_currentPage(), m_pages(),
+  m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
   m_isBackgroundPage(false)
@@ -1739,7 +1739,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
       return;
     }
     element = cstiter->second.getElement(id);
-    iter = m_stencilShape->m_nurbsData.find(element ? element->getDataID() : (unsigned)-1);
+    iter = m_stencilShape->m_nurbsData.find(element ? element->getDataID() : MINUS_ONE);
     iterEnd =  m_stencilShape->m_nurbsData.end();
   }
   else // No stencils involved, directly get dataID and fill in missing parts
@@ -1822,7 +1822,7 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned leve
       return;
     }
     element = cstiter->second.getElement(id);
-    iter = m_stencilShape->m_polylineData.find(element ? element->getDataID() : (unsigned)-1);
+    iter = m_stencilShape->m_polylineData.find(element ? element->getDataID() : MINUS_ONE);
     iterEnd = m_stencilShape->m_polylineData.end();
   }
   else // No stencils involved, directly get dataID
@@ -2113,7 +2113,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
         m_fields.push_back(WPXString());
     }
 
-    if (m_stencilShape->m_lineStyleId)
+    if (m_stencilShape->m_lineStyleId != MINUS_ONE)
     {
       lineStyle = m_styles.getLineStyle(m_stencilShape->m_lineStyleId);
       _lineProperties(lineStyle);
@@ -2124,7 +2124,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
       _lineProperties(lineStyle);
     }
 
-    if (m_stencilShape->m_fillStyleId)
+    if (m_stencilShape->m_fillStyleId != MINUS_ONE)
     {
       fillStyle = m_styles.getFillStyle(m_stencilShape->m_fillStyleId);
       _fillAndShadowProperties(fillStyle);
@@ -2149,18 +2149,18 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
       m_defaultParaStyle = *(m_stencilShape->m_paraStyle);
   }
 
-  if (lineStyleId != (unsigned)-1)
+  if (lineStyleId != MINUS_ONE)
   {
     lineStyle = m_styles.getLineStyle(lineStyleId);
     _lineProperties(lineStyle);
   }
 
-  if (fillStyleId != (unsigned)-1)
+  if (fillStyleId != MINUS_ONE)
   {
     fillStyle = m_styles.getFillStyle(fillStyleId);
     _fillAndShadowProperties(fillStyle);
   }
-  if (textStyleId != (unsigned)-1)
+  if (textStyleId != MINUS_ONE)
   {
     m_defaultCharStyle = m_styles.getCharStyle(textStyleId);
     m_defaultParaStyle = m_styles.getParaStyle(textStyleId);

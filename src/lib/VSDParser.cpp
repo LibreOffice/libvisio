@@ -44,7 +44,7 @@
 libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
   : m_input(input), m_painter(painter), m_header(), m_collector(0), m_shapeList(), m_currentLevel(0),
     m_stencils(), m_currentStencil(0), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
-    m_currentShapeLevel(0), m_currentShapeID((unsigned)-1), m_extractStencils(false), m_colours(),
+    m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
     m_currentGeometryList(0), m_currentGeomListCount(0)
 {}
@@ -917,15 +917,15 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
   m_currentGeomListCount = 0;
   m_isShapeStarted = true;
   m_shapeList.clear();
-  if (m_header.id != (unsigned)-1)
+  if (m_header.id != MINUS_ONE)
     m_currentShapeID = m_header.id;
   m_currentShapeLevel = m_header.level;
   unsigned parent = 0;
-  unsigned masterPage = (unsigned)-1;
-  unsigned masterShape = (unsigned)-1;
-  unsigned lineStyle = (unsigned)-1;
-  unsigned fillStyle = (unsigned)-1;
-  unsigned textStyle = (unsigned)-1;
+  unsigned masterPage = MINUS_ONE;
+  unsigned masterShape = MINUS_ONE;
+  unsigned lineStyle = MINUS_ONE;
+  unsigned fillStyle = MINUS_ONE;
+  unsigned textStyle = MINUS_ONE;
 
   try
   {
@@ -963,7 +963,7 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
   m_shape.m_masterPage = masterPage;
   m_shape.m_masterShape = masterShape;
   m_shape.m_shapeId = m_currentShapeID;
-  m_currentShapeID = (unsigned)-1;
+  m_currentShapeID = MINUS_ONE;
 }
 
 void libvisio::VSDParser::readNURBSTo(WPXInputStream *input)

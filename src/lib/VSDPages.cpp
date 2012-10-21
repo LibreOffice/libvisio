@@ -33,7 +33,7 @@
 
 libvisio::VSDPage::VSDPage()
   : m_pageWidth(0.0), m_pageHeight(0.0),
-    m_currentPageID(0), m_backgroundPageID((unsigned)-1),
+    m_currentPageID(0), m_backgroundPageID(MINUS_ONE),
     m_pageElements()
 {
 }
@@ -120,7 +120,7 @@ void libvisio::VSDPages::_drawWithBackground(libwpg::WPGPaintInterface *painter,
   if (!painter)
     return;
 
-  if (page.m_backgroundPageID != (unsigned)-1)
+  if (page.m_backgroundPageID != MINUS_ONE)
   {
     std::map<unsigned, libvisio::VSDPage>::iterator iter = m_backgroundPages.find(page.m_backgroundPageID);
     if (iter != m_backgroundPages.end())

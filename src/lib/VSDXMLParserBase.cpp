@@ -43,12 +43,12 @@
 
 libvisio::VSDXMLParserBase::VSDXMLParserBase()
   : m_collector(), m_stencils(), m_currentStencil(0), m_shape(),
-    m_isStencilStarted(false), m_currentStencilID((unsigned)-1),
+    m_isStencilStarted(false), m_currentStencilID(MINUS_ONE),
     m_extractStencils(false), m_isInStyles(false), m_currentLevel(0),
     m_currentShapeLevel(0), m_colours(), m_fieldList(), m_shapeList(),
     m_currentBinaryData(), m_shapeStack(), m_shapeLevelStack(),
     m_isShapeStarted(false), m_isPageStarted(false), m_currentGeometryList(0),
-    m_currentGeometryListIndex((unsigned)-1)
+    m_currentGeometryListIndex(MINUS_ONE)
 {
 }
 
@@ -67,7 +67,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -188,7 +188,7 @@ void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -245,7 +245,7 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -302,7 +302,7 @@ void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -363,7 +363,7 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -436,7 +436,7 @@ void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -509,7 +509,7 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -566,7 +566,7 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -623,7 +623,7 @@ void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -688,7 +688,7 @@ void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -761,7 +761,7 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -834,7 +834,7 @@ void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -891,7 +891,7 @@ void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -948,7 +948,7 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -1022,7 +1022,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   xmlChar *textStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle"));
 
   unsigned id = (unsigned)(idString ? xmlStringToLong(idString) : -1);
-  unsigned masterPage = (unsigned)-1;
+  unsigned masterPage = MINUS_ONE;
   if (!m_shapeStack.empty())
     masterPage = m_shapeStack.top().m_masterPage;
   if (masterPageString)
@@ -1052,7 +1052,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   const VSDStencil *tmpStencil = m_stencils.getStencil(masterPage);
   if (tmpStencil)
   {
-    if ((unsigned)-1 == masterShape)
+    if (MINUS_ONE == masterShape)
       masterShape = tmpStencil->m_firstShapeId;
     const VSDShape *tmpShape = tmpStencil->getStencilShape(masterShape);
     if (tmpShape)
@@ -1080,10 +1080,10 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   else
     m_shapeList.addShapeId(id);
 
-  m_shape.m_lineStyleId = lineStyle != (unsigned)-1 ? lineStyle : m_shape.m_lineStyleId;
-  m_shape.m_fillStyleId = fillStyle != (unsigned)-1 ? fillStyle : m_shape.m_fillStyleId;
-  m_shape.m_textStyleId = textStyle != (unsigned)-1 ? textStyle : m_shape.m_textStyleId;;
-  m_shape.m_parent = m_shapeStack.empty() ? (unsigned)-1 : m_shapeStack.top().m_shapeId;
+  m_shape.m_lineStyleId = lineStyle != MINUS_ONE ? lineStyle : m_shape.m_lineStyleId;
+  m_shape.m_fillStyleId = fillStyle != MINUS_ONE ? fillStyle : m_shape.m_fillStyleId;
+  m_shape.m_textStyleId = textStyle != MINUS_ONE ? textStyle : m_shape.m_textStyleId;;
+  m_shape.m_parent = m_shapeStack.empty() ? MINUS_ONE : m_shapeStack.top().m_shapeId;
   m_shape.m_masterPage = masterPage;
   m_shape.m_masterShape = masterShape;
   m_shape.m_shapeId = id;
@@ -1246,7 +1246,7 @@ void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -1319,7 +1319,7 @@ void libvisio::VSDXMLParserBase::readSplineKnot(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  unsigned ix = (unsigned)-1;
+  unsigned ix = MINUS_ONE;
   xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
   if (ixString)
   {
@@ -1383,7 +1383,7 @@ void libvisio::VSDXMLParserBase::readStencil(xmlTextReaderPtr reader)
     xmlFree(id);
   }
   else
-    m_currentStencilID = (unsigned)-1;
+    m_currentStencilID = MINUS_ONE;
   if (m_currentStencil)
     delete m_currentStencil;
   m_currentStencil = new VSDStencil();

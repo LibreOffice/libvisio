@@ -30,8 +30,7 @@
 
 #include <stack>
 #include "VSDStyles.h"
-
-#define NOMASTER (unsigned)-1
+#include "VSDTypes.h"
 
 libvisio::VSDStyles::VSDStyles() :
   m_lineStyles(), m_fillStyles(), m_textBlockStyles(), m_charStyles(), m_paraStyles(),
@@ -110,14 +109,14 @@ void libvisio::VSDStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned t
 libvisio::VSDLineStyle libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex) const
 {
   VSDLineStyle lineStyle;
-  if ((unsigned)-1 == lineStyleIndex)
+  if (MINUS_ONE == lineStyleIndex)
     return lineStyle;
   std::stack<unsigned> styleIdStack;
   styleIdStack.push(lineStyleIndex);
   while (true)
   {
     std::map<unsigned, unsigned>::const_iterator iter = m_lineStyleMasters.find(styleIdStack.top());
-    if (iter != m_lineStyleMasters.end() && iter->second != NOMASTER)
+    if (iter != m_lineStyleMasters.end() && iter->second != MINUS_ONE)
       styleIdStack.push(iter->second);
     else
       break;
@@ -135,14 +134,14 @@ libvisio::VSDLineStyle libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex
 libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
 {
   VSDFillStyle fillStyle;
-  if ((unsigned)-1 == fillStyleIndex)
+  if (MINUS_ONE == fillStyleIndex)
     return fillStyle;
   std::stack<unsigned> styleIdStack;
   styleIdStack.push(fillStyleIndex);
   while (true)
   {
     std::map<unsigned, unsigned>::const_iterator iter = m_fillStyleMasters.find(styleIdStack.top());
-    if (iter != m_fillStyleMasters.end() && iter->second != NOMASTER)
+    if (iter != m_fillStyleMasters.end() && iter->second != MINUS_ONE)
       styleIdStack.push(iter->second);
     else
       break;
@@ -160,14 +159,14 @@ libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex
 libvisio::VSDTextBlockStyle libvisio::VSDStyles::getTextBlockStyle(unsigned textStyleIndex) const
 {
   VSDTextBlockStyle textBlockStyle;
-  if ((unsigned)-1 == textStyleIndex)
+  if (MINUS_ONE == textStyleIndex)
     return textBlockStyle;
   std::stack<unsigned> styleIdStack;
   styleIdStack.push(textStyleIndex);
   while (true)
   {
     std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
-    if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
+    if (iter != m_textStyleMasters.end() && iter->second != MINUS_ONE)
       styleIdStack.push(iter->second);
     else
       break;
@@ -185,14 +184,14 @@ libvisio::VSDTextBlockStyle libvisio::VSDStyles::getTextBlockStyle(unsigned text
 libvisio::VSDCharStyle libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex) const
 {
   VSDCharStyle charStyle;
-  if ((unsigned)-1 == textStyleIndex)
+  if (MINUS_ONE == textStyleIndex)
     return charStyle;
   std::stack<unsigned> styleIdStack;
   styleIdStack.push(textStyleIndex);
   while (true)
   {
     std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
-    if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
+    if (iter != m_textStyleMasters.end() && iter->second != MINUS_ONE)
       styleIdStack.push(iter->second);
     else
       break;
@@ -210,14 +209,14 @@ libvisio::VSDCharStyle libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex
 libvisio::VSDParaStyle libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex) const
 {
   VSDParaStyle paraStyle;
-  if ((unsigned)-1 == textStyleIndex)
+  if (MINUS_ONE == textStyleIndex)
     return paraStyle;
   std::stack<unsigned> styleIdStack;
   styleIdStack.push(textStyleIndex);
   while (true)
   {
     std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
-    if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
+    if (iter != m_textStyleMasters.end() && iter->second != MINUS_ONE)
       styleIdStack.push(iter->second);
     else
       break;

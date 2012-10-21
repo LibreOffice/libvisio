@@ -37,6 +37,7 @@
 #include <functional>
 #include <algorithm>
 #include <boost/optional.hpp>
+#include "VSDTypes.h"
 
 namespace libvisio
 {
@@ -53,7 +54,7 @@ public:
   virtual VSDGeometryListElement *clone() = 0;
   virtual unsigned getDataID() const
   {
-    return (unsigned)-1;
+    return MINUS_ONE;
   }
   void setLevel(unsigned level)
   {
