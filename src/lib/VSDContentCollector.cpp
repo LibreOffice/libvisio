@@ -2077,6 +2077,8 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   // Get stencil shape
   m_stencilShape = m_stencils.getStencilShape(masterPage, masterShape);
   // Initialize the shape from stencil content
+  VSDLineStyle lineStyle;
+  VSDFillStyle fillStyle;
   if (m_stencilShape)
   {
     if (m_stencilShape->m_foreign)
@@ -2112,14 +2114,26 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
     }
 
     if (m_stencilShape->m_lineStyleId)
-      lineStyleFromStyleSheet(m_stencilShape->m_lineStyleId);
+    {
+      lineStyle = m_styles.getLineStyle(m_stencilShape->m_lineStyleId);
+      _lineProperties(lineStyle);
+    }
     if (m_stencilShape->m_lineStyle)
-      lineStyleFromStyleSheet(*(m_stencilShape->m_lineStyle));
+    {
+      lineStyle = (*(m_stencilShape->m_lineStyle));
+      _lineProperties(lineStyle);
+    }
 
     if (m_stencilShape->m_fillStyleId)
-      fillStyleFromStyleSheet(m_stencilShape->m_fillStyleId);
+    {
+      fillStyle = m_styles.getFillStyle(m_stencilShape->m_fillStyleId);
+      _fillAndShadowProperties(fillStyle);
+    }
     if (m_stencilShape->m_fillStyle)
-      fillStyleFromStyleSheet(*(m_stencilShape->m_fillStyle));
+    {
+      fillStyle = (*(m_stencilShape->m_fillStyle));
+      _fillAndShadowProperties(fillStyle);
+    }
 
     if (m_stencilShape->m_textStyleId)
     {
@@ -2136,9 +2150,16 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   }
 
   if (lineStyleId != (unsigned)-1)
-    lineStyleFromStyleSheet(lineStyleId);
+  {
+    lineStyle = m_styles.getLineStyle(lineStyleId);
+    _lineProperties(lineStyle);
+  }
+
   if (fillStyleId != (unsigned)-1)
-    fillStyleFromStyleSheet(fillStyleId);
+  {
+    fillStyle = m_styles.getFillStyle(fillStyleId);
+    _fillAndShadowProperties(fillStyle);
+  }
   if (textStyleId != (unsigned)-1)
   {
     m_defaultCharStyle = m_styles.getCharStyle(textStyleId);
@@ -2323,22 +2344,12 @@ void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned level, const 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::lineStyleFromStyleSheet(unsigned styleId)
-{
-  lineStyleFromStyleSheet(m_styles.getLineStyle(styleId));
-}
-
-void libvisio::VSDContentCollector::lineStyleFromStyleSheet(const VSDLineStyle &style)
+void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style)
 {
   _lineProperties(style.width, style.colour, style.pattern, style.startMarker, style.endMarker, style.cap);
 }
 
-void libvisio::VSDContentCollector::fillStyleFromStyleSheet(unsigned styleId)
-{
-  fillStyleFromStyleSheet(m_styles.getFillStyle(styleId));
-}
-
-void libvisio::VSDContentCollector::fillStyleFromStyleSheet(const VSDFillStyle &style)
+void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle &style)
 {
   _fillAndShadowProperties(style.fgColour, style.bgColour, style.pattern, style.fgTransparency, style.bgTransparency,
                            style.shadowPattern, style.shadowFgColour, style.shadowOffsetX, style.shadowOffsetY);

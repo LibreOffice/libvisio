@@ -182,10 +182,8 @@ private:
 
   void _handleForeignData(const WPXBinaryData &data);
 
-  void lineStyleFromStyleSheet(unsigned styleId);
-  void fillStyleFromStyleSheet(unsigned styleId);
-  void lineStyleFromStyleSheet(const VSDLineStyle &style);
-  void fillStyleFromStyleSheet(const VSDFillStyle &style);
+  void _lineProperties(const VSDLineStyle &style);
+  void _fillAndShadowProperties(const VSDFillStyle &style);
 
   void _applyLinePattern();
   void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
