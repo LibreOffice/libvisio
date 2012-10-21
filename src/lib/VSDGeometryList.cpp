@@ -133,7 +133,6 @@ public:
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
 private:
-  unsigned m_id, m_level;
   double m_x2, m_y2;
   unsigned m_xType, m_yType;
   unsigned m_degree;
@@ -868,10 +867,11 @@ void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
   }
   else
   {
-    libvisio::sorted_vector<unsigned> tmpVector;
+    std::vector<unsigned> tmpVector;
 
     for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-      tmpVector.insert(iter->first);
+      tmpVector.push_back(iter->first);
+    std::sort(tmpVector.begin(), tmpVector.end());
 
     for (unsigned i = 0; i < tmpVector.size(); i++)
     {

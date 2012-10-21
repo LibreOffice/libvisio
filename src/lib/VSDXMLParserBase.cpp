@@ -1504,9 +1504,10 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   if (!m_shape.m_geometries.empty())
   {
-    libvisio::sorted_vector<unsigned> tmpVector;
+    std::vector<unsigned> tmpVector;
     for (std::map<unsigned, VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
-      tmpVector.insert(iterGeom->first);
+      tmpVector.push_back(iterGeom->first);
+    std::sort(tmpVector.begin(), tmpVector.end());
 
     for (unsigned i = 0; i < tmpVector.size(); i++)
     {
