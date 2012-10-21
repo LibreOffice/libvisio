@@ -143,7 +143,7 @@ struct VSDOptionalFillStyle
 struct VSDFillStyle
 {
   VSDFillStyle()
-    : fgColour(), bgColour(), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(),
+    : fgColour(), bgColour(0xff, 0xff, 0xff, 0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(),
       shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
   VSDFillStyle(const Colour &fgc, const Colour &bgc, unsigned char p, double fga, double bga, const Colour &sfgc,
                unsigned char shp, double shX, double shY)
