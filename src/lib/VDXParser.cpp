@@ -351,12 +351,12 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
 
 void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
 {
-  double strokeWidth = 0;
-  Colour colour = m_colours.empty() ? Colour() : m_colours[0];
-  long linePattern = 0;
-  long startMarker = 0;
-  long endMarker = 0;
-  long lineCap = 0;
+  boost::optional<double> strokeWidth;
+  boost::optional<Colour> colour;
+  boost::optional<unsigned char> linePattern;
+  boost::optional<unsigned char> startMarker;
+  boost::optional<unsigned char> endMarker;
+  boost::optional<unsigned char> lineCap;
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
@@ -383,19 +383,19 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
       break;
     case XML_LINEPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(linePattern, reader);
+        ret = readUnsignedCharData(linePattern, reader);
       break;
     case XML_BEGINARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(startMarker, reader);
+        ret = readUnsignedCharData(startMarker, reader);
       break;
     case XML_ENDARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(endMarker, reader);
+        ret = readUnsignedCharData(endMarker, reader);
       break;
     case XML_LINECAP:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(lineCap, reader);
+        ret = readUnsignedCharData(lineCap, reader);
       break;
     default:
       break;
@@ -404,27 +404,27 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   while ((XML_LINE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(level, strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    m_collector->collectLineStyle(level, strokeWidth, colour, linePattern, startMarker, endMarker, lineCap);
   else
   {
     if (!m_shape.m_lineStyle)
       m_shape.m_lineStyle = new VSDLineStyle();
-    *(m_shape.m_lineStyle) = VSDLineStyle(strokeWidth, colour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
+    m_shape.m_lineStyle->override(VSDOptionalLineStyle(strokeWidth, colour, linePattern, startMarker, endMarker, lineCap));
   }
 }
 
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 {
-  Colour fillColourFG = m_colours.empty() ? Colour() : m_colours[0];
-  double fillFGTransparency = 0.0;
-  Colour fillColourBG = m_colours.empty() ? Colour() : m_colours[1];
-  double fillBGTransparency = 0.0;
-  long fillPattern = 0;
-  Colour shadowColourFG = m_colours.empty() ? Colour() : m_colours[0];
-  Colour shadowColourBG = m_colours.empty() ? Colour() : m_colours[1];
-  long shadowPattern = 0;
-  double shadowOffsetX = 0;
-  double shadowOffsetY = 0;
+  boost::optional<Colour> fillColourFG;
+  boost::optional<double> fillFGTransparency;
+  boost::optional<Colour> fillColourBG;
+  boost::optional<double> fillBGTransparency;
+  boost::optional<unsigned char> fillPattern;
+  boost::optional<Colour> shadowColourFG;
+  boost::optional<Colour> shadowColourBG;
+  boost::optional<unsigned char> shadowPattern;
+  boost::optional<double> shadowOffsetX;
+  boost::optional<double> shadowOffsetY;
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
@@ -451,7 +451,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     case XML_FILLPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(fillPattern, reader);
+        ret = readUnsignedCharData(fillPattern, reader);
       break;
     case XML_SHDWFOREGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -463,7 +463,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     case XML_SHDWPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(shadowPattern, reader);
+        ret = readUnsignedCharData(shadowPattern, reader);
       break;
     case XML_FILLFOREGNDTRANS:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -479,8 +479,11 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     case XML_SHAPESHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(shadowOffsetY, reader);
-      shadowOffsetY *= -1.0;
+      {
+        double tmpDoubleData = 0.0;
+        ret = readDoubleData(tmpDoubleData, reader);
+        shadowOffsetY = - tmpDoubleData;
+      }
       break;
     case XML_SHDWFOREGNDTRANS:
     case XML_SHDWBKGNDTRANS:
@@ -494,8 +497,8 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   while ((XML_FILL != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (m_isInStyles)
-    m_collector->collectFillStyle(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
-                                  fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectFillStyle(level, fillColourFG, fillColourBG, fillPattern, fillFGTransparency,
+                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
   else
   {
     if (m_isStencilStarted)
@@ -504,9 +507,8 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
     }
     if (!m_shape.m_fillStyle)
       m_shape.m_fillStyle = new VSDFillStyle();
-    *(m_shape.m_fillStyle) = VSDFillStyle(fillColourFG, fillColourBG, (unsigned char)fillPattern,
-                                          fillFGTransparency, fillBGTransparency, shadowColourFG, (unsigned char)shadowPattern,
-                                          shadowOffsetX, shadowOffsetY);
+    m_shape.m_fillStyle->override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
+                                  shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY));
   }
 }
 

@@ -70,8 +70,8 @@ private:
 
 void libvisio::VSDParaIX::handle(VSDCollector *collector) const
 {
-  collector->collectVSDParaStyle(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
-                                 m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
+  collector->collectParaIX(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
+                           m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
 }
 
 libvisio::VSDParagraphListElement *libvisio::VSDParaIX::clone()

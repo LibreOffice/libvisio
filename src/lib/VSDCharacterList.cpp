@@ -71,9 +71,9 @@ private:
 
 void libvisio::VSDCharIX::handle(VSDCollector *collector) const
 {
-  collector->collectVSDCharStyle(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
-                                 m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
-                                 m_superscript, m_subscript, m_fontFace);
+  collector->collectCharIX(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
+                           m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
+                           m_superscript, m_subscript, m_fontFace);
 }
 
 libvisio::VSDCharacterListElement *libvisio::VSDCharIX::clone()

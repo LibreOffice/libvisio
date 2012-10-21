@@ -1071,7 +1071,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       copy_optional(m_shape.m_geometries, tmpShape->m_geometries);
       m_shape.m_lineStyleId = tmpShape->m_lineStyleId;
       m_shape.m_fillStyleId = tmpShape->m_fillStyleId;
-      m_shape.m_textStyleId = tmpShape->m_textStyleId;;
+      m_shape.m_textStyleId = tmpShape->m_textStyleId;
     }
   }
 
@@ -1239,12 +1239,138 @@ void libvisio::VSDXMLParserBase::readPageSheet(xmlTextReaderPtr reader)
   m_collector->collectPageSheet(0, m_currentShapeLevel);
 }
 
-void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr reader)
 {
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  unsigned ix = (unsigned)-1;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
+  boost::optional<double> b;
+  boost::optional<double> c;
+  boost::optional<unsigned> d;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readSplineStart: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_X:
+      ret = readDoubleData(x, reader);
+      break;
+    case XML_Y:
+      ret = readDoubleData(y, reader);
+      break;
+    case XML_A:
+      ret = readDoubleData(a, reader);
+      break;
+    case XML_B:
+      ret = readDoubleData(b, reader);
+      break;
+    case XML_C:
+      ret = readDoubleData(c, reader);
+      break;
+    case XML_D:
+      ret = readUnsignedData(d, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_ELLIPTICALARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addSplineStart(ix, level, x, y, a, b, c, d);
 }
 
-void libvisio::VSDXMLParserBase::readSplineKnot(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readSplineKnot(xmlTextReaderPtr reader)
 {
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  unsigned ix = (unsigned)-1;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  if (ixString)
+  {
+    ix = xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    if (delString)
+    {
+      if (xmlStringToBool(delString))
+        m_currentGeometryList->addEmpty(ix, level);
+      xmlFree(delString);
+    }
+    return;
+  }
+
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> a;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (-1 == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readSplineKnot: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_X:
+      ret = readDoubleData(x, reader);
+      break;
+    case XML_Y:
+      ret = readDoubleData(y, reader);
+      break;
+    case XML_A:
+      ret = readDoubleData(a, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_SPLINEKNOT != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  if (ret == 1)
+    m_currentGeometryList->addSplineKnot(ix, level, x, y, a);
 }
 
 void libvisio::VSDXMLParserBase::readStencil(xmlTextReaderPtr reader)
@@ -1311,6 +1437,22 @@ void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
     m_shape.m_foreign->format = 255;
 
   getBinaryData(reader);
+}
+
+int libvisio::VSDXMLParserBase::readLongData(boost::optional<long> &value, xmlTextReaderPtr reader)
+{
+  long tmpValue;
+  int ret = readLongData(tmpValue, reader);
+  value = tmpValue;
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader)
+{
+  Colour tmpValue;
+  int ret = readExtendedColourData(tmpValue, reader);
+  value = tmpValue;
+  return ret;
 }
 
 int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
@@ -1424,6 +1566,38 @@ int libvisio::VSDXMLParserBase::readBoolData(boost::optional<bool> &value, xmlTe
   {
     ret = readBoolData(tmpValue, reader);
     value = tmpValue;
+  }
+  catch (const XmlParserException &)
+  {
+    return -1;
+  }
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readUnsignedData(boost::optional<unsigned> &value, xmlTextReaderPtr reader)
+{
+  long tmpValue = 0;
+  int ret = 1;
+  try
+  {
+    ret = readLongData(tmpValue, reader);
+    value = (unsigned)tmpValue;
+  }
+  catch (const XmlParserException &)
+  {
+    return -1;
+  }
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readUnsignedCharData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader)
+{
+  long tmpValue = 0;
+  int ret = 1;
+  try
+  {
+    ret = readLongData(tmpValue, reader);
+    value = (unsigned char)tmpValue;
   }
   catch (const XmlParserException &)
   {

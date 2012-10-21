@@ -34,6 +34,9 @@
 #include <vector>
 #include <libwpd/libwpd.h>
 
+#define FROM_OPTIONAL(t, u) t.is_initialized() ? t.get() : u
+#define ASSIGN_OPTIONAL(t, u) if(t.is_initialized()) u = t.get()
+
 namespace libvisio
 {
 struct XForm

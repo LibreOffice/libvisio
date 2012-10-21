@@ -260,6 +260,10 @@ public:
   {
     return (unsigned)-1;
   }
+  void setLevel(unsigned level)
+  {
+    m_level = level;
+  }
 protected:
   unsigned m_id;
   unsigned m_level;
@@ -293,8 +297,11 @@ public:
   void addEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3, const boost::optional<double> &y3,
                           const boost::optional<double> &x2, const boost::optional<double> &y2,
                           const boost::optional<double> &angle, const boost::optional<double> &ecc);
-  void addSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree);
-  void addSplineKnot(unsigned id, unsigned level, double x, double y, double knot);
+  void addSplineStart(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
+                      const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
+                      const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree);
+  void addSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
+                     const boost::optional<double> &knot);
   void addInfiniteLine(unsigned id, unsigned level, const boost::optional<double> &x1, const boost::optional<double> &y1,
                        const boost::optional<double> &x2, const boost::optional<double> &y2);
   void addRelCubBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
@@ -323,6 +330,7 @@ public:
   {
     return m_elements.size();
   }
+  void resetLevel(unsigned level);
 private:
   void clearElement(unsigned id);
   std::map<unsigned, VSDGeometryListElement *> m_elements;

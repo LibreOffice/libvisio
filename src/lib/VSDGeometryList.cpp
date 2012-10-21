@@ -32,9 +32,6 @@
 #include "VSDGeometryList.h"
 #include "libvisio_utils.h"
 
-#define FROM_OPTIONAL(t, u) t.is_initialized() ? t.get() : u
-#define ASSIGN_OPTIONAL(t, u) if(t.is_initialized()) u = t.get()
-
 namespace libvisio
 {
 
@@ -194,12 +191,14 @@ private:
 class VSDSplineStart : public VSDGeometryListElement
 {
 public:
-  VSDSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree) :
-    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_secondKnot(secondKnot), m_firstKnot(firstKnot), m_lastKnot(lastKnot), m_degree(degree) {}
+  VSDSplineStart(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
+                 const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
+                 const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree) :
+    VSDGeometryListElement(id, level), m_x(FROM_OPTIONAL(x, 0.0)), m_y(FROM_OPTIONAL(y, 0.0)), m_secondKnot(FROM_OPTIONAL(secondKnot, 0.0)),
+    m_firstKnot(FROM_OPTIONAL(firstKnot, 0.0)), m_lastKnot(FROM_OPTIONAL(lastKnot, 0.0)), m_degree(FROM_OPTIONAL(degree, 0)) {}
   virtual ~VSDSplineStart() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
   double m_x, m_y;
   double m_secondKnot, m_firstKnot, m_lastKnot;
   unsigned m_degree;
@@ -208,12 +207,12 @@ private:
 class VSDSplineKnot : public VSDGeometryListElement
 {
 public:
-  VSDSplineKnot(unsigned id, unsigned level, double x, double y, double knot) :
-    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_knot(knot) {}
+  VSDSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
+                const boost::optional<double> &knot) :
+    VSDGeometryListElement(id, level), m_x(FROM_OPTIONAL(x, 0.0)), m_y(FROM_OPTIONAL(y, 0.0)), m_knot(FROM_OPTIONAL(knot, 0.0)) {}
   virtual ~VSDSplineKnot() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
   double m_x, m_y;
   double m_knot;
 };
@@ -701,16 +700,42 @@ void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, 
   }
 }
 
-void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree)
+void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, const boost::optional<double> &x,
+    const boost::optional<double> &y, const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
+    const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree)
 {
-  clearElement(id);
-  m_elements[id] = new VSDSplineStart(id, level, x, y, secondKnot, firstKnot, lastKnot, degree);
+  VSDSplineStart *tmpElement = dynamic_cast<VSDSplineStart *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDSplineStart(id, level, x, y, secondKnot, firstKnot, lastKnot, degree);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(x, tmpElement->m_x);
+    ASSIGN_OPTIONAL(y, tmpElement->m_y);
+    ASSIGN_OPTIONAL(secondKnot, tmpElement->m_secondKnot);
+    ASSIGN_OPTIONAL(firstKnot, tmpElement->m_firstKnot);
+    ASSIGN_OPTIONAL(lastKnot, tmpElement->m_lastKnot);
+    ASSIGN_OPTIONAL(degree, tmpElement->m_degree);
+  }
 }
 
-void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, double x, double y, double knot)
+void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x,
+    const boost::optional<double> &y, const boost::optional<double> &knot)
 {
-  clearElement(id);
-  m_elements[id] = new VSDSplineKnot(id, level, x, y, knot);
+  VSDSplineKnot *tmpElement = dynamic_cast<VSDSplineKnot *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDSplineKnot(id, level, x, y, knot);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(x, tmpElement->m_x);
+    ASSIGN_OPTIONAL(y, tmpElement->m_y);
+    ASSIGN_OPTIONAL(knot, tmpElement->m_knot);
+  }
 }
 
 void libvisio::VSDGeometryList::addInfiniteLine(unsigned id, unsigned level, const boost::optional<double> &x1,
@@ -887,6 +912,13 @@ void libvisio::VSDGeometryList::clearElement(unsigned id)
       delete iter->second;
     m_elements.erase(iter);
   }
+}
+
+void libvisio::VSDGeometryList::resetLevel(unsigned level)
+{
+  for (std::map<unsigned, VSDGeometryListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
+    iter->second->setLevel(level);
+
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

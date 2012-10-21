@@ -79,6 +79,9 @@ protected:
 
   // Helper functions
 
+  int readUnsignedCharData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader);
+  int readUnsignedData(boost::optional<unsigned> &value, xmlTextReaderPtr reader);
+  int readLongData(boost::optional<long> &value, xmlTextReaderPtr reader);
   virtual int readLongData(long &value, xmlTextReaderPtr reader) = 0;
   int readDoubleData(boost::optional<double> &value, xmlTextReaderPtr reader);
   virtual int readDoubleData(double &value, xmlTextReaderPtr reader) = 0;
@@ -87,6 +90,7 @@ protected:
   virtual int readColourData(Colour &value, xmlTextReaderPtr reader) = 0;
   virtual int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader) = 0;
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
+  int readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader);
   virtual void _handleLevelChange(unsigned level);
   void _flushShape();
   virtual void copy_optional(std::map<unsigned, VSDGeometryList> &dest, const std::map<unsigned, VSDGeometryList> &source) = 0;

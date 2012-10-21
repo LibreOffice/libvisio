@@ -28,6 +28,7 @@
  * instead of those above.
  */
 
+#include <stack>
 #include "VSDStyles.h"
 
 #define NOMASTER (unsigned)-1
@@ -66,34 +67,29 @@ libvisio::VSDStyles &libvisio::VSDStyles::operator=(const libvisio::VSDStyles &s
   return *this;
 }
 
-void libvisio::VSDStyles::addLineStyle(unsigned lineStyleIndex, VSDLineStyle *lineStyle)
+void libvisio::VSDStyles::addLineStyle(unsigned lineStyleIndex, const VSDOptionalLineStyle &lineStyle)
 {
-  if (lineStyle)
-    m_lineStyles[lineStyleIndex] = *lineStyle;
+  m_lineStyles[lineStyleIndex] = lineStyle;
 }
 
-void libvisio::VSDStyles::addFillStyle(unsigned fillStyleIndex, VSDFillStyle *fillStyle)
+void libvisio::VSDStyles::addFillStyle(unsigned fillStyleIndex, const VSDOptionalFillStyle &fillStyle)
 {
-  if (fillStyle)
-    m_fillStyles[fillStyleIndex] = *fillStyle;
+  m_fillStyles[fillStyleIndex] = fillStyle;
 }
 
-void libvisio::VSDStyles::addTextBlockStyle(unsigned textStyleIndex, VSDTextBlockStyle *textBlockStyle)
+void libvisio::VSDStyles::addTextBlockStyle(unsigned textStyleIndex, const VSDOptionalTextBlockStyle &textBlockStyle)
 {
-  if (textBlockStyle)
-    m_textBlockStyles[textStyleIndex] = *textBlockStyle;
+  m_textBlockStyles[textStyleIndex] = textBlockStyle;
 }
 
-void libvisio::VSDStyles::addCharStyle(unsigned textStyleIndex, VSDCharStyle *charStyle)
+void libvisio::VSDStyles::addCharStyle(unsigned textStyleIndex, const VSDOptionalCharStyle &charStyle)
 {
-  if (charStyle)
-    m_charStyles[textStyleIndex] = *charStyle;
+  m_charStyles[textStyleIndex] = charStyle;
 }
 
-void libvisio::VSDStyles::addParaStyle(unsigned textStyleIndex, VSDParaStyle *paraStyle)
+void libvisio::VSDStyles::addParaStyle(unsigned textStyleIndex, const VSDOptionalParaStyle &paraStyle)
 {
-  if (paraStyle)
-    m_paraStyles[textStyleIndex] = *paraStyle;
+  m_paraStyles[textStyleIndex] = paraStyle;
 }
 
 void libvisio::VSDStyles::addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster)
@@ -111,103 +107,129 @@ void libvisio::VSDStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned t
   m_textStyleMasters[textStyleIndex] = textStyleMaster;
 }
 
-const libvisio::VSDLineStyle *libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex) const
+libvisio::VSDLineStyle libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex) const
 {
+  VSDLineStyle lineStyle;
   if ((unsigned)-1 == lineStyleIndex)
-    return 0;
-  std::map<unsigned, VSDLineStyle>::const_iterator iterStyle;
+    return lineStyle;
+  std::stack<unsigned> styleIdStack;
+  styleIdStack.push(lineStyleIndex);
   while (true)
   {
-    iterStyle = m_lineStyles.find(lineStyleIndex);
-    if (iterStyle != m_lineStyles.end())
-      return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_lineStyleMasters.find(lineStyleIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_lineStyleMasters.find(styleIdStack.top());
     if (iter != m_lineStyleMasters.end() && iter->second != NOMASTER)
-      lineStyleIndex = iter->second;
+      styleIdStack.push(iter->second);
     else
       break;
   }
-
-  return 0;
+  while (!styleIdStack.empty())
+  {
+    std::map<unsigned, VSDOptionalLineStyle>::const_iterator iter = m_lineStyles.find(styleIdStack.top());
+    if (iter != m_lineStyles.end())
+      lineStyle.override(iter->second);
+    styleIdStack.pop();
+  }
+  return lineStyle;
 }
 
-const libvisio::VSDFillStyle *libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
+libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
 {
+  VSDFillStyle fillStyle;
   if ((unsigned)-1 == fillStyleIndex)
-    return 0;
-  std::map<unsigned, VSDFillStyle>::const_iterator iterStyle;
+    return fillStyle;
+  std::stack<unsigned> styleIdStack;
+  styleIdStack.push(fillStyleIndex);
   while (true)
   {
-    iterStyle = m_fillStyles.find(fillStyleIndex);
-    if (iterStyle != m_fillStyles.end())
-      return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_fillStyleMasters.find(fillStyleIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_fillStyleMasters.find(styleIdStack.top());
     if (iter != m_fillStyleMasters.end() && iter->second != NOMASTER)
-      fillStyleIndex = iter->second;
+      styleIdStack.push(iter->second);
     else
       break;
   }
-
-  return 0;
+  while (!styleIdStack.empty())
+  {
+    std::map<unsigned, VSDOptionalFillStyle>::const_iterator iter = m_fillStyles.find(styleIdStack.top());
+    if (iter != m_fillStyles.end())
+      fillStyle.override(iter->second);
+    styleIdStack.pop();
+  }
+  return fillStyle;
 }
 
-const libvisio::VSDTextBlockStyle *libvisio::VSDStyles::getTextBlockStyle(unsigned textStyleIndex) const
+libvisio::VSDTextBlockStyle libvisio::VSDStyles::getTextBlockStyle(unsigned textStyleIndex) const
 {
+  VSDTextBlockStyle textBlockStyle;
   if ((unsigned)-1 == textStyleIndex)
-    return 0;
-  std::map<unsigned, VSDTextBlockStyle>::const_iterator iterStyle;
+    return textBlockStyle;
+  std::stack<unsigned> styleIdStack;
+  styleIdStack.push(textStyleIndex);
   while (true)
   {
-    iterStyle = m_textBlockStyles.find(textStyleIndex);
-    if (iterStyle != m_textBlockStyles.end())
-      return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(textStyleIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
     if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
-      textStyleIndex = iter->second;
+      styleIdStack.push(iter->second);
     else
       break;
   }
-
-  return 0;
+  while (!styleIdStack.empty())
+  {
+    std::map<unsigned, VSDOptionalTextBlockStyle>::const_iterator iter = m_textBlockStyles.find(styleIdStack.top());
+    if (iter != m_textBlockStyles.end())
+      textBlockStyle.override(iter->second);
+    styleIdStack.pop();
+  }
+  return textBlockStyle;
 }
 
-const libvisio::VSDCharStyle *libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex) const
+libvisio::VSDCharStyle libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex) const
 {
+  VSDCharStyle charStyle;
   if ((unsigned)-1 == textStyleIndex)
-    return 0;
-  std::map<unsigned, VSDCharStyle>::const_iterator iterStyle;
+    return charStyle;
+  std::stack<unsigned> styleIdStack;
+  styleIdStack.push(textStyleIndex);
   while (true)
   {
-    iterStyle = m_charStyles.find(textStyleIndex);
-    if (iterStyle != m_charStyles.end())
-      return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(textStyleIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
     if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
-      textStyleIndex = iter->second;
+      styleIdStack.push(iter->second);
     else
       break;
   }
-
-  return 0;
+  while (!styleIdStack.empty())
+  {
+    std::map<unsigned, VSDOptionalCharStyle>::const_iterator iter = m_charStyles.find(styleIdStack.top());
+    if (iter != m_charStyles.end())
+      charStyle.override(iter->second);
+    styleIdStack.pop();
+  }
+  return charStyle;
 }
 
-const libvisio::VSDParaStyle *libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex) const
+libvisio::VSDParaStyle libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex) const
 {
+  VSDParaStyle paraStyle;
   if ((unsigned)-1 == textStyleIndex)
-    return 0;
-  std::map<unsigned, VSDParaStyle>::const_iterator iterStyle;
+    return paraStyle;
+  std::stack<unsigned> styleIdStack;
+  styleIdStack.push(textStyleIndex);
   while (true)
   {
-    iterStyle = m_paraStyles.find(textStyleIndex);
-    if (iterStyle != m_paraStyles.end())
-      return &iterStyle->second;
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(textStyleIndex);
+    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
     if (iter != m_textStyleMasters.end() && iter->second != NOMASTER)
-      textStyleIndex = iter->second;
+      styleIdStack.push(iter->second);
     else
       break;
   }
-
-  return 0;
+  while (!styleIdStack.empty())
+  {
+    std::map<unsigned, VSDOptionalParaStyle>::const_iterator iter = m_paraStyles.find(styleIdStack.top());
+    if (iter != m_paraStyles.end())
+      paraStyle.override(iter->second);
+    styleIdStack.pop();
+  }
+  return paraStyle;
 }
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

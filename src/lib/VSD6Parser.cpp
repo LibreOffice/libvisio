@@ -186,7 +186,7 @@ void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
 
   if (m_isInStyles)
     m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-                                    spLine, spBefore, spAfter, align, 0);
+                                    spLine, spBefore, spAfter, align, (unsigned)0);
   else
   {
     if (m_isStencilStarted)

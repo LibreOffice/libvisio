@@ -44,6 +44,7 @@ class VDXParser : public VSDXMLParserBase
   using VSDXMLParserBase::readExtendedColourData;
   using VSDXMLParserBase::readDoubleData;
   using VSDXMLParserBase::readBoolData;
+  using VSDXMLParserBase::readLongData;
 
 public:
   explicit VDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
@@ -67,7 +68,12 @@ private:
   int getElementToken(xmlTextReaderPtr reader);
   int getElementDepth(xmlTextReaderPtr reader);
 
-  void copy_optional(std::map<unsigned, VSDGeometryList> &, const std::map<unsigned, VSDGeometryList> &) {}
+  void copy_optional(std::map<unsigned, VSDGeometryList> &dest, const std::map<unsigned, VSDGeometryList> &source)
+  {
+    dest = source;
+    for (std::map<unsigned, VSDGeometryList>::iterator iter = dest.begin(); iter != dest.end(); ++iter)
+      iter->second.resetLevel(m_currentShapeLevel+2);
+  }
 
   // Functions to read the DatadiagramML document structure
 

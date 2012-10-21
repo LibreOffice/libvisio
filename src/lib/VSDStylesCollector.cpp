@@ -260,13 +260,13 @@ void libvisio::VSDStylesCollector::collectText(unsigned level, const ::WPXBinary
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectVSDParaStyle(unsigned /* id */ , unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */,
+void libvisio::VSDStylesCollector::collectParaIX(unsigned /* id */ , unsigned level, unsigned /* charCount */, double /* indFirst */, double /* indLeft */,
     double /* indRight */, double /* spLine */, double /* spBefore */, double /* spAfter */, unsigned char /* align */, unsigned /* flags */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectVSDCharStyle(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/,
+void libvisio::VSDStylesCollector::collectCharIX(unsigned /*id*/ , unsigned level, unsigned /*charCount*/, unsigned short /*fontID*/,
     Colour /*fontColour*/, double /*fontSize*/, bool /*bold*/, bool /*italic*/, bool /*underline*/,
     bool /* doubleunderline */, bool /* strikeout */, bool /* doublestrikeout */, bool /* allcaps */,
     bool /* initcaps */, bool /* smallcaps */, bool /* superscript */, bool /* subscript */, VSDFont /*fontFace*/)
@@ -303,51 +303,60 @@ void libvisio::VSDStylesCollector::collectStyleSheet(unsigned id, unsigned level
   m_styles.addTextStyleMaster(m_currentStyleSheet, textStyleParent);
 }
 
-void libvisio::VSDStylesCollector::collectLineStyle(unsigned /* level */, double strokeWidth, const Colour &c, unsigned char linePattern,
-    unsigned char startMarker, unsigned char endMarker, unsigned char lineCap)
+void libvisio::VSDStylesCollector::collectLineStyle(unsigned /* level */, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c,
+    const boost::optional<unsigned char> &linePattern, const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
+    const boost::optional<unsigned char> &lineCap)
 {
-  VSDLineStyle lineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
-  m_styles.addLineStyle(m_currentStyleSheet, &lineStyle);
+  VSDOptionalLineStyle lineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+  m_styles.addLineStyle(m_currentStyleSheet, lineStyle);
 }
 
-void libvisio::VSDStylesCollector::collectFillStyle(unsigned /* level */, const Colour &colourFG, const Colour &colourBG,
-    unsigned char fillPattern, double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc,
-    double shadowOffsetX, double shadowOffsetY)
+void libvisio::VSDStylesCollector::collectFillStyle(unsigned /* level */, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
+    const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency, const boost::optional<double> &fillBGTransparency,
+    const boost::optional<unsigned char> &shadowPattern, const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX,
+    const boost::optional<double> &shadowOffsetY)
 {
-  VSDFillStyle fillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY);
-  m_styles.addFillStyle(m_currentStyleSheet, &fillStyle);
+  VSDOptionalFillStyle fillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY);
+  m_styles.addFillStyle(m_currentStyleSheet, fillStyle);
 
 }
 
-void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const Colour &colourFG, const Colour &colourBG,
-    unsigned char fillPattern, double fillFGTransparency, double fillBGTransparency, unsigned char shadowPattern, const Colour &shfgc)
+void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
+    const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency, const boost::optional<double> &fillBGTransparency,
+    const boost::optional<unsigned char> &shadowPattern, const boost::optional<Colour> &shfgc)
 {
   collectFillStyle(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
-void libvisio::VSDStylesCollector::collectParaIXStyle(unsigned /*id*/, unsigned /* level */, unsigned charCount, double indFirst, double indLeft, double indRight,
-    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags)
+void libvisio::VSDStylesCollector::collectParaIXStyle(unsigned /* id */, unsigned /* level */, const boost::optional<unsigned> &charCount,
+    const boost::optional<double> &indFirst, const boost::optional<double> &indLeft, const boost::optional<double> &indRight,
+    const boost::optional<double> &spLine, const boost::optional<double> &spBefore, const boost::optional<double> &spAfter,
+    const boost::optional<unsigned char> &align, const boost::optional<unsigned> &flags)
 {
-  VSDParaStyle paraStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
-  m_styles.addParaStyle(m_currentStyleSheet, &paraStyle);
+  VSDOptionalParaStyle paraStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
+  m_styles.addParaStyle(m_currentStyleSheet, paraStyle);
 }
 
 
-void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /*id*/ , unsigned /* level */, unsigned charCount, unsigned short fontID,
-    Colour fontColour, double fontSize, bool bold, bool italic, bool underline, bool doubleunderline,
-    bool strikeout, bool doublestrikeout, bool allcaps, bool initcaps, bool smallcaps,
-    bool superscript, bool subscript, VSDFont fontFace)
+void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /* id */, unsigned /* level */, const boost::optional<unsigned> &charCount,
+    const boost::optional<unsigned short> &fontID, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize,
+    const boost::optional<bool> &bold, const boost::optional<bool> &italic, const boost::optional<bool> &underline,
+    const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout,
+    const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
+    const boost::optional<bool> &superscript, const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace)
 {
-  VSDCharStyle charStyle(charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                         allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
-  m_styles.addCharStyle(m_currentStyleSheet, &charStyle);
+  VSDOptionalCharStyle charStyle(charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  m_styles.addCharStyle(m_currentStyleSheet, charStyle);
 }
 
-void libvisio::VSDStylesCollector::collectTextBlockStyle(unsigned /* level */, double leftMargin, double rightMargin, double topMargin, double bottomMargin,
-    unsigned char verticalAlign, bool isBgFilled, const Colour &bgColour, double defaultTabStop, unsigned char textDirection)
+void libvisio::VSDStylesCollector::collectTextBlockStyle(unsigned /* level */, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,
+    const boost::optional<double> &topMargin, const boost::optional<double> &bottomMargin, const boost::optional<unsigned char> &verticalAlign,
+    const boost::optional<bool> &isBgFilled, const boost::optional<Colour> &bgColour, const boost::optional<double> &defaultTabStop,
+    const boost::optional<unsigned char> &textDirection)
 {
-  VSDTextBlockStyle textBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, isBgFilled, bgColour, defaultTabStop, textDirection);
-  m_styles.addTextBlockStyle(m_currentStyleSheet, &textBlockStyle);
+  VSDOptionalTextBlockStyle textBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, isBgFilled, bgColour, defaultTabStop, textDirection);
+  m_styles.addTextBlockStyle(m_currentStyleSheet, textBlockStyle);
 }
 
 void libvisio::VSDStylesCollector::collectFieldList(unsigned /* id */, unsigned level)
