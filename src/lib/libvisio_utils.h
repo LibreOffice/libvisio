@@ -32,6 +32,7 @@
 #define __LIBVISIO_UTILS_H__
 
 #include <stdio.h>
+#include "VSDTypes.h"
 
 #ifdef _MSC_VER
 
@@ -94,6 +95,8 @@ uint64_t readU64(WPXInputStream *input);
 double readDouble(WPXInputStream *input);
 
 void appendFromBase64(WPXBinaryData &data, const unsigned char *base64String, size_t base64StringLength);
+
+const ::WPXString getColourString(const Colour &c);
 
 class EndOfStreamException
 {

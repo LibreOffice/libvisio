@@ -135,14 +135,6 @@ public:
   virtual void endPage() = 0;
   virtual void endPages() = 0;
 
-protected:
-  const ::WPXString getColourString(const Colour &c) const
-  {
-    ::WPXString sColour;
-    sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
-    return sColour;
-  }
-
 private:
   VSDCollector(const VSDCollector &);
   VSDCollector &operator=(const VSDCollector &);

@@ -160,4 +160,13 @@ void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64
   }
 }
 
+const ::WPXString libvisio::getColourString(const Colour &c)
+{
+  ::WPXString sColour;
+  sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
+  return sColour;
+}
+
+
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
