@@ -662,9 +662,12 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
         {
           if (!wasMove)
           {
-            WPXPropertyList closedPath;
-            closedPath.insert("libwpg:path-action", "Z");
-            tmpPath.push_back(closedPath);
+            if (tmpPath.back()["libwpg:path-action"]->getStr() != "Z")
+            {
+              WPXPropertyList closedPath;
+              closedPath.insert("libwpg:path-action", "Z");
+              tmpPath.push_back(closedPath);
+            }
           }
           else
           {
@@ -681,9 +684,12 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     {
       if (!wasMove)
       {
-        WPXPropertyList closedPath;
-        closedPath.insert("libwpg:path-action", "Z");
-        tmpPath.push_back(closedPath);
+        if (tmpPath.back()["libwpg:path-action"]->getStr() != "Z")
+        {
+          WPXPropertyList closedPath;
+          closedPath.insert("libwpg:path-action", "Z");
+          tmpPath.push_back(closedPath);
+        }
       }
       else
         tmpPath.pop_back();
@@ -725,9 +731,12 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
           {
             if ((x == prevX) && (y == prevY))
             {
-              WPXPropertyList closedPath;
-              closedPath.insert("libwpg:path-action", "Z");
-              tmpPath.push_back(closedPath);
+              if (tmpPath.back()["libwpg:path-action"]->getStr() != "Z")
+              {
+                WPXPropertyList closedPath;
+                closedPath.insert("libwpg:path-action", "Z");
+                tmpPath.push_back(closedPath);
+              }
             }
           }
           else
@@ -753,9 +762,12 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       {
         if ((x == prevX) && (y == prevY))
         {
-          WPXPropertyList closedPath;
-          closedPath.insert("libwpg:path-action", "Z");
-          tmpPath.push_back(closedPath);
+          if (tmpPath.back()["libwpg:path-action"]->getStr() != "Z")
+          {
+            WPXPropertyList closedPath;
+            closedPath.insert("libwpg:path-action", "Z");
+            tmpPath.push_back(closedPath);
+          }
         }
       }
       else
@@ -1226,6 +1238,12 @@ void libvisio::VSDContentCollector::collectEllipse(unsigned /* id */, unsigned l
   ellipse.insert("svg:x",m_scale*xleft);
   ellipse.insert("svg:y",m_scale*yleft);
   ellipse.insert("libwpg:large-arc", largeArc?0:1);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(ellipse);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(ellipse);
+  ellipse.clear();
+  ellipse.insert("libwpg:path-action", "Z");
   if (!m_noFill && !m_noShow)
     m_currentFillGeometry.push_back(ellipse);
   if (!m_noLine && !m_noShow)
