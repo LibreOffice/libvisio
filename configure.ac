@@ -213,7 +213,7 @@ AS_IF([test "x$native_win32" = "xyes"], [
 	AS_IF([test x"$GCC" = xyes], [
 		# Be tough with warnings and produce less careless code
 		CFLAGS="$CFLAGS -Wall -Wextra -pedantic"
-		CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow -pedantic -Weffc++"
+		CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow -pedantic"
 	])
 ])
 LIBVISIO_CXXFLAGS="$LIBVISIO_CFLAGS"
