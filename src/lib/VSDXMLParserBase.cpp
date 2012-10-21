@@ -1068,7 +1068,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
-      copy_optional(m_shape.m_geometries, tmpShape->m_geometries);
+      m_shape.m_geometries = tmpShape->m_geometries;
       m_shape.m_lineStyleId = tmpShape->m_lineStyleId;
       m_shape.m_fillStyleId = tmpShape->m_fillStyleId;
       m_shape.m_textStyleId = tmpShape->m_textStyleId;
@@ -1504,6 +1504,8 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   if (!m_shape.m_geometries.empty())
   {
+    for (std::map<unsigned, VSDGeometryList>::iterator iter = m_shape.m_geometries.begin(); iter != m_shape.m_geometries.end(); ++iter)
+      iter->second.resetLevel(m_currentShapeLevel+2);
     std::vector<unsigned> tmpVector;
     for (std::map<unsigned, VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
       tmpVector.push_back(iterGeom->first);

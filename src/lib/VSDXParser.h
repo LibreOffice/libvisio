@@ -68,13 +68,6 @@ private:
   int getElementToken(xmlTextReaderPtr reader);
   int getElementDepth(xmlTextReaderPtr reader);
 
-  void copy_optional(std::map<unsigned, VSDGeometryList> &dest, const std::map<unsigned, VSDGeometryList> &source)
-  {
-    dest = source;
-    for (std::map<unsigned, VSDGeometryList>::iterator iter = dest.begin(); iter != dest.end(); ++iter)
-      iter->second.resetLevel(m_currentShapeLevel+2);
-  }
-
   // Functions parsing the Visio 2013 OPC document structure
 
   bool parseDocument(WPXInputStream *input, const char *name);
