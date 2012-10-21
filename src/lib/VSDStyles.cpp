@@ -106,9 +106,9 @@ void libvisio::VSDStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned t
   m_textStyleMasters[textStyleIndex] = textStyleMaster;
 }
 
-libvisio::VSDLineStyle libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex) const
+libvisio::VSDOptionalLineStyle libvisio::VSDStyles::getOptionalLineStyle(unsigned lineStyleIndex) const
 {
-  VSDLineStyle lineStyle;
+  VSDOptionalLineStyle lineStyle;
   if (MINUS_ONE == lineStyleIndex)
     return lineStyle;
   std::stack<unsigned> styleIdStack;
@@ -131,9 +131,16 @@ libvisio::VSDLineStyle libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex
   return lineStyle;
 }
 
-libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
+libvisio::VSDLineStyle libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex) const
 {
-  VSDFillStyle fillStyle;
+  VSDLineStyle lineStyle;
+  lineStyle.override(getOptionalLineStyle(lineStyleIndex));
+  return lineStyle;
+}
+
+libvisio::VSDOptionalFillStyle libvisio::VSDStyles::getOptionalFillStyle(unsigned fillStyleIndex) const
+{
+  VSDOptionalFillStyle fillStyle;
   if (MINUS_ONE == fillStyleIndex)
     return fillStyle;
   std::stack<unsigned> styleIdStack;
@@ -156,9 +163,16 @@ libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex
   return fillStyle;
 }
 
-libvisio::VSDTextBlockStyle libvisio::VSDStyles::getTextBlockStyle(unsigned textStyleIndex) const
+libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
 {
-  VSDTextBlockStyle textBlockStyle;
+  VSDFillStyle fillStyle;
+  fillStyle.override(getOptionalFillStyle(fillStyleIndex));
+  return fillStyle;
+}
+
+libvisio::VSDOptionalTextBlockStyle libvisio::VSDStyles::getOptionalTextBlockStyle(unsigned textStyleIndex) const
+{
+  VSDOptionalTextBlockStyle textBlockStyle;
   if (MINUS_ONE == textStyleIndex)
     return textBlockStyle;
   std::stack<unsigned> styleIdStack;
@@ -181,9 +195,16 @@ libvisio::VSDTextBlockStyle libvisio::VSDStyles::getTextBlockStyle(unsigned text
   return textBlockStyle;
 }
 
-libvisio::VSDCharStyle libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex) const
+libvisio::VSDTextBlockStyle libvisio::VSDStyles::getTextBlockStyle(unsigned textStyleIndex) const
 {
-  VSDCharStyle charStyle;
+  VSDTextBlockStyle textBlockStyle;
+  textBlockStyle.override(getOptionalTextBlockStyle(textStyleIndex));
+  return textBlockStyle;
+}
+
+libvisio::VSDOptionalCharStyle libvisio::VSDStyles::getOptionalCharStyle(unsigned textStyleIndex) const
+{
+  VSDOptionalCharStyle charStyle;
   if (MINUS_ONE == textStyleIndex)
     return charStyle;
   std::stack<unsigned> styleIdStack;
@@ -206,9 +227,16 @@ libvisio::VSDCharStyle libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex
   return charStyle;
 }
 
-libvisio::VSDParaStyle libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex) const
+libvisio::VSDCharStyle libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex) const
 {
-  VSDParaStyle paraStyle;
+  VSDCharStyle charStyle;
+  charStyle.override(getOptionalCharStyle(textStyleIndex));
+  return charStyle;
+}
+
+libvisio::VSDOptionalParaStyle libvisio::VSDStyles::getOptionalParaStyle(unsigned textStyleIndex) const
+{
+  VSDOptionalParaStyle paraStyle;
   if (MINUS_ONE == textStyleIndex)
     return paraStyle;
   std::stack<unsigned> styleIdStack;
@@ -228,6 +256,13 @@ libvisio::VSDParaStyle libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex
       paraStyle.override(iter->second);
     styleIdStack.pop();
   }
+  return paraStyle;
+}
+
+libvisio::VSDParaStyle libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex) const
+{
+  VSDParaStyle paraStyle;
+  paraStyle.override(getOptionalParaStyle(textStyleIndex));
   return paraStyle;
 }
 
