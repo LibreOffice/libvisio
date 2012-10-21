@@ -52,6 +52,16 @@ struct VSDOptionalLineStyle
     width(style.width), colour(style.colour), pattern(style.pattern), startMarker(style.startMarker),
     endMarker(style.endMarker), cap(style.cap) {}
   ~VSDOptionalLineStyle() {}
+  void override(const VSDOptionalLineStyle &style)
+  {
+    ASSIGN_OPTIONAL(style.width, width);
+    ASSIGN_OPTIONAL(style.colour, colour);
+    ASSIGN_OPTIONAL(style.pattern, pattern);
+    ASSIGN_OPTIONAL(style.startMarker, startMarker);
+    ASSIGN_OPTIONAL(style.endMarker, endMarker);
+    ASSIGN_OPTIONAL(style.cap, cap);
+  }
+
   boost::optional<double> width;
   boost::optional<Colour> colour;
   boost::optional<unsigned char> pattern;
@@ -106,6 +116,18 @@ struct VSDOptionalFillStyle
     bgTransparency(style.bgTransparency), shadowFgColour(style.shadowFgColour), shadowPattern(style.shadowPattern),
     shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY) {}
   ~VSDOptionalFillStyle() {}
+  void override(const VSDOptionalFillStyle &style)
+  {
+    ASSIGN_OPTIONAL(style.fgColour, fgColour);
+    ASSIGN_OPTIONAL(style.bgColour, bgColour);
+    ASSIGN_OPTIONAL(style.pattern, pattern);
+    ASSIGN_OPTIONAL(style.fgTransparency, fgTransparency);
+    ASSIGN_OPTIONAL(style.bgTransparency, bgTransparency);
+    ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
+    ASSIGN_OPTIONAL(style.shadowPattern, shadowPattern);
+    ASSIGN_OPTIONAL(style.shadowOffsetX, shadowOffsetX);
+    ASSIGN_OPTIONAL(style.shadowOffsetY, shadowOffsetY);
+  }
 
   boost::optional<Colour> fgColour;
   boost::optional<Colour> bgColour;
@@ -176,6 +198,25 @@ struct VSDOptionalCharStyle
     doublestrikeout(style.doublestrikeout), allcaps(style.allcaps), initcaps(style.initcaps), smallcaps(style.smallcaps),
     superscript(style.superscript), subscript(style.subscript), face(style.face) {}
   ~VSDOptionalCharStyle() {}
+  void override(const VSDOptionalCharStyle &style)
+  {
+    ASSIGN_OPTIONAL(style.charCount, charCount);
+    ASSIGN_OPTIONAL(style.faceID, faceID);
+    ASSIGN_OPTIONAL(style.colour, colour);
+    ASSIGN_OPTIONAL(style.size, size);
+    ASSIGN_OPTIONAL(style.bold, bold);
+    ASSIGN_OPTIONAL(style.italic, italic);
+    ASSIGN_OPTIONAL(style.underline, underline);
+    ASSIGN_OPTIONAL(style.doubleunderline, doubleunderline);
+    ASSIGN_OPTIONAL(style.strikeout, strikeout);
+    ASSIGN_OPTIONAL(style.doublestrikeout, doublestrikeout);
+    ASSIGN_OPTIONAL(style.allcaps, allcaps);
+    ASSIGN_OPTIONAL(style.initcaps, initcaps);
+    ASSIGN_OPTIONAL(style.smallcaps, smallcaps);
+    ASSIGN_OPTIONAL(style.superscript, superscript);
+    ASSIGN_OPTIONAL(style.subscript, subscript);
+    ASSIGN_OPTIONAL(style.face, face);
+  }
 
   boost::optional<unsigned> charCount;
   boost::optional<unsigned short> faceID;
@@ -262,6 +303,18 @@ struct VSDOptionalParaStyle
     charCount(style.charCount), indFirst(style.indFirst), indLeft(style.indLeft), indRight(style.indRight), spLine(style.spLine),
     spBefore(style.spBefore), spAfter(style.spAfter), align(style.align), flags(style.flags) {}
   ~VSDOptionalParaStyle() {}
+  void override(const VSDOptionalParaStyle &style)
+  {
+    ASSIGN_OPTIONAL(style.charCount, charCount);
+    ASSIGN_OPTIONAL(style.indFirst, indFirst);
+    ASSIGN_OPTIONAL(style.indLeft, indLeft);
+    ASSIGN_OPTIONAL(style.indRight,indRight);
+    ASSIGN_OPTIONAL(style.spLine, spLine);
+    ASSIGN_OPTIONAL(style.spBefore, spBefore);
+    ASSIGN_OPTIONAL(style.spAfter, spAfter);
+    ASSIGN_OPTIONAL(style.align, align);
+    ASSIGN_OPTIONAL(style.flags, flags);
+  }
 
   boost::optional<unsigned> charCount;
   boost::optional<double> indFirst;
@@ -326,6 +379,18 @@ struct VSDOptionalTextBlockStyle
     bottomMargin(style.bottomMargin), verticalAlign(style.verticalAlign), isTextBkgndFilled(style.isTextBkgndFilled),
     textBkgndColour(style.textBkgndColour), defaultTabStop(style.defaultTabStop), textDirection(style.textDirection) {}
   ~VSDOptionalTextBlockStyle() {}
+  void override(const VSDOptionalTextBlockStyle &style)
+  {
+    ASSIGN_OPTIONAL(style.leftMargin, leftMargin);
+    ASSIGN_OPTIONAL(style.rightMargin, rightMargin);
+    ASSIGN_OPTIONAL(style.topMargin, topMargin);
+    ASSIGN_OPTIONAL(style.bottomMargin, bottomMargin);
+    ASSIGN_OPTIONAL(style.verticalAlign, verticalAlign);
+    ASSIGN_OPTIONAL(style.isTextBkgndFilled, isTextBkgndFilled);
+    ASSIGN_OPTIONAL(style.textBkgndColour, textBkgndColour);
+    ASSIGN_OPTIONAL(style.defaultTabStop, defaultTabStop);
+    ASSIGN_OPTIONAL(style.textDirection, textDirection);
+  }
 
   boost::optional<double> leftMargin;
   boost::optional<double> rightMargin;
