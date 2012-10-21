@@ -1591,19 +1591,19 @@ int libvisio::VSDXMLParserBase::readUnsignedData(boost::optional<unsigned> &valu
   return ret;
 }
 
-int libvisio::VSDXMLParserBase::readUnsignedCharData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readByteData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader)
 {
-  long tmpValue = 0;
-  int ret = 1;
-  try
-  {
-    ret = readLongData(tmpValue, reader);
-    value = (unsigned char)tmpValue;
-  }
-  catch (const XmlParserException &)
-  {
-    return -1;
-  }
+  unsigned char tmpValue = 0;
+  int ret = readByteData(tmpValue, reader);
+  value = tmpValue;
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readByteData(unsigned char &value, xmlTextReaderPtr reader)
+{
+  long longValue = 0;
+  int ret = readLongData(longValue, reader);
+  value = (unsigned char) longValue;
   return ret;
 }
 

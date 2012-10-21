@@ -383,19 +383,19 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
       break;
     case XML_LINEPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readUnsignedCharData(linePattern, reader);
+        ret = readByteData(linePattern, reader);
       break;
     case XML_BEGINARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readUnsignedCharData(startMarker, reader);
+        ret = readByteData(startMarker, reader);
       break;
     case XML_ENDARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readUnsignedCharData(endMarker, reader);
+        ret = readByteData(endMarker, reader);
       break;
     case XML_LINECAP:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readUnsignedCharData(lineCap, reader);
+        ret = readByteData(lineCap, reader);
       break;
     default:
       break;
@@ -451,7 +451,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     case XML_FILLPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readUnsignedCharData(fillPattern, reader);
+        ret = readByteData(fillPattern, reader);
       break;
     case XML_SHDWFOREGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -463,7 +463,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     case XML_SHDWPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readUnsignedCharData(shadowPattern, reader);
+        ret = readByteData(shadowPattern, reader);
       break;
     case XML_FILLFOREGNDTRANS:
       if (XML_READER_TYPE_ELEMENT == tokenType)

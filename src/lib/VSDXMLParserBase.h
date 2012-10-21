@@ -79,7 +79,8 @@ protected:
 
   // Helper functions
 
-  int readUnsignedCharData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader);
+  int readByteData(unsigned char &value, xmlTextReaderPtr reader);
+  int readByteData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader);
   int readUnsignedData(boost::optional<unsigned> &value, xmlTextReaderPtr reader);
   int readLongData(boost::optional<long> &value, xmlTextReaderPtr reader);
   virtual int readLongData(long &value, xmlTextReaderPtr reader) = 0;
