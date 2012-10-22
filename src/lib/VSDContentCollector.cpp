@@ -143,7 +143,10 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const Colour &colou
   m_fillFGTransparency = fillFGTransparency;
   m_fillBGTransparency = fillBGTransparency;
 
-  if (m_fillPattern == 0)
+  if (m_fillPattern)
+    m_styleProps.insert("svg:fill-rule", "evenodd");
+
+  if (!m_fillPattern)
     m_fillType = "none";
   else if (m_fillPattern == 1)
   {
@@ -478,7 +481,11 @@ void libvisio::VSDContentCollector::_lineProperties(double strokeWidth, Colour c
 {
   m_linePattern = linePattern;
 
-  if (linePattern == 0) return; // No need to add style
+  if (!linePattern)
+  {
+    m_styleProps.insert("draw:stroke", "none");
+    return;
+  }
 
   m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
   m_lineColour = getColourString(c);
@@ -1575,19 +1582,6 @@ void libvisio::VSDContentCollector::collectGeometry(unsigned /* id */, unsigned 
   m_noLine = noLine;
   m_noShow = noShow;
 
-  _applyLinePattern();
-
-  if (m_linePattern == 0)
-    m_styleProps.insert("draw:stroke", "none");
-  else
-    m_styleProps.insert("svg:stroke-color", m_lineColour);
-  if (m_fillPattern == 0)
-    m_styleProps.insert("draw:fill", "none");
-  else
-  {
-    m_styleProps.insert("draw:fill", m_fillType);
-    m_styleProps.insert("svg:fill-rule", "evenodd");
-  }
   VSD_DEBUG_MSG(("NoFill: %d NoLine: %d NoShow: %d\n", m_noFill, m_noLine, m_noShow));
   m_currentGeometryCount++;
 }
@@ -2104,11 +2098,6 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_fillPattern = 1; // same as "solid"
   m_fillFGTransparency = 0.0;
   m_fillBGTransparency = 0.0;
-
-  // Reset style
-  m_styleProps.clear();
-  m_styleProps.insert("draw:fill", m_fillType);
-  m_styleProps.insert("draw:stroke", "solid");
 
   m_textStream.clear();
   m_charFormats.clear();
