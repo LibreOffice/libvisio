@@ -1535,6 +1535,8 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
     iterPara->handle(m_collector);
+
+  m_collector->collectUnhandledChunk(0, m_currentShapeLevel);
 }
 
 void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)

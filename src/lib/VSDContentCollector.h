@@ -197,11 +197,9 @@ private:
 
   void _lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap);
   void _lineProperties(const VSDLineStyle &style);
-  void _lineProperties(const VSDOptionalLineStyle &style);
   void _fillAndShadowProperties(const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
                                 double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
   void _fillAndShadowProperties(const VSDFillStyle &style);
-  void _fillAndShadowProperties(const VSDOptionalFillStyle &style);
 
   void _applyLinePattern();
   const char *_linePropertiesMarkerViewbox(unsigned marker);

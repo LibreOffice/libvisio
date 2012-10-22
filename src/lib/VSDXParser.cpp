@@ -1280,6 +1280,8 @@ void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
       xmlFree(id);
     }
   }
+  if (!m_shape.m_foreign)
+    m_shape.m_foreign = new ForeignData();
   m_shape.m_foreign->data = m_currentBinaryData;
 }
 

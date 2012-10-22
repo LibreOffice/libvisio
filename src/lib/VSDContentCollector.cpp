@@ -626,6 +626,9 @@ double libvisio::VSDContentCollector::_linePropertiesMarkerScale(unsigned marker
 
 void libvisio::VSDContentCollector::_flushCurrentPath()
 {
+  m_styleProps.clear();
+  _lineProperties(m_lineStyle);
+  _fillAndShadowProperties(m_fillStyle);
   WPXPropertyList fillPathProps(m_styleProps);
   fillPathProps.insert("draw:stroke", "none");
   WPXPropertyList linePathProps(m_styleProps);
@@ -1046,7 +1049,7 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
 
   transformFlips(flipX, flipY);
 
-  WPXPropertyList styleProps(m_styleProps);
+  WPXPropertyList styleProps;
 
   m_currentForeignProps.insert("svg:x", m_scale*(xmiddle - (m_foreignWidth / 2.0)));
   m_currentForeignProps.insert("svg:width", m_scale*m_foreignWidth);
@@ -1070,7 +1073,7 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
   if (angle != 0.0)
     m_currentForeignProps.insert("libwpg:rotate", angle * 180 / M_PI, WPX_GENERIC);
 
-  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0 && !m_noShow)
+  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0)
   {
     m_shapeOutputDrawing->addStyle(styleProps, WPXPropertyListVector());
     m_shapeOutputDrawing->addGraphicObject(m_currentForeignProps, m_currentForeignData);
@@ -1415,7 +1418,6 @@ void libvisio::VSDContentCollector::collectLine(unsigned level, const boost::opt
 {
   _handleLevelChange(level);
   m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap));
-  _lineProperties(m_lineStyle);
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
@@ -1425,7 +1427,6 @@ void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const b
 {
   _handleLevelChange(level);
   m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY));
-  _fillAndShadowProperties(m_fillStyle);
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
@@ -2170,22 +2171,14 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
     }
 
     if (m_stencilShape->m_lineStyleId != MINUS_ONE)
-    {
       m_lineStyle.override(m_styles.getOptionalLineStyle(m_stencilShape->m_lineStyleId));
-      _lineProperties(m_lineStyle);
-    }
 
     m_lineStyle.override(m_stencilShape->m_lineStyle);
-    _lineProperties(m_lineStyle);
 
     if (m_stencilShape->m_fillStyleId != MINUS_ONE)
-    {
       m_fillStyle.override(m_styles.getOptionalFillStyle(m_stencilShape->m_fillStyleId));
-      _fillAndShadowProperties(m_fillStyle);
-    }
 
     m_fillStyle.override(m_stencilShape->m_fillStyle);
-    _fillAndShadowProperties(m_fillStyle);
 
     if (m_stencilShape->m_textStyleId)
     {
@@ -2200,25 +2193,16 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   }
 
   if (lineStyleId != MINUS_ONE)
-  {
     m_lineStyle.override(m_styles.getOptionalLineStyle(lineStyleId));
-    _lineProperties(m_lineStyle);
-  }
 
   if (fillStyleId != MINUS_ONE)
-  {
     m_fillStyle = m_styles.getFillStyle(fillStyleId);
-    _fillAndShadowProperties(m_fillStyle);
-  }
   if (textStyleId != MINUS_ONE)
   {
     m_defaultCharStyle = m_styles.getCharStyle(textStyleId);
     m_defaultParaStyle = m_styles.getParaStyle(textStyleId);
     m_textBlockStyle = m_styles.getTextBlockStyle(textStyleId);
   }
-
-  _fillAndShadowProperties(m_fillStyle);
-  _lineProperties(m_lineStyle);
 
   m_currentGeometryCount = 0;
   m_fieldIndex = 0;
@@ -2401,21 +2385,9 @@ void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned level, const 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::_lineProperties(const VSDOptionalLineStyle &style)
-{
-  m_lineStyle.override(style);
-  _lineProperties(m_lineStyle);
-}
-
 void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style)
 {
   _lineProperties(style.width, style.colour, style.pattern, style.startMarker, style.endMarker, style.cap);
-}
-
-void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDOptionalFillStyle &style)
-{
-  m_fillStyle.override(style);
-  _fillAndShadowProperties(m_fillStyle);
 }
 
 void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle &style)

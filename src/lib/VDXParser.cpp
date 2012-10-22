@@ -872,6 +872,8 @@ void libvisio::VDXParser::getBinaryData(xmlTextReaderPtr reader)
     const xmlChar *data = xmlTextReaderConstValue(reader);
     if (data)
     {
+      if (!m_shape.m_foreign)
+        m_shape.m_foreign = new ForeignData();
       m_shape.m_foreign->data.clear();
       appendFromBase64(m_shape.m_foreign->data, data, xmlStrlen(data));
     }
