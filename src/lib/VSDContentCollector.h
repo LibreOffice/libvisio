@@ -236,9 +236,7 @@ private:
   double m_foreignWidth;
   double m_foreignHeight;
   WPXPropertyList m_styleProps;
-  ::WPXString m_lineColour;
   ::WPXString m_fillType;
-  unsigned m_linePattern;
   unsigned m_fillPattern;
   double m_fillFGTransparency;
   double m_fillBGTransparency;
