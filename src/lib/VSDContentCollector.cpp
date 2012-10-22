@@ -303,230 +303,6 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const Colour &colou
   m_styleProps.insert("draw:fill", m_fillType);
 }
 
-void libvisio::VSDContentCollector::_applyLinePattern()
-{
-  int dots1 = 0;
-  int dots2 = 0;
-  double dots1len = 0.0;
-  double dots2len = 0.0;
-  double gap = 0.0;
-
-  m_styleProps.remove("draw:stroke");
-  switch (m_linePattern)
-  {
-  case 2: // "6, 3"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 6.0;
-    gap = 3.0;
-    break;
-  case 3: // "1, 3"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 1.0;
-    gap = 3.0;
-    break;
-  case 4: // "6, 3, 1, 3"
-    dots1 = 1;
-    dots1len = 6.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 3.0;
-    break;
-  case 5: // "6, 3, 1, 3, 1, 3"
-    dots1 = 1;
-    dots1len = 6.0;
-    dots2 = 2;
-    dots2len = 1.0;
-    gap = 3.0;
-    break;
-  case 6: // "6, 3, 6, 3, 1, 3"
-    dots1 = 2;
-    dots1len = 6.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 3.0;
-    break;
-  case 7: // "14, 2, 6, 2"
-    dots1 = 1;
-    dots1len = 14.0;
-    dots2 = 1;
-    dots2len = 6.0;
-    gap = 2.0;
-    break;
-  case 8: // "14, 2, 6, 2, 6, 2"
-    dots1 = 1;
-    dots1len = 14.0;
-    dots2 = 2;
-    dots2len = 6.0;
-    gap = 2.0;
-    break;
-  case 9: // "3, 2"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 3.0;
-    gap = 2.0;
-    break;
-  case 10: // "1, 2"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 1.0;
-    gap = 2.0;
-    break;
-  case 11: // "3, 2, 1, 2"
-    dots1 = 1;
-    dots1len = 3.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 2.0;
-    break;
-  case 12: // "3, 2, 1, 2, 1, 2"
-    dots1 = 1;
-    dots1len = 3.0;
-    dots2 = 2;
-    dots2len = 1.0;
-    gap = 2.0;
-    break;
-  case 13: // "3, 2, 3, 2, 1, 2"
-    dots1 = 2;
-    dots1len = 3.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 2.0;
-    break;
-  case 14: // "7, 2, 3, 2"
-    dots1 = 1;
-    dots1len = 7.0;
-    dots2 = 1;
-    dots2len = 3.0;
-    gap = 2.0;
-    break;
-  case 15: // "7, 2, 3, 2, 3, 2"
-    dots1 = 1;
-    dots1len = 7.0;
-    dots2 = 2;
-    dots2len = 3.0;
-    gap = 2.0;
-    break;
-  case 16: // "11, 5"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 11.0;
-    gap = 5.0;
-    break;
-  case 17: // "1, 5"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 1.0;
-    gap = 5.0;
-    break;
-  case 18: // "11, 5, 1, 5"
-    dots1 = 1;
-    dots1len = 11.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 5.0;
-    break;
-  case 19: // "11, 5, 1, 5, 1, 5"
-    dots1 = 1;
-    dots1len = 11.0;
-    dots2 = 2;
-    dots2len = 1.0;
-    gap = 5.0;
-    break;
-  case 20: // "11, 5, 11, 5, 1, 5"
-    dots1 = 2;
-    dots1len = 11.0;
-    dots2 = 1;
-    dots2len = 1.0;
-    gap = 5.0;
-    break;
-  case 21: // "27, 5, 11, 5"
-    dots1 = 1;
-    dots1len = 27.0;
-    dots2 = 1;
-    dots2len = 11.0;
-    gap = 5.0;
-    break;
-  case 22: // "27, 5, 11, 5, 11, 5"
-    dots1 = 1;
-    dots1len = 27.0;
-    dots2 = 2;
-    dots2len = 11.0;
-    gap = 5.0;
-    break;
-  case 23: // "2, 2"
-    dots1 = dots2 = 1;
-    dots1len = dots2len = 2.0;
-    gap = 2.0;
-    break;
-  default:
-    break;
-  }
-
-  if (m_linePattern == 0)
-    m_styleProps.insert("draw:stroke", "none");
-  else if (m_linePattern == 1)
-    m_styleProps.insert("draw:stroke", "solid");
-  else if (m_linePattern > 1 && m_linePattern <= 23)
-  {
-    m_styleProps.insert("draw:stroke", "dash");
-    m_styleProps.insert("draw:dots1", dots1);
-    m_styleProps.insert("draw:dots1-length", dots1len, WPX_PERCENT);
-    m_styleProps.insert("draw:dots2", dots2);
-    m_styleProps.insert("draw:dots2-length", dots2len, WPX_PERCENT);
-    m_styleProps.insert("draw:distance", gap, WPX_PERCENT);
-  }
-  else
-    // FIXME: later it will require special treatment for custom line patterns
-    // patt ID is 0xfe, link to stencil name is in 'Line' blocks
-    m_styleProps.insert("draw:stroke", "solid");
-}
-
-void libvisio::VSDContentCollector::_lineProperties(double strokeWidth, Colour c, unsigned linePattern, unsigned startMarker, unsigned endMarker, unsigned lineCap)
-{
-  m_linePattern = linePattern;
-
-  if (!linePattern)
-  {
-    m_styleProps.insert("draw:stroke", "none");
-    return;
-  }
-
-  m_styleProps.insert("svg:stroke-width", m_scale*strokeWidth);
-  m_lineColour = getColourString(c);
-  m_styleProps.insert("svg:stroke-color", m_lineColour);
-  if (c.a)
-    m_styleProps.insert("svg:stroke-opacity", (1 - c.a/255.0), WPX_PERCENT);
-  else
-    m_styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
-  switch (lineCap)
-  {
-  case 0:
-    m_styleProps.insert("svg:stroke-linecap", "round");
-    m_styleProps.insert("svg:stroke-linejoin", "round");
-    break;
-  case 2:
-    m_styleProps.insert("svg:stroke-linecap", "square");
-    m_styleProps.insert("svg:stroke-linejoin", "miter");
-    break;
-  default:
-    m_styleProps.insert("svg:stroke-linecap", "butt");
-    m_styleProps.insert("svg:stroke-linejoin", "miter");
-    break;
-  }
-
-  _applyLinePattern();
-
-  // Deal with line markers (arrows, etc.)
-  if (startMarker > 0)
-  {
-    m_styleProps.insert("draw:marker-start-viewbox", _linePropertiesMarkerViewbox(startMarker));
-    m_styleProps.insert("draw:marker-start-path", _linePropertiesMarkerPath(startMarker));
-    m_styleProps.insert("draw:marker-start-width", m_scale*_linePropertiesMarkerScale(startMarker)*(0.1/(strokeWidth*strokeWidth+1)+2.54*strokeWidth));
-  }
-  if (endMarker > 0)
-  {
-    m_styleProps.insert("draw:marker-end-viewbox", _linePropertiesMarkerViewbox(endMarker));
-    m_styleProps.insert("draw:marker-end-path", _linePropertiesMarkerPath(endMarker));
-    m_styleProps.insert("draw:marker-end-width", m_scale*_linePropertiesMarkerScale(endMarker)*(0.1/(strokeWidth*strokeWidth+1)+2.54*strokeWidth));
-  }
-}
-
 const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned marker)
 {
   switch (marker)
@@ -634,7 +410,7 @@ double libvisio::VSDContentCollector::_linePropertiesMarkerScale(unsigned marker
 void libvisio::VSDContentCollector::_flushCurrentPath()
 {
   m_styleProps.clear();
-  _lineProperties(m_lineStyle);
+  _lineProperties(m_lineStyle, m_styleProps);
   _fillAndShadowProperties(m_fillStyle);
   WPXPropertyList fillPathProps(m_styleProps);
   fillPathProps.insert("draw:stroke", "none");
@@ -2374,9 +2150,220 @@ void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned level, const 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style)
+void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, WPXPropertyList &styleProps)
 {
-  _lineProperties(style.width, style.colour, style.pattern, style.startMarker, style.endMarker, style.cap);
+  if (!style.pattern)
+  {
+    styleProps.insert("draw:stroke", "none");
+    return;
+  }
+
+  styleProps.insert("svg:stroke-width", m_scale*style.width);
+  styleProps.insert("svg:stroke-color", getColourString(style.colour));
+  if (style.colour.a)
+    styleProps.insert("svg:stroke-opacity", (1 - style.colour.a/255.0), WPX_PERCENT);
+  else
+    styleProps.insert("svg:stroke-opacity", 1.0, WPX_PERCENT);
+  switch (style.cap)
+  {
+  case 0:
+    styleProps.insert("svg:stroke-linecap", "round");
+    styleProps.insert("svg:stroke-linejoin", "round");
+    break;
+  case 2:
+    styleProps.insert("svg:stroke-linecap", "square");
+    styleProps.insert("svg:stroke-linejoin", "miter");
+    break;
+  default:
+    styleProps.insert("svg:stroke-linecap", "butt");
+    styleProps.insert("svg:stroke-linejoin", "miter");
+    break;
+  }
+
+  // Deal with line markers (arrows, etc.)
+  if (style.startMarker > 0)
+  {
+    styleProps.insert("draw:marker-start-viewbox", _linePropertiesMarkerViewbox(style.startMarker));
+    styleProps.insert("draw:marker-start-path", _linePropertiesMarkerPath(style.startMarker));
+    styleProps.insert("draw:marker-start-width", m_scale*_linePropertiesMarkerScale(style.startMarker)*(0.1/(style.width*style.width+1)+2.54*style.width));
+  }
+  if (style.endMarker > 0)
+  {
+    styleProps.insert("draw:marker-end-viewbox", _linePropertiesMarkerViewbox(style.endMarker));
+    styleProps.insert("draw:marker-end-path", _linePropertiesMarkerPath(style.endMarker));
+    styleProps.insert("draw:marker-end-width", m_scale*_linePropertiesMarkerScale(style.endMarker)*(0.1/(style.width*style.width+1)+2.54*style.width));
+  }
+
+  int dots1 = 0;
+  int dots2 = 0;
+  double dots1len = 0.0;
+  double dots2len = 0.0;
+  double gap = 0.0;
+
+  styleProps.remove("draw:stroke");
+  switch (style.pattern)
+  {
+  case 2: // "6, 3"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 6.0;
+    gap = 3.0;
+    break;
+  case 3: // "1, 3"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 4: // "6, 3, 1, 3"
+    dots1 = 1;
+    dots1len = 6.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 5: // "6, 3, 1, 3, 1, 3"
+    dots1 = 1;
+    dots1len = 6.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 6: // "6, 3, 6, 3, 1, 3"
+    dots1 = 2;
+    dots1len = 6.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 3.0;
+    break;
+  case 7: // "14, 2, 6, 2"
+    dots1 = 1;
+    dots1len = 14.0;
+    dots2 = 1;
+    dots2len = 6.0;
+    gap = 2.0;
+    break;
+  case 8: // "14, 2, 6, 2, 6, 2"
+    dots1 = 1;
+    dots1len = 14.0;
+    dots2 = 2;
+    dots2len = 6.0;
+    gap = 2.0;
+    break;
+  case 9: // "3, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 10: // "1, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 11: // "3, 2, 1, 2"
+    dots1 = 1;
+    dots1len = 3.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 12: // "3, 2, 1, 2, 1, 2"
+    dots1 = 1;
+    dots1len = 3.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 13: // "3, 2, 3, 2, 1, 2"
+    dots1 = 2;
+    dots1len = 3.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 2.0;
+    break;
+  case 14: // "7, 2, 3, 2"
+    dots1 = 1;
+    dots1len = 7.0;
+    dots2 = 1;
+    dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 15: // "7, 2, 3, 2, 3, 2"
+    dots1 = 1;
+    dots1len = 7.0;
+    dots2 = 2;
+    dots2len = 3.0;
+    gap = 2.0;
+    break;
+  case 16: // "11, 5"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 17: // "1, 5"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 18: // "11, 5, 1, 5"
+    dots1 = 1;
+    dots1len = 11.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 19: // "11, 5, 1, 5, 1, 5"
+    dots1 = 1;
+    dots1len = 11.0;
+    dots2 = 2;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 20: // "11, 5, 11, 5, 1, 5"
+    dots1 = 2;
+    dots1len = 11.0;
+    dots2 = 1;
+    dots2len = 1.0;
+    gap = 5.0;
+    break;
+  case 21: // "27, 5, 11, 5"
+    dots1 = 1;
+    dots1len = 27.0;
+    dots2 = 1;
+    dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 22: // "27, 5, 11, 5, 11, 5"
+    dots1 = 1;
+    dots1len = 27.0;
+    dots2 = 2;
+    dots2len = 11.0;
+    gap = 5.0;
+    break;
+  case 23: // "2, 2"
+    dots1 = dots2 = 1;
+    dots1len = dots2len = 2.0;
+    gap = 2.0;
+    break;
+  default:
+    break;
+  }
+
+  if (style.pattern == 0)
+    styleProps.insert("draw:stroke", "none");
+  else if (style.pattern == 1)
+    styleProps.insert("draw:stroke", "solid");
+  else if (style.pattern > 1 && style.pattern <= 23)
+  {
+    styleProps.insert("draw:stroke", "dash");
+    styleProps.insert("draw:dots1", dots1);
+    styleProps.insert("draw:dots1-length", dots1len, WPX_PERCENT);
+    styleProps.insert("draw:dots2", dots2);
+    styleProps.insert("draw:dots2-length", dots2len, WPX_PERCENT);
+    styleProps.insert("draw:distance", gap, WPX_PERCENT);
+  }
+  else
+    // FIXME: later it will require special treatment for custom line patterns
+    // patt ID is 0xfe, link to stencil name is in 'Line' blocks
+    styleProps.insert("draw:stroke", "solid");
 }
 
 void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle &style)
