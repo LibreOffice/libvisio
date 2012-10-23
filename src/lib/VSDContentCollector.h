@@ -196,9 +196,7 @@ private:
   void _handleForeignData(const WPXBinaryData &data);
 
   void _lineProperties(const VSDLineStyle &style, WPXPropertyList &styleProps);
-  void _fillAndShadowProperties(const Colour &colourFG, const Colour &colourBG, unsigned fillPattern, double fillFGTransparency,
-                                double fillBGTransparency, unsigned shadowPattern, const Colour &shfgc, double shadowOffsetX, double shadowOffsetY);
-  void _fillAndShadowProperties(const VSDFillStyle &style);
+  void _fillAndShadowProperties(const VSDFillStyle &style, WPXPropertyList &styleProps);
 
   void _applyLinePattern();
   const char *_linePropertiesMarkerViewbox(unsigned marker);
