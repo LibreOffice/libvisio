@@ -255,7 +255,7 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
 
   if (xmlTextReaderIsEmptyElement(reader))
   {
-    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("del"));
+    xmlChar *delString = xmlTextReaderGetAttribute(reader, BAD_CAST("Del"));
     if (delString)
     {
       if (xmlStringToBool(delString))
