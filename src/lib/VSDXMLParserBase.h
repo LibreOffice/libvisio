@@ -92,6 +92,7 @@ protected:
   virtual int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader) = 0;
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   int readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader);
+  virtual int readStringData(std::string &value, xmlTextReaderPtr reader) = 0;
   virtual void _handleLevelChange(unsigned level);
   void _flushShape();
 
@@ -157,6 +158,11 @@ protected:
 private:
   VSDXMLParserBase(const VSDXMLParserBase &);
   VSDXMLParserBase &operator=(const VSDXMLParserBase &);
+
+  int readNURBSFormula(double &knotLast, unsigned &degree, unsigned char &typeX, unsigned char &typeY,
+                       std::vector<double> &knotVector, std::vector<std::pair<double,double> > &controlPoints,
+                       std::vector<double> &weights, xmlTextReaderPtr reader);
+  int readPolylineFormula(std::vector<std::pair<double,double> > &points, xmlTextReaderPtr reader);
 };
 
 } // namespace libvisio

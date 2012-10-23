@@ -64,6 +64,7 @@ private:
   int readBoolData(bool &value, xmlTextReaderPtr reader);
   int readColourData(Colour &value, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
+  int readStringData(std::string &value, xmlTextReaderPtr reader);
 
   int getElementToken(xmlTextReaderPtr reader);
   int getElementDepth(xmlTextReaderPtr reader);

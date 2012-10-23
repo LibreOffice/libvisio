@@ -790,6 +790,22 @@ int libvisio::VDXParser::readExtendedColourData(Colour &value, long &idx, xmlTex
   return ret;
 }
 
+int libvisio::VDXParser::readStringData(std::string &value, xmlTextReaderPtr reader)
+{
+  int ret = xmlTextReaderRead(reader);
+  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
+  {
+    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
+    if (stringValue)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readStringData stringValue %s\n", (const char *)stringValue));
+      value = (const char *)stringValue;
+    }
+    ret = xmlTextReaderRead(reader);
+  }
+  return ret;
+}
+
 int libvisio::VDXParser::getElementToken(xmlTextReaderPtr reader)
 {
   return VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));

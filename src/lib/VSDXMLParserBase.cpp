@@ -32,6 +32,9 @@
 #include <libxml/xmlstring.h>
 #include <libwpd-stream/libwpd-stream.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/bind.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_while.hpp>
 #include "VSDXMLParserBase.h"
 #include "libvisio_utils.h"
 #include "VSDContentCollector.h"
@@ -529,8 +532,19 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
+  double x = 0.0;
+  double y = 0.0;
+  double knot = 0.0; // Second last knot
+  double weight = 0.0; // Last weight
+  double knotPrev = 0.0; // First knot
+  double weightPrev = 0.0; // First weight
+  double knotLast = 0.0;
+  unsigned degree = 0;
+  unsigned char typeX = 0;
+  unsigned char typeY = 0;
+  std::vector<double> knotVector;
+  std::vector<std::pair<double, double> > controlPoints;
+  std::vector<double> weights;
 
   do
   {
@@ -549,6 +563,21 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
       break;
     case XML_Y:
       ret = readDoubleData(y, reader);
+      break;
+    case XML_A:
+      ret = readDoubleData(knot, reader);
+      break;
+    case XML_B:
+      ret = readDoubleData(weight, reader);
+      break;
+    case XML_C:
+      ret = readDoubleData(knotPrev, reader);
+      break;
+    case XML_D:
+      ret = readDoubleData(weightPrev, reader);
+      break;
+    case XML_E:
+      ret = readNURBSFormula(knotLast, degree, typeX, typeY, knotVector, controlPoints, weights, reader);
       break;
     default:
       break;
@@ -1749,6 +1778,22 @@ void libvisio::VSDXMLParserBase::skipPages(xmlTextReaderPtr reader)
     tokenType = xmlTextReaderNodeType(reader);
   }
   while ((XML_PAGES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+int libvisio::VSDXMLParserBase::readNURBSFormula(double & /* knotLast */, unsigned & /* degree */, unsigned char & /* typeX */, unsigned char & /* typeY */,
+                     std::vector<double> & /* knotVector */, std::vector<std::pair<double,double> > & /* controlPoints */,
+                     std::vector<double> & /* weights */, xmlTextReaderPtr reader)
+{
+  std::string formula;
+  int ret = readStringData(formula, reader);
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readPolylineFormula(std::vector<std::pair<double,double> > & /* points */, xmlTextReaderPtr reader)
+{
+  std::string formula;
+  int ret = readStringData(formula, reader);
+  return ret;
 }
 
 
