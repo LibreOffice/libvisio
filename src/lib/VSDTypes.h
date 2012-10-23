@@ -34,8 +34,8 @@
 #include <vector>
 #include <libwpd/libwpd.h>
 
-#define FROM_OPTIONAL(t, u) t.is_initialized() ? t.get() : u
-#define ASSIGN_OPTIONAL(t, u) if(t.is_initialized()) u = t.get()
+#define FROM_OPTIONAL(t, u) !!t ? t.get() : u
+#define ASSIGN_OPTIONAL(t, u) if(!!t) u = t.get()
 #define MINUS_ONE (unsigned)-1
 
 namespace libvisio
