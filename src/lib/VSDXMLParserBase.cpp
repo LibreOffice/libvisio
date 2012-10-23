@@ -1013,24 +1013,19 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   m_currentShapeLevel = getElementDepth(reader);
 
   xmlChar *idString = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
-  xmlChar *masterPageString = xmlTextReaderGetAttribute(reader, BAD_CAST("MasterPage"));
-  if (!masterPageString)
-    masterPageString = xmlTextReaderGetAttribute(reader, BAD_CAST("Master"));
+  xmlChar *masterPageString = xmlTextReaderGetAttribute(reader, BAD_CAST("Master"));
   xmlChar *masterShapeString = xmlTextReaderGetAttribute(reader, BAD_CAST("MasterShape"));
   xmlChar *lineStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("LineStyle"));
   xmlChar *fillStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("FillStyle"));
   xmlChar *textStyleString = xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle"));
 
-  unsigned id = (unsigned)(idString ? xmlStringToLong(idString) : -1);
-  unsigned masterPage = MINUS_ONE;
-  if (!m_shapeStack.empty())
-    masterPage = m_shapeStack.top().m_masterPage;
-  if (masterPageString)
-    masterPage = xmlStringToLong(masterPageString);
-  unsigned masterShape =  (unsigned)(masterShapeString ? xmlStringToLong(masterShapeString) : -1);
-  unsigned lineStyle =  (unsigned)(lineStyleString ? xmlStringToLong(lineStyleString) : -1);
-  unsigned fillStyle =  (unsigned)(fillStyleString ? xmlStringToLong(fillStyleString) : -1);
-  unsigned textStyle =  (unsigned)(textStyleString ? xmlStringToLong(textStyleString) : -1);
+  unsigned id = idString ? (unsigned)xmlStringToLong(idString) : MINUS_ONE;
+  unsigned masterPage = masterPageString ? (unsigned)xmlStringToLong(masterPageString) : MINUS_ONE;
+  unsigned masterShape = masterShapeString ? (unsigned)xmlStringToLong(masterShapeString) : MINUS_ONE;
+  unsigned lineStyle = lineStyleString ? (unsigned)xmlStringToLong(lineStyleString) : MINUS_ONE;
+  unsigned fillStyle =  fillStyleString ? (unsigned)xmlStringToLong(fillStyleString) : MINUS_ONE;
+  unsigned textStyle =  textStyleString ? (unsigned)xmlStringToLong(textStyleString) : MINUS_ONE;
+
   if (idString)
     xmlFree(idString);
   if (masterPageString)
@@ -1043,6 +1038,12 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
     xmlFree(fillStyleString);
   if (textStyleString)
     xmlFree(textStyleString);
+
+  if (masterPage != MINUS_ONE || masterShape != MINUS_ONE)
+  {
+    if (!m_shapeStack.empty())
+      masterPage = m_shapeStack.top().m_masterPage;
+  }
 
   m_shape.clear();
 
