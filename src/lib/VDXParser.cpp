@@ -416,11 +416,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     case XML_SHAPESHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        double tmpDoubleData = 0.0;
-        ret = readDoubleData(tmpDoubleData, reader);
-        shadowOffsetY = - tmpDoubleData;
-      }
+        ret = readDoubleData(shadowOffsetY, reader);
       break;
     case XML_SHDWFOREGNDTRANS:
     case XML_SHDWBKGNDTRANS:
@@ -550,7 +546,6 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
     case XML_SHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetY, reader);
-      shadowOffsetY *= -1.0;
       break;
     case XML_PAGESCALE:
       if (XML_READER_TYPE_ELEMENT == tokenType)

@@ -890,7 +890,7 @@ void libvisio::VSDParser::readPageProps(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   m_shadowOffsetX = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
-  m_shadowOffsetY = -readDouble(input);
+  m_shadowOffsetY = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   double scale = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);

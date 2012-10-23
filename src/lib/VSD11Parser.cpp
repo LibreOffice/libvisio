@@ -244,7 +244,7 @@ void libvisio::VSD11Parser::readFillAndShadow(WPXInputStream *input)
   input->seek(2, WPX_SEEK_CUR); // Shadow Type and Value format byte
   double shadowOffsetX = readDouble(input);
   input->seek(1, WPX_SEEK_CUR); // Value format byte
-  double shadowOffsetY = -readDouble(input);
+  double shadowOffsetY = readDouble(input);
 
 
 

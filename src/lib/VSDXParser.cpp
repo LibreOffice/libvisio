@@ -550,17 +550,23 @@ int libvisio::VSDXParser::readLongData(long &value, xmlTextReaderPtr reader)
   if (stringValue)
   {
     VSD_DEBUG_MSG(("VSDXParser::readLongData stringValue %s\n", (const char *)stringValue));
-    try
+    int ret = 1;
+    if (xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      ret = 0;
+    else
     {
-      value = xmlStringToLong(stringValue);
-    }
-    catch (const XmlParserException &e)
-    {
+      try
+      {
+        value = xmlStringToLong(stringValue);
+      }
+      catch (const XmlParserException &e)
+      {
+        xmlFree(stringValue);
+        throw e;
+      }
       xmlFree(stringValue);
-      throw e;
+      return 1;
     }
-    xmlFree(stringValue);
-    return 1;
   }
   xmlFree(stringValue);
   return -1;
@@ -572,9 +578,13 @@ int libvisio::VSDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
   if (stringValue)
   {
     VSD_DEBUG_MSG(("VSDXParser::readDoubleData stringValue %s\n", (const char *)stringValue));
-    value = xmlStringToDouble(stringValue);
+    int ret = 1;
+    if (xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      ret = 0;
+    else
+      value = xmlStringToDouble(stringValue);
     xmlFree(stringValue);
-    return 1;
+    return ret;
   }
   return -1;
 }
@@ -585,9 +595,13 @@ int libvisio::VSDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
   if (stringValue)
   {
     VSD_DEBUG_MSG(("VSDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
-    value = xmlStringToBool(stringValue);
+    int ret = 1;
+    if (xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      ret = 0;
+    else
+      value = xmlStringToBool(stringValue);
     xmlFree(stringValue);
-    return 1;
+    return ret;
   }
   return -1;
 }
@@ -598,18 +612,24 @@ int libvisio::VSDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
   if (stringValue)
   {
     VSD_DEBUG_MSG(("VSDXParser::readColourData stringValue %s\n", (const char *)stringValue));
-    try
+    int ret = 1;
+    if (xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      ret = 0;
+    else
     {
-      Colour tmpColour = xmlStringToColour(stringValue);
-      value = tmpColour;
-    }
-    catch (const XmlParserException &)
-    {
-      xmlFree(stringValue);
-      throw XmlParserException();
+      try
+      {
+        Colour tmpColour = xmlStringToColour(stringValue);
+        value = tmpColour;
+      }
+      catch (const XmlParserException &)
+      {
+        xmlFree(stringValue);
+        throw XmlParserException();
+      }
     }
     xmlFree(stringValue);
-    return 1;
+    return ret;
   }
   return -1;
 }
@@ -733,7 +753,6 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
     case XML_SHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetY, reader);
-      shadowOffsetY *= -1.0;
       break;
     case XML_PAGESCALE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -771,35 +790,35 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
 void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
 {
   // Line properties
-  double strokeWidth = 0;
-  Colour strokeColour;
-  long linePattern = 0;
-  long startMarker = 0;
-  long endMarker = 0;
-  long lineCap = 0;
+  boost::optional<double> strokeWidth;
+  boost::optional<Colour> strokeColour;
+  boost::optional<unsigned char> linePattern;
+  boost::optional<unsigned char> startMarker;
+  boost::optional<unsigned char> endMarker;
+  boost::optional<unsigned char> lineCap;
 
   // Fill and shadow properties
-  Colour fillColourFG;
-  double fillFGTransparency = 0.0;
-  Colour fillColourBG;
-  double fillBGTransparency = 0.0;
-  long fillPattern = 0;
-  Colour shadowColourFG;
-  Colour shadowColourBG;
-  long shadowPattern = 0;
-  double shadowOffsetX = 0;
-  double shadowOffsetY = 0;
+  boost::optional<Colour> fillColourFG;
+  boost::optional<double> fillFGTransparency;
+  boost::optional<Colour> fillColourBG;
+  boost::optional<double> fillBGTransparency;
+  boost::optional<unsigned char> fillPattern;
+  boost::optional<Colour> shadowColourFG;
+  boost::optional<Colour> shadowColourBG;
+  boost::optional<unsigned char> shadowPattern;
+  boost::optional<double> shadowOffsetX;
+  boost::optional<double> shadowOffsetY;
 
   // Text block properties
-  double leftMargin = 0.0;
-  double rightMargin = 0.0;
-  double topMargin = 0.0;
-  double bottomMargin = 0.0;
-  long verticalAlign = 0;
-  long bgClrId = 0;
-  Colour bgColour;
-  double defaultTabStop = 0.0;
-  long textDirection = 0.0;
+  boost::optional<double> leftMargin;
+  boost::optional<double> rightMargin;
+  boost::optional<double> topMargin;
+  boost::optional<double> bottomMargin;
+  boost::optional<unsigned char> verticalAlign;
+  boost::optional<bool> bgClrId;
+  boost::optional<Colour> bgColour;
+  boost::optional<double> defaultTabStop;
+  boost::optional<unsigned char> textDirection;
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
@@ -826,19 +845,19 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       break;
     case XML_LINEPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(linePattern, reader);
+        ret = readByteData(linePattern, reader);
       break;
     case XML_BEGINARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(startMarker, reader);
+        ret = readByteData(startMarker, reader);
       break;
     case XML_ENDARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(endMarker, reader);
+        ret = readByteData(endMarker, reader);
       break;
     case XML_LINECAP:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(lineCap, reader);
+        ret = readByteData(lineCap, reader);
       break;
     case XML_FILLFOREGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -850,7 +869,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       break;
     case XML_FILLPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(fillPattern, reader);
+        ret = readByteData(fillPattern, reader);
       break;
     case XML_SHDWFOREGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -862,7 +881,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       break;
     case XML_SHDWPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(shadowPattern, reader);
+        ret = readByteData(shadowPattern, reader);
       break;
     case XML_FILLFOREGNDTRANS:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -879,7 +898,6 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     case XML_SHAPESHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(shadowOffsetY, reader);
-      shadowOffsetY *= -1.0;
       break;
     case XML_LEFTMARGIN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -899,11 +917,13 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       break;
     case XML_VERTICALALIGN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(verticalAlign, reader);
+        ret = readByteData(verticalAlign, reader);
       break;
     case XML_TEXTBKGND:
+#if 0
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readExtendedColourData(bgColour, bgClrId, reader);
+#endif
       break;
     case XML_DEFAULTTABSTOP:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -911,7 +931,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       break;
     case XML_TEXTDIRECTION:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(textDirection, reader);
+        ret = readByteData(textDirection, reader);
       break;
     case XML_SHDWFOREGNDTRANS:
     case XML_SHDWBKGNDTRANS:
@@ -925,6 +945,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   }
   while ((XML_STYLESHEET != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
+#if 0
   if (bgClrId < 0)
     bgClrId = 0;
   if (bgClrId)
@@ -935,14 +956,15 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     else
       bgColour = Colour();
   }
+#endif
 
   if (m_isInStyles)
   {
-    m_collector->collectLineStyle(level, strokeWidth, strokeColour, (unsigned char)linePattern, (unsigned char)startMarker, (unsigned char)endMarker, (unsigned char)lineCap);
-    m_collector->collectFillStyle(level, fillColourFG, fillColourBG, (unsigned char)fillPattern, fillFGTransparency,
-                                  fillBGTransparency, (unsigned char)shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
+    m_collector->collectLineStyle(level, strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectFillStyle(level, fillColourFG, fillColourBG, fillPattern, fillFGTransparency,
+                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                       (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
+                                       verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
   }
   else
   {
@@ -1110,11 +1132,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       break;
     case XML_SHAPESHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        double shadowOffsetY;
-        ret = readDoubleData(shadowOffsetY, reader);
-        m_shape.m_fillStyle.shadowOffsetY = -shadowOffsetY;
-      }
+        ret = readDoubleData(m_shape.m_fillStyle.shadowOffsetY , reader);
       break;
     case XML_LEFTMARGIN:
       if (XML_READER_TYPE_ELEMENT == tokenType)

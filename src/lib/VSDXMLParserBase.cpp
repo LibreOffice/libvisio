@@ -1438,28 +1438,6 @@ void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
   getBinaryData(reader);
 }
 
-int libvisio::VSDXMLParserBase::readLongData(boost::optional<long> &value, xmlTextReaderPtr reader)
-{
-  long tmpValue;
-  int ret = readLongData(tmpValue, reader);
-  value = tmpValue;
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader)
-{
-  Colour tmpValue;
-  int ret = readExtendedColourData(tmpValue, reader);
-  value = tmpValue;
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
-{
-  long idx = -1;
-  return readExtendedColourData(value, idx, reader);
-}
-
 void libvisio::VSDXMLParserBase::_flushShape()
 {
   if (!m_isShapeStarted)
@@ -1553,7 +1531,10 @@ int libvisio::VSDXMLParserBase::readDoubleData(boost::optional<double> &value, x
   try
   {
     ret = readDoubleData(tmpValue, reader);
-    value = tmpValue;
+    if (ret > 0)
+      value = tmpValue;
+    else if (!ret)
+      ret = 1;
   }
   catch (const XmlParserException &)
   {
@@ -1569,7 +1550,10 @@ int libvisio::VSDXMLParserBase::readBoolData(boost::optional<bool> &value, xmlTe
   try
   {
     ret = readBoolData(tmpValue, reader);
-    value = tmpValue;
+    if (ret > 0)
+      value = tmpValue;
+    else if (!ret)
+      ret = 1;
   }
   catch (const XmlParserException &)
   {
@@ -1585,7 +1569,10 @@ int libvisio::VSDXMLParserBase::readUnsignedData(boost::optional<unsigned> &valu
   try
   {
     ret = readLongData(tmpValue, reader);
-    value = (unsigned)tmpValue;
+    if (ret > 0)
+      value = (unsigned)tmpValue;
+    else if (!ret)
+      ret = 1;
   }
   catch (const XmlParserException &)
   {
@@ -1596,9 +1583,12 @@ int libvisio::VSDXMLParserBase::readUnsignedData(boost::optional<unsigned> &valu
 
 int libvisio::VSDXMLParserBase::readByteData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader)
 {
-  unsigned char tmpValue = 0;
-  int ret = readByteData(tmpValue, reader);
-  value = tmpValue;
+  long tmpValue = 0;
+  int ret = readLongData(tmpValue, reader);
+  if (ret > 0)
+    value = (unsigned char) tmpValue;
+  else if (!ret)
+    ret = 1;
   return ret;
 }
 
@@ -1606,8 +1596,37 @@ int libvisio::VSDXMLParserBase::readByteData(unsigned char &value, xmlTextReader
 {
   long longValue = 0;
   int ret = readLongData(longValue, reader);
-  value = (unsigned char) longValue;
+  if (ret > 0)
+    value = (unsigned char) longValue;
   return ret;
+}
+
+int libvisio::VSDXMLParserBase::readLongData(boost::optional<long> &value, xmlTextReaderPtr reader)
+{
+  long tmpValue = 0;
+  int ret = readLongData(tmpValue, reader);
+  if (ret > 0)
+    value = tmpValue;
+  else if (!ret)
+    ret = 1;
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader)
+{
+  Colour tmpValue;
+  int ret = readExtendedColourData(tmpValue, reader);
+  if (ret > 0)
+    value = tmpValue;
+  else if (!ret)
+    ret = 1;
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
+{
+  long idx = -1;
+  return readExtendedColourData(value, idx, reader);
 }
 
 void libvisio::VSDXMLParserBase::handlePagesStart(xmlTextReaderPtr reader)
