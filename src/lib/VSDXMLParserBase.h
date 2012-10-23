@@ -143,6 +143,17 @@ protected:
   void readOLEList(xmlTextReaderPtr reader);
   void readOLEData(xmlTextReaderPtr reader);
 
+  void handlePagesStart(xmlTextReaderPtr reader);
+  void handlePagesEnd(xmlTextReaderPtr reader);
+  void handlePageStart(xmlTextReaderPtr reader);
+  void handlePageEnd(xmlTextReaderPtr reader);
+  void handleMastersStart(xmlTextReaderPtr reader);
+  void handleMastersEnd(xmlTextReaderPtr reader);
+  void handleMasterStart(xmlTextReaderPtr reader);
+  void handleMasterEnd(xmlTextReaderPtr reader);
+  void skipPages(xmlTextReaderPtr reader);
+  void skipMasters(xmlTextReaderPtr reader);
+
 private:
   VSDXMLParserBase(const VSDXMLParserBase &);
   VSDXMLParserBase &operator=(const VSDXMLParserBase &);

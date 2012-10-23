@@ -1610,4 +1610,127 @@ int libvisio::VSDXMLParserBase::readByteData(unsigned char &value, xmlTextReader
   return ret;
 }
 
+void libvisio::VSDXMLParserBase::handlePagesStart(xmlTextReaderPtr reader)
+{
+  m_isShapeStarted = false;
+  m_isStencilStarted = false;
+  if (m_extractStencils)
+    skipPages(reader);
+}
+
+void libvisio::VSDXMLParserBase::handlePagesEnd(xmlTextReaderPtr /* reader */)
+{
+  m_isShapeStarted = false;
+  if (!m_extractStencils)
+    m_collector->endPages();
+}
+
+void libvisio::VSDXMLParserBase::handlePageStart(xmlTextReaderPtr reader)
+{
+  m_isShapeStarted = false;
+  if (!m_extractStencils)
+    readPage(reader);
+}
+
+void libvisio::VSDXMLParserBase::handlePageEnd(xmlTextReaderPtr /* reader */)
+{
+  m_isShapeStarted = false;
+  if (!m_extractStencils)
+  {
+    m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
+    _handleLevelChange(0);
+    m_shapeList.clear();
+    m_isPageStarted = false;
+    m_collector->endPage();
+  }
+}
+
+void libvisio::VSDXMLParserBase::handleMastersStart(xmlTextReaderPtr reader)
+{
+  m_isShapeStarted = false;
+  if (m_stencils.count())
+    skipMasters(reader);
+  else
+  {
+    if (m_extractStencils)
+      m_isStencilStarted = false;
+    else
+      m_isStencilStarted = true;
+  }
+}
+
+void libvisio::VSDXMLParserBase::handleMastersEnd(xmlTextReaderPtr /* reader */)
+{
+  m_isShapeStarted = false;
+  if (m_extractStencils)
+  {
+    m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
+    _handleLevelChange(0);
+    m_shapeList.clear();
+    m_isPageStarted = false;
+    m_collector->endPage();
+  }
+  else
+    m_isStencilStarted = false;
+}
+
+void libvisio::VSDXMLParserBase::handleMasterStart(xmlTextReaderPtr reader)
+{
+  m_isShapeStarted = false;
+  if (m_extractStencils)
+    readPage(reader);
+  else
+    readStencil(reader);
+}
+
+void libvisio::VSDXMLParserBase::handleMasterEnd(xmlTextReaderPtr /* reader */)
+{
+  m_isShapeStarted = false;
+  m_isPageStarted = false;
+  if (m_extractStencils)
+  {
+    _handleLevelChange(0);
+    m_collector->endPage();
+  }
+  else
+  {
+    if (m_currentStencil)
+    {
+      m_stencils.addStencil(m_currentStencilID, *m_currentStencil);
+      delete m_currentStencil;
+    }
+    m_currentStencil = 0;
+    m_currentStencilID = MINUS_ONE;
+  }
+}
+
+void libvisio::VSDXMLParserBase::skipMasters(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    tokenType = xmlTextReaderNodeType(reader);
+  }
+  while ((XML_MASTERS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXMLParserBase::skipPages(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    tokenType = xmlTextReaderNodeType(reader);
+  }
+  while ((XML_PAGES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

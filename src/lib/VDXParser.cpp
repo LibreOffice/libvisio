@@ -138,81 +138,22 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       readLine(reader);
     break;
   case XML_MASTER:
-    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
-    {
-      if (m_extractStencils)
-        readPage(reader);
-      else
-        readStencil(reader);
-    }
+      handleMasterStart(reader);
     else if (tokenType == XML_READER_TYPE_END_ELEMENT)
-    {
-      m_isPageStarted = false;
-      if (m_extractStencils)
-      {
-        _handleLevelChange(0);
-        m_collector->endPage();
-      }
-      else
-      {
-        if (m_currentStencil)
-        {
-          m_stencils.addStencil(m_currentStencilID, *m_currentStencil);
-          delete m_currentStencil;
-        }
-        m_currentStencil = 0;
-        m_currentStencilID = MINUS_ONE;
-      }
-    }
+      handleMasterEnd(reader);
     break;
   case XML_MASTERS:
-    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
-    {
-      if (m_extractStencils)
-        m_isStencilStarted = false;
-      else
-        m_isStencilStarted = true;
-    }
+      handleMastersStart(reader);
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
-    {
-      if (m_extractStencils)
-        m_collector->endPages();
-      else
-        m_isStencilStarted = false;
-    }
+      handleMastersEnd(reader);
     break;
   case XML_PAGE:
-    m_isShapeStarted = false;
     if (XML_READER_TYPE_ELEMENT == tokenType)
-    {
-      if (m_extractStencils)
-      {
-        // This skips page, because we are spitting out the stencils only
-        int ret = 1;
-        do
-        {
-          ret = xmlTextReaderRead(reader);
-          tokenId = getElementToken(reader);
-          tokenType = xmlTextReaderNodeType(reader);
-        }
-        while ((XML_PAGE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
-      }
-      else
-        readPage(reader);
-    }
+      handlePageStart(reader);
     else if (tokenType == XML_READER_TYPE_END_ELEMENT)
-    {
-      if (!m_extractStencils)
-      {
-        m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
-        _handleLevelChange(0);
-        m_shapeList.clear();
-        m_isPageStarted = false;
-        m_collector->endPage();
-      }
-    }
+      handlePageEnd(reader);
     break;
   case XML_PAGEPROPS:
     if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -220,9 +161,9 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     break;
   case XML_PAGES:
     if (XML_READER_TYPE_ELEMENT == tokenType)
-      m_isStencilStarted = false;
-    else if (XML_READER_TYPE_END_ELEMENT == tokenType && !m_extractStencils)
-      m_collector->endPages();
+      handlePagesStart(reader);
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
+      handlePagesEnd(reader);
     break;
   case XML_PAGESHEET:
     if (XML_READER_TYPE_ELEMENT == tokenType)
