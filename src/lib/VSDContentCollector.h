@@ -233,11 +233,6 @@ private:
   double m_foreignOffsetY;
   double m_foreignWidth;
   double m_foreignHeight;
-  WPXPropertyList m_styleProps;
-  ::WPXString m_fillType;
-  unsigned m_fillPattern;
-  double m_fillFGTransparency;
-  double m_fillBGTransparency;
   bool m_noLine;
   bool m_noFill;
   bool m_noShow;

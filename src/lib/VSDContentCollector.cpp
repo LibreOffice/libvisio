@@ -114,10 +114,8 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
   m_txtxform(0), m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? 0 : &groupXFormsSequence[0]),
-  m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(),
-  m_currentShapeId(0), m_foreignType(0), m_foreignFormat(0), m_foreignOffsetX(0.0),
-  m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0), m_styleProps(),
-  m_fillType("none"), m_fillPattern(1), m_fillFGTransparency(0), m_fillBGTransparency(0),
+  m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType(0),
+  m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
   m_noLine(false), m_noFill(false), m_noShow(false), m_fonts(),
   m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
   m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
@@ -241,20 +239,20 @@ double libvisio::VSDContentCollector::_linePropertiesMarkerScale(unsigned marker
 
 void libvisio::VSDContentCollector::_flushCurrentPath()
 {
-  m_styleProps.clear();
-  _lineProperties(m_lineStyle, m_styleProps);
-  _fillAndShadowProperties(m_fillStyle, m_styleProps);
-  WPXPropertyList fillPathProps(m_styleProps);
+  WPXPropertyList styleProps;
+  _lineProperties(m_lineStyle, styleProps);
+  _fillAndShadowProperties(m_fillStyle, styleProps);
+  WPXPropertyList fillPathProps(styleProps);
   fillPathProps.insert("draw:stroke", "none");
-  WPXPropertyList linePathProps(m_styleProps);
+  WPXPropertyList linePathProps(styleProps);
   linePathProps.insert("draw:fill", "none");
   bool needsGroup = true;
 
-  if (!m_styleProps["draw:fill"] || m_styleProps["draw:fill"]->getStr() == "none")
+  if (!m_fillStyle.pattern)
     needsGroup = false;
   if (m_currentFillGeometry.empty())
     needsGroup = false;
-  if (!m_styleProps["draw:stroke"] || m_styleProps["draw:stroke"]->getStr() == "none")
+  if (!m_lineStyle.pattern)
     needsGroup = false;
   if (m_currentLineGeometry.empty())
     needsGroup = false;
@@ -263,7 +261,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     m_shapeOutputDrawing->addStartLayer(WPXPropertyList());
 
   std::vector<WPXPropertyList> tmpPath;
-  if (m_styleProps["draw:fill"] && m_styleProps["draw:fill"]->getStr() != "none")
+  if (m_fillStyle.pattern)
   {
     bool firstPoint = true;
     bool wasMove = false;
@@ -324,7 +322,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
   m_currentFillGeometry.clear();
   tmpPath.clear();
 
-  if (m_styleProps["draw:stroke"] && m_styleProps["draw:stroke"]->getStr() != "none")
+  if (m_lineStyle.pattern)
   {
     bool firstPoint = true;
     bool wasMove = false;
@@ -1702,11 +1700,6 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_isFirstGeometry = true;
 
   // Save line colour and pattern, fill type and pattern
-  m_fillType = "none";
-  m_fillPattern = 1; // same as "solid"
-  m_fillFGTransparency = 0.0;
-  m_fillBGTransparency = 0.0;
-
   m_textStream.clear();
   m_charFormats.clear();
   m_paraFormats.clear();
