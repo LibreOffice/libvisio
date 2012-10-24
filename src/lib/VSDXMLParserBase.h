@@ -83,16 +83,16 @@ protected:
   int readByteData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader);
   int readUnsignedData(boost::optional<unsigned> &value, xmlTextReaderPtr reader);
   int readLongData(boost::optional<long> &value, xmlTextReaderPtr reader);
-  virtual int readLongData(long &value, xmlTextReaderPtr reader) = 0;
+  int readLongData(long &value, xmlTextReaderPtr reader);
   int readDoubleData(boost::optional<double> &value, xmlTextReaderPtr reader);
-  virtual int readDoubleData(double &value, xmlTextReaderPtr reader) = 0;
+  int readDoubleData(double &value, xmlTextReaderPtr reader);
   int readBoolData(boost::optional<bool> &value, xmlTextReaderPtr reader);
-  virtual int readBoolData(bool &value, xmlTextReaderPtr reader) = 0;
-  virtual int readColourData(Colour &value, xmlTextReaderPtr reader) = 0;
-  virtual int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader) = 0;
+  int readBoolData(bool &value, xmlTextReaderPtr reader);
+  int readColourData(Colour &value, xmlTextReaderPtr reader);
+  int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   int readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader);
-  virtual int readStringData(std::string &value, xmlTextReaderPtr reader) = 0;
+  virtual xmlChar *readStringData(xmlTextReaderPtr reader) = 0;
   virtual void _handleLevelChange(unsigned level);
   void _flushShape();
 

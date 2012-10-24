@@ -1571,111 +1571,6 @@ void libvisio::VSDXMLParserBase::_handleLevelChange(unsigned level)
   m_collector->collectUnhandledChunk(0, m_currentLevel);
 }
 
-int libvisio::VSDXMLParserBase::readDoubleData(boost::optional<double> &value, xmlTextReaderPtr reader)
-{
-  double tmpValue = 0.0;
-  int ret = 1;
-  try
-  {
-    ret = readDoubleData(tmpValue, reader);
-    if (ret > 0)
-      value = tmpValue;
-    else if (!ret)
-      ret = 1;
-  }
-  catch (const XmlParserException &)
-  {
-    return -1;
-  }
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readBoolData(boost::optional<bool> &value, xmlTextReaderPtr reader)
-{
-  bool tmpValue = false;
-  int ret = 1;
-  try
-  {
-    ret = readBoolData(tmpValue, reader);
-    if (ret > 0)
-      value = tmpValue;
-    else if (!ret)
-      ret = 1;
-  }
-  catch (const XmlParserException &)
-  {
-    return -1;
-  }
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readUnsignedData(boost::optional<unsigned> &value, xmlTextReaderPtr reader)
-{
-  long tmpValue = 0;
-  int ret = 1;
-  try
-  {
-    ret = readLongData(tmpValue, reader);
-    if (ret > 0)
-      value = (unsigned)tmpValue;
-    else if (!ret)
-      ret = 1;
-  }
-  catch (const XmlParserException &)
-  {
-    return -1;
-  }
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readByteData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader)
-{
-  long tmpValue = 0;
-  int ret = readLongData(tmpValue, reader);
-  if (ret > 0)
-    value = (unsigned char) tmpValue;
-  else if (!ret)
-    ret = 1;
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readByteData(unsigned char &value, xmlTextReaderPtr reader)
-{
-  long longValue = 0;
-  int ret = readLongData(longValue, reader);
-  if (ret > 0)
-    value = (unsigned char) longValue;
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readLongData(boost::optional<long> &value, xmlTextReaderPtr reader)
-{
-  long tmpValue = 0;
-  int ret = readLongData(tmpValue, reader);
-  if (ret > 0)
-    value = tmpValue;
-  else if (!ret)
-    ret = 1;
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader)
-{
-  Colour tmpValue;
-  int ret = readExtendedColourData(tmpValue, reader);
-  if (ret > 0)
-    value = tmpValue;
-  else if (!ret)
-    ret = 1;
-  return ret;
-}
-
-int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
-{
-  long idx = -1;
-  return readExtendedColourData(value, idx, reader);
-}
-
 void libvisio::VSDXMLParserBase::handlePagesStart(xmlTextReaderPtr reader)
 {
   m_isShapeStarted = false;
@@ -1804,33 +1699,40 @@ int libvisio::VSDXMLParserBase::readNURBSFormula(double &knotLast, unsigned &deg
 {
   using namespace ::boost::spirit::classic;
 
-  std::string formula;
-  int ret = readStringData(formula, reader);
-  std::pair<double, double> point;
+  bool bRes = false;
+  xmlChar *formula = readStringData(reader);
 
-  const bool bRes = parse(formula.c_str(),
-                          //  Begin grammar
-                          (
-                            str_p("NURBS")
-                            >> '('
-                            >> real_p[assign_a(knotLast)] >> (',' | eps_p)
-                            >> int_p[assign_a(degree)] >> (',' | eps_p)
-                            >> int_p[assign_a(typeX)] >> (',' | eps_p)
-                            >> int_p[assign_a(typeY)] >> (',' | eps_p) >>
-                            // array of points, weights and knots
-                            (list_p(
-                               (
-                                 (real_p[assign_a(point.first)] >> (',' | eps_p) >>
-                                  real_p[assign_a(point.second)])[push_back_a(controlPoints,point)]
-                                 >> (',' | eps_p) >>
-                                 real_p[push_back_a(knotVector)] >> (',' | eps_p) >>
-                                 real_p[push_back_a(weights)]), ',' | eps_p ))
-                          ) >> ')' >> end_p,
-                          //  End grammar
-                          space_p).full;
+  if (formula)
+  {
+    std::pair<double, double> point;
+
+    bRes = parse((const char *)formula,
+                 //  Begin grammar
+                 (
+                   str_p("NURBS")
+                   >> '('
+                   >> real_p[assign_a(knotLast)] >> (',' | eps_p)
+                   >> int_p[assign_a(degree)] >> (',' | eps_p)
+                   >> int_p[assign_a(typeX)] >> (',' | eps_p)
+                   >> int_p[assign_a(typeY)] >> (',' | eps_p) >>
+                   // array of points, weights and knots
+                   (list_p(
+                      (
+                        (real_p[assign_a(point.first)] >> (',' | eps_p) >>
+                         real_p[assign_a(point.second)])[push_back_a(controlPoints,point)]
+                        >> (',' | eps_p) >>
+                        real_p[push_back_a(knotVector)] >> (',' | eps_p) >>
+                        real_p[push_back_a(weights)]), ',' | eps_p ))
+                 ) >> ')' >> end_p,
+                 //  End grammar
+                 space_p).full;
+
+    xmlFree(formula);
+  }
+
   if( !bRes )
     return -1;
-  return ret;
+  return 1;
 }
 
 int libvisio::VSDXMLParserBase::readPolylineFormula(unsigned char &typeX, unsigned char &typeY,
@@ -1838,29 +1740,215 @@ int libvisio::VSDXMLParserBase::readPolylineFormula(unsigned char &typeX, unsign
 {
   using namespace ::boost::spirit::classic;
 
-  std::string formula;
-  int ret = readStringData(formula, reader);
-  std::pair<double, double> point;
+  bool bRes = false;
+  xmlChar *formula = readStringData(reader);
 
-  const bool bRes = parse(formula.c_str(),
-                          //  Begin grammar
-                          (
-                            str_p("POLYLINE")
-                            >> '('
-                            >> int_p[assign_a(typeX)] >> (',' | eps_p)
-                            >> int_p[assign_a(typeY)] >> (',' | eps_p) >>
-                            // array of points
-                            (list_p(
-                               (
-                                 (real_p[assign_a(point.first)] >> (',' | eps_p) >>
-                                  real_p[assign_a(point.second)])[push_back_a(points,point)]), ',' | eps_p ))
-                          ) >> ')' >> end_p,
-                          //  End grammar
-                          space_p).full;
+  if (formula)
+  {
+    std::pair<double, double> point;
+
+    bRes = parse((const char *)formula,
+                 //  Begin grammar
+                 (
+                   str_p("POLYLINE")
+                   >> '('
+                   >> int_p[assign_a(typeX)] >> (',' | eps_p)
+                   >> int_p[assign_a(typeY)] >> (',' | eps_p) >>
+                   // array of points
+                   (list_p(
+                      (
+                        (real_p[assign_a(point.first)] >> (',' | eps_p) >>
+                         real_p[assign_a(point.second)])[push_back_a(points,point)]), ',' | eps_p ))
+                 ) >> ')' >> end_p,
+                 //  End grammar
+                 space_p).full;
+    xmlFree(formula);
+  }
+
   if( !bRes )
     return -1;
+  return 1;
+}
+
+
+int libvisio::VSDXMLParserBase::readDoubleData(double &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = readStringData(reader);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readDoubleData stringValue %s\n", (const char *)stringValue));
+    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      value = xmlStringToDouble(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readDoubleData(boost::optional<double> &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = readStringData(reader);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readDoubleData stringValue %s\n", (const char *)stringValue));
+    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      value = xmlStringToDouble(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readLongData(long &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = readStringData(reader);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readLongData stringValue %s\n", (const char *)stringValue));
+    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      value = xmlStringToLong(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readLongData(boost::optional<long> &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = readStringData(reader);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readLongData stringValue %s\n", (const char *)stringValue));
+    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      value = xmlStringToLong(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readBoolData(bool &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = readStringData(reader);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readBoolData stringValue %s\n", (const char *)stringValue));
+    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      value = xmlStringToBool(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readBoolData(boost::optional<bool> &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = readStringData(reader);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readBoolData stringValue %s\n", (const char *)stringValue));
+    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
+      value = xmlStringToBool(stringValue);
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readUnsignedData(boost::optional<unsigned> &value, xmlTextReaderPtr reader)
+{
+  boost::optional<long> tmpValue;
+  int ret = readLongData(tmpValue, reader);
+  if (!!tmpValue)
+    value = (unsigned)tmpValue.get();
   return ret;
 }
 
+int libvisio::VSDXMLParserBase::readByteData(unsigned char &value, xmlTextReaderPtr reader)
+{
+  long longValue = 0;
+  int ret = readLongData(longValue, reader);
+  value = (unsigned char) longValue;
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readByteData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader)
+{
+  boost::optional<long> tmpValue;
+  int ret = readLongData(tmpValue, reader);
+  if (!!tmpValue)
+    value = (unsigned char) tmpValue.get();
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readColourData(Colour &value, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = readStringData(reader);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readColourData stringValue %s\n", (const char *)stringValue));
+    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
+    {
+      try
+      {
+        Colour tmpColour = xmlStringToColour(stringValue);
+        value = tmpColour;
+      }
+      catch (const XmlParserException &)
+      {
+        xmlFree(stringValue);
+        throw XmlParserException();
+      }
+    }
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader)
+{
+  xmlChar *stringValue = readStringData(reader);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readColourData stringValue %s\n", (const char *)stringValue));
+    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
+    {
+      try
+      {
+        value = xmlStringToColour(stringValue);
+      }
+      catch (const XmlParserException &)
+      {
+        idx = xmlStringToLong(stringValue);
+      }
+      if (idx >= 0)
+      {
+        std::map<unsigned, Colour>::const_iterator iter = m_colours.find((unsigned)idx);
+        if (iter != m_colours.end())
+          value = iter->second;
+        else
+          idx = -1;
+      }
+    }
+    xmlFree(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader)
+{
+  Colour tmpValue;
+  int ret = readExtendedColourData(tmpValue, reader);
+  value = tmpValue;
+  return ret;
+}
+
+int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
+{
+  long idx = -1;
+  return readExtendedColourData(value, idx, reader);
+}
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

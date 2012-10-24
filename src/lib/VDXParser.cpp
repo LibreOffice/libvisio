@@ -693,117 +693,20 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
                                       (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection));
 }
 
-int libvisio::VDXParser::readLongData(long &value, xmlTextReaderPtr reader)
+xmlChar *libvisio::VDXParser::readStringData(xmlTextReaderPtr reader)
 {
   int ret = xmlTextReaderRead(reader);
-  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
+  if (1 == ret && XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
   {
-    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
-    if (stringValue)
-    {
-      VSD_DEBUG_MSG(("VDXParser::readLongData stringValue %s\n", (const char *)stringValue));
-      value = xmlStringToLong(stringValue);
-    }
+    xmlChar *stringValue = xmlTextReaderValue(reader);
     ret = xmlTextReaderRead(reader);
-  }
-  return ret;
-}
-
-int libvisio::VDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
-{
-  int ret = xmlTextReaderRead(reader);
-  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
-  {
-    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
-    if (stringValue)
-    {
-      VSD_DEBUG_MSG(("VDXParser::readDoubleData stringValue %s\n", (const char *)stringValue));
-      value = xmlStringToDouble(stringValue);
-    }
-    ret = xmlTextReaderRead(reader);
-  }
-  return ret;
-}
-
-int libvisio::VDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
-{
-  int ret = xmlTextReaderRead(reader);
-  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
-  {
-    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
-    if (stringValue)
-    {
-      VSD_DEBUG_MSG(("VDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
-      value = xmlStringToBool(stringValue);
-    }
-    ret = xmlTextReaderRead(reader);
-  }
-  return ret;
-}
-
-int libvisio::VDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
-{
-  int ret = xmlTextReaderRead(reader);
-  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
-  {
-    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
-    if (stringValue)
-    {
-      VSD_DEBUG_MSG(("VDXParser::readColourData stringValue %s\n", (const char *)stringValue));
-      Colour tmpValue = xmlStringToColour(stringValue);
-      value = tmpValue;
-    }
-    ret = xmlTextReaderRead(reader);
-  }
-  return ret;
-}
-
-int libvisio::VDXParser::readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader)
-{
-  int ret = xmlTextReaderRead(reader);
-  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
-  {
-    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
-    if (stringValue)
-    {
-      VSD_DEBUG_MSG(("VSDXParser::readExtendedColourData stringValue %s\n", (const char *)stringValue));
-      try
-      {
-        Colour tmpColour = xmlStringToColour(stringValue);
-        value = tmpColour;
-      }
-      catch (const XmlParserException &)
-      {
-        idx = xmlStringToLong(stringValue);
-      }
-      if (idx >= 0)
-      {
-        std::map<unsigned, Colour>::const_iterator iter = m_colours.find((unsigned)idx);
-        if (iter != m_colours.end())
-          value = iter->second;
-        else
-          idx = -1;
-      }
-      ret = xmlTextReaderRead(reader);
-    }
-  }
-  return ret;
-}
-
-int libvisio::VDXParser::readStringData(std::string &value, xmlTextReaderPtr reader)
-{
-  int ret = xmlTextReaderRead(reader);
-  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
-  {
-    const xmlChar *stringValue = xmlTextReaderConstValue(reader);
-    if (stringValue)
+    if (1 == ret && stringValue)
     {
       VSD_DEBUG_MSG(("VDXParser::readStringData stringValue %s\n", (const char *)stringValue));
-      value = (const char *)stringValue;
+      return stringValue;
     }
-    ret = xmlTextReaderRead(reader);
   }
-  return ret;
+  return 0;
 }
 
 int libvisio::VDXParser::getElementToken(xmlTextReaderPtr reader)

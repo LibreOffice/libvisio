@@ -59,12 +59,7 @@ private:
 
   // Helper functions
 
-  int readLongData(long &value, xmlTextReaderPtr reader);
-  int readDoubleData(double &value, xmlTextReaderPtr reader);
-  int readBoolData(bool &value, xmlTextReaderPtr reader);
-  int readColourData(Colour &value, xmlTextReaderPtr reader);
-  int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
-  int readStringData(std::string &value, xmlTextReaderPtr reader);
+  xmlChar *readStringData(xmlTextReaderPtr reader);
 
   int getElementToken(xmlTextReaderPtr reader);
   int getElementDepth(xmlTextReaderPtr reader);

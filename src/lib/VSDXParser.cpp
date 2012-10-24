@@ -544,145 +544,15 @@ void libvisio::VSDXParser::extractBinaryData(WPXInputStream *input, const char *
   VSD_DEBUG_MSG(("%s\n", m_currentBinaryData.getBase64Data().cstr()));
 }
 
-int libvisio::VSDXParser::readLongData(long &value, xmlTextReaderPtr reader)
-{
-  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
-  if (stringValue)
-  {
-    VSD_DEBUG_MSG(("VSDXParser::readLongData stringValue %s\n", (const char *)stringValue));
-    int ret = 1;
-    if (xmlStrEqual(stringValue, BAD_CAST("Themed")))
-      ret = 0;
-    else
-    {
-      try
-      {
-        value = xmlStringToLong(stringValue);
-      }
-      catch (const XmlParserException &e)
-      {
-        xmlFree(stringValue);
-        throw e;
-      }
-      xmlFree(stringValue);
-      return 1;
-    }
-  }
-  xmlFree(stringValue);
-  return -1;
-}
-
-int libvisio::VSDXParser::readDoubleData(double &value, xmlTextReaderPtr reader)
-{
-  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
-  if (stringValue)
-  {
-    VSD_DEBUG_MSG(("VSDXParser::readDoubleData stringValue %s\n", (const char *)stringValue));
-    int ret = 1;
-    if (xmlStrEqual(stringValue, BAD_CAST("Themed")))
-      ret = 0;
-    else
-      value = xmlStringToDouble(stringValue);
-    xmlFree(stringValue);
-    return ret;
-  }
-  return -1;
-}
-
-int libvisio::VSDXParser::readBoolData(bool &value, xmlTextReaderPtr reader)
-{
-  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
-  if (stringValue)
-  {
-    VSD_DEBUG_MSG(("VSDXParser::readBoolData stringValue %s\n", (const char *)stringValue));
-    int ret = 1;
-    if (xmlStrEqual(stringValue, BAD_CAST("Themed")))
-      ret = 0;
-    else
-      value = xmlStringToBool(stringValue);
-    xmlFree(stringValue);
-    return ret;
-  }
-  return -1;
-}
-
-int libvisio::VSDXParser::readColourData(Colour &value, xmlTextReaderPtr reader)
-{
-  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
-  if (stringValue)
-  {
-    VSD_DEBUG_MSG(("VSDXParser::readColourData stringValue %s\n", (const char *)stringValue));
-    int ret = 1;
-    if (xmlStrEqual(stringValue, BAD_CAST("Themed")))
-      ret = 0;
-    else
-    {
-      try
-      {
-        Colour tmpColour = xmlStringToColour(stringValue);
-        value = tmpColour;
-      }
-      catch (const XmlParserException &)
-      {
-        xmlFree(stringValue);
-        throw XmlParserException();
-      }
-    }
-    xmlFree(stringValue);
-    return ret;
-  }
-  return -1;
-}
-
-int libvisio::VSDXParser::readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader)
-{
-  idx = -1;
-  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
-  if (stringValue)
-  {
-    VSD_DEBUG_MSG(("VSDXParser::readExtendedColourData stringValue %s\n", (const char *)stringValue));
-    try
-    {
-      Colour tmpColour = xmlStringToColour(stringValue);
-      value = tmpColour;
-    }
-    catch (const XmlParserException &)
-    {
-      try
-      {
-        idx = xmlStringToLong(stringValue);
-      }
-      catch (const XmlParserException &)
-      {
-        xmlFree(stringValue);
-        return -1;
-      }
-    }
-    xmlFree(stringValue);
-    if (idx >= 0)
-    {
-      std::map<unsigned, Colour>::const_iterator iter = m_colours.find((unsigned)idx);
-      if (iter != m_colours.end())
-        value = iter->second;
-      else
-        idx = -1;
-    }
-    return 1;
-  }
-  return -1;
-}
-
-int libvisio::VSDXParser::readStringData(std::string &value, xmlTextReaderPtr reader)
+xmlChar *libvisio::VSDXParser::readStringData(xmlTextReaderPtr reader)
 {
   xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
   if (stringValue)
   {
     VSD_DEBUG_MSG(("VSDXParser::readStringData stringValue %s\n", (const char *)stringValue));
-    value = (const char *)stringValue;
-    xmlFree(stringValue);
-    return 1;
+    return stringValue;
   }
-  return -1;
+  return 0;
 }
 
 int libvisio::VSDXParser::getElementToken(xmlTextReaderPtr reader)
