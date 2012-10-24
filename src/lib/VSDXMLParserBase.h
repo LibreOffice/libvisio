@@ -162,7 +162,8 @@ private:
   int readNURBSFormula(double &knotLast, unsigned &degree, unsigned char &typeX, unsigned char &typeY,
                        std::vector<double> &knotVector, std::vector<std::pair<double,double> > &controlPoints,
                        std::vector<double> &weights, xmlTextReaderPtr reader);
-  int readPolylineFormula(std::vector<std::pair<double,double> > &points, xmlTextReaderPtr reader);
+  int readPolylineFormula(unsigned char &typeX, unsigned char &typeY,
+                          std::vector<std::pair<double,double> > &points, xmlTextReaderPtr reader);
 };
 
 } // namespace libvisio
