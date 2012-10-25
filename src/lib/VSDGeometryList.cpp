@@ -132,7 +132,7 @@ public:
   virtual ~VSDNURBSTo1() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
+
   double m_x2, m_y2;
   unsigned m_xType, m_yType;
   unsigned m_degree;
@@ -148,14 +148,30 @@ public:
   virtual ~VSDNURBSTo2() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-  unsigned getDataID() const;
 
-private:
+  unsigned getDataID() const;
   unsigned m_dataID;
   double m_x2, m_y2;
   double m_knot, m_knotPrev;
   double m_weight, m_weightPrev;
+};
 
+class VSDNURBSTo3 : public VSDGeometryListElement
+{
+public:
+  VSDNURBSTo3(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2, const boost::optional<double> &knot,
+              const boost::optional<double> &knotPrev, const boost::optional<double> &weight, const boost::optional<double> &weightPrev,
+              const boost::optional<NURBSData> &data) :
+    VSDGeometryListElement(id, level), m_data(FROM_OPTIONAL(data, NURBSData())), m_x2(FROM_OPTIONAL(x2, 0.0)), m_y2(FROM_OPTIONAL(y2, 0.0)),
+    m_knot(FROM_OPTIONAL(knot, 0.0)), m_knotPrev(FROM_OPTIONAL(knotPrev, 0.0)), m_weight(FROM_OPTIONAL(weight, 0.0)), m_weightPrev(FROM_OPTIONAL(weightPrev, 0.0)) {}
+  virtual ~VSDNURBSTo3() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+
+  NURBSData m_data;
+  double m_x2, m_y2;
+  double m_knot, m_knotPrev;
+  double m_weight, m_weightPrev;
 };
 
 class VSDPolylineTo1 : public VSDGeometryListElement
@@ -166,7 +182,7 @@ public:
   virtual ~VSDPolylineTo1() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
-private:
+
   double m_x, m_y;
   unsigned m_xType, m_yType;
   std::vector<std::pair<double, double> > m_points;
@@ -182,8 +198,21 @@ public:
   VSDGeometryListElement *clone();
   unsigned getDataID() const;
 
-private:
   unsigned m_dataID;
+  double m_x, m_y;
+};
+
+class VSDPolylineTo3 : public VSDGeometryListElement
+{
+public:
+  VSDPolylineTo3(unsigned id , unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
+                 const boost::optional<PolylineData> &data) :
+    VSDGeometryListElement(id, level), m_data(FROM_OPTIONAL(data, PolylineData())), m_x(FROM_OPTIONAL(x, 0.0)), m_y(FROM_OPTIONAL(y, 0.0)) {}
+  virtual ~VSDPolylineTo3() {}
+  void handle(VSDCollector *collector) const;
+  VSDGeometryListElement *clone();
+
+  PolylineData m_data;
   double m_x, m_y;
 };
 
@@ -198,6 +227,7 @@ public:
   virtual ~VSDSplineStart() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
+
   double m_x, m_y;
   double m_secondKnot, m_firstKnot, m_lastKnot;
   unsigned m_degree;
@@ -406,6 +436,17 @@ unsigned libvisio::VSDNURBSTo2::getDataID() const
   return m_dataID;
 }
 
+void libvisio::VSDNURBSTo3::handle(VSDCollector *collector) const
+{
+  collector->collectSplineEnd();
+  collector->collectNURBSTo(m_id, m_level, m_x2, m_y2, m_knot, m_knotPrev, m_weight, m_weightPrev, m_data);
+}
+
+libvisio::VSDGeometryListElement *libvisio::VSDNURBSTo3::clone()
+{
+  return new VSDNURBSTo3(m_id, m_level, m_x2, m_y2, m_knot, m_knotPrev, m_weight, m_weightPrev, m_data);
+}
+
 
 void libvisio::VSDPolylineTo1::handle(VSDCollector *collector) const
 {
@@ -433,6 +474,18 @@ libvisio::VSDGeometryListElement *libvisio::VSDPolylineTo2::clone()
 unsigned libvisio::VSDPolylineTo2::getDataID() const
 {
   return m_dataID;
+}
+
+
+void libvisio::VSDPolylineTo3::handle(VSDCollector *collector) const
+{
+  collector->collectSplineEnd();
+  collector->collectPolylineTo(m_id, m_level, m_x, m_y, m_data);
+}
+
+libvisio::VSDGeometryListElement *libvisio::VSDPolylineTo3::clone()
+{
+  return new VSDPolylineTo3(m_id, m_level, m_x, m_y, m_data);
 }
 
 
@@ -644,6 +697,28 @@ void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x
   m_elements[id] = new VSDNURBSTo2(id, level, x2, y2, knot, knotPrev, weight, weightPrev, dataID);
 }
 
+void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2,
+    const boost::optional<double> &knot, const boost::optional<double> &knotPrev, const boost::optional<double> &weight,
+    const boost::optional<double> &weightPrev, const boost::optional<NURBSData> &data)
+{
+  VSDNURBSTo3 *tmpElement = dynamic_cast<VSDNURBSTo3 *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDNURBSTo3(id, level, x2, y2, knot, knotPrev, weight, weightPrev, data);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(x2, tmpElement->m_x2);
+    ASSIGN_OPTIONAL(y2, tmpElement->m_y2);
+    ASSIGN_OPTIONAL(knot, tmpElement->m_knot);
+    ASSIGN_OPTIONAL(knotPrev, tmpElement->m_knotPrev);
+    ASSIGN_OPTIONAL(weight, tmpElement->m_weight);
+    ASSIGN_OPTIONAL(weightPrev, tmpElement->m_weightPrev);
+    ASSIGN_OPTIONAL(data, tmpElement->m_data);
+  }
+}
+
 void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
     const std::vector<std::pair<double, double> > &points)
 {
@@ -655,6 +730,22 @@ void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, doub
 {
   clearElement(id);
   m_elements[id] = new VSDPolylineTo2(id, level, x, y, dataID);
+}
+
+void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, boost::optional<double> &x, boost::optional<double> &y, boost::optional<PolylineData> &data)
+{
+  VSDPolylineTo3 *tmpElement = dynamic_cast<VSDPolylineTo3 *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    clearElement(id);
+    m_elements[id] = new VSDPolylineTo3(id, level, x, y, data);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(x, tmpElement->m_x);
+    ASSIGN_OPTIONAL(y, tmpElement->m_y);
+    ASSIGN_OPTIONAL(data, tmpElement->m_data);
+  }
 }
 
 void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, const boost::optional<double> &cx,

@@ -84,9 +84,13 @@ public:
                   const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector,
                   const std::vector<double> &weights);
   void addNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID);
+  void addNURBSTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2,
+                  const boost::optional<double> &knot, const boost::optional<double> &knotPrev, const boost::optional<double> &weight,
+                  const boost::optional<double> &weightPrev, const boost::optional<NURBSData> &data);
   void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
                      const std::vector<std::pair<double, double> > &points);
   void addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID);
+  void addPolylineTo(unsigned id , unsigned level, boost::optional<double> &x, boost::optional<double> &y, boost::optional<PolylineData> &data);
   void addEllipse(unsigned id, unsigned level, const boost::optional<double> &cx, const boost::optional<double> &cy,
                   const boost::optional<double> &xleft, const boost::optional<double> &yleft,
                   const boost::optional<double> &xtop, const boost::optional<double> &ytop);

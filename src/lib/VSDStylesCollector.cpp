@@ -130,6 +130,12 @@ void libvisio::VSDStylesCollector::collectNURBSTo(unsigned /* id */, unsigned le
   _handleLevelChange(level);
 }
 
+void libvisio::VSDStylesCollector::collectNURBSTo(unsigned /* id */, unsigned level, double /* x2 */, double /* y2 */, double /* knot */,
+    double /* knotPrev */, double /* weight */, double /* weightPrev */, const NURBSData & /* data */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDStylesCollector::collectPolylineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */,
     unsigned char /* xType */, unsigned char /* yType */,
     const std::vector<std::pair<double, double> > & /* points */)
@@ -138,6 +144,11 @@ void libvisio::VSDStylesCollector::collectPolylineTo(unsigned /* id */, unsigned
 }
 
 void libvisio::VSDStylesCollector::collectPolylineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */, unsigned /* dataID */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDStylesCollector::collectPolylineTo(unsigned /* id */, unsigned level, double /* x */, double /* y */, const PolylineData & /* data */)
 {
   _handleLevelChange(level);
 }

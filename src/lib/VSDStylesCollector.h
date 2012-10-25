@@ -79,8 +79,10 @@ public:
                       unsigned degree, std::vector<std::pair<double, double> > controlPoints,
                       std::vector<double> knotVector, std::vector<double> weights);
   void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID);
+  void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, const NURBSData &data);
   void collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType, const std::vector<std::pair<double, double> > &points);
   void collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID);
+  void collectPolylineTo(unsigned id, unsigned level, double x, double y, const PolylineData &data);
   void collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, unsigned degree, double lastKnot,
                         std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights);
   void collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points);

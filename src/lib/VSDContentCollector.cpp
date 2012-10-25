@@ -955,26 +955,36 @@ void libvisio::VSDContentCollector::collectInfiniteLine(unsigned /* id */, unsig
     m_currentLineGeometry.push_back(infLine);
 }
 
-void libvisio::VSDContentCollector::collectRelCubBezTo(unsigned /* id */, unsigned level, double x, double y, double a, double b, double c, double d)
+void libvisio::VSDContentCollector::collectRelCubBezTo(unsigned /* id */, unsigned level, double x, double y, double x1, double y1, double x2, double y2)
 {
   _handleLevelChange(level);
   x *= m_xform.width;
   y *= m_xform.height;
-  a *= m_xform.width;
-  b *= m_xform.height;
-  c *= m_xform.width;
-  d *= m_xform.height;
+  x1 *= m_xform.width;
+  y1 *= m_xform.height;
+  x2 *= m_xform.width;
+  y2 *= m_xform.height;
+  transformPoint(x1, y1);
+  transformPoint(x2, y2);
+  m_originalX = x;
+  m_originalY = y;
   transformPoint(x, y);
-  transformPoint(a, b);
-  transformPoint(c, d);
+  double x0 = m_x;
+  double y0 = m_y;
+  m_x = x;
+  m_y = y;
   WPXPropertyList node;
-  node.insert("svg:x",m_scale*x);
-  node.insert("svg:y",m_scale*x);
-  node.insert("svg:x1",m_scale*a);
-  node.insert("svg:y1",m_scale*b);
-  node.insert("svg:x2",m_scale*c);
-  node.insert("svg:y2",m_scale*d);
+  double bx = -5.0*x0/9.0 + 3.0*x1 - 3.0*x2/2.0 + x/3.0;
+  double by = -5.0*y0/9.0 + 3.0*y1 - 3.0*y2/2.0 + y/3.0;
+  double cx = x0/3.0 - 3.0*x1/2.0 + 3.0*x2 - 5.0*x/9.0;
+  double cy = y0/3.0 - 3.0*y1/2.0 + 3.0*y2 - 5.0*y/9.0;
   node.insert("libwpg:path-action", "C");
+  node.insert("svg:x",m_scale*x);
+  node.insert("svg:y",m_scale*y);
+  node.insert("svg:x1",m_scale*bx);
+  node.insert("svg:y1",m_scale*by);
+  node.insert("svg:x2",m_scale*cx);
+  node.insert("svg:y2",m_scale*cy);
   if (!m_noFill && !m_noShow)
     m_currentFillGeometry.push_back(node);
   if (!m_noLine && !m_noShow)
@@ -1004,22 +1014,29 @@ void libvisio::VSDContentCollector::collectRelMoveTo(unsigned id, unsigned level
   collectMoveTo(id, level, x, y);
 }
 
-void libvisio::VSDContentCollector::collectRelQuadBezTo(unsigned /* id */, unsigned level, double x, double y, double a, double b)
+void libvisio::VSDContentCollector::collectRelQuadBezTo(unsigned /* id */, unsigned level, double x, double y, double x1, double y1)
 {
-  _handleLevelChange(level);
   _handleLevelChange(level);
   x *= m_xform.width;
   y *= m_xform.height;
-  a *= m_xform.width;
-  b *= m_xform.height;
+  x1 *= m_xform.width;
+  y1 *= m_xform.height;
+  transformPoint(x1, y1);
+  m_originalX = x;
+  m_originalY = y;
   transformPoint(x, y);
-  transformPoint(a, b);
+  double x0 = m_x;
+  double y0 = m_y;
+  m_x = x;
+  m_y = y;
   WPXPropertyList node;
-  node.insert("svg:x",m_scale*x);
-  node.insert("svg:y",m_scale*x);
-  node.insert("svg:x1",m_scale*a);
-  node.insert("svg:y1",m_scale*b);
+  double bx = -x0/2.0 + 2.0*x1 - x/2.0;
+  double by = -y0/2.0 + 2.0*y1 - y/2.0;
   node.insert("libwpg:path-action", "Q");
+  node.insert("svg:x",m_scale*x);
+  node.insert("svg:y",m_scale*y);
+  node.insert("svg:x1",m_scale*bx);
+  node.insert("svg:y1",m_scale*by);
   if (!m_noFill && !m_noShow)
     m_currentFillGeometry.push_back(node);
   if (!m_noLine && !m_noShow)
@@ -1373,6 +1390,17 @@ double libvisio::VSDContentCollector::_NURBSBasis(unsigned knot, unsigned degree
   return basis;
 }
 
+void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, const NURBSData &data)
+{
+  NURBSData newData(data);
+  newData.knots.push_back(knot);
+  newData.knots.push_back(newData.lastKnot);
+  newData.knots.insert(newData.knots.begin(), knotPrev);
+  newData.weights.push_back(weight);
+  newData.weights.insert(newData.weights.begin(), weightPrev);
+  collectNURBSTo(id, level, x2, y2, newData.xType, newData.yType, newData.degree, newData.points, newData.knots, newData.weights);
+}
+
 /* NURBS with incomplete data */
 void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
 {
@@ -1406,15 +1434,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
   }
 
   if (iter != iterEnd)
-  {
-    data = iter->second;
-    data.knots.push_back(knot);
-    data.knots.push_back(data.lastKnot);
-    data.knots.insert(data.knots.begin(), knotPrev);
-    data.weights.push_back(weight);
-    data.weights.insert(data.weights.begin(), weightPrev);
-    collectNURBSTo(id, level, x2, y2, data.xType, data.yType, data.degree, data.points, data.knots, data.weights);
-  }
+    collectNURBSTo(id, level, x2, y2, knot, knotPrev, weight, weightPrev, iter->second);
   else
     _handleLevelChange(level);
 }
@@ -1457,6 +1477,11 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */ , unsign
     m_currentLineGeometry.push_back(polyline);
 }
 
+void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, const PolylineData &data)
+{
+  collectPolylineTo(id, level, x, y, data.xType, data.yType, data.points);
+}
+
 /* Polyline with incomplete data */
 void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
@@ -1489,10 +1514,7 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned leve
   }
 
   if (iter != iterEnd)
-  {
-    PolylineData data = iter->second;
-    collectPolylineTo(id, level, x, y, data.xType, data.yType, data.points);
-  }
+    collectPolylineTo(id, level, x, y, iter->second);
   else
     _handleLevelChange(level);
 }

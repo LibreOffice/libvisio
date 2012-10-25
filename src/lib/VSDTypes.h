@@ -102,6 +102,14 @@ struct NURBSData
       knots(),
       weights(),
       points() {}
+  NURBSData(const NURBSData &data)
+    : lastKnot(data.lastKnot),
+      degree(data.degree),
+      xType(data.xType),
+      yType(data.yType),
+      knots(data.knots),
+      weights(data.weights),
+      points(data.points) {}
 };
 
 struct PolylineData

@@ -530,19 +530,13 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
     return;
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  double knot = 0.0; // Second last knot
-  double weight = 0.0; // Last weight
-  double knotPrev = 0.0; // First knot
-  double weightPrev = 0.0; // First weight
-  double knotLast = 0.0;
-  unsigned degree = 0;
-  unsigned char xType = 0;
-  unsigned char yType = 0;
-  std::vector<double> knotVector;
-  std::vector<std::pair<double, double> > controlPoints;
-  std::vector<double> weights;
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<double> knot; // Second last knot
+  boost::optional<double> weight; // Last weight
+  boost::optional<double> knotPrev; // First knot
+  boost::optional<double> weightPrev ; // First weight
+  boost::optional<NURBSData> nurbsData;
 
   do
   {
@@ -575,7 +569,7 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
       ret = readDoubleData(weightPrev, reader);
       break;
     case XML_E:
-      ret = readNURBSFormula(knotLast, degree, xType, yType, knotVector, controlPoints, weights, reader);
+      ret = readNURBSData(nurbsData, reader);
       break;
     default:
       break;
@@ -583,21 +577,8 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
   }
   while (((XML_NURBSTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
-  std::vector<double> tmpKnots;
-  tmpKnots.push_back(knotPrev);
-  unsigned i = 0;
-  for (i = 0; i < knotVector.size(); ++i)
-    tmpKnots.push_back(knotVector[i]);
-  tmpKnots.push_back(knot);
-  tmpKnots.push_back(knotLast);
-  std::vector<double> tmpWeights;
-  tmpWeights.push_back(weightPrev);
-  for (i = 0; i < weights.size(); ++i)
-    tmpWeights.push_back(weights[i]);
-  tmpWeights.push_back(weight);
-
   if (ret == 1)
-    m_currentGeometryList->addNURBSTo(ix, level, x, y, xType, yType, degree, controlPoints, tmpKnots, tmpWeights);
+    m_currentGeometryList->addNURBSTo(ix, level, x, y, knot, knotPrev, weight, weightPrev, nurbsData);
 }
 
 void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
@@ -627,11 +608,9 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
     return;
   }
 
-  double x = 0.0;
-  double y = 0.0;
-  unsigned char xType = 0;
-  unsigned char yType = 0;
-  std::vector<std::pair<double, double> > points;
+  boost::optional<double> x;
+  boost::optional<double> y;
+  boost::optional<PolylineData> polyLineData;
 
   do
   {
@@ -652,7 +631,7 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
       ret = readDoubleData(y, reader);
       break;
     case XML_A:
-      ret = readPolylineFormula(xType, yType, points, reader);
+      ret = readPolylineData(polyLineData, reader);
       break;
     default:
       break;
@@ -660,7 +639,7 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
   }
   while (((XML_POLYLINETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
   if (ret == 1)
-    m_currentGeometryList->addPolylineTo(ix, level, x, y, xType, yType, points);
+    m_currentGeometryList->addPolylineTo(ix, level, x, y, polyLineData);
 }
 
 void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
@@ -871,7 +850,15 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
   }
   while (((XML_RELCUBBEZTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
   if (ret == 1)
+#if 0
     m_currentGeometryList->addRelCubBezTo(ix, level, x, y, a, b, c, d);
+#else
+  {
+    m_currentGeometryList->addRelLineTo(ix, level, a, b);
+    m_currentGeometryList->addRelLineTo(ix, level, c, d);
+    m_currentGeometryList->addRelLineTo(ix, level, x, y);
+  }
+#endif
 }
 
 void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
@@ -1051,7 +1038,14 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
   }
   while (((XML_RELQUADBEZTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
   if (ret == 1)
+#if 0
     m_currentGeometryList->addRelQuadBezTo(ix, level, x, y, a, b);
+#else
+  {
+    m_currentGeometryList->addRelLineTo(ix, level, a, b);
+    m_currentGeometryList->addRelLineTo(ix, level, x, y);
+  }
+#endif
 }
 
 void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
@@ -1693,11 +1687,11 @@ void libvisio::VSDXMLParserBase::skipPages(xmlTextReaderPtr reader)
   while ((XML_PAGES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
-int libvisio::VSDXMLParserBase::readNURBSFormula(double &knotLast, unsigned &degree, unsigned char &typeX, unsigned char &typeY,
-    std::vector<double> &knotVector, std::vector<std::pair<double,double> > &controlPoints,
-    std::vector<double> &weights, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, xmlTextReaderPtr reader)
 {
   using namespace ::boost::spirit::classic;
+
+  NURBSData tmpData;
 
   bool bRes = false;
   xmlChar *formula = readStringData(reader);
@@ -1711,18 +1705,18 @@ int libvisio::VSDXMLParserBase::readNURBSFormula(double &knotLast, unsigned &deg
                  (
                    str_p("NURBS")
                    >> '('
-                   >> real_p[assign_a(knotLast)] >> (',' | eps_p)
-                   >> int_p[assign_a(degree)] >> (',' | eps_p)
-                   >> int_p[assign_a(typeX)] >> (',' | eps_p)
-                   >> int_p[assign_a(typeY)] >> (',' | eps_p) >>
+                   >> real_p[assign_a(tmpData.lastKnot)] >> (',' | eps_p)
+                   >> int_p[assign_a(tmpData.degree)] >> (',' | eps_p)
+                   >> int_p[assign_a(tmpData.xType)] >> (',' | eps_p)
+                   >> int_p[assign_a(tmpData.yType)] >> (',' | eps_p) >>
                    // array of points, weights and knots
                    (list_p(
                       (
                         (real_p[assign_a(point.first)] >> (',' | eps_p) >>
-                         real_p[assign_a(point.second)])[push_back_a(controlPoints,point)]
+                         real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]
                         >> (',' | eps_p) >>
-                        real_p[push_back_a(knotVector)] >> (',' | eps_p) >>
-                        real_p[push_back_a(weights)]), ',' | eps_p ))
+                        real_p[push_back_a(tmpData.knots)] >> (',' | eps_p) >>
+                        real_p[push_back_a(tmpData.weights)]), ',' | eps_p ))
                  ) >> ')' >> end_p,
                  //  End grammar
                  space_p).full;
@@ -1732,13 +1726,15 @@ int libvisio::VSDXMLParserBase::readNURBSFormula(double &knotLast, unsigned &deg
 
   if( !bRes )
     return -1;
+  data = tmpData;
   return 1;
 }
 
-int libvisio::VSDXMLParserBase::readPolylineFormula(unsigned char &typeX, unsigned char &typeY,
-    std::vector<std::pair<double,double> > &points, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &data, xmlTextReaderPtr reader)
 {
   using namespace ::boost::spirit::classic;
+
+  PolylineData tmpData;
 
   bool bRes = false;
   xmlChar *formula = readStringData(reader);
@@ -1752,21 +1748,23 @@ int libvisio::VSDXMLParserBase::readPolylineFormula(unsigned char &typeX, unsign
                  (
                    str_p("POLYLINE")
                    >> '('
-                   >> int_p[assign_a(typeX)] >> (',' | eps_p)
-                   >> int_p[assign_a(typeY)] >> (',' | eps_p) >>
+                   >> int_p[assign_a(tmpData.xType)] >> (',' | eps_p)
+                   >> int_p[assign_a(tmpData.yType)] >> (',' | eps_p) >>
                    // array of points
                    (list_p(
                       (
                         (real_p[assign_a(point.first)] >> (',' | eps_p) >>
-                         real_p[assign_a(point.second)])[push_back_a(points,point)]), ',' | eps_p ))
+                         real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]), ',' | eps_p ))
                  ) >> ')' >> end_p,
                  //  End grammar
                  space_p).full;
+
     xmlFree(formula);
   }
 
   if( !bRes )
     return -1;
+  data = tmpData;
   return 1;
 }
 
