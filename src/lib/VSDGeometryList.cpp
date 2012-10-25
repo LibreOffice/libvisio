@@ -116,7 +116,7 @@ public:
                      const boost::optional<double> &x2, const boost::optional<double> &y2,
                      const boost::optional<double> &angle, const boost::optional<double> &ecc) :
     VSDGeometryListElement(id, level), m_x3(FROM_OPTIONAL(x3, 0.0)), m_y3(FROM_OPTIONAL(y3, 0.0)), m_x2(FROM_OPTIONAL(x2, 0.0)),
-    m_y2(FROM_OPTIONAL(y2, 0.0)), m_angle(FROM_OPTIONAL(angle, 0.0)), m_ecc(FROM_OPTIONAL(ecc, 0.0)) {}
+    m_y2(FROM_OPTIONAL(y2, 0.0)), m_angle(FROM_OPTIONAL(angle, 0.0)), m_ecc(FROM_OPTIONAL(ecc, 1.0)) {}
   virtual ~VSDEllipticalArcTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
@@ -280,7 +280,7 @@ public:
                         const boost::optional<double> &ecc) :
     VSDGeometryListElement(id, level), m_x3(FROM_OPTIONAL(x3, 0.0)), m_y3(FROM_OPTIONAL(y3, 0.0)),
     m_x2(FROM_OPTIONAL(x2, 0.0)), m_y2(FROM_OPTIONAL(y2, 0.0)), m_angle(FROM_OPTIONAL(angle, 0.0)),
-    m_ecc(FROM_OPTIONAL(ecc, 0.0)) {}
+    m_ecc(FROM_OPTIONAL(ecc, 1.0)) {}
   virtual ~VSDRelEllipticalArcTo() {}
   void handle(VSDCollector *collector) const;
   VSDGeometryListElement *clone();
