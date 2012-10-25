@@ -64,6 +64,8 @@ private:
   int getElementToken(xmlTextReaderPtr reader);
   int getElementDepth(xmlTextReaderPtr reader);
 
+  int skipSection(xmlTextReaderPtr reader);
+
   // Functions parsing the Visio 2013 OPC document structure
 
   bool parseDocument(WPXInputStream *input, const char *name);

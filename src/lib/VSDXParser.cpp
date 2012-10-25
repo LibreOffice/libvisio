@@ -1067,6 +1067,11 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readGeometry(reader);
       break;
+    case XML_ACTIONS:
+    case XML_CONNECTION:
+    case XML_USER:
+      ret = skipSection(reader);
+      break;
     case XML_RESIZEMODE:
     default:
       break;
@@ -1074,15 +1079,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
   }
   while ((XML_SHAPES != tokenId) && (XML_SHAPE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
-  if (XML_SHAPE == tokenId && XML_READER_TYPE_END_ELEMENT == tokenType)
-  {
-    if (m_isStencilStarted)
-      m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
-    else
-      _flushShape();
-    m_shape.clear();
-  }
-  else if (XML_SHAPES == tokenId)
+  if (1 == ret)
     processXmlNode(reader);
 }
 
@@ -1111,6 +1108,21 @@ void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
   if (!m_shape.m_foreign)
     m_shape.m_foreign = new ForeignData();
   m_shape.m_foreign->data = m_currentBinaryData;
+}
+
+int libvisio::VSDXParser::skipSection(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = -1;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    tokenType = xmlTextReaderNodeType(reader);
+  }
+  while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  return ret;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
