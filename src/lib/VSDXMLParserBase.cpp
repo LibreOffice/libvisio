@@ -51,6 +51,7 @@ libvisio::VSDXMLParserBase::VSDXMLParserBase()
     m_isShapeStarted(false), m_isPageStarted(false), m_currentGeometryList(0),
     m_currentGeometryListIndex(MINUS_ONE)
 {
+  initColours();
 }
 
 libvisio::VSDXMLParserBase::~VSDXMLParserBase()
@@ -1124,7 +1125,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   m_shape.m_shapeId = id;
 }
 
-void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
+void libvisio::VSDXMLParserBase::initColours()
 {
   m_colours.clear();
   m_colours[0] = Colour(0x00, 0x00, 0x00, 0);
@@ -1151,10 +1152,16 @@ void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
   m_colours[21] = Colour(0x4D, 0x4D, 0x4D, 0);
   m_colours[22] = Colour(0x33, 0x33, 0x33, 0);
   m_colours[23] = Colour(0x1A, 0x1A, 0x1A, 0);
+}
 
+void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
+{
   int ret = 1;
   int tokenId = -1;
   int tokenType = -1;
+
+  initColours();
+
   do
   {
     ret = xmlTextReaderRead(reader);

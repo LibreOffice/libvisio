@@ -161,6 +161,8 @@ protected:
 private:
   VSDXMLParserBase(const VSDXMLParserBase &);
   VSDXMLParserBase &operator=(const VSDXMLParserBase &);
+
+  void initColours();
 };
 
 } // namespace libvisio
