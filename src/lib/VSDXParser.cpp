@@ -876,6 +876,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
+    int tokenClass = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
     if (-1 == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readShapeProperties: unknown token %s\n", xmlTextReaderConstName(reader)));
@@ -1067,13 +1068,11 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readGeometry(reader);
       break;
-    case XML_ACTIONS:
-    case XML_CONNECTION:
-    case XML_USER:
-      ret = skipSection(reader);
-      break;
     case XML_RESIZEMODE:
+      break;
     default:
+      if (XML_SECTION == tokenClass && XML_READER_TYPE_ELEMENT == tokenType)
+        ret = skipSection(reader);
       break;
     }
   }
