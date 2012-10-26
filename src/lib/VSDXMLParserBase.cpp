@@ -1102,16 +1102,10 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       if (tmpShape->m_foreign)
         m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
       m_shape.m_text = tmpShape->m_text;
-      m_shape.m_textFormat = tmpShape->m_textFormat;
-      m_shape.m_lineStyle = tmpShape->m_lineStyle;
-      m_shape.m_fillStyle = tmpShape->m_fillStyle;
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
       m_shape.m_geometries = tmpShape->m_geometries;
-      m_shape.m_lineStyleId = tmpShape->m_lineStyleId;
-      m_shape.m_fillStyleId = tmpShape->m_fillStyleId;
-      m_shape.m_textStyleId = tmpShape->m_textStyleId;
     }
   }
 
@@ -1120,9 +1114,10 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   else
     m_shapeList.addShapeId(id);
 
-  m_shape.m_lineStyleId = lineStyle != MINUS_ONE ? lineStyle : m_shape.m_lineStyleId;
-  m_shape.m_fillStyleId = fillStyle != MINUS_ONE ? fillStyle : m_shape.m_fillStyleId;
-  m_shape.m_textStyleId = textStyle != MINUS_ONE ? textStyle : m_shape.m_textStyleId;;
+  m_shape.m_lineStyleId = lineStyle;
+  m_shape.m_fillStyleId = fillStyle;
+  m_shape.m_textStyleId = textStyle;
+
   m_shape.m_parent = m_shapeStack.empty() ? MINUS_ONE : m_shapeStack.top().m_shapeId;
   m_shape.m_masterPage = masterPage;
   m_shape.m_masterShape = masterShape;
