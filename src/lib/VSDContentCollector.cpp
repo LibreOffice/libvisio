@@ -489,6 +489,7 @@ void libvisio::VSDContentCollector::_flushText()
   unsigned int paraCharCount = 0;
   unsigned long textBufferPosition = 0;
   const unsigned char *pTextBuffer = m_textStream.getDataBuffer();
+  const unsigned long nTextBufferLength = m_textStream.size();
 
   for (std::vector<VSDParaStyle>::iterator paraIt = m_paraFormats.begin();
        paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); ++paraIt)
@@ -588,7 +589,8 @@ void libvisio::VSDContentCollector::_flushText()
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
         VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
         std::vector<unsigned char> tmpBuffer;
-        for (unsigned i = 0; i < max*2; ++i)
+        unsigned i = 0;
+        for (; i < max*2 && textBufferPosition+i <nTextBufferLength; ++i)
           tmpBuffer.push_back(pTextBuffer[textBufferPosition+i]);
         if (!paraCharCount && tmpBuffer.size() >= 2)
         {
@@ -608,14 +610,34 @@ void libvisio::VSDContentCollector::_flushText()
 
         if (!tmpBuffer.empty())
           appendCharacters(text, tmpBuffer);
-        textBufferPosition += max*2;
+        textBufferPosition += i;
+      }
+      else if (m_textFormat == VSD_TEXT_UTF8)
+      {
+        unsigned long max = m_charFormats[charIndex].charCount <= m_textStream.size() ? m_charFormats[charIndex].charCount : m_textStream.size();
+        std::vector<unsigned char> tmpBuffer;
+        unsigned i = 0;
+        for (; i < max && textBufferPosition+i <nTextBufferLength; ++i)
+          tmpBuffer.push_back(pTextBuffer[textBufferPosition+i]);
+        if (!paraCharCount && !tmpBuffer.empty())
+        {
+          while (!tmpBuffer.empty() && tmpBuffer.back() == 0)
+            tmpBuffer.pop_back();
+          if (!tmpBuffer.empty() && (tmpBuffer.back() == 0x0a || tmpBuffer.back() == '\n' || tmpBuffer.back() == 0x0e))
+            tmpBuffer.back() = 0;
+        }
+        printf("Text size: %lu\n", tmpBuffer.size());
+        if (!tmpBuffer.empty() && tmpBuffer[0])
+          appendCharacters(text, tmpBuffer, VSD_TEXT_UTF8);
+        textBufferPosition += i;
       }
       else
       {
         unsigned long max = m_charFormats[charIndex].charCount <= m_textStream.size() ? m_charFormats[charIndex].charCount : m_textStream.size();
         max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
         std::vector<unsigned char> tmpBuffer;
-        for (unsigned i = 0; i < max; ++i)
+        unsigned i = 0;
+        for (; i < max && textBufferPosition+i <nTextBufferLength; ++i)
           tmpBuffer.push_back(pTextBuffer[textBufferPosition+i]);
         if (!paraCharCount && !tmpBuffer.empty())
         {
@@ -626,7 +648,7 @@ void libvisio::VSDContentCollector::_flushText()
         }
         if (!tmpBuffer.empty())
           appendCharacters(text, tmpBuffer, encoding);
-        textBufferPosition += max;
+        textBufferPosition += i;
       }
 
       VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));

@@ -1004,6 +1004,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   }
 
   m_shape.clear();
+  m_shape.m_textFormat = VSD_TEXT_UTF8;
 
   if (m_isStencilStarted)
     m_currentStencil->setFirstShape(id);
@@ -1166,12 +1167,17 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
     default:
       if (XML_READER_TYPE_TEXT == tokenType)
       {
+        WPXBinaryData tmpText;
+        const unsigned char *tmpBuffer = xmlTextReaderConstValue(reader);
+        int tmpLength = xmlStrlen(tmpBuffer);
+        for (int i = 0; i < tmpLength && tmpBuffer[i]; ++i)
+          tmpText.append(tmpBuffer[i]);
         if (!m_shape.m_charListVector.empty())
         {
           unsigned charCount = m_shape.m_charListVector.back().getCharCount(cp);
           if (MINUS_ONE != charCount)
           {
-            charCount += xmlStrlen(xmlTextReaderConstValue(reader));
+            charCount += (unsigned)tmpText.size();
             m_shape.m_charListVector.back().setCharCount(cp, charCount);
           }
         }
@@ -1180,11 +1186,11 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
           unsigned charCount = m_shape.m_paraListVector.back().getCharCount(pp);
           if (MINUS_ONE != charCount)
           {
-            charCount += xmlStrlen(xmlTextReaderConstValue(reader));
+            charCount += (unsigned)tmpText.size();
             m_shape.m_paraListVector.back().setCharCount(pp, charCount);
           }
         }
-        m_shape.m_text.append(xmlTextReaderConstValue(reader), xmlStrlen(xmlTextReaderConstValue(reader)));
+        m_shape.m_text.append(tmpText);
         m_shape.m_textFormat = VSD_TEXT_UTF8;
       }
       break;
