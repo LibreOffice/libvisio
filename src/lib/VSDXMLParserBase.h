@@ -96,6 +96,7 @@ protected:
   int readPolylineData(boost::optional<PolylineData> &data, xmlTextReaderPtr reader);
 
   virtual xmlChar *readStringData(xmlTextReaderPtr reader) = 0;
+  unsigned getIX(xmlTextReaderPtr reader);
   virtual void _handleLevelChange(unsigned level);
   void _flushShape();
 

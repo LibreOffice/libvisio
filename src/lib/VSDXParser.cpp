@@ -1084,6 +1084,10 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readGeometry(reader);
       break;
+    case XML_TEXT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readText(reader);
+      break;
     case XML_RESIZEMODE:
       break;
     default:
