@@ -89,6 +89,9 @@ private:
 
   void getBinaryData(xmlTextReaderPtr reader);
 
+  void readParagraph(xmlTextReaderPtr reader);
+  void readCharacter(xmlTextReaderPtr reader);
+
   // Private data
 
   WPXInputStream *m_input;

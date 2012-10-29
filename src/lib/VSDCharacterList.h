@@ -48,9 +48,12 @@ public:
   VSDCharacterList(const VSDCharacterList &charList);
   ~VSDCharacterList();
   VSDCharacterList &operator=(const VSDCharacterList &charList);
-  void addCharIX(unsigned id, unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-                 bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-                 bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace);
+  void addCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+                 const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
+                 const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
+                 const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
+                 const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
+                 const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDCollector *collector) const;
   void clear();

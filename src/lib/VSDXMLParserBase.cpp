@@ -65,7 +65,7 @@ libvisio::VSDXMLParserBase::~VSDXMLParserBase()
 void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -102,7 +102,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readGeometry: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -186,7 +186,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -217,7 +217,7 @@ void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readMoveTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -243,7 +243,7 @@ void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -274,7 +274,7 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readLineTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -300,7 +300,7 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -332,7 +332,7 @@ void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readArcTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -361,7 +361,7 @@ void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -396,7 +396,7 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readEllipticalArcTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -434,7 +434,7 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -469,7 +469,7 @@ void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readEllipse: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -507,7 +507,7 @@ void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -543,7 +543,7 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readNURBSTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -585,7 +585,7 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -617,7 +617,7 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readPolylineTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -646,7 +646,7 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -679,7 +679,7 @@ void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readInfiniteLine: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -711,7 +711,7 @@ void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -746,7 +746,7 @@ void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readRelEllipticalArcTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -784,7 +784,7 @@ void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -819,7 +819,7 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readRelCubBezTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -865,7 +865,7 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -896,7 +896,7 @@ void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readRelLineTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -922,7 +922,7 @@ void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -953,7 +953,7 @@ void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readRelMoveTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -979,7 +979,7 @@ void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -1013,7 +1013,7 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readRelQuadBezTo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -1157,7 +1157,7 @@ void libvisio::VSDXMLParserBase::initColours()
 void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
 
   initColours();
@@ -1166,7 +1166,7 @@ void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readColours: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -1227,12 +1227,211 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr /* reader */)
 {
 }
 
-void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
 {
+  if (xmlTextReaderIsEmptyElement(reader))
+    return;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  unsigned ix = MINUS_ONE;
+  if (ixString)
+  {
+    ix = (unsigned)xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  boost::optional<VSDFont> fontFace;
+  boost::optional<unsigned> charCount;
+  boost::optional<unsigned short> fontID;
+  boost::optional<Colour> fontColour;
+
+  boost::optional<bool> bold;
+  boost::optional<bool> italic;
+  boost::optional<bool> underline;
+  boost::optional<bool> doubleunderline;
+  boost::optional<bool> strikeout;
+  boost::optional<bool> doublestrikeout;
+  boost::optional<bool> allcaps;
+  boost::optional<bool> initcaps;
+  boost::optional<bool> smallcaps;
+  boost::optional<bool> superscript;
+  boost::optional<bool> subscript;
+  boost::optional<double> fontSize;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readCharIX: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_FONT:
+      break;
+    case XML_COLOR:
+      break;
+    case XML_STYLE:
+      break;
+    case XML_CASE:
+      break;
+    case XML_POS:
+      break;
+    case XML_FONTSCALE:
+      break;
+    case XML_SIZE:
+      break;
+    case XML_DBLUNDERLINE:
+      break;
+    case XML_OVERLINE:
+      break;
+    case XML_STRIKETHRU:
+      break;
+    case XML_HIGHLIGHT:
+      break;
+    case XML_DOUBLESTRIKETHROUGH:
+      break;
+    case XML_RTLTEXT:
+      break;
+    case XML_USEVERTICAL:
+      break;
+    case XML_LETTERSPACE:
+      break;
+    case XML_COLORTRANS:
+      break;
+    case XML_ASIANFONT:
+      break;
+    case XML_COMPLEXSCRIPTFONT:
+      break;
+    case XML_LOCALIZEFONT:
+      break;
+    case XML_COMPLEXSCRIPTSIZE:
+      break;
+    case XML_LANGID:
+      break;
+    default:
+      break;
+    }
+
+  }
+  while (((XML_CHAR != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+
+  if (m_isInStyles)
+    m_collector->collectCharIXStyle(ix, level, charCount, fontID, fontColour, fontSize,
+                                    bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  else
+  {
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil character style\n"));
+    }
+
+    m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, fontID, fontColour, fontSize,
+                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace));
+    if (m_shape.m_charListVector.empty())
+      m_shape.m_charListVector.push_back(VSDCharacterList());
+    m_shape.m_charListVector.back().addCharIX(ix, level, charCount, fontID, fontColour, fontSize,
+        bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+        allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  }
 }
 
-void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr /* reader */)
+void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
 {
+  if (xmlTextReaderIsEmptyElement(reader))
+    return;
+  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  unsigned ix = MINUS_ONE;
+  if (ixString)
+  {
+    ix = (unsigned)xmlStringToLong(ixString);
+    xmlFree(ixString);
+  }
+
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  int level = getElementDepth(reader);
+
+  boost::optional<unsigned> charCount;
+  boost::optional<double> indFirst;
+  boost::optional<double> indLeft;
+  boost::optional<double> indRight;
+  boost::optional<double> spLine;
+  boost::optional<double> spBefore;
+  boost::optional<double> spAfter;
+  boost::optional<unsigned char> align;
+  boost::optional<unsigned> flags;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readParaIX: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenType)
+    {
+    case XML_INDFIRST:
+      break;
+    case XML_INDLEFT:
+      break;
+    case XML_INDRIGHT:
+      break;
+    case XML_SPLINE:
+      break;
+    case XML_SPBEFORE:
+      break;
+    case XML_SPAFTER:
+      break;
+    case XML_HORZALIGN:
+      break;
+    case XML_BULLET:
+      break;
+    case XML_BULLETSTR:
+      break;
+    case XML_BULLETFONT:
+      break;
+    case XML_BULLETFONTSIZE:
+      break;
+    case XML_TEXTPOSAFTERBULLET:
+      break;
+    case XML_FLAGS:
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_PARA != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+
+  if (m_isInStyles)
+    m_collector->collectParaIXStyle(ix, level, charCount, indFirst, indLeft, indRight,
+                                    spLine, spBefore, spAfter, align, flags);
+  else
+  {
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
+    }
+
+    m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
+                                 spLine, spBefore, spAfter, align, flags));
+    if (m_shape.m_paraListVector.empty())
+      m_shape.m_paraListVector.push_back(VSDParagraphList());
+    m_shape.m_paraListVector.back().addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
+        spLine, spBefore, spAfter, align, flags);
+  }
 }
 
 void libvisio::VSDXMLParserBase::readNameList(xmlTextReaderPtr /* reader */)
@@ -1284,7 +1483,7 @@ void libvisio::VSDXMLParserBase::readPageSheet(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -1319,7 +1518,7 @@ void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readSplineStart: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -1357,7 +1556,7 @@ void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::readSplineKnot(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   int level = getElementDepth(reader);
 
@@ -1389,7 +1588,7 @@ void libvisio::VSDXMLParserBase::readSplineKnot(xmlTextReaderPtr reader)
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXMLParserBase::readSplineKnot: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -1664,7 +1863,7 @@ void libvisio::VSDXMLParserBase::handleMasterEnd(xmlTextReaderPtr /* reader */)
 void libvisio::VSDXMLParserBase::skipMasters(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
@@ -1678,7 +1877,7 @@ void libvisio::VSDXMLParserBase::skipMasters(xmlTextReaderPtr reader)
 void libvisio::VSDXMLParserBase::skipPages(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {

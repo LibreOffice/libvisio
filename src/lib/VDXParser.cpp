@@ -255,6 +255,14 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readGeometry(reader);
     break;
+  case XML_PARA:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readParaIX(reader);
+    break;
+  case XML_CHAR:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readCharIX(reader);
+    break;
   default:
     break;
   }
@@ -301,13 +309,13 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readLine: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -365,13 +373,13 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readFillAndShadow: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -446,13 +454,13 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readXFormData: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -518,13 +526,13 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readPageProps: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -583,13 +591,13 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
 void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readFonts: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -626,7 +634,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
@@ -738,13 +746,13 @@ void libvisio::VDXParser::getBinaryData(xmlTextReaderPtr reader)
 void libvisio::VDXParser::readForeignInfo(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readForeignInfo: unknown token %s\n", xmlTextReaderConstName(reader)));
     }

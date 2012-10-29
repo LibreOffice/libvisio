@@ -55,6 +55,7 @@ CellDef
 CenterX
 CenterY
 Char
+Character
 Checked
 Color
 ColorEntry
@@ -326,6 +327,7 @@ PaperSize
 PaperSource
 PaperWidth
 Para
+Paragraph
 Perpendicular
 PinX
 PinY

@@ -608,13 +608,13 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VSDXParser::readPageSheetProperties: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -705,13 +705,13 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readLine: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -816,6 +816,14 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readByteData(textDirection, reader);
       break;
+    case XML_PARAGRAPH:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readParagraph(reader);
+      break;
+    case XML_CHARACTER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readCharacter(reader);
+      break;
     case XML_SHDWFOREGNDTRANS:
     case XML_SHDWBKGNDTRANS:
     case XML_SHAPESHDWTYPE:
@@ -870,14 +878,14 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
   long bgClrId = 0;
 
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
     int tokenClass = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
-    if (-1 == tokenId)
+    if (XML_TOKEN_INVALID == tokenId)
     {
       VSD_DEBUG_MSG(("VDXParser::readShapeProperties: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
@@ -1063,6 +1071,14 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readByteData(m_shape.m_textBlockStyle.textDirection, reader);
       break;
+    case XML_PARAGRAPH:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readParagraph(reader);
+      break;
+    case XML_CHARACTER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readCharacter(reader);
+      break;
     case XML_GEOM:
     case XML_GEOMETRY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1080,6 +1096,48 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
 
   if (1 == ret)
     processXmlNode(reader);
+}
+
+void libvisio::VSDXParser::readParagraph(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXParser::readParagraph: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    if (XML_ROW == tokenType)
+      readParaIX(reader);
+  }
+  while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXParser::readCharacter(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXParser::readCharacter: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    if (XML_ROW == tokenType)
+      readCharIX(reader);
+  }
+  while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
@@ -1112,7 +1170,7 @@ void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
 int libvisio::VSDXParser::skipSection(xmlTextReaderPtr reader)
 {
   int ret = 1;
-  int tokenId = -1;
+  int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   do
   {

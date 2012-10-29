@@ -47,8 +47,10 @@ public:
   VSDParagraphList(const VSDParagraphList &paraList);
   ~VSDParagraphList();
   VSDParagraphList &operator=(const VSDParagraphList &paraList);
-  void addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-                 double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags);
+  void addParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+                 const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
+                 const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
+                 const boost::optional<unsigned> &flags);
 
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDCollector *collector) const;

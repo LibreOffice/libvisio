@@ -68,8 +68,8 @@ public:
                               std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) = 0;
   virtual void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) = 0;
   virtual void collectNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, const NURBSData &data) = 0;
-  virtual void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType, const std::vector<std::pair<double, double> > &points) = 0;
-  virtual void collectPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID) = 0;
+  virtual void collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType, const std::vector<std::pair<double, double> > &points) = 0;
+  virtual void collectPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID) = 0;
   virtual void collectPolylineTo(unsigned id, unsigned level, double x, double y, const PolylineData &data) = 0;
   virtual void collectShapeData(unsigned id, unsigned level, unsigned char xType, unsigned char yType, unsigned degree, double lastKnot,
                                 std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) = 0;
@@ -95,13 +95,13 @@ public:
 
   virtual void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format) = 0;
   virtual void collectText(unsigned level, const ::WPXBinaryData &textStream, TextFormat format) = 0;
-  virtual void collectCharIX(unsigned id , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+  virtual void collectCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
                              const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                              const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
                              const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                              const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
                              const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace) = 0;
-  virtual void collectParaIX(unsigned id , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+  virtual void collectParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
                              const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                              const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                              const boost::optional<unsigned> &flags) = 0;
@@ -127,13 +127,13 @@ public:
                                 const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                                 const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
                                 const boost::optional<Colour> &shfgc) = 0;
-  virtual void collectCharIXStyle(unsigned id , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+  virtual void collectCharIXStyle(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
                                   const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                                   const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
                                   const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                                   const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
                                   const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace) = 0;
-  virtual void collectParaIXStyle(unsigned id , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+  virtual void collectParaIXStyle(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
                                   const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                                   const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                                   const boost::optional<unsigned> &flags) = 0;

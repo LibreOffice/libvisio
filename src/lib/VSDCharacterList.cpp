@@ -46,13 +46,18 @@ public:
 class VSDCharIX : public VSDCharacterListElement
 {
 public:
-  VSDCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour, double fontSize,
-            bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-            bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace) :
-    m_id(id), m_level(level), m_charCount(charCount), m_fontID(fontID), m_fontColour(fontColour), m_fontSize(fontSize),
-    m_bold(bold), m_italic(italic), m_underline(underline), m_doubleunderline(doubleunderline), m_strikeout(strikeout),
-    m_doublestrikeout(doublestrikeout), m_allcaps(allcaps), m_initcaps(initcaps), m_smallcaps(smallcaps),
-    m_superscript(superscript), m_subscript(subscript), m_fontFace(fontFace) {}
+  VSDCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+            const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
+            const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
+            const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
+            const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
+            const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace) :
+    m_id(id), m_level(level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_fontID(FROM_OPTIONAL(fontID, 0)),
+    m_fontColour(FROM_OPTIONAL(fontColour, Colour())), m_fontSize(FROM_OPTIONAL(fontSize, 0.1668)), m_bold(FROM_OPTIONAL(bold, false)),
+    m_italic(FROM_OPTIONAL(italic, false)), m_underline(FROM_OPTIONAL(underline, false)), m_doubleunderline(FROM_OPTIONAL(doubleunderline, false)),
+    m_strikeout(FROM_OPTIONAL(strikeout, false)), m_doublestrikeout(FROM_OPTIONAL(doublestrikeout, false)),
+    m_allcaps(FROM_OPTIONAL(allcaps, false)), m_initcaps(FROM_OPTIONAL(initcaps, false)), m_smallcaps(FROM_OPTIONAL(smallcaps, false)),
+    m_superscript(FROM_OPTIONAL(superscript, false)), m_subscript(FROM_OPTIONAL(subscript, false)), m_fontFace(FROM_OPTIONAL(fontFace, VSDFont())) {}
   ~VSDCharIX() {}
   void handle(VSDCollector *collector) const;
   VSDCharacterListElement *clone();
@@ -114,9 +119,12 @@ libvisio::VSDCharacterList::~VSDCharacterList()
   clear();
 }
 
-void libvisio::VSDCharacterList::addCharIX(unsigned id , unsigned level, unsigned charCount, unsigned short fontID, Colour fontColour,
-    double fontSize, bool bold, bool italic, bool underline, bool doubleunderline, bool strikeout, bool doublestrikeout,
-    bool allcaps, bool initcaps, bool smallcaps, bool superscript, bool subscript, VSDFont fontFace)
+void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+    const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
+    const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
+    const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
+    const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
+    const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace)
 {
   m_elements[id] = new VSDCharIX(id, level, charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline,
                                  strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);

@@ -46,10 +46,14 @@ public:
 class VSDParaIX : public VSDParagraphListElement
 {
 public:
-  VSDParaIX(unsigned id , unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-            double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags) :
-    m_id(id), m_level(level), m_charCount(charCount), m_indFirst(indFirst), m_indLeft(indLeft), m_indRight(indRight),
-    m_spLine(spLine), m_spBefore(spBefore), m_spAfter(spAfter), m_align(align), m_flags(flags) {}
+  VSDParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+            const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
+            const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
+            const boost::optional<unsigned> &flags) :
+    m_id(id), m_level(level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_indFirst(FROM_OPTIONAL(indFirst, 0.0)),
+    m_indLeft(FROM_OPTIONAL(indLeft, 0.0)), m_indRight(FROM_OPTIONAL(indRight, 0.0)), m_spLine(FROM_OPTIONAL(spLine, 0.0)),
+    m_spBefore(FROM_OPTIONAL(spBefore, 0.0)), m_spAfter(FROM_OPTIONAL(spAfter, 0.0)), m_align(FROM_OPTIONAL(align, 0)),
+    m_flags(FROM_OPTIONAL(flags, 0)) {}
   ~VSDParaIX() {}
   void handle(VSDCollector *collector) const;
   VSDParagraphListElement *clone();
@@ -111,8 +115,10 @@ libvisio::VSDParagraphList::~VSDParagraphList()
   clear();
 }
 
-void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, unsigned charCount, double indFirst, double indLeft, double indRight,
-    double spLine, double spBefore, double spAfter, unsigned char align, unsigned flags)
+void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+    const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
+    const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
+    const boost::optional<unsigned> &flags)
 {
   m_elements[id] = new VSDParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
 }
