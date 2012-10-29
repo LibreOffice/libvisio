@@ -1167,19 +1167,26 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
     default:
       if (XML_READER_TYPE_TEXT == tokenType)
       {
-        unsigned charCount = m_shape.m_charListVector.back().getCharCount(cp);
-        if (MINUS_ONE != charCount)
+        if (!m_shape.m_charListVector.empty())
         {
-          charCount += xmlStrlen(xmlTextReaderConstValue(reader));
-          m_shape.m_charListVector.back().setCharCount(cp, charCount);
+          unsigned charCount = m_shape.m_charListVector.back().getCharCount(cp);
+          if (MINUS_ONE != charCount)
+          {
+            charCount += xmlStrlen(xmlTextReaderConstValue(reader));
+            m_shape.m_charListVector.back().setCharCount(cp, charCount);
+          }
         }
-        charCount = m_shape.m_paraListVector.back().getCharCount(pp);
-        if (MINUS_ONE != charCount)
+        if (!m_shape.m_paraListVector.empty())
         {
-          charCount += xmlStrlen(xmlTextReaderConstValue(reader));
-          m_shape.m_paraListVector.back().setCharCount(pp, charCount);
-          m_shape.m_text.append(xmlTextReaderConstValue(reader), xmlStrlen(xmlTextReaderConstValue(reader)));
+          unsigned charCount = m_shape.m_paraListVector.back().getCharCount(pp);
+          if (MINUS_ONE != charCount)
+          {
+            charCount += xmlStrlen(xmlTextReaderConstValue(reader));
+            m_shape.m_paraListVector.back().setCharCount(pp, charCount);
+          }
         }
+        m_shape.m_text.append(xmlTextReaderConstValue(reader), xmlStrlen(xmlTextReaderConstValue(reader)));
+        m_shape.m_textFormat = VSD_TEXT_UTF8;
       }
       break;
     }
@@ -1231,26 +1238,97 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
     case XML_FONT:
       break;
     case XML_COLOR:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readExtendedColourData(fontColour, reader);
       break;
     case XML_STYLE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long value = 0;
+        readLongData(value, reader);
+        if (value &0x1)
+          bold = true;
+        else
+          bold = false;
+        if (value &0x2)
+          italic = true;
+        else
+          italic = false;
+        if (value &0x4)
+          underline = true;
+        else
+          underline = false;
+        if (value &0x8)
+          smallcaps = true;
+        else
+          smallcaps = false;
+      }
       break;
     case XML_CASE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long value = 0;
+        readLongData(value, reader);
+        switch (value)
+        {
+        case 1:
+          allcaps = true;
+          initcaps = false;
+          break;
+        case 2:
+          allcaps = false;
+          initcaps = true;
+          break;
+        default:
+          allcaps = false;
+          initcaps = false;
+          break;
+        }
+      }
       break;
     case XML_POS:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long value = 0;
+        readLongData(value, reader);
+        switch (value)
+        {
+        case 1:
+          superscript = true;
+          subscript = false;
+          break;
+        case 2:
+          subscript = true;
+          superscript = false;
+          break;
+        default:
+          subscript = false;
+          superscript = false;
+          break;
+        }
+      }
       break;
     case XML_FONTSCALE:
       break;
     case XML_SIZE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readDoubleData(fontSize, reader);
       break;
     case XML_DBLUNDERLINE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readBoolData(doubleunderline, reader);
       break;
     case XML_OVERLINE:
       break;
     case XML_STRIKETHRU:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readBoolData(strikeout, reader);
       break;
     case XML_HIGHLIGHT:
       break;
     case XML_DOUBLESTRIKETHROUGH:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readBoolData(doublestrikeout, reader);
       break;
     case XML_RTLTEXT:
       break;
