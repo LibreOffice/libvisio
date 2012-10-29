@@ -37,10 +37,14 @@ namespace libvisio
 class VSDCharacterListElement
 {
 public:
-  VSDCharacterListElement() {}
+  VSDCharacterListElement(unsigned id, unsigned level) : m_id(id), m_level(level) {}
   virtual ~VSDCharacterListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDCharacterListElement *clone() = 0;
+  virtual unsigned getCharCount() const = 0;
+  virtual void setCharCount(unsigned charCount) = 0;
+protected:
+  unsigned m_id, m_level;
 };
 
 class VSDCharIX : public VSDCharacterListElement
@@ -52,7 +56,7 @@ public:
             const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
             const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
             const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace) :
-    m_id(id), m_level(level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_fontID(FROM_OPTIONAL(fontID, 0)),
+    VSDCharacterListElement(id, level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_fontID(FROM_OPTIONAL(fontID, 0)),
     m_fontColour(FROM_OPTIONAL(fontColour, Colour())), m_fontSize(FROM_OPTIONAL(fontSize, 0.1668)), m_bold(FROM_OPTIONAL(bold, false)),
     m_italic(FROM_OPTIONAL(italic, false)), m_underline(FROM_OPTIONAL(underline, false)), m_doubleunderline(FROM_OPTIONAL(doubleunderline, false)),
     m_strikeout(FROM_OPTIONAL(strikeout, false)), m_doublestrikeout(FROM_OPTIONAL(doublestrikeout, false)),
@@ -61,8 +65,15 @@ public:
   ~VSDCharIX() {}
   void handle(VSDCollector *collector) const;
   VSDCharacterListElement *clone();
+  unsigned getCharCount() const
+  {
+    return m_charCount;
+  }
+  void setCharCount(unsigned charCount)
+  {
+    m_charCount = charCount;
+  }
 private:
-  unsigned m_id, m_level;
   unsigned m_charCount;
   unsigned short m_fontID;
   Colour m_fontColour;
@@ -128,6 +139,22 @@ void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const bo
 {
   m_elements[id] = new VSDCharIX(id, level, charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline,
                                  strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+}
+
+unsigned libvisio::VSDCharacterList::getCharCount(unsigned id) const
+{
+  std::map<unsigned, VSDCharacterListElement *>::const_iterator iter = m_elements.find(id);
+  if (iter != m_elements.end() && iter->second)
+    return iter->second->getCharCount();
+  else
+    return MINUS_ONE;
+}
+
+void libvisio::VSDCharacterList::setCharCount(unsigned id, unsigned charCount)
+{
+  std::map<unsigned, VSDCharacterListElement *>::iterator iter = m_elements.find(id);
+  if (iter !=  m_elements.end() && iter->second)
+    iter->second->setCharCount(charCount);
 }
 
 void libvisio::VSDCharacterList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

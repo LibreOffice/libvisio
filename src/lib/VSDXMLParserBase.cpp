@@ -1138,12 +1138,53 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
 {
   if (xmlTextReaderIsEmptyElement(reader))
     return;
-#if 0
-  unsigned prevCp = MINUS_ONE;
-  unsigned prevPp = MINUS_ONE;
+
   unsigned cp = 0;
   unsigned pp = 0;
-#endif
+  m_shape.m_text.clear();
+
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readText: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_CP:
+      cp = getIX(reader);
+      break;
+    case XML_PP:
+      pp = getIX(reader);
+      break;
+    default:
+      if (XML_READER_TYPE_TEXT == tokenType)
+      {
+        unsigned charCount = m_shape.m_charListVector.back().getCharCount(cp);
+        if (MINUS_ONE != charCount)
+        {
+          charCount += xmlStrlen(xmlTextReaderConstValue(reader));
+          m_shape.m_charListVector.back().setCharCount(cp, charCount);
+        }
+        charCount = m_shape.m_paraListVector.back().getCharCount(pp);
+        if (MINUS_ONE != charCount)
+        {
+          charCount += xmlStrlen(xmlTextReaderConstValue(reader));
+          m_shape.m_paraListVector.back().setCharCount(pp, charCount);
+          m_shape.m_text.append(xmlTextReaderConstValue(reader), xmlStrlen(xmlTextReaderConstValue(reader)));
+        }
+      }
+      break;
+    }
+  }
+  while ((XML_TEXT != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
@@ -1159,7 +1200,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   int level = getElementDepth(reader);
 
   boost::optional<VSDFont> fontFace;
-  boost::optional<unsigned> charCount;
+  unsigned charCount = 0;
   boost::optional<unsigned short> fontID;
   boost::optional<Colour> fontColour;
 
@@ -1270,7 +1311,7 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  boost::optional<unsigned> charCount;
+  unsigned charCount = 0;
   boost::optional<double> indFirst;
   boost::optional<double> indLeft;
   boost::optional<double> indRight;

@@ -37,10 +37,14 @@ namespace libvisio
 class VSDParagraphListElement
 {
 public:
-  VSDParagraphListElement() {}
+  VSDParagraphListElement(unsigned id, unsigned level) : m_id(id), m_level(level) {}
   virtual ~VSDParagraphListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDParagraphListElement *clone() = 0;
+  virtual unsigned getCharCount() const = 0;
+  virtual void setCharCount(unsigned charCount) = 0;
+protected:
+  unsigned m_id, m_level;
 };
 
 class VSDParaIX : public VSDParagraphListElement
@@ -50,15 +54,22 @@ public:
             const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
             const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
             const boost::optional<unsigned> &flags) :
-    m_id(id), m_level(level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_indFirst(FROM_OPTIONAL(indFirst, 0.0)),
+    VSDParagraphListElement(id, level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_indFirst(FROM_OPTIONAL(indFirst, 0.0)),
     m_indLeft(FROM_OPTIONAL(indLeft, 0.0)), m_indRight(FROM_OPTIONAL(indRight, 0.0)), m_spLine(FROM_OPTIONAL(spLine, 0.0)),
     m_spBefore(FROM_OPTIONAL(spBefore, 0.0)), m_spAfter(FROM_OPTIONAL(spAfter, 0.0)), m_align(FROM_OPTIONAL(align, 0)),
     m_flags(FROM_OPTIONAL(flags, 0)) {}
   ~VSDParaIX() {}
   void handle(VSDCollector *collector) const;
   VSDParagraphListElement *clone();
+  unsigned getCharCount() const
+  {
+    return m_charCount;
+  }
+  void setCharCount(unsigned charCount)
+  {
+    m_charCount = charCount;
+  }
 private:
-  unsigned m_id, m_level;
   unsigned m_charCount;
   double m_indFirst;
   double m_indLeft;
@@ -121,6 +132,22 @@ void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, const bo
     const boost::optional<unsigned> &flags)
 {
   m_elements[id] = new VSDParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
+}
+
+unsigned libvisio::VSDParagraphList::getCharCount(unsigned id) const
+{
+  std::map<unsigned, VSDParagraphListElement *>::const_iterator iter = m_elements.find(id);
+  if (iter != m_elements.end() && iter->second)
+    return iter->second->getCharCount();
+  else
+    return MINUS_ONE;
+}
+
+void libvisio::VSDParagraphList::setCharCount(unsigned id, unsigned charCount)
+{
+  std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.find(id);
+  if (iter != m_elements.end() && iter->second)
+    iter->second->setCharCount(charCount);
 }
 
 void libvisio::VSDParagraphList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

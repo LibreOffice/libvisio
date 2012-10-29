@@ -54,6 +54,9 @@ public:
                  const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                  const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
                  const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace);
+  unsigned getCharCount(unsigned id) const;
+  void setCharCount(unsigned id, unsigned charCount);
+
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDCollector *collector) const;
   void clear();
