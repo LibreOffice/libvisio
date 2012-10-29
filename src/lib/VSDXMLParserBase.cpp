@@ -1018,7 +1018,6 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
     {
       if (tmpShape->m_foreign)
         m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
-      m_shape.m_text = tmpShape->m_text;
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
