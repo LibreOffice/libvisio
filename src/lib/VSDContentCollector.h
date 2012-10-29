@@ -270,6 +270,7 @@ private:
   VSDCharStyle m_defaultCharStyle;
   VSDParaStyle m_defaultParaStyle;
 
+  unsigned m_currentStyleSheet;
   VSDStyles m_styles;
 
   VSDStencils m_stencils;

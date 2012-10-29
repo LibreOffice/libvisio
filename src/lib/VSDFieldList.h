@@ -49,7 +49,7 @@ public:
   virtual ~VSDFieldListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDFieldListElement *clone() = 0;
-  virtual WPXString getString(const std::map<unsigned, WPXString>&) = 0;
+  virtual WPXString getString(const std::map<unsigned, WPXString> &) = 0;
   virtual void setNameId(int) = 0;
   virtual void setFormat(unsigned short) = 0;
   virtual void setValue(double) = 0;
