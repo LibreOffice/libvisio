@@ -492,7 +492,7 @@ void libvisio::VSDContentCollector::_flushText()
   const unsigned long nTextBufferLength = m_textStream.size();
 
   for (std::vector<VSDParaStyle>::iterator paraIt = m_paraFormats.begin();
-       paraIt < m_paraFormats.end() || charIndex < m_charFormats.size(); ++paraIt)
+       paraIt != m_paraFormats.end() && charIndex < m_charFormats.size(); ++paraIt)
   {
     WPXPropertyList paraProps;
 
