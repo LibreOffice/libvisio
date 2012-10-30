@@ -267,6 +267,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readText(reader);
     break;
+  case XML_TEXTXFORM:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readTxtXForm(reader);
+    break;
   default:
     break;
   }
@@ -515,8 +519,83 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
   while ((XML_XFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
-void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr /* reader */)
+void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr reader)
 {
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readXFormData: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_TXTPINX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->pinX, reader);
+      }
+      break;
+    case XML_TXTPINY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->pinY, reader);
+      }
+      break;
+    case XML_TXTWIDTH:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->width, reader);
+      }
+      break;
+    case XML_TXTHEIGHT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->height, reader);
+      }
+      break;
+    case XML_TXTLOCPINX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->pinLocX, reader);
+      }
+      break;
+    case XML_TXTLOCPINY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->pinLocY, reader);
+      }
+      break;
+    case XML_TXTANGLE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->angle, reader);
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  while ((XML_TEXTXFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)

@@ -928,6 +928,62 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readBoolData(m_shape.m_xform.flipY, reader);
       break;
+    case XML_TXTPINX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->pinX, reader);
+      }
+      break;
+    case XML_TXTPINY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->pinY, reader);
+      }
+      break;
+    case XML_TXTWIDTH:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->width, reader);
+      }
+      break;
+    case XML_TXTHEIGHT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->height, reader);
+      }
+      break;
+    case XML_TXTLOCPINX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->pinLocX, reader);
+      }
+      break;
+    case XML_TXTLOCPINY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->pinLocY, reader);
+      }
+      break;
+    case XML_TXTANGLE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_txtxform)
+          m_shape.m_txtxform = new XForm();
+        ret = readDoubleData(m_shape.m_txtxform->angle, reader);
+      }
+      break;
     case XML_IMGOFFSETX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
