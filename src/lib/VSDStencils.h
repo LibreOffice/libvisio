@@ -63,9 +63,9 @@ public:
   VSDOptionalFillStyle m_fillStyle;
   VSDOptionalTextBlockStyle m_textBlockStyle;
   VSDOptionalCharStyle m_charStyle;
-  std::vector<VSDCharacterList> m_charListVector;
+  VSDCharacterList m_charList;
   VSDOptionalParaStyle m_paraStyle;
-  std::vector<VSDParagraphList> m_paraListVector;
+  VSDParagraphList m_paraList;
   WPXBinaryData m_text;
   std::map< unsigned, VSDName > m_names;
   TextFormat m_textFormat;

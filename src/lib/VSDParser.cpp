@@ -522,11 +522,8 @@ void libvisio::VSDParser::_flushShape()
   for (std::map<unsigned, VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
     iterGeom->second.handle(m_collector);
 
-  for (std::vector<VSDCharacterList>::const_iterator iterChar = m_shape.m_charListVector.begin(); iterChar != m_shape.m_charListVector.end(); ++iterChar)
-    iterChar->handle(m_collector);
-
-  for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
-    iterPara->handle(m_collector);
+  m_shape.m_charList.handle(m_collector);
+  m_shape.m_paraList.handle(m_collector);
 }
 
 void libvisio::VSDParser::_handleLevelChange(unsigned level)
@@ -537,10 +534,6 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
   {
     if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
       m_shape.m_geometries.erase(--m_currentGeomListCount);
-    if (!m_shape.m_charListVector.empty() && m_shape.m_charListVector.back().empty())
-      m_shape.m_charListVector.pop_back();
-    if (!m_shape.m_paraListVector.empty() && m_shape.m_paraListVector.back().empty())
-      m_shape.m_paraListVector.pop_back();
     m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
     m_shapeList.clear();
 
@@ -712,8 +705,7 @@ void libvisio::VSDParser::readCharList(WPXInputStream *input)
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     characterOrder.push_back(readU32(input));
 
-  m_shape.m_charListVector.push_back(VSDCharacterList());
-  m_shape.m_charListVector.back().setElementsOrder(characterOrder);
+  m_shape.m_charList.setElementsOrder(characterOrder);
 
   // We want the collectors to still get the level information
   if (!m_isStencilStarted)
@@ -730,8 +722,7 @@ void libvisio::VSDParser::readParaList(WPXInputStream *input)
   for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
     paragraphOrder.push_back(readU32(input));
 
-  m_shape.m_paraListVector.push_back(VSDParagraphList());
-  m_shape.m_paraListVector.back().setElementsOrder(paragraphOrder);
+  m_shape.m_paraList.setElementsOrder(paragraphOrder);
 
   // We want the collectors to still get the level information
   if (!m_isStencilStarted)

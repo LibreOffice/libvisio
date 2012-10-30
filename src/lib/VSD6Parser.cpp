@@ -160,9 +160,9 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
     m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, fontID, fontColour, fontSize,
                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                  allcaps, initcaps, smallcaps, superscript, subscript, fontFace));
-    m_shape.m_charListVector.back().addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
-        bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-        allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+    m_shape.m_charList.addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
+                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   }
 }
 
@@ -195,8 +195,8 @@ void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
 
     m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, (unsigned)0));
-    m_shape.m_paraListVector.back().addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-        spLine, spBefore, spAfter, align, (unsigned)0);
+    m_shape.m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
+                                 spLine, spBefore, spAfter, align, (unsigned)0);
   }
 }
 

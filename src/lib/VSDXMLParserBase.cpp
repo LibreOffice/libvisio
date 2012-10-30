@@ -1172,23 +1172,17 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
         int tmpLength = xmlStrlen(tmpBuffer);
         for (int i = 0; i < tmpLength && tmpBuffer[i]; ++i)
           tmpText.append(tmpBuffer[i]);
-        if (!m_shape.m_charListVector.empty())
+        unsigned charCount = m_shape.m_charList.getCharCount(cp);
+        if (MINUS_ONE != charCount)
         {
-          unsigned charCount = m_shape.m_charListVector.back().getCharCount(cp);
-          if (MINUS_ONE != charCount)
-          {
-            charCount += (unsigned)tmpText.size();
-            m_shape.m_charListVector.back().setCharCount(cp, charCount);
-          }
+          charCount += (unsigned)tmpText.size();
+          m_shape.m_charList.setCharCount(cp, charCount);
         }
-        if (!m_shape.m_paraListVector.empty())
+        charCount = m_shape.m_paraList.getCharCount(pp);
+        if (MINUS_ONE != charCount)
         {
-          unsigned charCount = m_shape.m_paraListVector.back().getCharCount(pp);
-          if (MINUS_ONE != charCount)
-          {
-            charCount += (unsigned)tmpText.size();
-            m_shape.m_paraListVector.back().setCharCount(pp, charCount);
-          }
+          charCount += (unsigned)tmpText.size();
+          m_shape.m_paraList.setCharCount(pp, charCount);
         }
         m_shape.m_text.append(tmpText);
         m_shape.m_textFormat = VSD_TEXT_UTF8;
@@ -1374,11 +1368,9 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
     m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, fontID, fontColour, fontSize,
                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                  allcaps, initcaps, smallcaps, superscript, subscript, fontFace));
-    if (m_shape.m_charListVector.empty())
-      m_shape.m_charListVector.push_back(VSDCharacterList());
-    m_shape.m_charListVector.back().addCharIX(ix, level, charCount, fontID, fontColour, fontSize,
-        bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-        allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+    m_shape.m_charList.addCharIX(ix, level, charCount, fontID, fontColour, fontSize,
+                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
   }
 }
 
@@ -1417,18 +1409,32 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
     switch (tokenType)
     {
     case XML_INDFIRST:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readDoubleData(indFirst, reader);
       break;
     case XML_INDLEFT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readDoubleData(indLeft, reader);
       break;
     case XML_INDRIGHT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readDoubleData(indRight, reader);
       break;
     case XML_SPLINE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readDoubleData(spLine, reader);
       break;
     case XML_SPBEFORE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readDoubleData(spBefore, reader);
       break;
     case XML_SPAFTER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readDoubleData(spAfter, reader);
       break;
     case XML_HORZALIGN:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readByteData(align, reader);
       break;
     case XML_BULLET:
       break;
@@ -1441,6 +1447,8 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
     case XML_TEXTPOSAFTERBULLET:
       break;
     case XML_FLAGS:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readUnsignedData(flags, reader);
       break;
     default:
       break;
@@ -1460,10 +1468,8 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
 
     m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, flags));
-    if (m_shape.m_paraListVector.empty())
-      m_shape.m_paraListVector.push_back(VSDParagraphList());
-    m_shape.m_paraListVector.back().addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
-        spLine, spBefore, spAfter, align, flags);
+    m_shape.m_paraList.addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
+                                 spLine, spBefore, spAfter, align, flags);
   }
 }
 
@@ -1771,12 +1777,9 @@ void libvisio::VSDXMLParserBase::_flushShape()
   if (m_shape.m_text.size())
     m_collector->collectText(m_currentShapeLevel+1, m_shape.m_text, m_shape.m_textFormat);
 
+  m_shape.m_charList.handle(m_collector);
 
-  for (std::vector<VSDCharacterList>::const_iterator iterChar = m_shape.m_charListVector.begin(); iterChar != m_shape.m_charListVector.end(); ++iterChar)
-    iterChar->handle(m_collector);
-
-  for (std::vector<VSDParagraphList>::const_iterator iterPara = m_shape.m_paraListVector.begin(); iterPara != m_shape.m_paraListVector.end(); ++iterPara)
-    iterPara->handle(m_collector);
+  m_shape.m_paraList.handle(m_collector);
 
   m_collector->collectUnhandledChunk(0, m_currentShapeLevel);
 }

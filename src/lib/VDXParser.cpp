@@ -709,11 +709,11 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   double rightMargin = 0.0;
   double topMargin = 0.0;
   double bottomMargin = 0.0;
-  long verticalAlign = 0;
+  unsigned char verticalAlign = 0;
   long bgClrId = 0;
   Colour bgColour;
   double defaultTabStop = 0.0;
-  long textDirection = 0.0;
+  unsigned char textDirection = 0.0;
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
@@ -744,11 +744,23 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
       break;
     case XML_VERTICALALIGN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(verticalAlign, reader);
+        ret = readByteData(verticalAlign, reader);
       break;
     case XML_TEXTBKGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
         ret = readExtendedColourData(bgColour, bgClrId, reader);
+        if (bgClrId < 0)
+          bgClrId = 0;
+        if (bgClrId)
+        {
+          std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId-1);
+          if (iter != m_colours.end())
+            bgColour = iter->second;
+          else
+            bgColour = Colour();
+        }
+      }
       break;
     case XML_DEFAULTTABSTOP:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -756,7 +768,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
       break;
     case XML_TEXTDIRECTION:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readLongData(textDirection, reader);
+        ret = readByteData(textDirection, reader);
       break;
     case XML_TEXTBKGNDTRANS:
     default:
@@ -778,10 +790,10 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
 
   if (m_isInStyles)
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                       (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection);
+                                       verticalAlign, !!bgClrId, bgColour, defaultTabStop, textDirection);
   else
     m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-                                      (unsigned char)verticalAlign, !!bgClrId, bgColour, defaultTabStop, (unsigned char)textDirection));
+                                      verticalAlign, !!bgClrId, bgColour, defaultTabStop, textDirection));
 }
 
 xmlChar *libvisio::VDXParser::readStringData(xmlTextReaderPtr reader)
