@@ -105,9 +105,12 @@ void libvisio::VSD6Parser::readText(WPXInputStream *input)
 
 void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
 {
-  VSDFont fontFace;
   unsigned charCount = readU32(input);
-  unsigned short fontID = readU16(input);
+  unsigned fontID = readU16(input);
+  VSDName font;
+  std::map<unsigned, VSDName>::const_iterator iter = m_fonts.find(fontID);
+  if (iter != m_fonts.end())
+    font = iter->second;
   input->seek(1, WPX_SEEK_CUR);  // Color ID
   Colour fontColour;            // Font Colour
   fontColour.r = readU8(input);
@@ -147,9 +150,9 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
   if (fontMod & 0x20) doublestrikeout = true;
 
   if (m_isInStyles)
-    m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
+    m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
                                     bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+                                    allcaps, initcaps, smallcaps, superscript, subscript);
   else
   {
     if (m_isStencilStarted)
@@ -157,12 +160,12 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
       VSD_DEBUG_MSG(("Found stencil character style\n"));
     }
 
-    m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, fontID, fontColour, fontSize,
+    m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize,
                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace));
-    m_shape.m_charList.addCharIX(m_header.id, m_header.level, charCount, fontID, fontColour, fontSize,
+                                 allcaps, initcaps, smallcaps, superscript, subscript));
+    m_shape.m_charList.addCharIX(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+                                 allcaps, initcaps, smallcaps, superscript, subscript);
   }
 }
 

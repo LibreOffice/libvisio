@@ -541,16 +541,13 @@ void libvisio::VSDContentCollector::_flushText()
       paraCharCount -= m_charFormats[charIndex].charCount;
 
       WPXPropertyList textProps;
-      if (m_fonts[m_charFormats[charIndex].faceID].name == "")
-      {
-        textProps.insert("style:font-name", m_charFormats[charIndex].face.name);
-        encoding = m_charFormats[charIndex].face.encoding;
-      }
+
+      WPXString fontName;
+      if (m_charFormats[charIndex].font.m_data.size())
+        _convertDataToString(fontName, m_charFormats[charIndex].font.m_data, m_charFormats[charIndex].font.m_format);
       else
-      {
-        textProps.insert("style:font-name", m_fonts[m_charFormats[charIndex].faceID].name);
-        encoding = m_fonts[m_charFormats[charIndex].faceID].encoding;
-      }
+        fontName = "Arial";
+      textProps.insert("style:font-name", fontName);
 
       if (m_charFormats[charIndex].bold) textProps.insert("fo:font-weight", "bold");
       if (m_charFormats[charIndex].italic) textProps.insert("fo:font-style", "italic");
@@ -1847,16 +1844,6 @@ void libvisio::VSDContentCollector::collectUnhandledChunk(unsigned /* id */, uns
   _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::collectFont(unsigned short fontID, const WPXBinaryData &textStream, TextFormat format)
-{
-  VSDFont font;
-  font.name.clear();
-  _convertDataToString(font.name, textStream, format);
-  font.encoding = format;
-  m_fonts[fontID] = font;
-}
-
-
 void libvisio::VSDContentCollector::collectSplineStart(unsigned /* id */, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree)
 {
   m_splineLevel = level;
@@ -1915,15 +1902,15 @@ void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */ , unsigned l
 }
 
 void libvisio::VSDContentCollector::collectCharIX(unsigned /* id */ , unsigned level, const boost::optional<unsigned> &charCount,
-    const boost::optional<unsigned short> &fontID, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize,
-    const boost::optional<bool> &bold, const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
-    const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps,
-    const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript, const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace)
+    const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
+    const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout,
+    const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
+    const boost::optional<bool> &superscript, const boost::optional<bool> &subscript)
 {
   _handleLevelChange(level);
   VSDCharStyle format;
-  format.override(VSDOptionalCharStyle(charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                       allcaps, initcaps, smallcaps, superscript, subscript, fontFace));
+  format.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                       allcaps, initcaps, smallcaps, superscript, subscript));
   m_charFormats.push_back(format);
 }
 
@@ -2014,14 +2001,14 @@ void libvisio::VSDContentCollector::collectParaIXStyle(unsigned /* id */, unsign
 
 
 void libvisio::VSDContentCollector::collectCharIXStyle(unsigned /* id */, unsigned /* level */, const boost::optional<unsigned> &charCount,
-    const boost::optional<unsigned short> &fontID, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize,
+    const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize,
     const boost::optional<bool> &bold, const boost::optional<bool> &italic, const boost::optional<bool> &underline,
     const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout,
     const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
-    const boost::optional<bool> &superscript, const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace)
+    const boost::optional<bool> &superscript, const boost::optional<bool> &subscript)
 {
-  VSDOptionalCharStyle charStyle(charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  VSDOptionalCharStyle charStyle(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript);
   m_styles.addCharStyle(m_currentStyleSheet, charStyle);
 }
 

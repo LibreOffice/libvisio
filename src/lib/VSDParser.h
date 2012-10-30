@@ -165,6 +165,8 @@ protected:
   VSDGeometryList *m_currentGeometryList;
   unsigned m_currentGeomListCount;
 
+  std::map<unsigned, VSDName> m_fonts;
+
 private:
   VSDParser();
   VSDParser(const VSDParser &);

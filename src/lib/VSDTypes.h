@@ -170,15 +170,20 @@ public:
     : m_data(data),
       m_format(format) {}
   VSDName() : m_data(), m_format(VSD_TEXT_ANSI) {}
+  VSDName(const VSDName &name) : m_data(name.m_data), m_format(name.m_format) {}
   WPXBinaryData m_data;
   TextFormat m_format;
 };
 
 struct VSDFont
 {
-  WPXString name;
-  TextFormat encoding;
-  VSDFont() : name("Arial"), encoding(libvisio::VSD_TEXT_ANSI) {}
+  WPXString m_name;
+  TextFormat m_encoding;
+  VSDFont() : m_name("Arial"), m_encoding(libvisio::VSD_TEXT_ANSI) {}
+  VSDFont(const WPXString &name, const TextFormat &encoding) :
+    m_name(name), m_encoding(encoding) {}
+  VSDFont(const VSDFont &font) :
+    m_name(font.m_name), m_encoding(font.m_encoding) {}
 };
 
 } // namespace libvisio

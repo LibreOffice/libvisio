@@ -49,7 +49,7 @@ libvisio::VSDXMLParserBase::VSDXMLParserBase()
     m_currentShapeLevel(0), m_colours(), m_fieldList(), m_shapeList(),
     m_currentBinaryData(), m_shapeStack(), m_shapeLevelStack(),
     m_isShapeStarted(false), m_isPageStarted(false), m_currentGeometryList(0),
-    m_currentGeometryListIndex(MINUS_ONE)
+    m_currentGeometryListIndex(MINUS_ONE), m_fonts()
 {
   initColours();
 }
@@ -1104,14 +1104,6 @@ void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
   while ((XML_COLORS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
-void libvisio::VSDXMLParserBase::readCharList(xmlTextReaderPtr /* reader */)
-{
-}
-
-void libvisio::VSDXMLParserBase::readParaList(xmlTextReaderPtr /* reader */)
-{
-}
-
 void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
 {
   xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
@@ -1205,9 +1197,8 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   int tokenType = -1;
   int level = getElementDepth(reader);
 
-  boost::optional<VSDFont> fontFace;
   unsigned charCount = 0;
-  boost::optional<unsigned short> fontID;
+  boost::optional<VSDName> font;
   boost::optional<Colour> fontColour;
 
   boost::optional<bool> bold;
@@ -1235,6 +1226,26 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
     switch (tokenId)
     {
     case XML_FONT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        xmlChar *stringValue = readStringData(reader);
+        if (stringValue && !xmlStrEqual(stringValue, BAD_CAST("Themed")))
+        {
+          try
+          {
+            unsigned fontIndex = (unsigned)xmlStringToLong(stringValue);
+            std::map<unsigned, VSDName>::const_iterator iter = m_fonts.find(fontIndex);
+            if (iter != m_fonts.end())
+              font = iter->second;
+            else
+              font = VSDName(WPXBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
+          }
+          catch (const XmlParserException &)
+          {
+            font = VSDName(WPXBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
+          }
+        }
+      }
       break;
     case XML_COLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1355,9 +1366,9 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   while (((XML_CHAR != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (m_isInStyles)
-    m_collector->collectCharIXStyle(ix, level, charCount, fontID, fontColour, fontSize,
-                                    bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                    allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+    m_collector->collectCharIXStyle(ix, level, charCount, font, fontColour, fontSize, bold, italic,
+                                    underline, doubleunderline, strikeout, doublestrikeout, allcaps,
+                                    initcaps, smallcaps, superscript, subscript);
   else
   {
     if (m_isStencilStarted)
@@ -1365,12 +1376,12 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       VSD_DEBUG_MSG(("Found stencil character style\n"));
     }
 
-    m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, fontID, fontColour, fontSize,
-                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace));
-    m_shape.m_charList.addCharIX(ix, level, charCount, fontID, fontColour, fontSize,
-                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+    m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold,
+                                 italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript));
+    m_shape.m_charList.addCharIX(ix, level, charCount, font, fontColour, fontSize, bold, italic,
+                                 underline, doubleunderline, strikeout, doublestrikeout, allcaps,
+                                 initcaps, smallcaps, superscript, subscript);
   }
 }
 
@@ -1471,22 +1482,6 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
     m_shape.m_paraList.addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, flags);
   }
-}
-
-void libvisio::VSDXMLParserBase::readNameList(xmlTextReaderPtr /* reader */)
-{
-}
-
-void libvisio::VSDXMLParserBase::readName(xmlTextReaderPtr /* reader */)
-{
-}
-
-void libvisio::VSDXMLParserBase::readFieldList(xmlTextReaderPtr /* reader */)
-{
-}
-
-void libvisio::VSDXMLParserBase::readTextField(xmlTextReaderPtr /* reader */)
-{
 }
 
 void libvisio::VSDXMLParserBase::readStyleSheet(xmlTextReaderPtr reader)
@@ -1655,18 +1650,6 @@ void libvisio::VSDXMLParserBase::readStencil(xmlTextReaderPtr reader)
   if (m_currentStencil)
     delete m_currentStencil;
   m_currentStencil = new VSDStencil();
-}
-
-void libvisio::VSDXMLParserBase::readStencilShape(xmlTextReaderPtr /* reader */)
-{
-}
-
-void libvisio::VSDXMLParserBase::readOLEList(xmlTextReaderPtr /* reader */)
-{
-}
-
-void libvisio::VSDXMLParserBase::readOLEData(xmlTextReaderPtr /* reader */)
-{
 }
 
 void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)

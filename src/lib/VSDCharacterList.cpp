@@ -50,18 +50,18 @@ protected:
 class VSDCharIX : public VSDCharacterListElement
 {
 public:
-  VSDCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+  VSDCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<VSDName> &font,
             const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
             const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
             const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
             const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
-            const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace) :
-    VSDCharacterListElement(id, level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_fontID(FROM_OPTIONAL(fontID, 0)),
+            const boost::optional<bool> &subscript) :
+    VSDCharacterListElement(id, level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_font(FROM_OPTIONAL(font, VSDName())),
     m_fontColour(FROM_OPTIONAL(fontColour, Colour())), m_fontSize(FROM_OPTIONAL(fontSize, 0.1668)), m_bold(FROM_OPTIONAL(bold, false)),
     m_italic(FROM_OPTIONAL(italic, false)), m_underline(FROM_OPTIONAL(underline, false)), m_doubleunderline(FROM_OPTIONAL(doubleunderline, false)),
     m_strikeout(FROM_OPTIONAL(strikeout, false)), m_doublestrikeout(FROM_OPTIONAL(doublestrikeout, false)),
     m_allcaps(FROM_OPTIONAL(allcaps, false)), m_initcaps(FROM_OPTIONAL(initcaps, false)), m_smallcaps(FROM_OPTIONAL(smallcaps, false)),
-    m_superscript(FROM_OPTIONAL(superscript, false)), m_subscript(FROM_OPTIONAL(subscript, false)), m_fontFace(FROM_OPTIONAL(fontFace, VSDFont())) {}
+    m_superscript(FROM_OPTIONAL(superscript, false)), m_subscript(FROM_OPTIONAL(subscript, false)) {}
   ~VSDCharIX() {}
   void handle(VSDCollector *collector) const;
   VSDCharacterListElement *clone();
@@ -75,28 +75,27 @@ public:
   }
 
   unsigned m_charCount;
-  unsigned short m_fontID;
+  VSDName m_font;
   Colour m_fontColour;
   double m_fontSize;
   bool m_bold, m_italic, m_underline, m_doubleunderline, m_strikeout, m_doublestrikeout;
   bool m_allcaps, m_initcaps, m_smallcaps, m_superscript, m_subscript;
-  VSDFont m_fontFace;
 };
 } // namespace libvisio
 
 
 void libvisio::VSDCharIX::handle(VSDCollector *collector) const
 {
-  collector->collectCharIX(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
+  collector->collectCharIX(m_id, m_level, m_charCount, m_font, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
                            m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
-                           m_superscript, m_subscript, m_fontFace);
+                           m_superscript, m_subscript);
 }
 
 libvisio::VSDCharacterListElement *libvisio::VSDCharIX::clone()
 {
-  return new VSDCharIX(m_id, m_level, m_charCount, m_fontID, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
+  return new VSDCharIX(m_id, m_level, m_charCount, m_font, m_fontColour, m_fontSize, m_bold, m_italic, m_underline,
                        m_doubleunderline, m_strikeout, m_doublestrikeout, m_allcaps, m_initcaps, m_smallcaps,
-                       m_superscript, m_subscript, m_fontFace);
+                       m_superscript, m_subscript);
 }
 
 
@@ -130,12 +129,12 @@ libvisio::VSDCharacterList::~VSDCharacterList()
   clear();
 }
 
-void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
-    const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
-    const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
-    const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
-    const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
-    const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace)
+void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount,
+    const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize,
+    const boost::optional<bool> &bold, const boost::optional<bool> &italic, const boost::optional<bool> &underline,
+    const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout,
+    const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
+    const boost::optional<bool> &superscript, const boost::optional<bool> &subscript)
 {
   VSDCharIX *tmpElement = dynamic_cast<VSDCharIX *>(m_elements[id]);
   if (!tmpElement)
@@ -148,13 +147,13 @@ void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const bo
       m_elements.erase(iter);
     }
 
-    m_elements[id] = new VSDCharIX(id, level, charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline,
-                                   strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+    m_elements[id] = new VSDCharIX(id, level, charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline,
+                                   strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript);
   }
   else
   {
     ASSIGN_OPTIONAL(charCount, tmpElement->m_charCount);
-    ASSIGN_OPTIONAL(fontID, tmpElement->m_fontID);
+    ASSIGN_OPTIONAL(font, tmpElement->m_font);
     ASSIGN_OPTIONAL(fontColour, tmpElement->m_fontColour);
     ASSIGN_OPTIONAL(fontSize, tmpElement->m_fontSize);
     ASSIGN_OPTIONAL(bold, tmpElement->m_bold);
@@ -168,7 +167,6 @@ void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const bo
     ASSIGN_OPTIONAL(smallcaps, tmpElement->m_smallcaps);
     ASSIGN_OPTIONAL(superscript, tmpElement->m_superscript);
     ASSIGN_OPTIONAL(subscript, tmpElement->m_subscript);
-    ASSIGN_OPTIONAL(fontFace, tmpElement->m_fontFace);
   }
 }
 

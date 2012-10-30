@@ -77,6 +77,8 @@ protected:
   VSDGeometryList *m_currentGeometryList;
   unsigned m_currentGeometryListIndex;
 
+  std::map<unsigned, VSDName> m_fonts;
+
   // Helper functions
 
   int readByteData(unsigned char &value, xmlTextReaderPtr reader);
@@ -123,18 +125,10 @@ protected:
   virtual void getBinaryData(xmlTextReaderPtr reader) = 0;
   void readShape(xmlTextReaderPtr reader);
   void readColours(xmlTextReaderPtr reader);
-  void readCharList(xmlTextReaderPtr reader);
-  void readParaList(xmlTextReaderPtr reader);
   void readPage(xmlTextReaderPtr reader);
   void readText(xmlTextReaderPtr reader);
   void readCharIX(xmlTextReaderPtr reader);
   void readParaIX(xmlTextReaderPtr reader);
-
-  void readNameList(xmlTextReaderPtr reader);
-  void readName(xmlTextReaderPtr reader);
-
-  void readFieldList(xmlTextReaderPtr reader);
-  void readTextField(xmlTextReaderPtr reader);
 
   void readStyleSheet(xmlTextReaderPtr reader);
   void readPageSheet(xmlTextReaderPtr reader);
@@ -143,10 +137,6 @@ protected:
   void readSplineKnot(xmlTextReaderPtr reader);
 
   void readStencil(xmlTextReaderPtr reader);
-  void readStencilShape(xmlTextReaderPtr reader);
-
-  void readOLEList(xmlTextReaderPtr reader);
-  void readOLEData(xmlTextReaderPtr reader);
 
   void handlePagesStart(xmlTextReaderPtr reader);
   void handlePagesEnd(xmlTextReaderPtr reader);

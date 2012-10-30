@@ -181,27 +181,27 @@ struct VSDFillStyle
 struct VSDOptionalCharStyle
 {
   VSDOptionalCharStyle()
-    : charCount(), faceID(), colour(), size(), bold(), italic(), underline(), doubleunderline(), strikeout(),
-      doublestrikeout(), allcaps(), initcaps(), smallcaps(), superscript(), subscript(), face() {}
-  VSDOptionalCharStyle(const boost::optional<unsigned> &cc, const boost::optional<unsigned short> &id,
+    : charCount(), font(), colour(), size(), bold(), italic(), underline(), doubleunderline(), strikeout(),
+      doublestrikeout(), allcaps(), initcaps(), smallcaps(), superscript(), subscript() {}
+  VSDOptionalCharStyle(const boost::optional<unsigned> &cc, const boost::optional<VSDName> &ft,
                        const boost::optional<Colour> &c, const boost::optional<double> &s, const boost::optional<bool> &b,
                        const boost::optional<bool> &i, const boost::optional<bool> &u, const boost::optional<bool> &du,
                        const boost::optional<bool> &so, const boost::optional<bool> &dso, const boost::optional<bool> &ac,
                        const boost::optional<bool> &ic, const boost::optional<bool> &sc, const boost::optional<bool> &super,
-                       const boost::optional<bool> &sub, const boost::optional<VSDFont> &f) :
-    charCount(cc), faceID(id), colour(c), size(s), bold(b), italic(i), underline(u), doubleunderline(du),
+                       const boost::optional<bool> &sub) :
+    charCount(cc), font(ft), colour(c), size(s), bold(b), italic(i), underline(u), doubleunderline(du),
     strikeout(so), doublestrikeout(dso), allcaps(ac), initcaps(ic), smallcaps(sc), superscript(super),
-    subscript(sub), face(f) {}
+    subscript(sub) {}
   VSDOptionalCharStyle(const VSDOptionalCharStyle &style) :
-    charCount(style.charCount), faceID(style.faceID), colour(style.colour), size(style.size), bold(style.bold),
+    charCount(style.charCount), font(style.font), colour(style.colour), size(style.size), bold(style.bold),
     italic(style.italic), underline(style.underline), doubleunderline(style.doubleunderline), strikeout(style.strikeout),
     doublestrikeout(style.doublestrikeout), allcaps(style.allcaps), initcaps(style.initcaps), smallcaps(style.smallcaps),
-    superscript(style.superscript), subscript(style.subscript), face(style.face) {}
+    superscript(style.superscript), subscript(style.subscript) {}
   ~VSDOptionalCharStyle() {}
   void override(const VSDOptionalCharStyle &style)
   {
     ASSIGN_OPTIONAL(style.charCount, charCount);
-    ASSIGN_OPTIONAL(style.faceID, faceID);
+    ASSIGN_OPTIONAL(style.font, font);
     ASSIGN_OPTIONAL(style.colour, colour);
     ASSIGN_OPTIONAL(style.size, size);
     ASSIGN_OPTIONAL(style.bold, bold);
@@ -215,11 +215,10 @@ struct VSDOptionalCharStyle
     ASSIGN_OPTIONAL(style.smallcaps, smallcaps);
     ASSIGN_OPTIONAL(style.superscript, superscript);
     ASSIGN_OPTIONAL(style.subscript, subscript);
-    ASSIGN_OPTIONAL(style.face, face);
   }
 
   boost::optional<unsigned> charCount;
-  boost::optional<unsigned short> faceID;
+  boost::optional<VSDName> font;
   boost::optional<Colour> colour;
   boost::optional<double> size;
   boost::optional<bool> bold;
@@ -233,30 +232,29 @@ struct VSDOptionalCharStyle
   boost::optional<bool> smallcaps;
   boost::optional<bool> superscript;
   boost::optional<bool> subscript;
-  boost::optional<VSDFont> face;
 };
 
 struct VSDCharStyle
 {
   VSDCharStyle()
-    : charCount(0), faceID(0), colour(), size(12.0/72.0), bold(false), italic(false), underline(false),
+    : charCount(0), font(), colour(), size(12.0/72.0), bold(false), italic(false), underline(false),
       doubleunderline(false), strikeout(false), doublestrikeout(false), allcaps(false), initcaps(false),
-      smallcaps(false), superscript(false), subscript(false), face() {}
-  VSDCharStyle(unsigned cc, unsigned short id, const Colour &c, double s, bool b, bool i, bool u, bool du,
-               bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub, VSDFont f) :
-    charCount(cc), faceID(id), colour(c), size(s), bold(b), italic(i), underline(u), doubleunderline(du),
+      smallcaps(false), superscript(false), subscript(false) {}
+  VSDCharStyle(unsigned cc, const VSDName &ft, const Colour &c, double s, bool b, bool i, bool u, bool du,
+               bool so, bool dso, bool ac, bool ic, bool sc, bool super, bool sub) :
+    charCount(cc), font(ft), colour(c), size(s), bold(b), italic(i), underline(u), doubleunderline(du),
     strikeout(so), doublestrikeout(dso), allcaps(ac), initcaps(ic), smallcaps(sc), superscript(super),
-    subscript(sub), face(f) {}
+    subscript(sub) {}
   VSDCharStyle(const VSDCharStyle &style) :
-    charCount(style.charCount), faceID(style.faceID), colour(style.colour), size(style.size), bold(style.bold),
+    charCount(style.charCount), font(style.font), colour(style.colour), size(style.size), bold(style.bold),
     italic(style.italic), underline(style.underline), doubleunderline(style.doubleunderline), strikeout(style.strikeout),
     doublestrikeout(style.doublestrikeout), allcaps(style.allcaps), initcaps(style.initcaps), smallcaps(style.smallcaps),
-    superscript(style.superscript), subscript(style.subscript), face(style.face) {}
+    superscript(style.superscript), subscript(style.subscript) {}
   ~VSDCharStyle() {}
   void override(const VSDOptionalCharStyle &style)
   {
     ASSIGN_OPTIONAL(style.charCount, charCount);
-    ASSIGN_OPTIONAL(style.faceID, faceID);
+    ASSIGN_OPTIONAL(style.font, font);
     ASSIGN_OPTIONAL(style.colour, colour);
     ASSIGN_OPTIONAL(style.size, size);
     ASSIGN_OPTIONAL(style.bold, bold);
@@ -270,11 +268,10 @@ struct VSDCharStyle
     ASSIGN_OPTIONAL(style.smallcaps, smallcaps);
     ASSIGN_OPTIONAL(style.superscript, superscript);
     ASSIGN_OPTIONAL(style.subscript, subscript);
-    ASSIGN_OPTIONAL(style.face, face);
   }
 
   unsigned charCount;
-  unsigned short faceID;
+  VSDName font;
   Colour colour;
   double size;
   bool bold;
@@ -288,7 +285,6 @@ struct VSDCharStyle
   bool smallcaps;
   bool superscript;
   bool subscript;
-  VSDFont face;
 };
 
 struct VSDOptionalParaStyle

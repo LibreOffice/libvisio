@@ -46,7 +46,7 @@ libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface 
     m_stencils(), m_currentStencil(0), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
     m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
-    m_currentGeometryList(0), m_currentGeomListCount(0)
+    m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts()
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -1356,7 +1356,7 @@ void libvisio::VSDParser::readFont(WPXInputStream *input)
     textStream.append(curchar);
     textStream.append(nextchar);
   }
-  m_collector->collectFont(m_header.id, textStream, libvisio::VSD_TEXT_UTF16);
+  m_fonts[m_header.id] = VSDName(textStream, libvisio::VSD_TEXT_UTF16);
 }
 
 void libvisio::VSDParser::readFontIX(WPXInputStream *input)
@@ -1409,7 +1409,7 @@ void libvisio::VSDParser::readFontIX(WPXInputStream *input)
   default:
     break;
   }
-  m_collector->collectFont((unsigned short) m_header.id, textStream, format);
+  m_fonts[m_header.id] = VSDName(textStream, format);
 }
 
 /* StyleSheet readers */

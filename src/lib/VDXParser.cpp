@@ -698,7 +698,7 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
       {
         unsigned idx = (unsigned)xmlStringToLong(id);
         WPXBinaryData textStream(name, xmlStrlen(name));
-        m_collector->collectFont(idx, textStream, libvisio::VSD_TEXT_UTF8);
+        m_fonts[idx] = VSDName(textStream, libvisio::VSD_TEXT_UTF8);
       }
       xmlFree(name);
       xmlFree(id);

@@ -104,15 +104,13 @@ public:
   void collectRelQuadBezTo(unsigned id, unsigned level, double x, double y, double a, double b);
   void collectUnhandledChunk(unsigned id, unsigned level);
 
-  void collectFont(unsigned short fontID, const ::WPXBinaryData &textStream, TextFormat format);
-
   void collectText(unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
-  void collectCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+  void collectCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<VSDName> &font,
                      const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                      const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
                      const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                      const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
-                     const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace);
+                     const boost::optional<bool> &subscript);
   void collectParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
                      const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                      const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
@@ -142,12 +140,12 @@ public:
                         const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                         const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
                         const boost::optional<Colour> &shfgc);
-  void collectCharIXStyle(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<unsigned short> &fontID,
+  void collectCharIXStyle(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<VSDName> &font,
                           const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                           const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
                           const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                           const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
-                          const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace);
+                          const boost::optional<bool> &subscript);
   void collectParaIXStyle(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
                           const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                           const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
