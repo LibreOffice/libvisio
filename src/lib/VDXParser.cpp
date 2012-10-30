@@ -267,6 +267,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readText(reader);
     break;
+  case XML_TEXTBLOCK:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readTextBlock(reader);
+    break;
   case XML_TEXTXFORM:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readTxtXForm(reader);
