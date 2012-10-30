@@ -1769,6 +1769,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   // Initialize the shape from stencil content
   m_lineStyle = VSDLineStyle();
   m_fillStyle = VSDFillStyle();
+  m_textBlockStyle = VSDTextBlockStyle();
   if (m_stencilShape)
   {
     if (m_stencilShape->m_foreign)
@@ -1813,11 +1814,11 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
 
     m_fillStyle.override(m_stencilShape->m_fillStyle);
 
-    if (m_stencilShape->m_textStyleId)
+    if (m_stencilShape->m_textStyleId != MINUS_ONE)
     {
       m_defaultCharStyle = m_styles.getCharStyle(m_stencilShape->m_textStyleId);
       m_defaultParaStyle = m_styles.getParaStyle(m_stencilShape->m_textStyleId);
-      m_textBlockStyle = m_styles.getTextBlockStyle(m_stencilShape->m_textStyleId);
+      m_textBlockStyle.override(m_styles.getOptionalTextBlockStyle(m_stencilShape->m_textStyleId));
     }
 
     m_textBlockStyle.override(m_stencilShape->m_textBlockStyle);
@@ -1834,7 +1835,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   {
     m_defaultCharStyle = m_styles.getCharStyle(textStyleId);
     m_defaultParaStyle = m_styles.getParaStyle(textStyleId);
-    m_textBlockStyle = m_styles.getTextBlockStyle(textStyleId);
+    m_textBlockStyle.override(m_styles.getOptionalTextBlockStyle(textStyleId));
   }
 
   m_currentGeometryCount = 0;
