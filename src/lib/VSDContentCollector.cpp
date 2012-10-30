@@ -626,7 +626,6 @@ void libvisio::VSDContentCollector::_flushText()
           if (!tmpBuffer.empty() && (tmpBuffer.back() == 0x0a || tmpBuffer.back() == '\n' || tmpBuffer.back() == 0x0e))
             tmpBuffer.back() = 0;
         }
-        printf("Text size: %lu\n", tmpBuffer.size());
         if (!tmpBuffer.empty() && tmpBuffer[0])
           appendCharacters(text, tmpBuffer, VSD_TEXT_UTF8);
         textBufferPosition += i;

@@ -73,7 +73,7 @@ public:
   {
     m_charCount = charCount;
   }
-private:
+
   unsigned m_charCount;
   unsigned short m_fontID;
   Colour m_fontColour;
@@ -137,8 +137,39 @@ void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const bo
     const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
     const boost::optional<bool> &subscript, const boost::optional<VSDFont> &fontFace)
 {
-  m_elements[id] = new VSDCharIX(id, level, charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline,
-                                 strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  VSDCharIX *tmpElement = dynamic_cast<VSDCharIX *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    std::map<unsigned, VSDCharacterListElement *>::iterator iter = m_elements.find(id);
+    if (m_elements.end() != iter)
+    {
+      if (iter->second)
+        delete iter->second;
+      m_elements.erase(iter);
+    }
+
+    m_elements[id] = new VSDCharIX(id, level, charCount, fontID, fontColour, fontSize, bold, italic, underline, doubleunderline,
+                                   strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, fontFace);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(charCount, tmpElement->m_charCount);
+    ASSIGN_OPTIONAL(fontID, tmpElement->m_fontID);
+    ASSIGN_OPTIONAL(fontColour, tmpElement->m_fontColour);
+    ASSIGN_OPTIONAL(fontSize, tmpElement->m_fontSize);
+    ASSIGN_OPTIONAL(bold, tmpElement->m_bold);
+    ASSIGN_OPTIONAL(italic, tmpElement->m_italic);
+    ASSIGN_OPTIONAL(underline, tmpElement->m_underline);
+    ASSIGN_OPTIONAL(doubleunderline, tmpElement->m_doubleunderline);
+    ASSIGN_OPTIONAL(strikeout, tmpElement->m_strikeout);
+    ASSIGN_OPTIONAL(doublestrikeout, tmpElement->m_doublestrikeout);
+    ASSIGN_OPTIONAL(allcaps, tmpElement->m_allcaps);
+    ASSIGN_OPTIONAL(initcaps, tmpElement->m_initcaps);
+    ASSIGN_OPTIONAL(smallcaps, tmpElement->m_smallcaps);
+    ASSIGN_OPTIONAL(superscript, tmpElement->m_superscript);
+    ASSIGN_OPTIONAL(subscript, tmpElement->m_subscript);
+    ASSIGN_OPTIONAL(fontFace, tmpElement->m_fontFace);
+  }
 }
 
 unsigned libvisio::VSDCharacterList::getCharCount(unsigned id) const

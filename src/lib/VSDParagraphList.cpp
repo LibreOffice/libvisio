@@ -69,7 +69,7 @@ public:
   {
     m_charCount = charCount;
   }
-private:
+
   unsigned m_charCount;
   double m_indFirst;
   double m_indLeft;
@@ -131,7 +131,31 @@ void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, const bo
     const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
     const boost::optional<unsigned> &flags)
 {
-  m_elements[id] = new VSDParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
+  VSDParaIX *tmpElement = dynamic_cast<VSDParaIX *>(m_elements[id]);
+  if (!tmpElement)
+  {
+    std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.find(id);
+    if (m_elements.end() != iter)
+    {
+      if (iter->second)
+        delete iter->second;
+      m_elements.erase(iter);
+    }
+
+    m_elements[id] = new VSDParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
+  }
+  else
+  {
+    ASSIGN_OPTIONAL(charCount, tmpElement->m_charCount);
+    ASSIGN_OPTIONAL(indFirst, tmpElement->m_indFirst);
+    ASSIGN_OPTIONAL(indLeft, tmpElement->m_indLeft);
+    ASSIGN_OPTIONAL(indRight, tmpElement->m_indRight);
+    ASSIGN_OPTIONAL(spLine, tmpElement->m_spLine);
+    ASSIGN_OPTIONAL(spBefore, tmpElement->m_spBefore);
+    ASSIGN_OPTIONAL(spAfter, tmpElement->m_spAfter);
+    ASSIGN_OPTIONAL(align, tmpElement->m_align);
+    ASSIGN_OPTIONAL(flags, tmpElement->m_flags);
+  }
 }
 
 unsigned libvisio::VSDParagraphList::getCharCount(unsigned id) const
