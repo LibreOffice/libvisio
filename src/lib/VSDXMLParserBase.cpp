@@ -1158,7 +1158,7 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
       pp = getIX(reader);
       break;
     default:
-      if (XML_READER_TYPE_TEXT == tokenType)
+      if (XML_READER_TYPE_TEXT == tokenType || XML_READER_TYPE_SIGNIFICANT_WHITESPACE == tokenType)
       {
         WPXBinaryData tmpText;
         const unsigned char *tmpBuffer = xmlTextReaderConstValue(reader);
