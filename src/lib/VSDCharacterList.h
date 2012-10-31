@@ -34,6 +34,7 @@
 #include <vector>
 #include <map>
 #include "VSDTypes.h"
+#include "VSDStyles.h"
 
 namespace libvisio
 {
@@ -54,6 +55,7 @@ public:
                  const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                  const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
                  const boost::optional<bool> &subscript);
+  void addCharIX(unsigned id, unsigned level, const VSDOptionalCharStyle &style);
   unsigned getCharCount(unsigned id) const;
   void setCharCount(unsigned id, unsigned charCount);
 

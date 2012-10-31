@@ -1023,6 +1023,8 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
       m_shape.m_geometries = tmpShape->m_geometries;
+      m_shape.m_charStyle.override(tmpShape->m_charStyle);
+      m_shape.m_paraStyle.override(tmpShape->m_paraStyle);
     }
   }
 
@@ -1372,14 +1374,12 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
                                     initcaps, smallcaps, superscript, subscript);
   else
   {
-    if (m_isStencilStarted)
-    {
-      VSD_DEBUG_MSG(("Found stencil character style\n"));
-    }
+    if (!ix) // character style 0 is the default character style
+      m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold,
+                                   italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                   allcaps, initcaps, smallcaps, superscript, subscript));
 
-    m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold,
-                                 italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript));
+    m_shape.m_charList.addCharIX(ix, level, m_shape.m_charStyle);
     m_shape.m_charList.addCharIX(ix, level, charCount, font, fontColour, fontSize, bold, italic,
                                  underline, doubleunderline, strikeout, doublestrikeout, allcaps,
                                  initcaps, smallcaps, superscript, subscript);
@@ -1473,13 +1473,11 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
                                     spLine, spBefore, spAfter, align, flags);
   else
   {
-    if (m_isStencilStarted)
-    {
-      VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
-    }
+    if (!ix) // paragraph style 0 is the default paragraph style
+      m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
+                                   spLine, spBefore, spAfter, align, flags));
 
-    m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
-                                 spLine, spBefore, spAfter, align, flags));
+    m_shape.m_paraList.addParaIX(ix, level, m_shape.m_paraStyle);
     m_shape.m_paraList.addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, flags);
   }

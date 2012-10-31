@@ -53,46 +53,37 @@ public:
   VSDParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
             const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
             const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
-            const boost::optional<unsigned> &flags) :
-    VSDParagraphListElement(id, level), m_charCount(FROM_OPTIONAL(charCount, 0)), m_indFirst(FROM_OPTIONAL(indFirst, 0.0)),
-    m_indLeft(FROM_OPTIONAL(indLeft, 0.0)), m_indRight(FROM_OPTIONAL(indRight, 0.0)), m_spLine(FROM_OPTIONAL(spLine, 0.0)),
-    m_spBefore(FROM_OPTIONAL(spBefore, 0.0)), m_spAfter(FROM_OPTIONAL(spAfter, 0.0)), m_align(FROM_OPTIONAL(align, 0)),
-    m_flags(FROM_OPTIONAL(flags, 0)) {}
+            const boost::optional<unsigned> &flags) : VSDParagraphListElement(id, level), m_style()
+  {
+    m_style.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags));
+  }
   ~VSDParaIX() {}
   void handle(VSDCollector *collector) const;
   VSDParagraphListElement *clone();
   unsigned getCharCount() const
   {
-    return m_charCount;
+    return m_style.charCount;
   }
   void setCharCount(unsigned charCount)
   {
-    m_charCount = charCount;
+    m_style.charCount = charCount;
   }
 
-  unsigned m_charCount;
-  double m_indFirst;
-  double m_indLeft;
-  double m_indRight;
-  double m_spLine;
-  double m_spBefore;
-  double m_spAfter;
-  unsigned char m_align;
-  unsigned m_flags;
+  VSDParaStyle m_style;
 };
 } // namespace libvisio
 
 
 void libvisio::VSDParaIX::handle(VSDCollector *collector) const
 {
-  collector->collectParaIX(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
-                           m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
+  collector->collectParaIX(m_id, m_level, m_style.charCount, m_style.indFirst, m_style.indLeft, m_style.indRight,
+                           m_style.spLine, m_style.spBefore, m_style.spAfter, m_style.align, m_style.flags);
 }
 
 libvisio::VSDParagraphListElement *libvisio::VSDParaIX::clone()
 {
-  return new VSDParaIX(m_id, m_level, m_charCount, m_indFirst, m_indLeft, m_indRight,
-                       m_spLine, m_spBefore, m_spAfter, m_align, m_flags);
+  return new VSDParaIX(m_id, m_level, m_style.charCount, m_style.indFirst, m_style.indLeft, m_style.indRight,
+                       m_style.spLine, m_style.spBefore, m_style.spAfter, m_style.align, m_style.flags);
 }
 
 
@@ -145,17 +136,13 @@ void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, const bo
     m_elements[id] = new VSDParaIX(id, level, charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags);
   }
   else
-  {
-    ASSIGN_OPTIONAL(charCount, tmpElement->m_charCount);
-    ASSIGN_OPTIONAL(indFirst, tmpElement->m_indFirst);
-    ASSIGN_OPTIONAL(indLeft, tmpElement->m_indLeft);
-    ASSIGN_OPTIONAL(indRight, tmpElement->m_indRight);
-    ASSIGN_OPTIONAL(spLine, tmpElement->m_spLine);
-    ASSIGN_OPTIONAL(spBefore, tmpElement->m_spBefore);
-    ASSIGN_OPTIONAL(spAfter, tmpElement->m_spAfter);
-    ASSIGN_OPTIONAL(align, tmpElement->m_align);
-    ASSIGN_OPTIONAL(flags, tmpElement->m_flags);
-  }
+    tmpElement->m_style.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags));
+}
+
+void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, const VSDOptionalParaStyle &style)
+{
+  addParaIX(id, level, style.charCount, style.indFirst, style.indLeft, style.indRight, style.spLine,
+            style.spBefore, style.spAfter, style.align, style.flags);
 }
 
 unsigned libvisio::VSDParagraphList::getCharCount(unsigned id) const
