@@ -1106,6 +1106,7 @@ void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
 
 void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
 {
+  m_shapeList.clear();
   xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
   xmlChar *bgndPage = xmlTextReaderGetAttribute(reader, BAD_CAST("BackPage"));
   xmlChar *background = xmlTextReaderGetAttribute(reader, BAD_CAST("Background"));
