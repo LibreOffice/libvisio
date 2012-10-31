@@ -97,7 +97,7 @@ bool libvisio::VDXParser::processXmlDocument(WPXInputStream *input)
   if (!input)
     return false;
 
-  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
+  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER);
   if (!reader)
     return false;
   int ret = xmlTextReaderRead(reader);
@@ -140,7 +140,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_MASTER:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       handleMasterStart(reader);
-    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
       handleMasterEnd(reader);
     break;
   case XML_MASTERS:
@@ -152,7 +152,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_PAGE:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       handlePageStart(reader);
-    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
       handlePageEnd(reader);
     break;
   case XML_PAGEPROPS:
@@ -218,8 +218,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       do
       {
         xmlTextReaderRead(reader);
+#if 0
         // SolutionXML inside VDX file can have invalid namespace URIs
         xmlResetLastError();
+#endif
         tokenId = getElementToken(reader);
         tokenType = xmlTextReaderNodeType(reader);
       }
@@ -233,7 +235,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_STYLESHEETS:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       m_isInStyles = true;
-    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
       _handleLevelChange(0);
       m_isInStyles = false;

@@ -291,7 +291,7 @@ libvisio::VSDXRelationships::VSDXRelationships(WPXInputStream *input)
 {
   if (input)
   {
-    xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
+    xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER);
     if (reader)
     {
       bool inRelationships = false;

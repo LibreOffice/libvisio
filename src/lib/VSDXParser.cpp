@@ -314,7 +314,7 @@ void libvisio::VSDXParser::processXmlDocument(WPXInputStream *input, VSDXRelatio
 
   m_rels = &rels;
 
-  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOENT|XML_PARSE_NOBLANKS|XML_PARSE_NONET);
+  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET);
   if (!reader)
     return;
   int ret = xmlTextReaderRead(reader);
@@ -383,7 +383,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_MASTER:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       handleMasterStart(reader);
-    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
       handleMasterEnd(reader);
     break;
   case XML_MASTERS:
@@ -395,7 +395,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_PAGE:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       handlePageStart(reader);
-    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
       handlePageEnd(reader);
     break;
   case XML_PAGES:
@@ -421,7 +421,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_STYLESHEETS:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       m_isInStyles = true;
-    else if (tokenType == XML_READER_TYPE_END_ELEMENT)
+    else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
       _handleLevelChange(0);
       m_isInStyles = false;
