@@ -91,6 +91,7 @@ private:
 
   void readParagraph(xmlTextReaderPtr reader);
   void readCharacter(xmlTextReaderPtr reader);
+  void readFonts(xmlTextReaderPtr reader);
 
   // Private data
 
