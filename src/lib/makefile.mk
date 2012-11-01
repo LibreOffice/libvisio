@@ -60,6 +60,8 @@ SLOFILES= \
 	$(SLO)$/VSDStyles.obj \
 	$(SLO)$/VSDSVGGenerator.obj \
 	$(SLO)$/VSDXMLHelper.obj \
+	$(SLO)$/VSDXMLParserBase.obj \
+	$(SLO)$/VSDXMLTokenMap.obj \
 	$(SLO)$/VSDXParser.obj \
 	$(SLO)$/VSDZipStream.obj
 

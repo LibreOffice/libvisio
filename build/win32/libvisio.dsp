@@ -171,6 +171,14 @@ SOURCE=..\..\src\lib\VSDXMLHelper.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXMLParserBase.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXMLTokenMap.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDXParser.cpp
 # End Source File
 # Begin Source File
@@ -188,6 +196,14 @@ SOURCE=..\..\src\lib\libvisio.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\libvisio_utils.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\tokenhash.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\tokens.h
 # End Source File
 # Begin Source File
 
@@ -280,6 +296,14 @@ SOURCE=..\..\src\lib\VSDTypes.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXMLHelper.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXMLParserBase.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXMLTokenMap.h
 # End Source File
 # Begin Source File
 
