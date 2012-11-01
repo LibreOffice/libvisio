@@ -785,15 +785,7 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
   }
   while (((XML_RELCUBBEZTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
   if (ret == 1)
-#if 0
     m_currentGeometryList->addRelCubBezTo(ix, level, x, y, a, b, c, d);
-#else
-  {
-    m_currentGeometryList->addRelLineTo(ix, level, a, b);
-    m_currentGeometryList->addRelLineTo(ix, level, c, d);
-    m_currentGeometryList->addRelLineTo(ix, level, x, y);
-  }
-#endif
 }
 
 void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
@@ -923,7 +915,6 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
   boost::optional<double> y;
   boost::optional<double> a;
   boost::optional<double> b;
-  boost::optional<double> d;
 
   do
   {
@@ -955,14 +946,7 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
   }
   while (((XML_RELQUADBEZTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
   if (ret == 1)
-#if 0
     m_currentGeometryList->addRelQuadBezTo(ix, level, x, y, a, b);
-#else
-  {
-    m_currentGeometryList->addRelLineTo(ix, level, a, b);
-    m_currentGeometryList->addRelLineTo(ix, level, x, y);
-  }
-#endif
 }
 
 void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)

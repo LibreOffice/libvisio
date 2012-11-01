@@ -987,22 +987,16 @@ void libvisio::VSDContentCollector::collectRelCubBezTo(unsigned /* id */, unsign
   m_originalX = x;
   m_originalY = y;
   transformPoint(x, y);
-  double x0 = m_x;
-  double y0 = m_y;
   m_x = x;
   m_y = y;
   WPXPropertyList node;
-  double bx = -5.0*x0/9.0 + 3.0*x1 - 3.0*x2/2.0 + x/3.0;
-  double by = -5.0*y0/9.0 + 3.0*y1 - 3.0*y2/2.0 + y/3.0;
-  double cx = x0/3.0 - 3.0*x1/2.0 + 3.0*x2 - 5.0*x/9.0;
-  double cy = y0/3.0 - 3.0*y1/2.0 + 3.0*y2 - 5.0*y/9.0;
   node.insert("libwpg:path-action", "C");
   node.insert("svg:x",m_scale*x);
   node.insert("svg:y",m_scale*y);
-  node.insert("svg:x1",m_scale*bx);
-  node.insert("svg:y1",m_scale*by);
-  node.insert("svg:x2",m_scale*cx);
-  node.insert("svg:y2",m_scale*cy);
+  node.insert("svg:x1",m_scale*x1);
+  node.insert("svg:y1",m_scale*y1);
+  node.insert("svg:x2",m_scale*x2);
+  node.insert("svg:y2",m_scale*y2);
   if (!m_noFill && !m_noShow)
     m_currentFillGeometry.push_back(node);
   if (!m_noLine && !m_noShow)
@@ -1043,18 +1037,14 @@ void libvisio::VSDContentCollector::collectRelQuadBezTo(unsigned /* id */, unsig
   m_originalX = x;
   m_originalY = y;
   transformPoint(x, y);
-  double x0 = m_x;
-  double y0 = m_y;
   m_x = x;
   m_y = y;
   WPXPropertyList node;
-  double bx = -x0/2.0 + 2.0*x1 - x/2.0;
-  double by = -y0/2.0 + 2.0*y1 - y/2.0;
   node.insert("libwpg:path-action", "Q");
   node.insert("svg:x",m_scale*x);
   node.insert("svg:y",m_scale*y);
-  node.insert("svg:x1",m_scale*bx);
-  node.insert("svg:y1",m_scale*by);
+  node.insert("svg:x1",m_scale*x1);
+  node.insert("svg:y1",m_scale*y1);
   if (!m_noFill && !m_noShow)
     m_currentFillGeometry.push_back(node);
   if (!m_noLine && !m_noShow)
