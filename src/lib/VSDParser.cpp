@@ -522,7 +522,18 @@ void libvisio::VSDParser::_flushShape()
   for (std::map<unsigned, VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
     iterGeom->second.handle(m_collector);
 
+  m_collector->collectDefaultCharStyle(m_shape.m_charStyle.charCount, m_shape.m_charStyle.font, m_shape.m_charStyle.colour,
+                                       m_shape.m_charStyle.size, m_shape.m_charStyle.bold, m_shape.m_charStyle.italic, m_shape.m_charStyle.underline,
+                                       m_shape.m_charStyle.doubleunderline, m_shape.m_charStyle.strikeout, m_shape.m_charStyle.doublestrikeout,
+                                       m_shape.m_charStyle.allcaps, m_shape.m_charStyle.initcaps, m_shape.m_charStyle.smallcaps,
+                                       m_shape.m_charStyle.superscript, m_shape.m_charStyle.subscript);
+
   m_shape.m_charList.handle(m_collector);
+
+  m_collector->collectDefaultParaStyle(m_shape.m_paraStyle.charCount, m_shape.m_paraStyle.indFirst, m_shape.m_paraStyle.indLeft,
+                                       m_shape.m_paraStyle.indRight, m_shape.m_paraStyle.spLine, m_shape.m_paraStyle.spBefore,
+                                       m_shape.m_paraStyle.spAfter, m_shape.m_paraStyle.align, m_shape.m_paraStyle.flags);
+
   m_shape.m_paraList.handle(m_collector);
 }
 

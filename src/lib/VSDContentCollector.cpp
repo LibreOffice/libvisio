@@ -1734,10 +1734,6 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_charFormats.clear();
   m_paraFormats.clear();
 
-  m_defaultCharStyle = m_styles.getCharStyle(0);
-  m_defaultParaStyle = m_styles.getParaStyle(0);
-  m_textBlockStyle = m_styles.getTextBlockStyle(0);
-
   m_currentShapeId = id;
   m_pageOutputDrawing[m_currentShapeId] = VSDOutputElementList();
   m_pageOutputText[m_currentShapeId] = VSDOutputElementList();
@@ -1757,6 +1753,8 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_lineStyle = VSDLineStyle();
   m_fillStyle = VSDFillStyle();
   m_textBlockStyle = VSDTextBlockStyle();
+  m_defaultCharStyle = VSDCharStyle();
+  m_defaultParaStyle = VSDParaStyle();
   if (m_stencilShape)
   {
     if (m_stencilShape->m_foreign)
@@ -1803,8 +1801,8 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
 
     if (m_stencilShape->m_textStyleId != MINUS_ONE)
     {
-      m_defaultCharStyle = m_styles.getCharStyle(m_stencilShape->m_textStyleId);
-      m_defaultParaStyle = m_styles.getParaStyle(m_stencilShape->m_textStyleId);
+      m_defaultCharStyle.override(m_styles.getOptionalCharStyle(m_stencilShape->m_textStyleId));
+      m_defaultParaStyle.override(m_styles.getOptionalParaStyle(m_stencilShape->m_textStyleId));
       m_textBlockStyle.override(m_styles.getOptionalTextBlockStyle(m_stencilShape->m_textStyleId));
     }
 
@@ -1818,10 +1816,11 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
 
   if (fillStyleId != MINUS_ONE)
     m_fillStyle = m_styles.getFillStyle(fillStyleId);
+
   if (textStyleId != MINUS_ONE)
   {
-    m_defaultCharStyle = m_styles.getCharStyle(textStyleId);
-    m_defaultParaStyle = m_styles.getParaStyle(textStyleId);
+    m_defaultCharStyle.override(m_styles.getOptionalCharStyle(textStyleId));
+    m_defaultParaStyle.override(m_styles.getOptionalParaStyle(textStyleId));
     m_textBlockStyle.override(m_styles.getOptionalTextBlockStyle(textStyleId));
   }
 
@@ -1886,9 +1885,17 @@ void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */ , unsigned l
     const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align, const boost::optional<unsigned> &flags)
 {
   _handleLevelChange(level);
-  VSDParaStyle format;
+  VSDParaStyle format(m_defaultParaStyle);
   format.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags));
+  format.charCount = charCount;
   m_paraFormats.push_back(format);
+}
+
+void libvisio::VSDContentCollector::collectDefaultParaStyle(unsigned charCount, const boost::optional<double> &indFirst,
+    const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine, const boost::optional<double> &spBefore,
+    const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align, const boost::optional<unsigned> &flags)
+{
+  m_defaultParaStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags));
 }
 
 void libvisio::VSDContentCollector::collectCharIX(unsigned /* id */ , unsigned level, unsigned charCount,
@@ -1898,10 +1905,21 @@ void libvisio::VSDContentCollector::collectCharIX(unsigned /* id */ , unsigned l
     const boost::optional<bool> &superscript, const boost::optional<bool> &subscript)
 {
   _handleLevelChange(level);
-  VSDCharStyle format;
+  VSDCharStyle format(m_defaultCharStyle);
   format.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                        allcaps, initcaps, smallcaps, superscript, subscript));
+  format.charCount = charCount;
   m_charFormats.push_back(format);
+}
+
+void libvisio::VSDContentCollector::collectDefaultCharStyle(unsigned charCount,
+    const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
+    const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout,
+    const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
+    const boost::optional<bool> &superscript, const boost::optional<bool> &subscript)
+{
+  m_defaultCharStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                              allcaps, initcaps, smallcaps, superscript, subscript));
 }
 
 void libvisio::VSDContentCollector::collectTextBlock(unsigned level, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,

@@ -278,6 +278,13 @@ void libvisio::VSDStylesCollector::collectParaIX(unsigned /* id */, unsigned lev
   _handleLevelChange(level);
 }
 
+void libvisio::VSDStylesCollector::collectDefaultParaStyle(unsigned /* charCount */, const boost::optional<double> & /* indFirst */,
+    const boost::optional<double> & /* indLeft */, const boost::optional<double> & /* indRight */, const boost::optional<double> & /* spLine */,
+    const boost::optional<double> & /* spBefore */, const boost::optional<double> & /* spAfter */,
+    const boost::optional<unsigned char> & /* align */, const boost::optional<unsigned> & /* flags */)
+{
+}
+
 void libvisio::VSDStylesCollector::collectCharIX(unsigned /* id */, unsigned level, unsigned /* charCount */,
     const boost::optional<VSDName> & /* font */, const boost::optional<Colour> & /* fontColour */, const boost::optional<double> & /* fontSize */,
     const boost::optional<bool> & /* bold */, const boost::optional<bool> & /* italic */, const boost::optional<bool> & /* underline */,
@@ -286,6 +293,15 @@ void libvisio::VSDStylesCollector::collectCharIX(unsigned /* id */, unsigned lev
     const boost::optional<bool> & /* superscript */, const boost::optional<bool> & /* subscript */)
 {
   _handleLevelChange(level);
+}
+
+void libvisio::VSDStylesCollector::collectDefaultCharStyle(unsigned /* charCount */,
+    const boost::optional<VSDName> & /* font */, const boost::optional<Colour> & /* fontColour */, const boost::optional<double> & /* fontSize */,
+    const boost::optional<bool> & /* bold */, const boost::optional<bool> & /* italic */, const boost::optional<bool> & /* underline */,
+    const boost::optional<bool> & /* doubleunderline */, const boost::optional<bool> & /* strikeout */, const boost::optional<bool> & /* doublestrikeout */,
+    const boost::optional<bool> & /* allcaps */, const boost::optional<bool> & /* initcaps */, const boost::optional<bool> & /* smallcaps */,
+    const boost::optional<bool> & /* superscript */, const boost::optional<bool> & /* subscript */)
+{
 }
 
 void libvisio::VSDStylesCollector::collectTextBlock(unsigned level, const boost::optional<double> & /* leftMargin */,
