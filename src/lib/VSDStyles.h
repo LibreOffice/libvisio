@@ -181,7 +181,7 @@ struct VSDFillStyle
 struct VSDOptionalCharStyle
 {
   VSDOptionalCharStyle()
-    : charCount(), font(), colour(), size(), bold(), italic(), underline(), doubleunderline(), strikeout(),
+    : charCount(0), font(), colour(), size(), bold(), italic(), underline(), doubleunderline(), strikeout(),
       doublestrikeout(), allcaps(), initcaps(), smallcaps(), superscript(), subscript() {}
   VSDOptionalCharStyle(unsigned cc, const boost::optional<VSDName> &ft,
                        const boost::optional<Colour> &c, const boost::optional<double> &s, const boost::optional<bool> &b,
@@ -200,7 +200,6 @@ struct VSDOptionalCharStyle
   ~VSDOptionalCharStyle() {}
   void override(const VSDOptionalCharStyle &style)
   {
-    charCount = style.charCount;
     ASSIGN_OPTIONAL(style.font, font);
     ASSIGN_OPTIONAL(style.colour, colour);
     ASSIGN_OPTIONAL(style.size, size);
@@ -253,7 +252,6 @@ struct VSDCharStyle
   ~VSDCharStyle() {}
   void override(const VSDOptionalCharStyle &style)
   {
-    charCount = style.charCount;
     ASSIGN_OPTIONAL(style.font, font);
     ASSIGN_OPTIONAL(style.colour, colour);
     ASSIGN_OPTIONAL(style.size, size);
@@ -290,7 +288,7 @@ struct VSDCharStyle
 struct VSDOptionalParaStyle
 {
   VSDOptionalParaStyle() :
-    charCount(), indFirst(), indLeft(), indRight(), spLine(), spBefore(), spAfter(), align(), flags() {}
+    charCount(0), indFirst(), indLeft(), indRight(), spLine(), spBefore(), spAfter(), align(), flags() {}
   VSDOptionalParaStyle(unsigned cc, const boost::optional<double> &ifst, const boost::optional<double> &il,
                        const boost::optional<double> &ir, const boost::optional<double> &sl, const boost::optional<double> &sb,
                        const boost::optional<double> &sa, const boost::optional<unsigned char> &a, const boost::optional<unsigned> &f) :
@@ -301,7 +299,6 @@ struct VSDOptionalParaStyle
   ~VSDOptionalParaStyle() {}
   void override(const VSDOptionalParaStyle &style)
   {
-    charCount = style.charCount;
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
     ASSIGN_OPTIONAL(style.indLeft, indLeft);
     ASSIGN_OPTIONAL(style.indRight,indRight);
@@ -336,7 +333,6 @@ struct VSDParaStyle
   ~VSDParaStyle() {}
   void override(const VSDOptionalParaStyle &style)
   {
-    charCount = style.charCount;
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
     ASSIGN_OPTIONAL(style.indLeft, indLeft);
     ASSIGN_OPTIONAL(style.indRight,indRight);
