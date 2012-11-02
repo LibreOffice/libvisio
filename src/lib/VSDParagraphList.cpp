@@ -43,7 +43,7 @@ public:
   virtual VSDParagraphListElement *clone() = 0;
   virtual unsigned getCharCount() const = 0;
   virtual void setCharCount(unsigned charCount) = 0;
-protected:
+
   unsigned m_id, m_level;
 };
 
@@ -53,10 +53,8 @@ public:
   VSDParaIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
             const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
             const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
-            const boost::optional<unsigned> &flags) : VSDParagraphListElement(id, level), m_style()
-  {
-    m_style.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags));
-  }
+            const boost::optional<unsigned> &flags) : VSDParagraphListElement(id, level),
+    m_style(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align, flags) {}
   ~VSDParaIX() {}
   void handle(VSDCollector *collector) const;
   VSDParagraphListElement *clone();
@@ -69,7 +67,7 @@ public:
     m_style.charCount = charCount;
   }
 
-  VSDParaStyle m_style;
+  VSDOptionalParaStyle m_style;
 };
 } // namespace libvisio
 
@@ -159,6 +157,20 @@ void libvisio::VSDParagraphList::setCharCount(unsigned id, unsigned charCount)
   std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.find(id);
   if (iter != m_elements.end() && iter->second)
     iter->second->setCharCount(charCount);
+}
+
+void libvisio::VSDParagraphList::resetCharCount()
+{
+  for (std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.begin();
+       iter != m_elements.end(); ++iter)
+    iter->second->setCharCount(0);
+}
+
+unsigned libvisio::VSDParagraphList::getLevel() const
+{
+  if (m_elements.empty() || !m_elements.begin()->second)
+    return 0;
+  return m_elements.begin()->second->m_level;
 }
 
 void libvisio::VSDParagraphList::setElementsOrder(const std::vector<unsigned> &elementsOrder)

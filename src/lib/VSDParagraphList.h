@@ -55,6 +55,8 @@ public:
   void addParaIX(unsigned id, unsigned level, const VSDOptionalParaStyle &style);
   unsigned getCharCount(unsigned id) const;
   void setCharCount(unsigned id, unsigned charCount);
+  void resetCharCount();
+  unsigned getLevel() const;
 
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDCollector *collector) const;
