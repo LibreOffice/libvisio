@@ -1007,8 +1007,9 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
       m_shape.m_geometries = tmpShape->m_geometries;
-      m_shape.m_charStyle.override(tmpShape->m_charStyle);
-      m_shape.m_paraStyle.override(tmpShape->m_paraStyle);
+      m_shape.m_charList = tmpShape->m_charList;
+      m_shape.m_paraList = tmpShape->m_paraList;
+      m_shape.m_text = tmpShape->m_text;
     }
   }
 
@@ -1121,6 +1122,8 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
   unsigned cp = 0;
   unsigned pp = 0;
   m_shape.m_text.clear();
+  m_shape.m_charList.resetCharCount();
+  m_shape.m_paraList.resetCharCount();
 
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
@@ -1150,19 +1153,36 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
         const unsigned char *tmpBuffer = xmlTextReaderConstValue(reader);
         int tmpLength = xmlStrlen(tmpBuffer);
         for (int i = 0; i < tmpLength && tmpBuffer[i]; ++i)
-          tmpText.append(tmpBuffer[i]);
+        {
+          if (i < tmpLength-1 && 0xd == tmpBuffer[i] && 0xa == tmpBuffer[i+1])
+          {
+            tmpText.append((unsigned char)'\n');
+            ++i;
+          }
+          // utf-8 line separator 0xe2 0x80 0xa8 (0x2028) and paragraph separator 0xe2 0x80 0xa9 (0x2029)
+          else if (i < tmpLength-2 && 0xe2 == tmpBuffer[i] && 0x80 == tmpBuffer[i+1] && (0xa8 == tmpBuffer[i+2] || 0xa9 == tmpBuffer[i+2]))
+          {
+            tmpText.append((unsigned char)'\n');
+            ++i;
+            ++i;
+          }
+          else
+            tmpText.append(tmpBuffer[i]);
+        }
         unsigned charCount = m_shape.m_charList.getCharCount(cp);
-        if (MINUS_ONE != charCount)
-        {
-          charCount += (unsigned)tmpText.size();
-          m_shape.m_charList.setCharCount(cp, charCount);
-        }
+        if (MINUS_ONE == charCount) // we are calling non-existing style
+          m_shape.m_charList.addCharIX(cp, m_shape.m_charList.getLevel(), m_shape.m_charStyle);
+
+        charCount += (unsigned)tmpText.size();
+        m_shape.m_charList.setCharCount(cp, charCount);
+
         charCount = m_shape.m_paraList.getCharCount(pp);
-        if (MINUS_ONE != charCount)
-        {
-          charCount += (unsigned)tmpText.size();
-          m_shape.m_paraList.setCharCount(pp, charCount);
-        }
+        if (MINUS_ONE == charCount)
+          m_shape.m_paraList.addParaIX(pp, m_shape.m_paraList.getLevel(), m_shape.m_paraStyle);
+
+        charCount += (unsigned)tmpText.size();
+        m_shape.m_paraList.setCharCount(pp, charCount);
+
         m_shape.m_text.append(tmpText);
         m_shape.m_textFormat = VSD_TEXT_UTF8;
       }
@@ -1358,12 +1378,11 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
                                     initcaps, smallcaps, superscript, subscript);
   else
   {
-    if (!ix) // character style 0 is the default character style
+    if (!ix || m_shape.m_charList.empty()) // character style 0 is the default character style
       m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold,
                                    italic, underline, doubleunderline, strikeout, doublestrikeout,
                                    allcaps, initcaps, smallcaps, superscript, subscript));
 
-    m_shape.m_charList.addCharIX(ix, level, m_shape.m_charStyle);
     m_shape.m_charList.addCharIX(ix, level, charCount, font, fontColour, fontSize, bold, italic,
                                  underline, doubleunderline, strikeout, doublestrikeout, allcaps,
                                  initcaps, smallcaps, superscript, subscript);
@@ -1457,11 +1476,10 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
                                     spLine, spBefore, spAfter, align, flags);
   else
   {
-    if (!ix) // paragraph style 0 is the default paragraph style
+    if (!ix || m_shape.m_paraList.empty()) // paragraph style 0 is the default paragraph style
       m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
                                    spLine, spBefore, spAfter, align, flags));
 
-    m_shape.m_paraList.addParaIX(ix, level, m_shape.m_paraStyle);
     m_shape.m_paraList.addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, flags);
   }
