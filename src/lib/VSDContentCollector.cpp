@@ -1881,7 +1881,7 @@ void libvisio::VSDContentCollector::collectText(unsigned level, const WPXBinaryD
   m_textFormat = format;
 }
 
-void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */ , unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */ , unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
     const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine, const boost::optional<double> &spBefore,
     const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align, const boost::optional<unsigned> &flags)
 {
@@ -1980,7 +1980,7 @@ void libvisio::VSDContentCollector::collectFillStyle(unsigned level, const boost
   collectFillStyle(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
-void libvisio::VSDContentCollector::collectParaIXStyle(unsigned /* id */, unsigned /* level */, const boost::optional<unsigned> &charCount,
+void libvisio::VSDContentCollector::collectParaIXStyle(unsigned /* id */, unsigned /* level */, unsigned charCount,
     const boost::optional<double> &indFirst, const boost::optional<double> &indLeft, const boost::optional<double> &indRight,
     const boost::optional<double> &spLine, const boost::optional<double> &spBefore, const boost::optional<double> &spAfter,
     const boost::optional<unsigned char> &align, const boost::optional<unsigned> &flags)

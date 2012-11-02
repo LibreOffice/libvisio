@@ -111,7 +111,7 @@ public:
                      const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                      const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
                      const boost::optional<bool> &subscript);
-  void collectParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+  void collectParaIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
                      const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                      const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                      const boost::optional<unsigned> &flags);
@@ -146,7 +146,7 @@ public:
                           const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                           const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
                           const boost::optional<bool> &subscript);
-  void collectParaIXStyle(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+  void collectParaIXStyle(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
                           const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                           const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                           const boost::optional<unsigned> &flags);

@@ -270,7 +270,7 @@ void libvisio::VSDStylesCollector::collectText(unsigned level, const ::WPXBinary
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectParaIX(unsigned /* id */, unsigned level, const boost::optional<unsigned> & /* charCount */,
+void libvisio::VSDStylesCollector::collectParaIX(unsigned /* id */, unsigned level, unsigned /* charCount */,
     const boost::optional<double> & /* indFirst */, const boost::optional<double> & /* indLeft */, const boost::optional<double> & /* indRight */,
     const boost::optional<double> & /* spLine */, const boost::optional<double> & /* spBefore */, const boost::optional<double> & /* spAfter */,
     const boost::optional<unsigned char> & /* align */, const boost::optional<unsigned> & /* flags */)
@@ -343,7 +343,7 @@ void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /* id */, unsigne
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectParaIXStyle(unsigned /* id */, unsigned level, const boost::optional<unsigned> & /* charCount */, const boost::optional<double> & /* indFirst */,
+void libvisio::VSDStylesCollector::collectParaIXStyle(unsigned /* id */, unsigned level, unsigned /* charCount */, const boost::optional<double> & /* indFirst */,
     const boost::optional<double> & /* indLeft */, const boost::optional<double> & /* indRight */, const boost::optional<double> & /* spLine */, const boost::optional<double> & /* spBefore */,
     const boost::optional<double> & /* spAfter */, const boost::optional<unsigned char> & /* align */, const boost::optional<unsigned> & /* flags */)
 {

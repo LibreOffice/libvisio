@@ -291,7 +291,7 @@ struct VSDOptionalParaStyle
 {
   VSDOptionalParaStyle() :
     charCount(), indFirst(), indLeft(), indRight(), spLine(), spBefore(), spAfter(), align(), flags() {}
-  VSDOptionalParaStyle(const boost::optional<unsigned> &cc, const boost::optional<double> &ifst, const boost::optional<double> &il,
+  VSDOptionalParaStyle(unsigned cc, const boost::optional<double> &ifst, const boost::optional<double> &il,
                        const boost::optional<double> &ir, const boost::optional<double> &sl, const boost::optional<double> &sb,
                        const boost::optional<double> &sa, const boost::optional<unsigned char> &a, const boost::optional<unsigned> &f) :
     charCount(cc), indFirst(ifst), indLeft(il), indRight(ir), spLine(sl), spBefore(sb), spAfter(sa), align(a), flags(f) {}
@@ -301,7 +301,7 @@ struct VSDOptionalParaStyle
   ~VSDOptionalParaStyle() {}
   void override(const VSDOptionalParaStyle &style)
   {
-    ASSIGN_OPTIONAL(style.charCount, charCount);
+    charCount = style.charCount;
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
     ASSIGN_OPTIONAL(style.indLeft, indLeft);
     ASSIGN_OPTIONAL(style.indRight,indRight);
@@ -312,7 +312,7 @@ struct VSDOptionalParaStyle
     ASSIGN_OPTIONAL(style.flags, flags);
   }
 
-  boost::optional<unsigned> charCount;
+  unsigned charCount;
   boost::optional<double> indFirst;
   boost::optional<double> indLeft;
   boost::optional<double> indRight;
@@ -336,7 +336,7 @@ struct VSDParaStyle
   ~VSDParaStyle() {}
   void override(const VSDOptionalParaStyle &style)
   {
-    ASSIGN_OPTIONAL(style.charCount, charCount);
+    charCount = style.charCount;
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
     ASSIGN_OPTIONAL(style.indLeft, indLeft);
     ASSIGN_OPTIONAL(style.indRight,indRight);

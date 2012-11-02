@@ -50,7 +50,7 @@ protected:
 class VSDParaIX : public VSDParagraphListElement
 {
 public:
-  VSDParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+  VSDParaIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
             const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
             const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
             const boost::optional<unsigned> &flags) : VSDParagraphListElement(id, level), m_style()
@@ -117,7 +117,7 @@ libvisio::VSDParagraphList::~VSDParagraphList()
   clear();
 }
 
-void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<double> &indFirst,
+void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
     const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
     const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
     const boost::optional<unsigned> &flags)
