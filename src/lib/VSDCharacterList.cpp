@@ -50,7 +50,7 @@ protected:
 class VSDCharIX : public VSDCharacterListElement
 {
 public:
-  VSDCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<VSDName> &font,
+  VSDCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
             const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
             const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
             const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
@@ -128,7 +128,7 @@ libvisio::VSDCharacterList::~VSDCharacterList()
   clear();
 }
 
-void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount,
+void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, unsigned charCount,
     const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize,
     const boost::optional<bool> &bold, const boost::optional<bool> &italic, const boost::optional<bool> &underline,
     const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout,

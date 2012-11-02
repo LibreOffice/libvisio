@@ -49,7 +49,7 @@ public:
   VSDCharacterList(const VSDCharacterList &charList);
   ~VSDCharacterList();
   VSDCharacterList &operator=(const VSDCharacterList &charList);
-  void addCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<VSDName> &font,
+  void addCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
                  const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                  const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
                  const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,

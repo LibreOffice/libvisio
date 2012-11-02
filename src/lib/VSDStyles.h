@@ -183,7 +183,7 @@ struct VSDOptionalCharStyle
   VSDOptionalCharStyle()
     : charCount(), font(), colour(), size(), bold(), italic(), underline(), doubleunderline(), strikeout(),
       doublestrikeout(), allcaps(), initcaps(), smallcaps(), superscript(), subscript() {}
-  VSDOptionalCharStyle(const boost::optional<unsigned> &cc, const boost::optional<VSDName> &ft,
+  VSDOptionalCharStyle(unsigned cc, const boost::optional<VSDName> &ft,
                        const boost::optional<Colour> &c, const boost::optional<double> &s, const boost::optional<bool> &b,
                        const boost::optional<bool> &i, const boost::optional<bool> &u, const boost::optional<bool> &du,
                        const boost::optional<bool> &so, const boost::optional<bool> &dso, const boost::optional<bool> &ac,
@@ -200,7 +200,7 @@ struct VSDOptionalCharStyle
   ~VSDOptionalCharStyle() {}
   void override(const VSDOptionalCharStyle &style)
   {
-    ASSIGN_OPTIONAL(style.charCount, charCount);
+    charCount = style.charCount;
     ASSIGN_OPTIONAL(style.font, font);
     ASSIGN_OPTIONAL(style.colour, colour);
     ASSIGN_OPTIONAL(style.size, size);
@@ -217,7 +217,7 @@ struct VSDOptionalCharStyle
     ASSIGN_OPTIONAL(style.subscript, subscript);
   }
 
-  boost::optional<unsigned> charCount;
+  unsigned charCount;
   boost::optional<VSDName> font;
   boost::optional<Colour> colour;
   boost::optional<double> size;
@@ -253,7 +253,7 @@ struct VSDCharStyle
   ~VSDCharStyle() {}
   void override(const VSDOptionalCharStyle &style)
   {
-    ASSIGN_OPTIONAL(style.charCount, charCount);
+    charCount = style.charCount;
     ASSIGN_OPTIONAL(style.font, font);
     ASSIGN_OPTIONAL(style.colour, colour);
     ASSIGN_OPTIONAL(style.size, size);

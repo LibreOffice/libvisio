@@ -115,7 +115,7 @@ public:
   void collectUnhandledChunk(unsigned id, unsigned level);
 
   void collectText(unsigned level, const WPXBinaryData &textStream, TextFormat format);
-  void collectCharIX(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<VSDName> &font,
+  void collectCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
                      const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                      const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
                      const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
@@ -148,7 +148,7 @@ public:
                         const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                         const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
                         const boost::optional<Colour> &shfgc);
-  void collectCharIXStyle(unsigned id, unsigned level, const boost::optional<unsigned> &charCount, const boost::optional<VSDName> &font,
+  void collectCharIXStyle(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
                           const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                           const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
                           const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
