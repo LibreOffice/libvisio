@@ -1170,18 +1170,24 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
             tmpText.append(tmpBuffer[i]);
         }
         unsigned charCount = m_shape.m_charList.getCharCount(cp);
-        if (MINUS_ONE == charCount) // we are calling non-existing style
+        if (MINUS_ONE == charCount && !m_shape.m_charList.empty())
+          // fill non-existing character style with a legitimate default character style
           m_shape.m_charList.addCharIX(cp, m_shape.m_charList.getLevel(), m_shape.m_charStyle);
-
-        charCount += (unsigned)tmpText.size();
-        m_shape.m_charList.setCharCount(cp, charCount);
+        if (!m_shape.m_charList.empty())
+        {
+          charCount += (unsigned)tmpText.size();
+          m_shape.m_charList.setCharCount(cp, charCount);
+        }
 
         charCount = m_shape.m_paraList.getCharCount(pp);
-        if (MINUS_ONE == charCount)
+        if (MINUS_ONE == charCount && !m_shape.m_paraList.empty())
+          // fill non-existing paragraph style with a legitimate default paragraph style
           m_shape.m_paraList.addParaIX(pp, m_shape.m_paraList.getLevel(), m_shape.m_paraStyle);
-
-        charCount += (unsigned)tmpText.size();
-        m_shape.m_paraList.setCharCount(pp, charCount);
+        if (!m_shape.m_paraList.empty())
+        {
+          charCount += (unsigned)tmpText.size();
+          m_shape.m_paraList.setCharCount(pp, charCount);
+        }
 
         m_shape.m_text.append(tmpText);
         m_shape.m_textFormat = VSD_TEXT_UTF8;
