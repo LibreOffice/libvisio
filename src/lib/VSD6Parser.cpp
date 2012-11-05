@@ -221,14 +221,14 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
   shfgc.a = readU8(input);
   input->seek(5, WPX_SEEK_CUR); // Shadow Background Colour skipped
   unsigned char shadowPattern = readU8(input);
-  double shadowOffsetX = 0.0;
-  double shadowOffsetY = 0.0;
 
   if (m_isInStyles)
     m_collector->collectFillStyle(m_header.level, colourFG, colourBG, fillPattern,
                                   fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
   else
   {
+    double shadowOffsetX = 0.0;
+    double shadowOffsetY = 0.0;
     if (m_isStencilStarted)
     {
       VSD_DEBUG_MSG(("Found stencil fill\n"));
