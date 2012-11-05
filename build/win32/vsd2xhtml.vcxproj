@@ -71,7 +71,7 @@
       <AdditionalDependencies>libvisio-0.0.lib;libwpd-0.9.lib;libwpd-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\bin\vsd2xhtml.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>Release\lib;$(LIBWPD_LIB_DIR);$(ZLIB_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>Release\lib;$(LIBWPD_LIB_DIR);$(LIBXML_LIB_DIR);$(ZLIB_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>.\Release/vsd2xhtml.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -114,7 +114,7 @@
       <AdditionalDependencies>libvisio-0.0.lib;libwpd-0.9.lib;libwpd-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Debug\bin\vsd2xhtml.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>Debug\lib;$(LIBWPD_LIB_DIR);$(ZLIB_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>Debug\lib;$(LIBWPD_LIB_DIR);$(LIBXML_LIB_DIR);$(ZLIB_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/vsd2xhtml.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>

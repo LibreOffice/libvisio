@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR),$(ZLIB_INCLUDE_DIR)"
+				AdditionalIncludeDirectories="$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR),$(LIBXML_INCLUDE_DIR),$(ZLIB_INCLUDE_DIR)"
 				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_LIB;_CRT_SECURE_NO_WARNINGS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR),$(ZLIB_INCLUDE_DIR)"
+				AdditionalIncludeDirectories="$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR),$(LIBXML_INCLUDE_DIR),$(ZLIB_INCLUDE_DIR)"
 				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
