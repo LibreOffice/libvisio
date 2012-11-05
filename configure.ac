@@ -55,10 +55,16 @@ AC_SUBST(GPERF)
 # ====================
 # Find additional apps
 # ====================
-PKG_CHECK_MODULES([LIBVISIO],[
+PKG_CHECK_MODULES([WPD],[
 	libwpd-0.9
 	libwpd-stream-0.9
+])
+
+PKG_CHECK_MODULES([WPG],[
 	libwpg-0.2
+])
+
+PKG_CHECK_MODULES([LIBXML],[
 	libxml-2.0
 ])
 
@@ -216,8 +222,10 @@ AS_IF([test "x$native_win32" = "xyes"], [
 		CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow -pedantic"
 	])
 ])
-LIBVISIO_CXXFLAGS="$LIBVISIO_CFLAGS"
+LIBVISIO_CXXFLAGS="${WPD_CFLAGS} ${WPG_CFLAGS} ${LIBXML_CFLAGS}"
+LIBVISIO_LIBS="${WPD_LIBS} ${WPG_LIBS} ${LIBXML_LIBS}"
 AC_SUBST(LIBVISIO_CXXFLAGS)
+AC_SUBST(LIBVISIO_LIBS)
 
 # ============
 # Debug switch
