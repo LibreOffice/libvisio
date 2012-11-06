@@ -1258,6 +1258,8 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
             font = VSDName(WPXBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
           }
         }
+        if (stringValue)
+          xmlFree(stringValue);
       }
       break;
     case XML_COLOR:
