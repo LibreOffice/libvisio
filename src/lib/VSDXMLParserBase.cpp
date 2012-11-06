@@ -1843,13 +1843,7 @@ void libvisio::VSDXMLParserBase::handleMastersEnd(xmlTextReaderPtr /* reader */)
 {
   m_isShapeStarted = false;
   if (m_extractStencils)
-  {
-    m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
-    _handleLevelChange(0);
-    m_shapeList.clear();
-    m_isPageStarted = false;
-    m_collector->endPage();
-  }
+    m_collector->endPages();
   else
     m_isStencilStarted = false;
 }
@@ -1869,7 +1863,10 @@ void libvisio::VSDXMLParserBase::handleMasterEnd(xmlTextReaderPtr /* reader */)
   m_isPageStarted = false;
   if (m_extractStencils)
   {
+    m_collector->collectShapesOrder(0, 2, m_shapeList.getShapesOrder());
     _handleLevelChange(0);
+    m_shapeList.clear();
+    m_isPageStarted = false;
     m_collector->endPage();
   }
   else
