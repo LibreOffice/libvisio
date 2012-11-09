@@ -47,7 +47,7 @@ public:
   explicit VSD11Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
   ~VSD11Parser();
 private:
-  bool getChunkHeader(WPXInputStream *input);
+  virtual bool getChunkHeader(WPXInputStream *input);
   void readText(WPXInputStream *input);
   void readCharIX(WPXInputStream *input);
   void readParaIX(WPXInputStream *input);

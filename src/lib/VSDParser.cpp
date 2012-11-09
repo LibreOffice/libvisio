@@ -62,14 +62,15 @@ bool libvisio::VSDParser::parseMain()
   // Seek to trailer stream pointer
   m_input->seek(0x24, WPX_SEEK_SET);
 
-  m_input->seek(8, WPX_SEEK_CUR);
-  unsigned offset = readU32(m_input);
-  unsigned length = readU32(m_input);
-  unsigned short format = readU16(m_input);
-  bool compressed = ((format & 2) == 2);
+  Pointer trailerPointer;
+  readPointer(m_input, trailerPointer);
+  bool compressed = ((trailerPointer.Format & 2) == 2);
+  unsigned shift = 0;
+  if (compressed)
+    shift = 4;
 
-  m_input->seek(offset, WPX_SEEK_SET);
-  VSDInternalStream trailerStream(m_input, length, compressed);
+  m_input->seek(trailerPointer.Offset, WPX_SEEK_SET);
+  VSDInternalStream trailerStream(m_input, trailerPointer.Length, compressed);
 
   std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
@@ -78,7 +79,7 @@ bool libvisio::VSDParser::parseMain()
   VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
   m_collector = &stylesCollector;
   VSD_DEBUG_MSG(("VSDParser::parseMain 1st pass\n"));
-  if (!parseDocument(&trailerStream))
+  if (!parseDocument(&trailerStream, shift))
     return false;
 
   _handleLevelChange(0);
@@ -88,17 +89,17 @@ bool libvisio::VSDParser::parseMain()
   VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
   m_collector = &contentCollector;
   VSD_DEBUG_MSG(("VSDParser::parseMain 2nd pass\n"));
-  if (!parseDocument(&trailerStream))
+  if (!parseDocument(&trailerStream, shift))
     return false;
 
   return true;
 }
 
-bool libvisio::VSDParser::parseDocument(WPXInputStream *input)
+bool libvisio::VSDParser::parseDocument(WPXInputStream *input, unsigned shift)
 {
   try
   {
-    handleStreams(input, 4, 0);
+    handleStreams(input, VSD_TRAILER_STREAM, shift, 0);
     return true;
   }
   catch (...)
@@ -122,8 +123,20 @@ void libvisio::VSDParser::readPointer(WPXInputStream *input, Pointer &ptr)
   ptr.Format = readU16(input);
 }
 
-void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, unsigned level)
+void libvisio::VSDParser::readPointerInfo(WPXInputStream *input, unsigned /* ptrType */, unsigned shift, unsigned &listSize, unsigned &pointerCount)
 {
+  VSD_DEBUG_MSG(("VSDParser::readPointerInfo\n"));
+  input->seek(shift, WPX_SEEK_SET);
+  unsigned offset = readU32(input);
+  input->seek(offset+shift-4, WPX_SEEK_SET);
+  listSize = readU32(input);
+  pointerCount = readU32(input);
+  input->seek(4, WPX_SEEK_CUR);
+}
+
+void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned level)
+{
+  VSD_DEBUG_MSG(("VSDParser::HandleStreams\n"));
   std::vector<unsigned> pointerOrder;
   std::map<unsigned, libvisio::Pointer> PtrList;
   std::map<unsigned, libvisio::Pointer> FontFaces;
@@ -132,20 +145,18 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, u
   try
   {
     // Parse out pointers to streams
-    input->seek(shift, WPX_SEEK_SET);
-    unsigned offset = readU32(input);
-    input->seek(offset+shift-4, WPX_SEEK_SET);
-    unsigned listSize = readU32(input);
-    unsigned pointerCount = readU32(input);
-    input->seek(4, WPX_SEEK_CUR);
+    unsigned listSize = 0;
+    unsigned pointerCount = 0;
+    readPointerInfo(input, ptrType, shift, listSize, pointerCount);
     for (i = 0; i < pointerCount; i++)
     {
       Pointer ptr;
-	  readPointer(input, ptr);
+      readPointer(input, ptr);
       if (ptr.Type == VSD_FONTFACES)
         FontFaces[i] = ptr;
       else if (ptr.Type != 0)
         PtrList[i] = ptr;
+      VSD_DEBUG_MSG(("--> Pointer #%u\n", i));
     }
     for (i = 0; i < listSize; ++i)
       pointerOrder.push_back(readU32(input));
@@ -178,9 +189,9 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, u
 
 }
 
-
 void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigned level)
 {
+  VSD_DEBUG_MSG(("VSDParser::HandleStream\n"));
   m_header.level = level;
   m_header.id = idx;
   m_header.chunkType = ptr.Type;
@@ -248,7 +259,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     if (ptr.Length > 4)
       handleBlob(&tmpInput, level+1);
     if ((ptr.Format >> 4) == 0x5 && ptr.Type != VSD_COLORS)
-      handleStreams(&tmpInput, shift, level+1);
+      handleStreams(&tmpInput, ptr.Type, shift, level+1);
   }
   else if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0x8)
     handleChunks(&tmpInput, level+1);

@@ -49,6 +49,8 @@ public:
 
 protected:
   virtual void readPointer(WPXInputStream *input, Pointer &ptr);
+  virtual bool getChunkHeader(WPXInputStream *input);
+  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, unsigned &pointerCount);
 
 private:
   VSD5Parser();

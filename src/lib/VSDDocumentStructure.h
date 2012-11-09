@@ -35,6 +35,7 @@
 #define VSD_OLE_LIST 0x0d
 #define VSD_TEXT 0x0e
 
+#define VSD_TRAILER_STREAM 0x14
 #define VSD_PAGE 0x15
 #define VSD_COLORS 0x16
 #define VSD_FONT_LIST 0x18

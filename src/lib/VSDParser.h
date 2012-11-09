@@ -124,16 +124,17 @@ protected:
   void readOLEData(WPXInputStream *input);
 
   // parser of one pass
-  bool parseDocument(WPXInputStream *input);
+  bool parseDocument(WPXInputStream *input, unsigned shift);
 
   // Stream handlers
-  void handleStreams(WPXInputStream *input, unsigned shift, unsigned level);
+  void handleStreams(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned level);
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
   void handleChunks(WPXInputStream *input, unsigned level);
   void handleChunk(WPXInputStream *input);
   void handleBlob(WPXInputStream *input, unsigned level);
 
   virtual void readPointer(WPXInputStream *input, Pointer &ptr);
+  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, unsigned &pointerCount);
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);
   Colour _colourFromIndex(unsigned idx);
