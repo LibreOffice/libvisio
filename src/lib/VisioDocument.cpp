@@ -36,6 +36,7 @@
 #include "VSDSVGGenerator.h"
 #include "VSDParser.h"
 #include "VSDXParser.h"
+#include "VSD5Parser.h"
 #include "VSD6Parser.h"
 #include "VSD11Parser.h"
 #include "VSDXMLHelper.h"
@@ -64,7 +65,7 @@ static bool isBinaryVisioDocument(WPXInputStream *input)
     VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
 
     // Versions 2k (6) and 2k3 (11)
-    if (version == 6 || version == 11)
+    if (version == 4 || version == 5 || version == 6 || version == 11)
     {
       return true;
     }
@@ -224,6 +225,10 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
     VSDParser *parser = 0;
     switch(version)
     {
+    case 4:
+    case 5:
+      parser = new VSD5Parser(docStream, painter);
+      break;
     case 6:
       parser = new VSD6Parser(docStream, painter);
       break;

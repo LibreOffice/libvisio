@@ -113,6 +113,15 @@ bool libvisio::VSDParser::extractStencils()
   return parseMain();
 }
 
+void libvisio::VSDParser::readPointer(WPXInputStream *input, Pointer &ptr)
+{
+  ptr.Type = readU32(input);
+  input->seek(4, WPX_SEEK_CUR); // Skip dword
+  ptr.Offset = readU32(input);
+  ptr.Length = readU32(input);
+  ptr.Format = readU16(input);
+}
+
 void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, unsigned level)
 {
   std::vector<unsigned> pointerOrder;
@@ -132,11 +141,7 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned shift, u
     for (i = 0; i < pointerCount; i++)
     {
       Pointer ptr;
-      ptr.Type = readU32(input);
-      input->seek(4, WPX_SEEK_CUR); // Skip dword
-      ptr.Offset = readU32(input);
-      ptr.Length = readU32(input);
-      ptr.Format = readU16(input);
+	  readPointer(input, ptr);
       if (ptr.Type == VSD_FONTFACES)
         FontFaces[i] = ptr;
       else if (ptr.Type != 0)
