@@ -719,7 +719,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   long bgClrId = 0;
   Colour bgColour;
   double defaultTabStop = 0.0;
-  unsigned char textDirection = 0.0;
+  unsigned char textDirection = 0;
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
