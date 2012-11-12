@@ -129,7 +129,7 @@ protected:
   // Stream handlers
   void handleStreams(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned level);
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
-  void handleChunks(WPXInputStream *input, unsigned level);
+  virtual void handleChunks(WPXInputStream *input, unsigned level);
   void handleChunk(WPXInputStream *input);
   void handleBlob(WPXInputStream *input, unsigned level);
 

@@ -55,7 +55,7 @@ void libvisio::VSD5Parser::readPointer(WPXInputStream *input, Pointer &ptr)
   ptr.Length = readU32(input);
 }
 
-void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, unsigned &pointerCount)
+void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned & /*listSize*/, unsigned &pointerCount)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readPointerInfo\n"));
   switch (ptrType)
@@ -83,7 +83,7 @@ void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrTy
     break;
   }
   pointerCount = readU16(input);
-  VSD_DEBUG_MSG(("VSD5Parser::readPointerInfo ptrType %u shift %u listSize 0x%x pointerCount 0x%x\n", ptrType, shift, listSize, pointerCount));
+  VSD_DEBUG_MSG(("VSD5Parser::readPointerInfo ptrType %u shift %u pointerCount 0x%x\n", ptrType, shift, pointerCount));
 }
 
 bool libvisio::VSD5Parser::getChunkHeader(WPXInputStream *input)
@@ -98,33 +98,37 @@ bool libvisio::VSD5Parser::getChunkHeader(WPXInputStream *input)
     input->seek(-1, WPX_SEEK_CUR);
 
   m_header.chunkType = readU16(input);
+  if (!m_header.chunkType)
+    input->seek(10, WPX_SEEK_CUR);
   m_header.id = readU16(input);
   m_header.level = readU8(input);
   m_header.unknown = readU8(input);
 
-  m_header.list = readU16(input);
-
-  // Certain chunk types seem to always have a trailer
   m_header.trailer = 0;
-  if (m_header.list != 0 || m_header.chunkType == 0x76 || m_header.chunkType == 0x73 ||
-      m_header.chunkType == 0x72 || m_header.chunkType == 0x71 || m_header.chunkType == 0x70 ||
-      m_header.chunkType == 0x6f || m_header.chunkType == 0x6e || m_header.chunkType == 0x6d ||
-      m_header.chunkType == 0x6c || m_header.chunkType == 0x6b || m_header.chunkType == 0x6a ||
-      m_header.chunkType == 0x69 || m_header.chunkType == 0x68 || m_header.chunkType == 0x67 ||
-      m_header.chunkType == 0x66 || m_header.chunkType == 0x65 || m_header.chunkType == 0x64 ||
-      m_header.chunkType == 0x2c || m_header.chunkType == 0xd)
-    m_header.trailer += 8; // 8 byte trailer
+
+  m_header.list = readU16(input);
 
   m_header.dataLength = readU32(input);
 
-  // 0x1f (OLE data) and 0xc9 (Name ID) never have trailer
-  if (m_header.chunkType == 0x1f || m_header.chunkType == 0xc9)
-  {
-    m_header.trailer = 0;
-  }
   return true;
 }
 
+void libvisio::VSD5Parser::handleChunks(WPXInputStream *input, unsigned level)
+{
+  long endPos = 0;
+
+  while (!input->atEOS())
+  {
+    getChunkHeader(input);
+    m_header.level += level;
+    endPos = m_header.dataLength+m_header.trailer+input->tell();
+
+    _handleLevelChange(m_header.level);
+    VSD_DEBUG_MSG(("VSD5Parser::handleChunks - parsing chunk type 0x%x\n", m_header.chunkType));
+    handleChunk(input);
+    input->seek(endPos, WPX_SEEK_SET);
+  }
+}
 
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -323,7 +323,6 @@ void libvisio::VSDParser::handleBlob(WPXInputStream *input, unsigned level)
   }
 }
 
-
 void libvisio::VSDParser::handleChunks(WPXInputStream *input, unsigned level)
 {
   long endPos = 0;
@@ -335,7 +334,7 @@ void libvisio::VSDParser::handleChunks(WPXInputStream *input, unsigned level)
     endPos = m_header.dataLength+m_header.trailer+input->tell();
 
     _handleLevelChange(m_header.level);
-    VSD_DEBUG_MSG(("Shape: parsing chunk type 0x%x\n", m_header.chunkType));
+    VSD_DEBUG_MSG(("VSDParser::handleChunks - parsing chunk type 0x%x\n", m_header.chunkType));
     handleChunk(input);
     input->seek(endPos, WPX_SEEK_SET);
   }
