@@ -45,35 +45,108 @@
 namespace
 {
 
+#define VISIO_MAGIC_LENGTH 21
+
+static bool checkVisioMagic(WPXInputStream *input)
+{
+  int startPosition = (int)input->tell();
+  try
+  {
+    unsigned long numBytesRead = 0;
+    const unsigned char *buffer = input->read(VISIO_MAGIC_LENGTH, numBytesRead);
+    bool returnValue = true;
+    if (VISIO_MAGIC_LENGTH != numBytesRead)
+      returnValue = false;
+    else if (0x56 != buffer[0])
+      returnValue = false;
+    else if (0x69 != buffer[1])
+      returnValue = false;
+    else if (0x73 != buffer[2])
+      returnValue = false;
+    else if (0x69 != buffer[3])
+      returnValue = false;
+    else if (0x6f != buffer[4])
+      returnValue = false;
+    else if (0x20 != buffer[5])
+      returnValue = false;
+    else if (0x28 != buffer[6])
+      returnValue = false;
+    else if (0x54 != buffer[7])
+      returnValue = false;
+    else if (0x4d != buffer[8])
+      returnValue = false;
+    else if (0x29 != buffer[9])
+      returnValue = false;
+    else if (0x20 != buffer[10])
+      returnValue = false;
+    else if (0x44 != buffer[11])
+      returnValue = false;
+    else if (0x72 != buffer[12])
+      returnValue = false;
+    else if (0x61 != buffer[13])
+      returnValue = false;
+    else if (0x77 != buffer[14])
+      returnValue = false;
+    else if (0x69 != buffer[15])
+      returnValue = false;
+    else if (0x6e != buffer[16])
+      returnValue = false;
+    else if (0x67 != buffer[17])
+      returnValue = false;
+    else if (0x0d != buffer[18])
+      returnValue = false;
+    else if (0x0a != buffer[19])
+      returnValue = false;
+    else if (0x00 != buffer[20])
+      returnValue = false;
+    input->seek(startPosition, WPX_SEEK_SET);
+    return returnValue;
+  }
+  catch (...)
+  {
+    input->seek(startPosition, WPX_SEEK_SET);
+    return false;
+  }
+}
+
 static bool isBinaryVisioDocument(WPXInputStream *input)
 {
-  WPXInputStream *tmpDocStream = 0;
+  WPXInputStream *docStream = 0;
   try
   {
     input->seek(0, WPX_SEEK_SET);
-    if (!input->isOLEStream())
-      return false;
-    tmpDocStream = input->getDocumentOLEStream("VisioDocument");
-    if (!tmpDocStream)
-      return false;
+    if (input->isOLEStream())
+    {
+      input->seek(0, WPX_SEEK_SET);
+      docStream = input->getDocumentOLEStream("VisioDocument");
+    }
+    if (!docStream)
+      docStream = input;
 
-    tmpDocStream->seek(0x1A, WPX_SEEK_SET);
-
-    unsigned char version = libvisio::readU8(tmpDocStream);
-    delete tmpDocStream;
+    docStream->seek(0, WPX_SEEK_SET);
+    unsigned char version = 0;
+    if (checkVisioMagic(docStream))
+    {
+      docStream->seek(0x1A, WPX_SEEK_SET);
+      version = libvisio::readU8(docStream);
+    }
+    input->seek(0, WPX_SEEK_SET);
+    if (docStream && docStream != input)
+      delete docStream;
+    docStream = 0;
 
     VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
 
     // Versions 2k (6) and 2k3 (11)
-    if (version == 4 || version == 5 || version == 6 || version == 11)
+    if ((version >= 1 && version <= 6) || version == 11)
     {
       return true;
     }
   }
   catch (...)
   {
-    if (tmpDocStream)
-      delete tmpDocStream;
+    if (docStream && docStream != input)
+      delete docStream;
     return false;
   }
 
@@ -188,12 +261,10 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
 {
   if (isBinaryVisioDocument(input))
     return true;
-#if 1
   if (isOpcVisioDocument(input))
     return true;
   if (isXmlVisioDocument(input))
     return true;
-#endif
   return false;
 }
 
@@ -211,13 +282,11 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
   {
     VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
     input->seek(0, WPX_SEEK_SET);
-    if (!input->isOLEStream())
-      return false;
-
-    WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
-
+    WPXInputStream *docStream = 0;
+    if (input->isOLEStream())
+      docStream = input->getDocumentOLEStream("VisioDocument");
     if (!docStream)
-      return false;
+      docStream = input;
 
     docStream->seek(0x1A, WPX_SEEK_SET);
 
@@ -225,6 +294,9 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
     VSDParser *parser = 0;
     switch(version)
     {
+    case 1:
+    case 2:
+    case 3:
     case 4:
     case 5:
       parser = new VSD5Parser(docStream, painter);
@@ -243,12 +315,14 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
       parser->parseMain();
     else
     {
-      delete docStream;
+      if (docStream != input)
+        delete docStream;
       return false;
     }
 
     delete parser;
-    delete docStream;
+    if (docStream != input)
+      delete docStream;
 
     return true;
   }
