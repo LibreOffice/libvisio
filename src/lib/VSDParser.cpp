@@ -156,9 +156,9 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
         FontFaces[i] = ptr;
       else if (ptr.Type != 0)
         PtrList[i] = ptr;
-      VSD_DEBUG_MSG(("--> Pointer #%u\n", i));
+      VSD_DEBUG_MSG(("--> Pointer #%u type 0x%x\n", i, ptr.Type));
     }
-    for (i = 0; i < listSize; ++i)
+    for (i = 0; i < listSize && listSize > 1; ++i)
       pointerOrder.push_back(readU32(input));
   }
   catch (const EndOfStreamException &)
@@ -201,10 +201,6 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   m_input->seek(ptr.Offset, WPX_SEEK_SET);
   VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
   unsigned shift = compressed ? 4 : 0;
-
-  VSD_DEBUG_MSG(("VSDParser::handleStream: level %i, ptr.Type 0x%.8x, ptr.Offset 0x%.8x, ptr.Length 0x%.8x, ptr.Format 0x%.4x\n",
-                 level, ptr.Type, ptr.Offset, ptr.Length, ptr.Format));
-
   switch (ptr.Type)
   {
   case VSD_STYLES:
