@@ -48,8 +48,8 @@ libvisio::VSD5Parser::~VSD5Parser()
 
 void libvisio::VSD5Parser::readPointer(WPXInputStream *input, Pointer &ptr)
 {
-  ptr.Type = readU16(input);
-  ptr.Format = readU16(input);
+  ptr.Type = readU16(input) & 0x00ff;
+  ptr.Format = readU16(input) & 0x00ff;
   input->seek(4, WPX_SEEK_CUR); // Skip dword
   ptr.Offset = readU32(input);
   ptr.Length = readU32(input);
@@ -58,12 +58,19 @@ void libvisio::VSD5Parser::readPointer(WPXInputStream *input, Pointer &ptr)
 void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, unsigned &pointerCount)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readPointerInfo\n"));
-  input->seek(shift+0x6, WPX_SEEK_SET);
-  listSize = readU16(input);
   switch (ptrType)
   {
   case VSD_TRAILER_STREAM:
     input->seek(shift+0x82, WPX_SEEK_SET);
+    break;
+  case VSD_PAGE:
+    input->seek(shift+0x42, WPX_SEEK_SET);
+    break;
+  case VSD_FONT_LIST:
+    input->seek(shift+0x2e, WPX_SEEK_SET);
+    break;
+  case VSD_STYLES:
+    input->seek(shift+0x12, WPX_SEEK_SET);
     break;
   case VSD_STENCILS:
     input->seek(shift+0x1e, WPX_SEEK_SET);
