@@ -131,10 +131,10 @@ protected:
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
   virtual void handleChunks(WPXInputStream *input, unsigned level);
   void handleChunk(WPXInputStream *input);
-  void handleBlob(WPXInputStream *input, unsigned level);
+  virtual void handleBlob(WPXInputStream *input, unsigned level);
 
   virtual void readPointer(WPXInputStream *input, Pointer &ptr);
-  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, unsigned &pointerCount);
+  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
   virtual bool getChunkHeader(WPXInputStream *input) = 0;
   void _handleLevelChange(unsigned level);
   Colour _colourFromIndex(unsigned idx);

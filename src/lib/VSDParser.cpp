@@ -123,14 +123,14 @@ void libvisio::VSDParser::readPointer(WPXInputStream *input, Pointer &ptr)
   ptr.Format = readU16(input);
 }
 
-void libvisio::VSDParser::readPointerInfo(WPXInputStream *input, unsigned /* ptrType */, unsigned shift, unsigned &listSize, unsigned &pointerCount)
+void libvisio::VSDParser::readPointerInfo(WPXInputStream *input, unsigned /* ptrType */, unsigned shift, unsigned &listSize, int &pointerCount)
 {
   VSD_DEBUG_MSG(("VSDParser::readPointerInfo\n"));
   input->seek(shift, WPX_SEEK_SET);
   unsigned offset = readU32(input);
   input->seek(offset+shift-4, WPX_SEEK_SET);
   listSize = readU32(input);
-  pointerCount = readU32(input);
+  pointerCount = readS32(input);
   input->seek(4, WPX_SEEK_CUR);
 }
 
@@ -140,15 +140,14 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
   std::vector<unsigned> pointerOrder;
   std::map<unsigned, libvisio::Pointer> PtrList;
   std::map<unsigned, libvisio::Pointer> FontFaces;
-  unsigned i = 0;
 
   try
   {
     // Parse out pointers to streams
     unsigned listSize = 0;
-    unsigned pointerCount = 0;
+    int pointerCount = 0;
     readPointerInfo(input, ptrType, shift, listSize, pointerCount);
-    for (i = 0; i < pointerCount; i++)
+    for (int i = 0; i < pointerCount; i++)
     {
       Pointer ptr;
       readPointer(input, ptr);
@@ -157,7 +156,9 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
       else if (ptr.Type != 0)
         PtrList[i] = ptr;
     }
-    for (i = 0; i < listSize && listSize > 1; ++i)
+    if (listSize <= 1)
+      listSize = 0;
+    while (listSize--)
       pointerOrder.push_back(readU32(input));
   }
   catch (const EndOfStreamException &)
@@ -173,9 +174,9 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
 
   if (!pointerOrder.empty())
   {
-    for (i=0; i < pointerOrder.size(); ++i)
+    for (unsigned j=0; j < pointerOrder.size(); ++j)
     {
-      iter = PtrList.find(pointerOrder[i]);
+      iter = PtrList.find(pointerOrder[j]);
       if (iter != PtrList.end())
       {
         handleStream(iter->second, iter->first, level+1);

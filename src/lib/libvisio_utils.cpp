@@ -66,6 +66,11 @@ uint16_t libvisio::readU16(WPXInputStream *input)
   throw EndOfStreamException();
 }
 
+int16_t libvisio::readS16(WPXInputStream *input)
+{
+  return (int16_t)readU16(input);
+}
+
 uint32_t libvisio::readU32(WPXInputStream *input)
 {
   if (!input || input->atEOS())
@@ -80,6 +85,11 @@ uint32_t libvisio::readU32(WPXInputStream *input)
     return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);
   VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
   throw EndOfStreamException();
+}
+
+int32_t libvisio::readS32(WPXInputStream *input)
+{
+  return (int32_t)readU32(input);
 }
 
 uint64_t libvisio::readU64(WPXInputStream *input)

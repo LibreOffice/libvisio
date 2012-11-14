@@ -50,7 +50,7 @@ public:
 protected:
   virtual void readPointer(WPXInputStream *input, Pointer &ptr);
   virtual bool getChunkHeader(WPXInputStream *input);
-  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, unsigned &pointerCount);
+  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
 
   virtual void readGeomList(WPXInputStream * /* input */) {}
   virtual void readCharList(WPXInputStream * /* input */) {}
