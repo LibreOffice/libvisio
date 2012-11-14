@@ -28,43 +28,35 @@
  * instead of those above.
  */
 
-#ifndef __VSD5PARSER_H__
-#define __VSD5PARSER_H__
+#ifndef __VSD2PARSER_H__
+#define __VSD2PARSER_H__
 
 #include <stdio.h>
 #include <iostream>
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
-#include "VSD6Parser.h"
+#include "VSD5Parser.h"
 #include "VSDInternalStream.h"
 
 namespace libvisio
 {
 
-class VSD5Parser : public VSD6Parser
+class VSD2Parser : public VSD5Parser
 {
 public:
-  explicit VSD5Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
-  ~VSD5Parser();
+  explicit VSD2Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  ~VSD2Parser();
 
 protected:
-  virtual void readPointer(WPXInputStream *input, Pointer &ptr);
   virtual bool getChunkHeader(WPXInputStream *input);
-  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, unsigned &pointerCount);
-  virtual void handleChunks(WPXInputStream *input, unsigned level);
-
-  virtual void readGeomList(WPXInputStream * /* input */) {}
-  virtual void readCharList(WPXInputStream * /* input */) {}
-  virtual void readParaList(WPXInputStream * /* input */) {}
-  virtual void readShapeList(WPXInputStream * /* input */) {}
 
 private:
-  VSD5Parser();
-  VSD5Parser(const VSDParser &);
-  VSD5Parser &operator=(const VSDParser &);
+  VSD2Parser();
+  VSD2Parser(const VSDParser &);
+  VSD2Parser &operator=(const VSDParser &);
 };
 
 } // namespace libvisio
 
-#endif // __VSD5PARSER_H__
+#endif // __VSD2PARSER_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

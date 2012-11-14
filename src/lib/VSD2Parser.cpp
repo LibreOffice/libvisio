@@ -28,43 +28,27 @@
  * instead of those above.
  */
 
-#ifndef __VSD5PARSER_H__
-#define __VSD5PARSER_H__
-
-#include <stdio.h>
-#include <iostream>
-#include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
-#include "VSD6Parser.h"
+#include <libwpd-stream/libwpd-stream.h>
+#include <locale.h>
+#include <sstream>
+#include <string>
+#include "libvisio_utils.h"
+#include "VSD2Parser.h"
 #include "VSDInternalStream.h"
+#include "VSDDocumentStructure.h"
+#include "VSDContentCollector.h"
+#include "VSDStylesCollector.h"
 
-namespace libvisio
+libvisio::VSD2Parser::VSD2Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+  : VSD5Parser(input, painter)
+{}
+
+libvisio::VSD2Parser::~VSD2Parser()
+{}
+
+bool libvisio::VSD2Parser::getChunkHeader(WPXInputStream * /* input */)
 {
+  return true;
+}
 
-class VSD5Parser : public VSD6Parser
-{
-public:
-  explicit VSD5Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
-  ~VSD5Parser();
-
-protected:
-  virtual void readPointer(WPXInputStream *input, Pointer &ptr);
-  virtual bool getChunkHeader(WPXInputStream *input);
-  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, unsigned &pointerCount);
-  virtual void handleChunks(WPXInputStream *input, unsigned level);
-
-  virtual void readGeomList(WPXInputStream * /* input */) {}
-  virtual void readCharList(WPXInputStream * /* input */) {}
-  virtual void readParaList(WPXInputStream * /* input */) {}
-  virtual void readShapeList(WPXInputStream * /* input */) {}
-
-private:
-  VSD5Parser();
-  VSD5Parser(const VSDParser &);
-  VSD5Parser &operator=(const VSDParser &);
-};
-
-} // namespace libvisio
-
-#endif // __VSD5PARSER_H__
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

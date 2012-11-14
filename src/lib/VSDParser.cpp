@@ -191,7 +191,7 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
 
 void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigned level)
 {
-  VSD_DEBUG_MSG(("VSDParser::HandleStream\n"));
+  VSD_DEBUG_MSG(("VSDParser::HandleStream %u type 0x%x\n", idx, ptr.Type));
   m_header.level = level;
   m_header.id = idx;
   m_header.chunkType = ptr.Type;

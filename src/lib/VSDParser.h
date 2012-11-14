@@ -79,7 +79,7 @@ protected:
   void readEllipse(WPXInputStream *input);
   void readLine(WPXInputStream *input);
   virtual void readFillAndShadow(WPXInputStream *input) = 0;
-  void readGeomList(WPXInputStream *input);
+  virtual void readGeomList(WPXInputStream *input);
   void readGeometry(WPXInputStream *input);
   void readMoveTo(WPXInputStream *input);
   void readLineTo(WPXInputStream *input);
@@ -91,15 +91,15 @@ protected:
   void readXFormData(WPXInputStream *input);
   void readTxtXForm(WPXInputStream *input);
   void readShapeId(WPXInputStream *input);
-  void readShapeList(WPXInputStream *input);
+  virtual void readShapeList(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
   void readShape(WPXInputStream *input);
   void readColours(WPXInputStream *input);
   void readFont(WPXInputStream *input);
   void readFontIX(WPXInputStream *input);
-  void readCharList(WPXInputStream *input);
-  void readParaList(WPXInputStream *input);
+  virtual void readCharList(WPXInputStream *input);
+  virtual void readParaList(WPXInputStream *input);
   void readPage(WPXInputStream *input);
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
