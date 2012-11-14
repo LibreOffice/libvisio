@@ -58,12 +58,23 @@
 
 #define VSD_STYLE_SHEET 0x4a
 
+#define VSD_SCRATCH_LIST 0x64
 #define VSD_SHAPE_LIST 0x65
 #define VSD_FIELD_LIST 0x66
 #define VSD_PROP_LIST 0x68
 #define VSD_CHAR_LIST 0x69
 #define VSD_PARA_LIST 0x6a
+#define VSD_TABS_DATA_LIST 0x6b
 #define VSD_GEOM_LIST 0x6c
+#define VSD_CUST_PROPS_LIST 0x6d
+#define VSD_ACT_ID_LIST 0x6e
+#define VSD_LAYER_LIST 0x6f
+#define VSD_CTRL_LIST 0x70
+#define VSD_C_PNTS_LIST 0x71
+#define VSD_CONNECT_LIST 0x72
+#define VSD_HYPER_LNK_LIST 0x73
+
+#define VSD_SMART_TAG_LIST 0x76
 
 #define VSD_SHAPE_ID 0x83
 #define VSD_EVENT 0x84

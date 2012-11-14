@@ -156,7 +156,6 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
         FontFaces[i] = ptr;
       else if (ptr.Type != 0)
         PtrList[i] = ptr;
-      VSD_DEBUG_MSG(("--> Pointer #%u type 0x%x\n", i, ptr.Type));
     }
     for (i = 0; i < listSize && listSize > 1; ++i)
       pointerOrder.push_back(readU32(input));

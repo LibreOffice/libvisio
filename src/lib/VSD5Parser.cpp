@@ -32,6 +32,7 @@
 #include <locale.h>
 #include <sstream>
 #include <string>
+#include <stack>
 #include "libvisio_utils.h"
 #include "VSD5Parser.h"
 #include "VSDInternalStream.h"
@@ -112,23 +113,5 @@ bool libvisio::VSD5Parser::getChunkHeader(WPXInputStream *input)
 
   return true;
 }
-
-void libvisio::VSD5Parser::handleChunks(WPXInputStream *input, unsigned level)
-{
-  long endPos = 0;
-
-  while (!input->atEOS())
-  {
-    getChunkHeader(input);
-    m_header.level += level;
-    endPos = m_header.dataLength+m_header.trailer+input->tell();
-
-    _handleLevelChange(m_header.level);
-    VSD_DEBUG_MSG(("VSD5Parser::handleChunks - parsing chunk type 0x%x\n", m_header.chunkType));
-    handleChunk(input);
-    input->seek(endPos, WPX_SEEK_SET);
-  }
-}
-
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
