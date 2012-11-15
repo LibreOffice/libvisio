@@ -52,10 +52,15 @@ protected:
   virtual bool getChunkHeader(WPXInputStream *input);
   virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
 
-  virtual void readGeomList(WPXInputStream * /* input */) {}
-  virtual void readCharList(WPXInputStream * /* input */) {}
-  virtual void readParaList(WPXInputStream * /* input */) {}
-  virtual void readShapeList(WPXInputStream * /* input */) {}
+  virtual void readGeomList(WPXInputStream *input);
+  virtual void readCharList(WPXInputStream *input);
+  virtual void readParaList(WPXInputStream *input);
+  virtual void readShapeList(WPXInputStream *input);
+  virtual void readPropList(WPXInputStream *input);
+
+  virtual void handleChunkRecords(WPXInputStream *input);
+
+  virtual void readShapeId(WPXInputStream *input);
 
 private:
   VSD5Parser();

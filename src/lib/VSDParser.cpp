@@ -751,6 +751,10 @@ void libvisio::VSDParser::readParaList(WPXInputStream *input)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
 }
 
+void libvisio::VSDParser::readPropList(WPXInputStream * /* input */)
+{
+}
+
 void libvisio::VSDParser::readPage(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR); //sub header length and children list length

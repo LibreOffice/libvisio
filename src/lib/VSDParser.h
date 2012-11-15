@@ -90,7 +90,7 @@ protected:
   void readShapeData(WPXInputStream *input);
   void readXFormData(WPXInputStream *input);
   void readTxtXForm(WPXInputStream *input);
-  void readShapeId(WPXInputStream *input);
+  virtual void readShapeId(WPXInputStream *input);
   virtual void readShapeList(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
@@ -100,6 +100,7 @@ protected:
   void readFontIX(WPXInputStream *input);
   virtual void readCharList(WPXInputStream *input);
   virtual void readParaList(WPXInputStream *input);
+  virtual void readPropList(WPXInputStream *input);
   void readPage(WPXInputStream *input);
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;

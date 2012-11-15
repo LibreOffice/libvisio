@@ -114,4 +114,82 @@ bool libvisio::VSD5Parser::getChunkHeader(WPXInputStream *input)
   return true;
 }
 
+void libvisio::VSD5Parser::handleChunkRecords(WPXInputStream *input)
+{
+  long startPosition = input->tell();
+  long endPosition = input->tell() + m_header.dataLength;
+  input->seek(endPosition - 4, WPX_SEEK_SET);
+  unsigned numRecords = readU16(input);
+  unsigned endOffset = m_header.dataLength - 4*(numRecords+1);
+  std::map<unsigned, ChunkHeader> records;
+  input->seek(endOffset+startPosition, WPX_SEEK_SET);
+  unsigned i = 0;
+  for (i = 0; i < numRecords; ++i)
+  {
+    ChunkHeader header;
+    header.chunkType = readU16(input);
+    if (!header.chunkType)
+      header.chunkType = readU16(input);
+    unsigned offset = readU16(input) + (i < numRecords - 1? 2 : 0);
+    header.dataLength = endOffset - offset;
+    header.level = m_header.level + 1;
+    records[offset] = header;
+  }
+  i = 0;
+  for (std::map<unsigned, ChunkHeader>::iterator iter = records.begin(); iter != records.end(); ++iter)
+  {
+    m_header = iter->second;
+    m_header.id = i++;
+    input->seek(startPosition + iter->first, WPX_SEEK_SET);
+    handleChunk(input);
+  }
+}
+
+void libvisio::VSD5Parser::readGeomList(WPXInputStream *input)
+{
+  if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
+    m_shape.m_geometries.erase(--m_currentGeomListCount);
+  m_currentGeometryList = &m_shape.m_geometries[m_currentGeomListCount++];
+
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+  handleChunkRecords(input);
+}
+
+void libvisio::VSD5Parser::readCharList(WPXInputStream *input)
+{
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+  handleChunkRecords(input);
+}
+
+void libvisio::VSD5Parser::readParaList(WPXInputStream *input)
+{
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+  handleChunkRecords(input);
+}
+
+void libvisio::VSD5Parser::readShapeList(WPXInputStream *input)
+{
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+  handleChunkRecords(input);
+}
+
+void libvisio::VSD5Parser::readPropList(WPXInputStream *input)
+{
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+  handleChunkRecords(input);
+}
+
+void libvisio::VSD5Parser::readShapeId(WPXInputStream *input)
+{
+  if (!m_isShapeStarted)
+    m_shapeList.addShapeId(m_header.id, readU16(input));
+  else
+    m_shape.m_shapeList.addShapeId(m_header.id, readU16(input));
+}
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
