@@ -365,6 +365,9 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
   case VSD_LINE:
     readLine(input);
     break;
+  case VSD_PROP_LIST:
+    readPropList(input);
+    break;
   case VSD_FILL_AND_SHADOW:
     readFillAndShadow(input);
     break;
@@ -1389,7 +1392,7 @@ void libvisio::VSDParser::readFontIX(WPXInputStream *input)
 {
   input->seek(2, WPX_SEEK_CUR);
   unsigned char codePage = readU8(input);
-  input->seek(3, WPX_SEEK_CUR);
+  input->seek(getFontNameOffset(), WPX_SEEK_CUR);
   ::WPXBinaryData textStream;
 
   for (unsigned i = 0; i < m_header.dataLength - 6; i++)

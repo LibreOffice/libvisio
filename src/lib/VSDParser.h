@@ -141,6 +141,11 @@ protected:
   Colour _colourFromIndex(unsigned idx);
   void _flushShape();
 
+  virtual unsigned getFontNameOffset() const
+  {
+    return 3;
+  }
+
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;
   ChunkHeader m_header;

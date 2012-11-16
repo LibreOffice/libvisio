@@ -62,6 +62,11 @@ protected:
 
   virtual void readShapeId(WPXInputStream *input);
 
+  virtual unsigned getFontNameOffset() const
+  {
+    return 1;
+  }
+
 private:
   VSD5Parser();
   VSD5Parser(const VSDParser &);

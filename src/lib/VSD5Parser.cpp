@@ -120,20 +120,22 @@ void libvisio::VSD5Parser::handleChunkRecords(WPXInputStream *input)
   long endPosition = input->tell() + m_header.dataLength;
   input->seek(endPosition - 4, WPX_SEEK_SET);
   unsigned numRecords = readU16(input);
-  unsigned endOffset = m_header.dataLength - 4*(numRecords+1);
+  unsigned endOffset = readU16(input);
   std::map<unsigned, ChunkHeader> records;
-  input->seek(endOffset+startPosition, WPX_SEEK_SET);
+  input->seek(endPosition-4*(numRecords+1), WPX_SEEK_SET);
   unsigned i = 0;
   for (i = 0; i < numRecords; ++i)
   {
     ChunkHeader header;
     header.chunkType = readU16(input);
-    if (!header.chunkType)
-      header.chunkType = readU16(input);
-    unsigned offset = readU16(input) + (i < numRecords - 1? 2 : 0);
-    header.dataLength = endOffset - offset;
+    unsigned offset = readU16(input);
+    unsigned tmpStart = offset;
+    while (tmpStart % 4)
+      tmpStart++;
+    header.dataLength = endOffset - tmpStart;
     header.level = m_header.level + 1;
-    records[offset] = header;
+    records[tmpStart] = header;
+    endOffset = offset;
   }
   i = 0;
   for (std::map<unsigned, ChunkHeader>::iterator iter = records.begin(); iter != records.end(); ++iter)
@@ -172,6 +174,7 @@ void libvisio::VSD5Parser::readParaList(WPXInputStream *input)
 
 void libvisio::VSD5Parser::readShapeList(WPXInputStream *input)
 {
+  VSD_DEBUG_MSG(("VSD5Parser::readShapeList\n"));
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   handleChunkRecords(input);
@@ -179,6 +182,7 @@ void libvisio::VSD5Parser::readShapeList(WPXInputStream *input)
 
 void libvisio::VSD5Parser::readPropList(WPXInputStream *input)
 {
+  VSD_DEBUG_MSG(("VSD5Parser::readPropList\n"));
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   handleChunkRecords(input);
