@@ -188,12 +188,14 @@ void libvisio::VSD5Parser::readPropList(WPXInputStream *input)
   handleChunkRecords(input);
 }
 
-void libvisio::VSD5Parser::readShapeId(WPXInputStream *input)
+unsigned libvisio::VSD5Parser::getUInt(WPXInputStream *input)
 {
-  if (!m_isShapeStarted)
-    m_shapeList.addShapeId(m_header.id, readU16(input));
-  else
-    m_shape.m_shapeList.addShapeId(m_header.id, readU16(input));
+  return readU16(input);
+}
+
+int libvisio::VSD5Parser::getInt(WPXInputStream *input)
+{
+  return readS16(input);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

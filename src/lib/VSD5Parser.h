@@ -60,12 +60,8 @@ protected:
 
   virtual void handleChunkRecords(WPXInputStream *input);
 
-  virtual void readShapeId(WPXInputStream *input);
-
-  virtual unsigned getFontNameOffset() const
-  {
-    return 1;
-  }
+  virtual unsigned getUInt(WPXInputStream *input);
+  virtual int getInt(WPXInputStream *input);
 
 private:
   VSD5Parser();

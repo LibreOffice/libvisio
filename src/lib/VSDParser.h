@@ -141,10 +141,8 @@ protected:
   Colour _colourFromIndex(unsigned idx);
   void _flushShape();
 
-  virtual unsigned getFontNameOffset() const
-  {
-    return 3;
-  }
+  virtual unsigned getUInt(WPXInputStream *input);
+  virtual int getInt(WPXInputStream *input);
 
   WPXInputStream *m_input;
   libwpg::WPGPaintInterface *m_painter;

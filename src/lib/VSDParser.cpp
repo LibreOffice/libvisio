@@ -851,9 +851,9 @@ void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
 void libvisio::VSDParser::readShapeId(WPXInputStream *input)
 {
   if (!m_isShapeStarted)
-    m_shapeList.addShapeId(m_header.id, readU32(input));
+    m_shapeList.addShapeId(m_header.id, getUInt(input));
   else
-    m_shape.m_shapeList.addShapeId(m_header.id, readU32(input));
+    m_shape.m_shapeList.addShapeId(m_header.id, getUInt(input));
 }
 
 void libvisio::VSDParser::readShapeList(WPXInputStream *input)
@@ -1391,8 +1391,8 @@ void libvisio::VSDParser::readFont(WPXInputStream *input)
 void libvisio::VSDParser::readFontIX(WPXInputStream *input)
 {
   input->seek(2, WPX_SEEK_CUR);
-  unsigned char codePage = readU8(input);
-  input->seek(getFontNameOffset(), WPX_SEEK_CUR);
+  unsigned char codePage = (unsigned char)(getUInt(input) & 0xff);
+
   ::WPXBinaryData textStream;
 
   for (unsigned i = 0; i < m_header.dataLength - 6; i++)
@@ -1466,6 +1466,16 @@ libvisio::Colour libvisio::VSDParser::_colourFromIndex(unsigned idx)
   if (idx < m_colours.size())
     return m_colours[idx];
   return libvisio::Colour();
+}
+
+unsigned libvisio::VSDParser::getUInt(WPXInputStream *input)
+{
+  return readU32(input);
+}
+
+int libvisio::VSDParser::getInt(WPXInputStream *input)
+{
+  return readS32(input);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
