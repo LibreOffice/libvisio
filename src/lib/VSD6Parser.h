@@ -50,9 +50,9 @@ protected:
   virtual bool getChunkHeader(WPXInputStream *input);
 private:
   void readText(WPXInputStream *input);
-  void readCharIX(WPXInputStream *input);
-  void readParaIX(WPXInputStream *input);
-  void readFillAndShadow(WPXInputStream *input);
+  virtual void readCharIX(WPXInputStream *input);
+  virtual void readParaIX(WPXInputStream *input);
+  virtual void readFillAndShadow(WPXInputStream *input);
   void readName(WPXInputStream *input);
   void readTextField(WPXInputStream *input);
 

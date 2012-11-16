@@ -188,6 +188,56 @@ void libvisio::VSD5Parser::readPropList(WPXInputStream *input)
   handleChunkRecords(input);
 }
 
+void libvisio::VSD5Parser::readLine(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  double strokeWidth = readDouble(input);
+  unsigned char colourIndex = readU8(input);
+  Colour c = _colourFromIndex(colourIndex);
+  unsigned char linePattern = readU8(input);
+  input->seek(9, WPX_SEEK_CUR);
+  unsigned char startMarker = readU8(input);
+  unsigned char endMarker = readU8(input);
+  unsigned char lineCap = readU8(input);
+
+  if (m_isInStyles)
+    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+  else
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap));
+}
+
+void libvisio::VSD5Parser::readFillAndShadow(WPXInputStream *input)
+{
+  Colour colourFG = _colourFromIndex(readU8(input));
+  Colour colourBG = _colourFromIndex(readU8(input));
+  unsigned char fillPattern = readU8(input);
+  input->seek(1, WPX_SEEK_CUR); // Shadow Background Colour skipped
+  Colour shfgc = _colourFromIndex(readU8(input));
+  unsigned char shadowPattern = readU8(input);
+
+  if (m_isInStyles)
+    m_collector->collectFillStyle(m_header.level, colourFG, colourBG, fillPattern,
+                                  0.0, 0.0, shadowPattern, shfgc);
+  else
+  {
+    double shadowOffsetX = 0.0;
+    double shadowOffsetY = 0.0;
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil fill\n"));
+      shadowOffsetX = m_currentStencil->m_shadowOffsetX;
+      shadowOffsetY = m_currentStencil->m_shadowOffsetY;
+    }
+    else
+    {
+      shadowOffsetX = m_shadowOffsetX;
+      shadowOffsetY = m_shadowOffsetY;
+    }
+    m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, 0.0,
+                                 0.0, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY));
+  }
+}
+
 unsigned libvisio::VSD5Parser::getUInt(WPXInputStream *input)
 {
   return readU16(input);

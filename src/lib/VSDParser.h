@@ -77,7 +77,7 @@ protected:
   void readEllipticalArcTo(WPXInputStream *input);
   void readForeignData(WPXInputStream *input);
   void readEllipse(WPXInputStream *input);
-  void readLine(WPXInputStream *input);
+  virtual void readLine(WPXInputStream *input);
   virtual void readFillAndShadow(WPXInputStream *input) = 0;
   virtual void readGeomList(WPXInputStream *input);
   void readGeometry(WPXInputStream *input);
