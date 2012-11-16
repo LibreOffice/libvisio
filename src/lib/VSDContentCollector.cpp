@@ -1613,7 +1613,7 @@ void libvisio::VSDContentCollector::transformPoint(double &x, double &y, XForm *
     else
       break;
     std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
-    if (iter != m_groupMemberships.end())
+    if (iter != m_groupMemberships.end() && shapeId != iter->second)
       shapeId = iter->second;
     else
       break;
@@ -1663,7 +1663,7 @@ void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
     else
       break;
     std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
-    if (iter != m_groupMemberships.end())
+    if (iter != m_groupMemberships.end() && shapeId != iter->second)
       shapeId = iter->second;
     else
       break;

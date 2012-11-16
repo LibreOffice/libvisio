@@ -101,7 +101,7 @@ protected:
   virtual void readCharList(WPXInputStream *input);
   virtual void readParaList(WPXInputStream *input);
   virtual void readPropList(WPXInputStream *input);
-  void readPage(WPXInputStream *input);
+  virtual void readPage(WPXInputStream *input);
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
   virtual void readParaIX(WPXInputStream *input) = 0;

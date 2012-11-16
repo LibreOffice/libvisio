@@ -257,7 +257,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     if ((ptr.Format >> 4) == 0x5 && ptr.Type != VSD_COLORS)
       handleStreams(&tmpInput, ptr.Type, shift, level+1);
   }
-  else if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0x8)
+  else if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0xc || (ptr.Format >> 4) == 0x8)
     handleChunks(&tmpInput, level+1);
 
   switch (ptr.Type)
@@ -761,7 +761,7 @@ void libvisio::VSDParser::readPropList(WPXInputStream * /* input */)
 void libvisio::VSDParser::readPage(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR); //sub header length and children list length
-  uint32_t backgroundPageID = readU32(input);
+  unsigned backgroundPageID = readU32(input);
   m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage);
 }
 

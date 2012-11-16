@@ -105,7 +105,7 @@ bool libvisio::VSD5Parser::getChunkHeader(WPXInputStream *input)
 
   m_header.trailer = 0;
 
-  m_header.list = readU16(input);
+  m_header.list = getUInt(input);
 
   m_header.dataLength = readU32(input);
 
@@ -285,6 +285,12 @@ void libvisio::VSD5Parser::readShape(WPXInputStream *input)
   m_shape.m_masterShape = masterShape;
   m_shape.m_shapeId = m_currentShapeID;
   m_currentShapeID = MINUS_ONE;
+}
+
+void libvisio::VSD5Parser::readPage(WPXInputStream *input)
+{
+  unsigned backgroundPageID = getUInt(input);
+  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage);
 }
 
 unsigned libvisio::VSD5Parser::getUInt(WPXInputStream *input)
