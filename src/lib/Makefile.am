@@ -102,7 +102,7 @@ if OS_WIN32
 
 endif
 
-clean-local :
+distclean-local :
 	rm -f $(generated_files) $(top_builddir)/src/lib/*.gperf
 
 EXTRA_DIST = \
