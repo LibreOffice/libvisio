@@ -61,6 +61,8 @@ protected:
   virtual void readLine(WPXInputStream *input);
   virtual void readFillAndShadow(WPXInputStream *input);
 
+  virtual void readShape(WPXInputStream *input);
+
   virtual void handleChunkRecords(WPXInputStream *input);
 
   virtual unsigned getUInt(WPXInputStream *input);

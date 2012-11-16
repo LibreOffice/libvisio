@@ -98,10 +98,8 @@ bool libvisio::VSD5Parser::getChunkHeader(WPXInputStream *input)
   else
     input->seek(-1, WPX_SEEK_CUR);
 
-  m_header.chunkType = readU16(input);
-  if (!m_header.chunkType)
-    input->seek(10, WPX_SEEK_CUR);
-  m_header.id = readU16(input);
+  m_header.chunkType = getUInt(input);
+  m_header.id = getUInt(input);
   m_header.level = readU8(input);
   m_header.unknown = readU8(input);
 
@@ -238,9 +236,61 @@ void libvisio::VSD5Parser::readFillAndShadow(WPXInputStream *input)
   }
 }
 
+void libvisio::VSD5Parser::readShape(WPXInputStream *input)
+{
+  m_currentGeomListCount = 0;
+  m_isShapeStarted = true;
+  m_shapeList.clear();
+  if (m_header.id != MINUS_ONE)
+    m_currentShapeID = m_header.id;
+  m_currentShapeLevel = m_header.level;
+  unsigned parent = 0;
+  unsigned masterPage = MINUS_ONE;
+  unsigned masterShape = MINUS_ONE;
+  unsigned lineStyle = MINUS_ONE;
+  unsigned fillStyle = MINUS_ONE;
+  unsigned textStyle = MINUS_ONE;
+
+  try
+  {
+    input->seek(14, WPX_SEEK_CUR);
+    parent = getUInt(input);
+    masterPage = getUInt(input);
+    masterShape = getUInt(input);
+#if 0
+    fillStyle = getUInt(input);
+    lineStyle = getUInt(input);
+    textStyle = getUInt(input);
+#endif
+  }
+  catch (const EndOfStreamException &)
+  {
+  }
+
+  m_shape.clear();
+  const VSDShape *tmpShape = m_stencils.getStencilShape(masterPage, masterShape);
+  if (tmpShape)
+  {
+    if (tmpShape->m_foreign)
+      m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
+    m_shape.m_text = tmpShape->m_text;
+    m_shape.m_textFormat = tmpShape->m_textFormat;
+  }
+
+  m_shape.m_lineStyleId = lineStyle;
+  m_shape.m_fillStyleId = fillStyle;
+  m_shape.m_textStyleId = textStyle;
+  m_shape.m_parent = parent;
+  m_shape.m_masterPage = masterPage;
+  m_shape.m_masterShape = masterShape;
+  m_shape.m_shapeId = m_currentShapeID;
+  m_currentShapeID = MINUS_ONE;
+}
+
 unsigned libvisio::VSD5Parser::getUInt(WPXInputStream *input)
 {
-  return readU16(input);
+  int value = readS16(input);
+  return (unsigned)value;
 }
 
 int libvisio::VSD5Parser::getInt(WPXInputStream *input)

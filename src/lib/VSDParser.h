@@ -94,7 +94,7 @@ protected:
   virtual void readShapeList(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
-  void readShape(WPXInputStream *input);
+  virtual void readShape(WPXInputStream *input);
   void readColours(WPXInputStream *input);
   void readFont(WPXInputStream *input);
   void readFontIX(WPXInputStream *input);
