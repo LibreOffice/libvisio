@@ -200,6 +200,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   bool compressed = ((ptr.Format & 2) == 2);
   m_input->seek(ptr.Offset, WPX_SEEK_SET);
   VSDInternalStream tmpInput(m_input, ptr.Length, compressed);
+  m_header.dataLength = tmpInput.getSize();
   unsigned shift = compressed ? 4 : 0;
   switch (ptr.Type)
   {

@@ -80,7 +80,10 @@ void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrTy
     input->seek(shift+0x36, WPX_SEEK_SET);
     break;
   default:
-    input->seek(shift+0xa, WPX_SEEK_SET);
+    if (ptrType > 0x45)
+      input->seek(shift+0x1e, WPX_SEEK_SET);
+    else
+      input->seek(shift+0xa, WPX_SEEK_SET);
     break;
   }
   pointerCount = readS16(input);
