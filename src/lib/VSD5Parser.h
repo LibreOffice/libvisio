@@ -65,6 +65,7 @@ protected:
   virtual void readPage(WPXInputStream *input);
 
   virtual void handleChunkRecords(WPXInputStream *input);
+  virtual void handleBlob(WPXInputStream *input, unsigned level);
 
   virtual unsigned getUInt(WPXInputStream *input);
   virtual int getInt(WPXInputStream *input);

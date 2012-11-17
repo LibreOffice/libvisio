@@ -49,8 +49,6 @@ public:
 
 protected:
   virtual bool getChunkHeader(WPXInputStream *input);
-  // virtual void handleChunks(WPXInputStream * /* input */, unsigned /* level */) {}
-  virtual void handleBlob(WPXInputStream *input, unsigned level);
 
 private:
   VSD2Parser();
