@@ -364,13 +364,11 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
   {
     VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
     input->seek(0, WPX_SEEK_SET);
-    if (!input->isOLEStream())
-      return false;
-
-    WPXInputStream *docStream = input->getDocumentOLEStream("VisioDocument");
-
+    WPXInputStream *docStream = 0;
+    if (input->isOLEStream())
+      docStream = input->getDocumentOLEStream("VisioDocument");
     if (!docStream)
-      return false;
+      docStream = input;
 
     docStream->seek(0x1A, WPX_SEEK_SET);
 
@@ -378,6 +376,15 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
     VSDParser *parser = 0;
     switch(version)
     {
+    case 1:
+    case 2:
+      parser = new VSD2Parser(docStream, painter);
+      break;
+    case 3:
+    case 4:
+    case 5:
+      parser = new VSD5Parser(docStream, painter);
+      break;
     case 6:
       parser = new VSD6Parser(docStream, painter);
       break;
@@ -392,12 +399,14 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
       parser->extractStencils();
     else
     {
-      delete docStream;
+      if (docStream != input)
+        delete docStream;
       return false;
     }
 
     delete parser;
-    delete docStream;
+    if (docStream != input)
+      delete docStream;
 
     return true;
   }
