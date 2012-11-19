@@ -51,4 +51,23 @@ bool libvisio::VSD2Parser::getChunkHeader(WPXInputStream * /* input */)
   return true;
 }
 
+void libvisio::VSD2Parser::readColours(WPXInputStream *input)
+{
+  input->seek(2, WPX_SEEK_SET);
+  unsigned numColours = readU8(input);
+  input->seek(1, WPX_SEEK_CUR);
+  m_colours.clear();
+
+  for (unsigned i = 0; i < numColours; i++)
+  {
+    Colour tmpColour;
+    tmpColour.r = readU8(input);
+    tmpColour.g = readU8(input);
+    tmpColour.b = readU8(input);
+    tmpColour.a = readU8(input);
+
+    m_colours.push_back(tmpColour);
+  }
+}
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

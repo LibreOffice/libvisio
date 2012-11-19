@@ -289,8 +289,8 @@ void libvisio::VSD5Parser::readFillAndShadow(WPXInputStream *input)
   Colour colourFG = _colourFromIndex(readU8(input));
   Colour colourBG = _colourFromIndex(readU8(input));
   unsigned char fillPattern = readU8(input);
-  input->seek(1, WPX_SEEK_CUR); // Shadow Background Colour skipped
   Colour shfgc = _colourFromIndex(readU8(input));
+  input->seek(1, WPX_SEEK_CUR); // Shadow Background Colour skipped
   unsigned char shadowPattern = readU8(input);
 
   if (m_isInStyles)

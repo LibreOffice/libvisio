@@ -49,6 +49,7 @@ public:
 
 protected:
   virtual bool getChunkHeader(WPXInputStream *input);
+  virtual void readColours(WPXInputStream *input);
 
 private:
   VSD2Parser();

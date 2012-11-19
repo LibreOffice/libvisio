@@ -1357,12 +1357,12 @@ void libvisio::VSDParser::readColours(WPXInputStream *input)
 {
   input->seek(6, WPX_SEEK_SET);
   unsigned numColours = readU8(input);
-  Colour tmpColour;
   input->seek(1, WPX_SEEK_CUR);
   m_colours.clear();
 
   for (unsigned i = 0; i < numColours; i++)
   {
+    Colour tmpColour;
     tmpColour.r = readU8(input);
     tmpColour.g = readU8(input);
     tmpColour.b = readU8(input);
