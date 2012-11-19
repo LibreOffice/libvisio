@@ -824,8 +824,8 @@ void libvisio::VSDParser::readXFormData(WPXInputStream *input)
   m_shape.m_xform.pinLocY = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
   m_shape.m_xform.angle = readDouble(input);
-  m_shape.m_xform.flipX = (readU8(input) != 0);
-  m_shape.m_xform.flipY = (readU8(input) != 0);
+  m_shape.m_xform.flipX = !!readU8(input);
+  m_shape.m_xform.flipY = !!readU8(input);
 }
 
 void libvisio::VSDParser::readTxtXForm(WPXInputStream *input)
@@ -1391,12 +1391,14 @@ void libvisio::VSDParser::readFont(WPXInputStream *input)
 
 void libvisio::VSDParser::readFontIX(WPXInputStream *input)
 {
+  long tmpAdjust = input->tell();
   input->seek(2, WPX_SEEK_CUR);
   unsigned char codePage = (unsigned char)(getUInt(input) & 0xff);
+  tmpAdjust -= input->tell();
 
   ::WPXBinaryData textStream;
 
-  for (unsigned i = 0; i < m_header.dataLength - 6; i++)
+  for (int i = 0; i < m_header.dataLength + tmpAdjust; i++)
   {
     unsigned char curchar = readU8(input);
     if (curchar == 0)

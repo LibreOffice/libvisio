@@ -221,6 +221,69 @@ void libvisio::VSD5Parser::readLine(WPXInputStream *input)
     m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap));
 }
 
+void libvisio::VSD5Parser::readCharIX(WPXInputStream *input)
+{
+  unsigned charCount = readU16(input);
+  unsigned fontID = readU16(input);
+  VSDName font;
+  std::map<unsigned, VSDName>::const_iterator iter = m_fonts.find(fontID);
+  if (iter != m_fonts.end())
+    font = iter->second;
+  Colour fontColour = _colourFromIndex(readU8(input));
+
+  bool bold(false);
+  bool italic(false);
+  bool underline(false);
+  bool doubleunderline(false);
+  bool strikeout(false);
+  bool doublestrikeout(false);
+  bool allcaps(false);
+  bool initcaps(false);
+  bool smallcaps(false);
+  bool superscript(false);
+  bool subscript(false);
+  unsigned char fontMod = readU8(input);
+  if (fontMod & 1) bold = true;
+  if (fontMod & 2) italic = true;
+  if (fontMod & 4) underline = true;
+  if (fontMod & 8) smallcaps = true;
+  fontMod = readU8(input);
+  if (fontMod & 1) allcaps = true;
+  if (fontMod & 2) initcaps = true;
+  fontMod = readU8(input);
+  if (fontMod & 1) superscript = true;
+  if (fontMod & 2) subscript = true;
+
+  input->seek(4, WPX_SEEK_CUR);
+  double fontSize = readDouble(input);
+
+#if 0
+  fontMod = readU8(input);
+  if (fontMod & 1) doubleunderline = true;
+  if (fontMod & 4) strikeout = true;
+  if (fontMod & 0x20) doublestrikeout = true;
+#endif
+
+  if (m_isInStyles)
+    m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
+                                    bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                    allcaps, initcaps, smallcaps, superscript, subscript);
+  else
+  {
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil character style\n"));
+    }
+
+    m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize,
+                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript));
+    m_shape.m_charList.addCharIX(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
+                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                 allcaps, initcaps, smallcaps, superscript, subscript);
+  }
+}
+
 void libvisio::VSD5Parser::readFillAndShadow(WPXInputStream *input)
 {
   Colour colourFG = _colourFromIndex(readU8(input));
@@ -253,6 +316,16 @@ void libvisio::VSD5Parser::readFillAndShadow(WPXInputStream *input)
   }
 }
 
+void libvisio::VSD5Parser::readStyleSheet(WPXInputStream *input)
+{
+  input->seek(10, WPX_SEEK_CUR);
+  unsigned lineStyle = getUInt(input);
+  unsigned fillStyle = getUInt(input);
+  unsigned textStyle = getUInt(input);
+
+  m_collector->collectStyleSheet(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
+}
+
 void libvisio::VSD5Parser::readShape(WPXInputStream *input)
 {
   m_currentGeomListCount = 0;
@@ -270,15 +343,13 @@ void libvisio::VSD5Parser::readShape(WPXInputStream *input)
 
   try
   {
-    input->seek(14, WPX_SEEK_CUR);
+    input->seek(2, WPX_SEEK_CUR);
     parent = getUInt(input);
     masterPage = getUInt(input);
     masterShape = getUInt(input);
-#if 0
     fillStyle = getUInt(input);
     lineStyle = getUInt(input);
     textStyle = getUInt(input);
-#endif
   }
   catch (const EndOfStreamException &)
   {
@@ -308,6 +379,31 @@ void libvisio::VSD5Parser::readPage(WPXInputStream *input)
 {
   unsigned backgroundPageID = getUInt(input);
   m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage);
+}
+
+void libvisio::VSD5Parser::readTextBlock(WPXInputStream *input)
+{
+  input->seek(1, WPX_SEEK_CUR);
+  double leftMargin = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double rightMargin = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double topMargin = readDouble(input);
+  input->seek(1, WPX_SEEK_CUR);
+  double bottomMargin = readDouble(input);
+  unsigned char verticalAlign = readU8(input);
+  unsigned char colourIndex = readU8(input);
+  bool isBgFilled = !!colourIndex;
+  Colour c;
+  if (isBgFilled)
+    c = _colourFromIndex(colourIndex-1);
+
+  if (m_isInStyles)
+    m_collector->collectTextBlockStyle(m_header.level, leftMargin, rightMargin, topMargin, bottomMargin,
+                                       verticalAlign, isBgFilled, c, 0.0, (unsigned char)0);
+  else
+    m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
+                                      verticalAlign, isBgFilled, c, 0.0, (unsigned char)0));
 }
 
 unsigned libvisio::VSD5Parser::getUInt(WPXInputStream *input)

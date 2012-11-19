@@ -105,7 +105,7 @@ protected:
   virtual void readText(WPXInputStream *input) = 0;
   virtual void readCharIX(WPXInputStream *input) = 0;
   virtual void readParaIX(WPXInputStream *input) = 0;
-  void readTextBlock(WPXInputStream *input);
+  virtual void readTextBlock(WPXInputStream *input);
 
   void readNameList(WPXInputStream *input);
   virtual void readName(WPXInputStream *input) = 0;
@@ -113,7 +113,7 @@ protected:
   void readFieldList(WPXInputStream *input);
   virtual void readTextField(WPXInputStream *input) = 0;
 
-  void readStyleSheet(WPXInputStream *input);
+  virtual void readStyleSheet(WPXInputStream *input);
   void readPageSheet(WPXInputStream *input);
 
   void readSplineStart(WPXInputStream *input);

@@ -171,7 +171,7 @@ void libvisio::VSD6Parser::readCharIX(WPXInputStream *input)
 
 void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
 {
-  unsigned charCount = readU32(input);
+  unsigned charCount = getUInt(input);
   input->seek(1, WPX_SEEK_CUR);
   double indFirst = readDouble(input);
   input->seek(1, WPX_SEEK_CUR);
