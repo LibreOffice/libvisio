@@ -887,7 +887,10 @@ void libvisio::VSDParser::readForeignDataType(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   double imgHeight = readDouble(input);
   unsigned foreignType = readU16(input);
-  input->seek(0xb, WPX_SEEK_CUR);
+  unsigned foreignMapMode = readU16(input);
+  if (foreignMapMode == 0x8)
+    foreignType = 0x4;
+  input->seek(0x9, WPX_SEEK_CUR);
   unsigned foreignFormat = readU32(input);
 
   if (!m_shape.m_foreign)

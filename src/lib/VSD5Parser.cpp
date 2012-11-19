@@ -74,6 +74,7 @@ void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrTy
     input->seek(shift+0x12, WPX_SEEK_SET);
     break;
   case VSD_STENCILS:
+  case VSD_SHAPE_FOREIGN:
     input->seek(shift+0x1e, WPX_SEEK_SET);
     break;
   case VSD_STENCIL_PAGE:
