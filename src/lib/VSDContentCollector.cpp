@@ -534,7 +534,6 @@ void libvisio::VSDContentCollector::_flushText()
 
     paraCharCount = (*paraIt).charCount;
 
-    TextFormat encoding = libvisio::VSD_TEXT_ANSI;
     // Find char format that overlaps
     while (charIndex < m_charFormats.size() && paraCharCount)
     {
@@ -547,6 +546,7 @@ void libvisio::VSDContentCollector::_flushText()
         _convertDataToString(fontName, m_charFormats[charIndex].font.m_data, m_charFormats[charIndex].font.m_format);
       else
         fontName = "Arial";
+
       textProps.insert("style:font-name", fontName);
 
       if (m_charFormats[charIndex].bold) textProps.insert("fo:font-weight", "bold");
@@ -643,7 +643,7 @@ void libvisio::VSDContentCollector::_flushText()
             tmpBuffer.back() = 0;
         }
         if (!tmpBuffer.empty())
-          appendCharacters(text, tmpBuffer, encoding);
+          appendCharacters(text, tmpBuffer, m_charFormats[charIndex].font.m_format);
         textBufferPosition += i;
       }
 
