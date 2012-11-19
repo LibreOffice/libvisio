@@ -148,20 +148,6 @@ void libvisio::VSD5Parser::handleChunkRecords(WPXInputStream *input)
   }
 }
 
-void libvisio::VSD5Parser::handleBlob(WPXInputStream *input, unsigned level)
-{
-  try
-  {
-    m_header.level = level;
-    _handleLevelChange(m_header.level);
-    handleChunk(input);
-  }
-  catch (EndOfStreamException &)
-  {
-    VSD_DEBUG_MSG(("VSD5Parser::handleBlob - catching EndOfStreamException\n"));
-  }
-}
-
 void libvisio::VSD5Parser::readGeomList(WPXInputStream *input)
 {
   if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
@@ -210,7 +196,7 @@ void libvisio::VSD5Parser::readLine(WPXInputStream *input)
   unsigned char colourIndex = readU8(input);
   Colour c = _colourFromIndex(colourIndex);
   unsigned char linePattern = readU8(input);
-  input->seek(9, WPX_SEEK_CUR);
+  input->seek(10, WPX_SEEK_CUR);
   unsigned char startMarker = readU8(input);
   unsigned char endMarker = readU8(input);
   unsigned char lineCap = readU8(input);
@@ -345,6 +331,7 @@ void libvisio::VSD5Parser::readShape(WPXInputStream *input)
   {
     input->seek(2, WPX_SEEK_CUR);
     parent = getUInt(input);
+    input->seek(2, WPX_SEEK_CUR);
     masterPage = getUInt(input);
     masterShape = getUInt(input);
     fillStyle = getUInt(input);

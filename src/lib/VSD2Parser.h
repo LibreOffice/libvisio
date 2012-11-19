@@ -50,6 +50,7 @@ public:
 protected:
   virtual bool getChunkHeader(WPXInputStream *input);
   virtual void readColours(WPXInputStream *input);
+  virtual void handleBlob(WPXInputStream *input, unsigned level);
 
 private:
   VSD2Parser();
