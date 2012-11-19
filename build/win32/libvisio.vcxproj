@@ -120,7 +120,13 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\VSD11Parser.cpp">
+    <ClCompile Include="..\..\src\lib\VSD2Parser.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\src\lib\VSD5Parser.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -260,7 +266,8 @@
     <ClInclude Include="..\..\src\lib\tokens.h" />
     <ClInclude Include="..\..\src\lib\VDXParser.h" />
     <ClInclude Include="..\..\src\lib\VisioDocument.h" />
-    <ClInclude Include="..\..\src\lib\VSD11Parser.h" />
+    <ClInclude Include="..\..\src\lib\VSD2Parser.h" />
+    <ClInclude Include="..\..\src\lib\VSD5Parser.h" />
     <ClInclude Include="..\..\src\lib\VSD6Parser.h" />
     <ClInclude Include="..\..\src\lib\VSDCharacterList.h" />
     <ClInclude Include="..\..\src\lib\VSDCollector.h" />

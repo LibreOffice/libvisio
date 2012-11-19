@@ -99,7 +99,11 @@ SOURCE=..\..\src\lib\VisioDocument.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSD11Parser.cpp
+SOURCE=..\..\src\lib\VSD2Parser.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSD5Parser.cpp
 # End Source File
 # Begin Source File
 
@@ -215,7 +219,11 @@ SOURCE=..\..\src\lib\VisioDocument.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSD11Parser.h
+SOURCE=..\..\src\lib\VSD2Parser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSD5Parser.h
 # End Source File
 # Begin Source File
 

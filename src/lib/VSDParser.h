@@ -78,7 +78,7 @@ protected:
   void readForeignData(WPXInputStream *input);
   void readEllipse(WPXInputStream *input);
   virtual void readLine(WPXInputStream *input);
-  virtual void readFillAndShadow(WPXInputStream *input) = 0;
+  virtual void readFillAndShadow(WPXInputStream *input);
   virtual void readGeomList(WPXInputStream *input);
   void readGeometry(WPXInputStream *input);
   void readMoveTo(WPXInputStream *input);
@@ -102,16 +102,16 @@ protected:
   virtual void readParaList(WPXInputStream *input);
   virtual void readPropList(WPXInputStream *input);
   virtual void readPage(WPXInputStream *input);
-  virtual void readText(WPXInputStream *input) = 0;
-  virtual void readCharIX(WPXInputStream *input) = 0;
-  virtual void readParaIX(WPXInputStream *input) = 0;
+  virtual void readText(WPXInputStream *input);
+  virtual void readCharIX(WPXInputStream *input);
+  virtual void readParaIX(WPXInputStream *input);
   virtual void readTextBlock(WPXInputStream *input);
 
   void readNameList(WPXInputStream *input);
-  virtual void readName(WPXInputStream *input) = 0;
+  virtual void readName(WPXInputStream *input);
 
   void readFieldList(WPXInputStream *input);
-  virtual void readTextField(WPXInputStream *input) = 0;
+  virtual void readTextField(WPXInputStream *input);
 
   virtual void readStyleSheet(WPXInputStream *input);
   void readPageSheet(WPXInputStream *input);
@@ -136,7 +136,7 @@ protected:
 
   virtual void readPointer(WPXInputStream *input, Pointer &ptr);
   virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
-  virtual bool getChunkHeader(WPXInputStream *input) = 0;
+  virtual bool getChunkHeader(WPXInputStream *input);
   void _handleLevelChange(unsigned level);
   Colour _colourFromIndex(unsigned idx);
   void _flushShape();

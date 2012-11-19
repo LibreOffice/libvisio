@@ -24,7 +24,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -e
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_utils.cpp \
 	VisioDocument.cpp \
-	VSD11Parser.cpp \
 	VSD2Parser.cpp \
 	VSD5Parser.cpp \
 	VSD6Parser.cpp \
@@ -46,7 +45,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXMLHelper.cpp \
 	VSDZipStream.cpp \
 	libvisio_utils.h \
-	VSD11Parser.h \
 	VSD2Parser.h \
 	VSD5Parser.h \
 	VSD6Parser.h \

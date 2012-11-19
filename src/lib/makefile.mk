@@ -42,7 +42,8 @@ SLOFILES= \
 	$(SLO)$/libvisio_utils.obj \
 	$(SLO)$/VDXParser.obj \
 	$(SLO)$/VisioDocument.obj \
-	$(SLO)$/VSD11Parser.obj \
+	$(SLO)$/VSD2Parser.obj \
+	$(SLO)$/VSD5Parser.obj \
 	$(SLO)$/VSD6Parser.obj \
 	$(SLO)$/VSDCharacterList.obj \
 	$(SLO)$/VSDContentCollector.obj \
