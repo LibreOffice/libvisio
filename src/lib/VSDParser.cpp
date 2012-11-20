@@ -270,7 +270,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   case VSD_PAGE:
     if (m_extractStencils)
       return;
-    if (ptr.Format == 0xd2 || ptr.Format == 0xd6)
+    if (!(ptr.Format&0x1))
       m_isBackgroundPage = true;
     else
       m_isBackgroundPage = false;
