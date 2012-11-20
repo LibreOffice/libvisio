@@ -151,6 +151,7 @@ void libvisio::VSD5Parser::handleChunkRecords(WPXInputStream *input)
 
 void libvisio::VSD5Parser::readGeomList(WPXInputStream *input)
 {
+  VSD_DEBUG_MSG(("VSD5Parser::readGeomList\n"));
   if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
     m_shape.m_geometries.erase(--m_currentGeomListCount);
   m_currentGeometryList = &m_shape.m_geometries[m_currentGeomListCount++];
@@ -162,6 +163,7 @@ void libvisio::VSD5Parser::readGeomList(WPXInputStream *input)
 
 void libvisio::VSD5Parser::readCharList(WPXInputStream *input)
 {
+  VSD_DEBUG_MSG(("VSD5Parser::readCharList\n"));
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   handleChunkRecords(input);
@@ -169,6 +171,7 @@ void libvisio::VSD5Parser::readCharList(WPXInputStream *input)
 
 void libvisio::VSD5Parser::readParaList(WPXInputStream *input)
 {
+  VSD_DEBUG_MSG(("VSD5Parser::readParaList\n"));
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   handleChunkRecords(input);
@@ -185,6 +188,14 @@ void libvisio::VSD5Parser::readShapeList(WPXInputStream *input)
 void libvisio::VSD5Parser::readPropList(WPXInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readPropList\n"));
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+  handleChunkRecords(input);
+}
+
+void libvisio::VSD5Parser::readFieldList(WPXInputStream *input)
+{
+  VSD_DEBUG_MSG(("VSD5Parser::readFieldList\n"));
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   handleChunkRecords(input);
@@ -335,8 +346,8 @@ void libvisio::VSD5Parser::readShape(WPXInputStream *input)
     input->seek(2, WPX_SEEK_CUR);
     masterPage = getUInt(input);
     masterShape = getUInt(input);
-    fillStyle = getUInt(input);
     lineStyle = getUInt(input);
+    fillStyle = getUInt(input);
     textStyle = getUInt(input);
   }
   catch (const EndOfStreamException &)

@@ -57,6 +57,7 @@ protected:
   virtual void readParaList(WPXInputStream *input);
   virtual void readShapeList(WPXInputStream *input);
   virtual void readPropList(WPXInputStream *input);
+  virtual void readFieldList(WPXInputStream *input);
 
   virtual void readLine(WPXInputStream *input);
   virtual void readFillAndShadow(WPXInputStream *input);
