@@ -56,7 +56,7 @@ void libvisio::VSD5Parser::readPointer(WPXInputStream *input, Pointer &ptr)
   ptr.Length = readU32(input);
 }
 
-void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned & /*listSize*/, int &pointerCount)
+void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readPointerInfo\n"));
   switch (ptrType)
@@ -88,6 +88,7 @@ void libvisio::VSD5Parser::readPointerInfo(WPXInputStream *input, unsigned ptrTy
     break;
   }
   pointerCount = readS16(input);
+  listSize = 0;
   VSD_DEBUG_MSG(("VSD5Parser::readPointerInfo ptrType %u shift %u pointerCount %i\n", ptrType, shift, pointerCount));
 }
 
