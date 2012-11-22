@@ -1457,7 +1457,7 @@ void libvisio::VSDParser::readFontIX(WPXInputStream *input)
 
   ::WPXBinaryData textStream;
 
-  for (int i = 0; i < m_header.dataLength + tmpAdjust; i++)
+  for (long i = 0; i < (long)(m_header.dataLength + tmpAdjust); i++)
   {
     unsigned char curchar = readU8(input);
     if (curchar == 0)
