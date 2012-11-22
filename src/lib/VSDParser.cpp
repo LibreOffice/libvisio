@@ -364,13 +364,13 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
 
 }
 
-void libvisio::VSDParser::handleBlob(WPXInputStream *input, unsigned /* shift */, unsigned level)
+void libvisio::VSDParser::handleBlob(WPXInputStream *input, unsigned shift, unsigned level)
 {
   try
   {
     m_header.level = level;
-    m_header.trailer = 0;
-    m_header.dataLength = readU32(input);
+    input->seek(shift, WPX_SEEK_SET);
+    m_header.dataLength -= shift;
     _handleLevelChange(m_header.level);
     handleChunk(input);
   }
@@ -759,18 +759,22 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
 
 void libvisio::VSDParser::readGeomList(WPXInputStream *input)
 {
-  uint32_t subHeaderLength = readU32(input);
-  uint32_t childrenListLength = readU32(input);
-  input->seek(subHeaderLength, WPX_SEEK_CUR);
-  std::vector<unsigned> geometryOrder;
-  geometryOrder.reserve(childrenListLength / sizeof(uint32_t));
-  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-    geometryOrder.push_back(readU32(input));
-
   if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
     m_shape.m_geometries.erase(--m_currentGeomListCount);
   m_currentGeometryList = &m_shape.m_geometries[m_currentGeomListCount++];
-  m_currentGeometryList->setElementsOrder(geometryOrder);
+
+  if (m_header.trailer)
+  {
+    uint32_t subHeaderLength = readU32(input);
+    uint32_t childrenListLength = readU32(input);
+    input->seek(subHeaderLength, WPX_SEEK_CUR);
+    std::vector<unsigned> geometryOrder;
+    geometryOrder.reserve(childrenListLength / sizeof(uint32_t));
+    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+      geometryOrder.push_back(readU32(input));
+
+    m_currentGeometryList->setElementsOrder(geometryOrder);
+  }
 
   // We want the collectors to still get the level information
   if (!m_isStencilStarted)
@@ -779,36 +783,44 @@ void libvisio::VSDParser::readGeomList(WPXInputStream *input)
 
 void libvisio::VSDParser::readCharList(WPXInputStream *input)
 {
-  uint32_t subHeaderLength = readU32(input);
-  uint32_t childrenListLength = readU32(input);
-  input->seek(subHeaderLength, WPX_SEEK_CUR);
-  std::vector<unsigned> characterOrder;
-  characterOrder.reserve(childrenListLength / sizeof(uint32_t));
-  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-    characterOrder.push_back(readU32(input));
-
-  m_shape.m_charList.setElementsOrder(characterOrder);
-
   // We want the collectors to still get the level information
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+
+  if (m_header.trailer)
+  {
+    uint32_t subHeaderLength = readU32(input);
+    uint32_t childrenListLength = readU32(input);
+    input->seek(subHeaderLength, WPX_SEEK_CUR);
+    std::vector<unsigned> characterOrder;
+    characterOrder.reserve(childrenListLength / sizeof(uint32_t));
+    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+      characterOrder.push_back(readU32(input));
+
+    m_shape.m_charList.setElementsOrder(characterOrder);
+  }
+
 }
 
 void libvisio::VSDParser::readParaList(WPXInputStream *input)
 {
-  uint32_t subHeaderLength = readU32(input);
-  uint32_t childrenListLength = readU32(input);
-  input->seek(subHeaderLength, WPX_SEEK_CUR);
-  std::vector<unsigned> paragraphOrder;
-  paragraphOrder.reserve(childrenListLength / sizeof(uint32_t));
-  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-    paragraphOrder.push_back(readU32(input));
-
-  m_shape.m_paraList.setElementsOrder(paragraphOrder);
-
   // We want the collectors to still get the level information
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+
+  if (m_header.trailer)
+  {
+    uint32_t subHeaderLength = readU32(input);
+    uint32_t childrenListLength = readU32(input);
+    input->seek(subHeaderLength, WPX_SEEK_CUR);
+    std::vector<unsigned> paragraphOrder;
+    paragraphOrder.reserve(childrenListLength / sizeof(uint32_t));
+    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+      paragraphOrder.push_back(readU32(input));
+
+    m_shape.m_paraList.setElementsOrder(paragraphOrder);
+  }
+
 }
 
 void libvisio::VSDParser::readPropList(WPXInputStream * /* input */)
@@ -915,21 +927,24 @@ void libvisio::VSDParser::readShapeId(WPXInputStream *input)
 
 void libvisio::VSDParser::readShapeList(WPXInputStream *input)
 {
-  uint32_t subHeaderLength = readU32(input);
-  uint32_t childrenListLength = readU32(input);
-  input->seek(subHeaderLength, WPX_SEEK_CUR);
-  std::vector<unsigned> shapeOrder;
-  shapeOrder.reserve(childrenListLength / sizeof(uint32_t));
-  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-    shapeOrder.push_back(readU32(input));
-
-  if (!m_isShapeStarted)
-    m_shapeList.setElementsOrder(shapeOrder);
-  else
-    m_shape.m_shapeList.setElementsOrder(shapeOrder);
-
   // We want the collectors to still get the level information
   m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+
+  if (m_header.trailer)
+  {
+    uint32_t subHeaderLength = readU32(input);
+    uint32_t childrenListLength = readU32(input);
+    input->seek(subHeaderLength, WPX_SEEK_CUR);
+    std::vector<unsigned> shapeOrder;
+    shapeOrder.reserve(childrenListLength / sizeof(uint32_t));
+    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+      shapeOrder.push_back(readU32(input));
+
+    if (!m_isShapeStarted)
+      m_shapeList.setElementsOrder(shapeOrder);
+    else
+      m_shape.m_shapeList.setElementsOrder(shapeOrder);
+  }
 }
 
 void libvisio::VSDParser::readForeignDataType(WPXInputStream *input)
@@ -1400,16 +1415,19 @@ void libvisio::VSDParser::readNameList(WPXInputStream * /* input */)
 
 void libvisio::VSDParser::readFieldList(WPXInputStream *input)
 {
-  uint32_t subHeaderLength = readU32(input);
-  uint32_t childrenListLength = readU32(input);
-  input->seek(subHeaderLength, WPX_SEEK_CUR);
-  std::vector<unsigned> fieldOrder;
-  fieldOrder.reserve(childrenListLength / sizeof(uint32_t));
-  for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-    fieldOrder.push_back(readU32(input));
+  if (m_header.trailer)
+  {
+    uint32_t subHeaderLength = readU32(input);
+    uint32_t childrenListLength = readU32(input);
+    input->seek(subHeaderLength, WPX_SEEK_CUR);
+    std::vector<unsigned> fieldOrder;
+    fieldOrder.reserve(childrenListLength / sizeof(uint32_t));
+    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+      fieldOrder.push_back(readU32(input));
 
-  m_shape.m_fields.setElementsOrder(fieldOrder);
-  m_shape.m_fields.addFieldList(m_header.id, m_header.level);
+    m_shape.m_fields.setElementsOrder(fieldOrder);
+    m_shape.m_fields.addFieldList(m_header.id, m_header.level);
+  }
 }
 
 void libvisio::VSDParser::readColours(WPXInputStream *input)
