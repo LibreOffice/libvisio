@@ -310,7 +310,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   if ((ptr.Format >> 4) == 0x4 || (ptr.Format >> 4) == 0x5 || (ptr.Format >> 4) == 0x0)
   {
     if (ptr.Length > 4)
-      handleBlob(&tmpInput, level+1);
+      handleBlob(&tmpInput, shift, level+1);
     if ((ptr.Format >> 4) == 0x5 && ptr.Type != VSD_COLORS)
       handleStreams(&tmpInput, ptr.Type, shift, level+1);
   }
@@ -364,7 +364,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
 
 }
 
-void libvisio::VSDParser::handleBlob(WPXInputStream *input, unsigned level)
+void libvisio::VSDParser::handleBlob(WPXInputStream *input, unsigned /* shift */, unsigned level)
 {
   try
   {

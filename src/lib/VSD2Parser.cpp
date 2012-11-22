@@ -70,18 +70,4 @@ void libvisio::VSD2Parser::readColours(WPXInputStream *input)
   }
 }
 
-void libvisio::VSD2Parser::handleBlob(WPXInputStream *input, unsigned level)
-{
-  try
-  {
-    m_header.level = level;
-    _handleLevelChange(m_header.level);
-    handleChunk(input);
-  }
-  catch (EndOfStreamException &)
-  {
-    VSD_DEBUG_MSG(("VSD2Parser::handleBlob - catching EndOfStreamException\n"));
-  }
-}
-
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

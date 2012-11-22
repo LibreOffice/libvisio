@@ -149,6 +149,22 @@ void libvisio::VSD5Parser::handleChunkRecords(WPXInputStream *input)
   }
 }
 
+void libvisio::VSD5Parser::handleBlob(WPXInputStream *input, unsigned shift, unsigned level)
+{
+  try
+  {
+    m_header.level = level;
+    input->seek(shift, WPX_SEEK_SET);
+    m_header.dataLength -= shift;
+    _handleLevelChange(m_header.level);
+    handleChunk(input);
+  }
+  catch (EndOfStreamException &)
+  {
+    VSD_DEBUG_MSG(("VSD5Parser::handleBlob - catching EndOfStreamException\n"));
+  }
+}
+
 void libvisio::VSD5Parser::readGeomList(WPXInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readGeomList\n"));
