@@ -90,12 +90,12 @@ protected:
   void readShapeData(WPXInputStream *input);
   void readXFormData(WPXInputStream *input);
   void readTxtXForm(WPXInputStream *input);
-  virtual void readShapeId(WPXInputStream *input);
+  void readShapeId(WPXInputStream *input);
   virtual void readShapeList(WPXInputStream *input);
   void readForeignDataType(WPXInputStream *input);
   void readPageProps(WPXInputStream *input);
   virtual void readShape(WPXInputStream *input);
-  virtual void readColours(WPXInputStream *input);
+  void readColours(WPXInputStream *input);
   void readFont(WPXInputStream *input);
   void readFontIX(WPXInputStream *input);
   virtual void readCharList(WPXInputStream *input);
@@ -130,9 +130,9 @@ protected:
   // Stream handlers
   void handleStreams(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned level);
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
-  virtual void handleChunks(WPXInputStream *input, unsigned level);
+  void handleChunks(WPXInputStream *input, unsigned level);
   void handleChunk(WPXInputStream *input);
-  virtual void handleBlob(WPXInputStream *input, unsigned shift, unsigned level);
+  void handleBlob(WPXInputStream *input, unsigned shift, unsigned level);
 
   virtual void readPointer(WPXInputStream *input, Pointer &ptr);
   virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
