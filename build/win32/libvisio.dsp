@@ -99,10 +99,6 @@ SOURCE=..\..\src\lib\VisioDocument.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\VSD2Parser.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\lib\VSD5Parser.cpp
 # End Source File
 # Begin Source File
@@ -216,10 +212,6 @@ SOURCE=..\..\src\lib\VDXParser.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VisioDocument.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\lib\VSD2Parser.h
 # End Source File
 # Begin Source File
 

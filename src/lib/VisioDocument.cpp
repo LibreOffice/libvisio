@@ -36,7 +36,6 @@
 #include "VSDSVGGenerator.h"
 #include "VSDParser.h"
 #include "VSDXParser.h"
-#include "VSD2Parser.h"
 #include "VSD5Parser.h"
 #include "VSD6Parser.h"
 #include "VSDXMLHelper.h"
@@ -296,8 +295,6 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
     {
     case 1:
     case 2:
-      parser = new VSD2Parser(docStream, painter);
-      break;
     case 3:
     case 4:
     case 5:
@@ -377,8 +374,6 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
     {
     case 1:
     case 2:
-      parser = new VSD2Parser(docStream, painter);
-      break;
     case 3:
     case 4:
     case 5:

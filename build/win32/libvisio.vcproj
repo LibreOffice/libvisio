@@ -239,28 +239,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\src\lib\VSD2Parser.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\src\lib\VSD5Parser.cpp"
 				>
 				<FileConfiguration
@@ -771,10 +749,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\lib\VisioDocument.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\lib\VSD2Parser.h"
 				>
 			</File>
 			<File

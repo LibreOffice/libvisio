@@ -1432,7 +1432,7 @@ void libvisio::VSDParser::readFieldList(WPXInputStream *input)
 
 void libvisio::VSDParser::readColours(WPXInputStream *input)
 {
-  input->seek(6, WPX_SEEK_SET);
+  input->seek(2, WPX_SEEK_CUR);
   unsigned numColours = readU8(input);
   input->seek(1, WPX_SEEK_CUR);
   m_colours.clear();
