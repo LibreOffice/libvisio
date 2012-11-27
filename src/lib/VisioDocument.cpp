@@ -152,6 +152,61 @@ static bool isBinaryVisioDocument(WPXInputStream *input)
   return false;
 }
 
+static bool parseBinaryVisioDocument(WPXInputStream *input, libwpg::WPGPaintInterface *painter, bool isStencilExtraction)
+{
+  VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
+  input->seek(0, WPX_SEEK_SET);
+  WPXInputStream *docStream = 0;
+  if (input->isOLEStream())
+    docStream = input->getDocumentOLEStream("VisioDocument");
+  if (!docStream)
+    docStream = input;
+
+  docStream->seek(0x1A, WPX_SEEK_SET);
+
+  unsigned char version = libvisio::readU8(docStream);
+  libvisio::VSDParser *parser = 0;
+  switch(version)
+  {
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  case 5:
+    parser = new libvisio::VSD5Parser(docStream, painter);
+    break;
+  case 6:
+    parser = new libvisio::VSD6Parser(docStream, painter);
+    break;
+  case 11:
+    parser = new libvisio::VSDParser(docStream, painter);
+    break;
+  default:
+    break;
+  }
+
+  bool retValue = false;
+  if (parser)
+  {
+    if (isStencilExtraction)
+      retValue = parser->extractStencils();
+    else if (!isStencilExtraction)
+      retValue = parser->parseMain();
+  }
+  else
+  {
+    if (docStream != input)
+      delete docStream;
+    return false;
+  }
+
+  delete parser;
+  if (docStream != input)
+    delete docStream;
+
+  return retValue;
+}
+
 static bool isOpcVisioDocument(WPXInputStream *input)
 {
   WPXInputStream *tmpInput = 0;
@@ -190,6 +245,18 @@ static bool isOpcVisioDocument(WPXInputStream *input)
   }
 }
 
+static bool parseOpcVisioDocument(WPXInputStream *input, libwpg::WPGPaintInterface *painter, bool isStencilExtraction)
+{
+  VSD_DEBUG_MSG(("Parsing Visio Document based on Open Packaging Convention\n"));
+  input->seek(0, WPX_SEEK_SET);
+  libvisio::VSDXParser parser(input, painter);
+  if (isStencilExtraction && parser.extractStencils())
+    return true;
+  else if (!isStencilExtraction && parser.parseMain())
+    return true;
+  return false;
+}
+
 static bool isXmlVisioDocument(WPXInputStream *input)
 {
   xmlTextReaderPtr reader = 0;
@@ -222,7 +289,6 @@ static bool isXmlVisioDocument(WPXInputStream *input)
     // Checking the two possible namespaces of VDX documents. This may be a bit strict
     // and filter out some of third party VDX documents. If that happens, commenting out
     // this block could be an option.
-#if 1
     const xmlChar *nsname = xmlTextReaderConstNamespaceUri(reader);
     if (!nsname)
     {
@@ -235,7 +301,7 @@ static bool isXmlVisioDocument(WPXInputStream *input)
       xmlFreeTextReader(reader);
       return false;
     }
-#endif
+
     xmlFreeTextReader(reader);
     return true;
   }
@@ -245,6 +311,18 @@ static bool isXmlVisioDocument(WPXInputStream *input)
       xmlFreeTextReader(reader);
     return false;
   }
+}
+
+static bool parseXmlVisioDocument(WPXInputStream *input, libwpg::WPGPaintInterface *painter, bool isStencilExtraction)
+{
+  VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
+  input->seek(0, WPX_SEEK_SET);
+  libvisio::VDXParser parser(input, painter);
+  if (isStencilExtraction && parser.extractStencils())
+    return true;
+  else if (!isStencilExtraction && parser.parseMain())
+    return true;
+  return false;
 }
 
 } // anonymous namespace
@@ -277,73 +355,14 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 */
 bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
 {
-  if (isBinaryVisioDocument(input))
-  {
-    VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
-    input->seek(0, WPX_SEEK_SET);
-    WPXInputStream *docStream = 0;
-    if (input->isOLEStream())
-      docStream = input->getDocumentOLEStream("VisioDocument");
-    if (!docStream)
-      docStream = input;
-
-    docStream->seek(0x1A, WPX_SEEK_SET);
-
-    unsigned char version = readU8(docStream);
-    VSDParser *parser = 0;
-    switch(version)
-    {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-      parser = new VSD5Parser(docStream, painter);
-      break;
-    case 6:
-      parser = new VSD6Parser(docStream, painter);
-      break;
-    case 11:
-      parser = new VSDParser(docStream, painter);
-      break;
-    default:
-      break;
-    }
-
-    if (parser)
-      parser->parseMain();
-    else
-    {
-      if (docStream != input)
-        delete docStream;
-      return false;
-    }
-
-    delete parser;
-    if (docStream != input)
-      delete docStream;
-
+  if (isBinaryVisioDocument(input) && parseBinaryVisioDocument(input, painter, false))
     return true;
-  }
-  else if (isOpcVisioDocument(input))
-  {
-    VSD_DEBUG_MSG(("Parsing Visio Document based on Open Packaging Convention\n"));
-    input->seek(0, WPX_SEEK_SET);
-    VSDXParser parser(input, painter);
-    if (parser.parseMain())
-      return true;
+  else if (isOpcVisioDocument(input) && parseOpcVisioDocument(input, painter, false))
+    return true;
+  else if (isXmlVisioDocument(input) && parseXmlVisioDocument(input, painter, false))
+    return true;
+  else
     return false;
-  }
-  else if (isXmlVisioDocument(input))
-  {
-    VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
-    input->seek(0, WPX_SEEK_SET);
-    VDXParser parser(input, painter);
-    if (parser.parseMain())
-      return true;
-    return false;
-  }
-  return false;
 }
 
 /**
@@ -356,73 +375,14 @@ when needed.
 */
 bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
 {
-  if (isBinaryVisioDocument(input))
-  {
-    VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
-    input->seek(0, WPX_SEEK_SET);
-    WPXInputStream *docStream = 0;
-    if (input->isOLEStream())
-      docStream = input->getDocumentOLEStream("VisioDocument");
-    if (!docStream)
-      docStream = input;
-
-    docStream->seek(0x1A, WPX_SEEK_SET);
-
-    unsigned char version = readU8(docStream);
-    VSDParser *parser = 0;
-    switch(version)
-    {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-      parser = new VSD5Parser(docStream, painter);
-      break;
-    case 6:
-      parser = new VSD6Parser(docStream, painter);
-      break;
-    case 11:
-      parser = new VSDParser(docStream, painter);
-      break;
-    default:
-      break;
-    }
-
-    if (parser)
-      parser->extractStencils();
-    else
-    {
-      if (docStream != input)
-        delete docStream;
-      return false;
-    }
-
-    delete parser;
-    if (docStream != input)
-      delete docStream;
-
+  if (isBinaryVisioDocument(input) && parseBinaryVisioDocument(input, painter, true))
     return true;
-  }
-  else if (isOpcVisioDocument(input))
-  {
-    VSD_DEBUG_MSG(("Parsing Visio Document based on Open Packaging Convention\n"));
-    input->seek(0, WPX_SEEK_SET);
-    VSDXParser parser(input, painter);
-    if (parser.extractStencils())
-      return true;
+  else if (isOpcVisioDocument(input) && parseOpcVisioDocument(input, painter, true))
+    return true;
+  else if (isXmlVisioDocument(input) && parseXmlVisioDocument(input, painter, true))
+    return true;
+  else
     return false;
-  }
-  else if (isXmlVisioDocument(input))
-  {
-    VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
-    input->seek(0, WPX_SEEK_SET);
-    VDXParser parser(input, painter);
-    if (parser.extractStencils())
-      return true;
-    return false;
-  }
-  return false;
 }
 
 /**
