@@ -207,11 +207,17 @@ void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
 void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
 {
   Colour colourFG = _colourFromIndex(readU8(input));
-  input->seek(3, WPX_SEEK_CUR);
-  double fillFGTransparency = (double)readU8(input) / 255.0;
+  colourFG.r = readU8(input);
+  colourFG.g = readU8(input);
+  colourFG.b = readU8(input);
+  colourFG.a = readU8(input);
+  double fillFGTransparency = (double)colourFG.a / 255.0;
   Colour colourBG = _colourFromIndex(readU8(input));
-  input->seek(3, WPX_SEEK_CUR);
-  double fillBGTransparency = (double)readU8(input) / 255.0;
+  colourBG.r = readU8(input);
+  colourBG.g = readU8(input);
+  colourBG.b = readU8(input);
+  colourBG.a = readU8(input);
+  double fillBGTransparency = (double)colourBG.a / 255.0;
   unsigned char fillPattern = readU8(input);
   input->seek(1, WPX_SEEK_CUR);
   Colour shfgc;            // Shadow Foreground Colour
