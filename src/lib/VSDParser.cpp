@@ -1730,16 +1730,16 @@ void libvisio::VSDParser::readTextField(WPXInputStream *input)
   unsigned char tmpCode = readU8(input);
   if (tmpCode == 0xe8)
   {
-    int nameId = (int)readU32(input);
+    int nameId = readS32(input);
     input->seek(6, WPX_SEEK_CUR);
-    int formatStringId = (int)readU32(input);
+    int formatStringId = readS32(input);
     m_shape.m_fields.addTextField(m_header.id, m_header.level, nameId, formatStringId);
   }
   else
   {
     double numericValue = readDouble(input);
     input->seek(2, WPX_SEEK_CUR);
-    int formatStringId = (int)readU32(input);
+    int formatStringId = readS32(input);
 
     unsigned blockIdx = 0;
     unsigned length = 0;

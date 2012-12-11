@@ -406,6 +406,22 @@ void libvisio::VSD5Parser::readTextBlock(WPXInputStream *input)
                                       verticalAlign, isBgFilled, c, 0.0, (unsigned char)0));
 }
 
+void libvisio::VSD5Parser::readTextField(WPXInputStream *input)
+{
+  input->seek(3, WPX_SEEK_CUR);
+  if (0xe8 == readU8(input))
+  {
+    int nameId = readS16(input);
+    m_shape.m_fields.addTextField(m_header.id, m_header.level, nameId, 0xffff);
+  }
+  else
+  {
+    double numericValue = readDouble(input);
+    m_shape.m_fields.addNumericField(m_header.id, m_header.level, 0xffff, numericValue, 0xffff);
+  }
+}
+
+
 unsigned libvisio::VSD5Parser::getUInt(WPXInputStream *input)
 {
   int value = readS16(input);

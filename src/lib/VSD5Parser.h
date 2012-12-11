@@ -63,6 +63,7 @@ protected:
   virtual void readFillAndShadow(WPXInputStream *input);
   virtual void readTextBlock(WPXInputStream *input);
   virtual void readCharIX(WPXInputStream *input);
+  virtual void readTextField(WPXInputStream *input);
 
   virtual void readShape(WPXInputStream *input);
   virtual void readPage(WPXInputStream *input);
