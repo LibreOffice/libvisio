@@ -526,7 +526,7 @@ void libvisio::VSDContentCollector::_flushText()
       break;
     }
     if ((*paraIt).spLine > 0)
-      paraProps.insert("fo:line-height", (*paraIt).spLine, WPX_POINT);
+      paraProps.insert("fo:line-height", (*paraIt).spLine);
     else
       paraProps.insert("fo:line-height", -(*paraIt).spLine, WPX_PERCENT);
 
