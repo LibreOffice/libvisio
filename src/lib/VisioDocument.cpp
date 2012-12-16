@@ -164,47 +164,58 @@ static bool parseBinaryVisioDocument(WPXInputStream *input, libwpg::WPGPaintInte
 
   docStream->seek(0x1A, WPX_SEEK_SET);
 
-  unsigned char version = libvisio::readU8(docStream);
   libvisio::VSDParser *parser = 0;
-  switch(version)
+  try
   {
-  case 1:
-  case 2:
-  case 3:
-  case 4:
-  case 5:
-    parser = new libvisio::VSD5Parser(docStream, painter);
-    break;
-  case 6:
-    parser = new libvisio::VSD6Parser(docStream, painter);
-    break;
-  case 11:
-    parser = new libvisio::VSDParser(docStream, painter);
-    break;
-  default:
-    break;
-  }
+    unsigned char version = libvisio::readU8(docStream);
+    switch(version)
+    {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+      parser = new libvisio::VSD5Parser(docStream, painter);
+      break;
+    case 6:
+      parser = new libvisio::VSD6Parser(docStream, painter);
+      break;
+    case 11:
+      parser = new libvisio::VSDParser(docStream, painter);
+      break;
+    default:
+      break;
+    }
 
-  bool retValue = false;
-  if (parser)
-  {
-    if (isStencilExtraction)
-      retValue = parser->extractStencils();
-    else if (!isStencilExtraction)
-      retValue = parser->parseMain();
-  }
-  else
-  {
+    bool retValue = false;
+    if (parser)
+    {
+      if (isStencilExtraction)
+        retValue = parser->extractStencils();
+      else if (!isStencilExtraction)
+        retValue = parser->parseMain();
+    }
+    else
+    {
+      if (docStream != input)
+        delete docStream;
+      return false;
+    }
+
+    delete parser;
     if (docStream != input)
       delete docStream;
-    return false;
+
+    return retValue;
+  }
+  catch (...)
+  {
+    delete parser;
+    if (docStream != input)
+      delete docStream;
   }
 
-  delete parser;
-  if (docStream != input)
-    delete docStream;
-
-  return retValue;
+  return false;
 }
 
 static bool isOpcVisioDocument(WPXInputStream *input)
