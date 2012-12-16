@@ -783,17 +783,6 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   }
   while ((XML_TEXTBLOCK != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
-  if (bgClrId < 0)
-    bgClrId = 0;
-  if (bgClrId)
-  {
-    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId-1);
-    if (iter != m_colours.end())
-      bgColour = iter->second;
-    else
-      bgColour = Colour();
-  }
-
   if (m_isInStyles)
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        verticalAlign, !!bgClrId, bgColour, defaultTabStop, textDirection);
