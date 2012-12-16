@@ -65,6 +65,7 @@ struct XForm
 // Utilities
 struct ChunkHeader
 {
+  ChunkHeader() : chunkType(0), id(0), list(0), dataLength(0), level(0), unknown(0), trailer(0) {}
   unsigned chunkType;  // 4 bytes
   unsigned id;         // 4 bytes
   unsigned list;       // 4 bytes
