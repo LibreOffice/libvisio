@@ -1264,7 +1264,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       break;
     case XML_COLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readExtendedColourData(fontColour, reader);
+        ret = readExtendedColourData(fontColour, reader);
       break;
     case XML_STYLE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1337,7 +1337,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       break;
     case XML_SIZE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(fontSize, reader);
+        ret = readDoubleData(fontSize, reader);
       break;
     case XML_DBLUNDERLINE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1430,34 +1430,34 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
     tokenType = xmlTextReaderNodeType(reader);
 
     switch (tokenId)
-    {
+   {
     case XML_INDFIRST:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(indFirst, reader);
+        ret = readDoubleData(indFirst, reader);
       break;
     case XML_INDLEFT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(indLeft, reader);
+        ret = readDoubleData(indLeft, reader);
       break;
     case XML_INDRIGHT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(indRight, reader);
+        ret = readDoubleData(indRight, reader);
       break;
     case XML_SPLINE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(spLine, reader);
+        ret = readDoubleData(spLine, reader);
       break;
     case XML_SPBEFORE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(spBefore, reader);
+        ret = readDoubleData(spBefore, reader);
       break;
     case XML_SPAFTER:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(spAfter, reader);
+        ret = readDoubleData(spAfter, reader);
       break;
     case XML_HORZALIGN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readByteData(align, reader);
+        ret = readByteData(align, reader);
       break;
     case XML_BULLET:
       break;

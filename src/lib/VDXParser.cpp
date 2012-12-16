@@ -342,7 +342,7 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
       break;
     case XML_LINECOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readExtendedColourData(colour, reader);
+        ret = readExtendedColourData(colour, reader);
       break;
     case XML_LINEPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
