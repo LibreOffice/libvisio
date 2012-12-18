@@ -206,31 +206,51 @@ void libvisio::VSD6Parser::readParaIX(WPXInputStream *input)
 
 void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
 {
-  Colour colourFG = _colourFromIndex(readU8(input));
+  unsigned char colourFGIndex = readU8(input);
+  Colour colourFG;
   colourFG.r = readU8(input);
   colourFG.g = readU8(input);
   colourFG.b = readU8(input);
   colourFG.a = readU8(input);
-  double fillFGTransparency = (double)colourFG.a / 255.0;
-  Colour colourBG = _colourFromIndex(readU8(input));
+  unsigned char colourBGIndex = readU8(input);
+  Colour colourBG;
   colourBG.r = readU8(input);
   colourBG.g = readU8(input);
   colourBG.b = readU8(input);
   colourBG.a = readU8(input);
+  if (!colourFG && !colourBG)
+  {
+    colourFG = _colourFromIndex(colourFGIndex);
+    colourBG = _colourFromIndex(colourBGIndex);
+  }
+  double fillFGTransparency = (double)colourFG.a / 255.0;
   double fillBGTransparency = (double)colourBG.a / 255.0;
+
   unsigned char fillPattern = readU8(input);
-  input->seek(1, WPX_SEEK_CUR);
-  Colour shfgc;            // Shadow Foreground Colour
-  shfgc.r = readU8(input);
-  shfgc.g = readU8(input);
-  shfgc.b = readU8(input);
-  shfgc.a = readU8(input);
-  input->seek(5, WPX_SEEK_CUR); // Shadow Background Colour skipped
+
+  unsigned char shadowFGIndex = readU8(input);
+  Colour shadowFG;
+  shadowFG.r = readU8(input);
+  shadowFG.g = readU8(input);
+  shadowFG.b = readU8(input);
+  shadowFG.a = readU8(input);
+  unsigned char shadowBGIndex = readU8(input);
+  Colour shadowBG;
+  shadowBG.r = readU8(input);
+  shadowBG.g = readU8(input);
+  shadowBG.b = readU8(input);
+  shadowBG.a = readU8(input);
+  if (!shadowFG && !shadowBG)
+  {
+    shadowFG = _colourFromIndex(shadowFGIndex);
+    shadowBG = _colourFromIndex(shadowBGIndex);
+  }
+
   unsigned char shadowPattern = readU8(input);
 
   if (m_isInStyles)
     m_collector->collectFillStyle(m_header.level, colourFG, colourBG, fillPattern,
-                                  fillFGTransparency, fillBGTransparency, shadowPattern, shfgc);
+                                  fillFGTransparency, fillBGTransparency, shadowPattern, shadowFG);
   else
   {
     double shadowOffsetX = 0.0;
@@ -247,7 +267,7 @@ void libvisio::VSD6Parser::readFillAndShadow(WPXInputStream *input)
       shadowOffsetY = m_shadowOffsetY;
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
-                                 fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY));
+                                 fillBGTransparency, shadowFG, shadowPattern, shadowOffsetX, shadowOffsetY));
   }
 }
 
