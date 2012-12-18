@@ -1430,7 +1430,7 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
     tokenType = xmlTextReaderNodeType(reader);
 
     switch (tokenId)
-   {
+    {
     case XML_INDFIRST:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(indFirst, reader);
