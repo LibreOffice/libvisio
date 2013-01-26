@@ -1307,7 +1307,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
 {
   _handleLevelChange(level);
 
-  if (!knotVector.size() || !controlPoints.size() || !weights.size())
+  if (knotVector.empty() || controlPoints.empty() || weights.empty())
     // Here, maybe we should just draw line to (x2,y2)
     return;
 
@@ -1380,7 +1380,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
 double libvisio::VSDContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector)
 {
   double basis = 0;
-  if (!knotVector.size())
+  if (knotVector.empty())
     return basis;
   if (degree == 0)
   {
