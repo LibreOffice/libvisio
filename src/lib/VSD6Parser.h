@@ -54,6 +54,7 @@ private:
   virtual void readParaIX(WPXInputStream *input);
   virtual void readFillAndShadow(WPXInputStream *input);
   virtual void readName(WPXInputStream *input);
+  virtual void readName2(WPXInputStream *input);
   virtual void readTextField(WPXInputStream *input);
 
   VSD6Parser();

@@ -50,6 +50,9 @@
 #define VSD_NAME_LIST 0x2c
 #define VSD_NAME 0x2d
 
+#define VSD_NAME_LIST2 0x32
+#define VSD_NAME2 0x33
+
 #define VSD_PAGE_SHEET 0x46
 #define VSD_SHAPE_GROUP 0x47
 #define VSD_SHAPE_SHAPE 0x48

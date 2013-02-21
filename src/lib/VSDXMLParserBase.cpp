@@ -1097,6 +1097,7 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
   xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
   xmlChar *bgndPage = xmlTextReaderGetAttribute(reader, BAD_CAST("BackPage"));
   xmlChar *background = xmlTextReaderGetAttribute(reader, BAD_CAST("Background"));
+  xmlChar *pageName = xmlTextReaderGetAttribute(reader, BAD_CAST("NameU"));
   if (id)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
@@ -1104,7 +1105,7 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
     bool isBackgroundPage = background ? xmlStringToBool(background) : false;
     m_isPageStarted = true;
     m_collector->startPage(nId);
-    m_collector->collectPage(nId, (unsigned)getElementDepth(reader), backgroundPageID, isBackgroundPage);
+    m_collector->collectPage(nId, (unsigned)getElementDepth(reader), backgroundPageID, isBackgroundPage, pageName ? WPXString((const char *)pageName) : WPXString());
   }
   if (id)
     xmlFree(id);
@@ -1112,6 +1113,8 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
     xmlFree(bgndPage);
   if (background)
     xmlFree(background);
+  if (pageName)
+    xmlFree(pageName);
 }
 
 void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)

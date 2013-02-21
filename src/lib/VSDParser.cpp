@@ -46,7 +46,7 @@ libvisio::VSDParser::VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface 
     m_stencils(), m_currentStencil(0), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
     m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
-    m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts()
+    m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts(), m_names()
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -196,6 +196,7 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
   std::vector<unsigned> pointerOrder;
   std::map<unsigned, libvisio::Pointer> PtrList;
   std::map<unsigned, libvisio::Pointer> FontFaces;
+  std::map<unsigned, libvisio::Pointer> NameList;
 
   try
   {
@@ -209,6 +210,8 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
       readPointer(input, ptr);
       if (ptr.Type == VSD_FONTFACES)
         FontFaces[i] = ptr;
+      else if (ptr.Type == VSD_NAME_LIST2)
+        NameList[i] = ptr;
       else if (ptr.Type != 0)
         PtrList[i] = ptr;
     }
@@ -222,10 +225,14 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
     pointerOrder.clear();
     PtrList.clear();
     FontFaces.clear();
+    NameList.clear();
   }
 
   std::map<unsigned, libvisio::Pointer>::iterator iter;
   for (iter = FontFaces.begin(); iter != FontFaces.end(); ++iter)
+    handleStream(iter->second, iter->first, level+1);
+
+  for (iter = NameList.begin(); iter != NameList.end(); ++iter)
     handleStream(iter->second, iter->first, level+1);
 
   if (!pointerOrder.empty())
@@ -513,8 +520,14 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
   case VSD_NAME_LIST:
     readNameList(input);
     break;
+  case VSD_NAME_LIST2:
+    readNameList2(input);
+    break;
   case VSD_NAME:
     readName(input);
+    break;
+  case VSD_NAME2:
+    readName2(input);
     break;
   case VSD_FIELD_LIST:
     readFieldList(input);
@@ -831,7 +844,7 @@ void libvisio::VSDParser::readPage(WPXInputStream *input)
 {
   input->seek(8, WPX_SEEK_CUR); //sub header length and children list length
   unsigned backgroundPageID = readU32(input);
-  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage);
+  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage, WPXString());
 }
 
 void libvisio::VSDParser::readGeometry(WPXInputStream *input)
@@ -1413,6 +1426,11 @@ void libvisio::VSDParser::readNameList(WPXInputStream * /* input */)
   m_shape.m_names.clear();
 }
 
+void libvisio::VSDParser::readNameList2(WPXInputStream * /* input */)
+{
+  m_names.clear();
+}
+
 void libvisio::VSDParser::readFieldList(WPXInputStream *input)
 {
   if (m_header.trailer)
@@ -1742,6 +1760,21 @@ void libvisio::VSDParser::readName(WPXInputStream *input)
     ::WPXBinaryData name(tmpBuffer, numBytesRead);
     m_shape.m_names[m_header.id] = VSDName(name, libvisio::VSD_TEXT_UTF16);
   }
+}
+
+void libvisio::VSDParser::readName2(WPXInputStream *input)
+{
+  unsigned short unicharacter = 0;
+  ::WPXBinaryData name;
+  input->seek(4, WPX_SEEK_CUR); // skip a dword that seems to be always 1
+  while ((unicharacter = readU16(input)))
+  {
+    name.append(unicharacter & 0xff);
+    name.append((unicharacter & 0xff00) >> 8);
+  }
+  name.append(unicharacter & 0xff);
+  name.append((unicharacter & 0xff00) >> 8);
+  m_names[m_header.id] = VSDName(name, libvisio::VSD_TEXT_UTF16);
 }
 
 void libvisio::VSDParser::readTextField(WPXInputStream *input)

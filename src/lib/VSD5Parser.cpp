@@ -162,44 +162,47 @@ void libvisio::VSD5Parser::readGeomList(WPXInputStream *input)
   handleChunkRecords(input);
 }
 
-void libvisio::VSD5Parser::readCharList(WPXInputStream *input)
+void libvisio::VSD5Parser::readList(WPXInputStream *input)
 {
-  VSD_DEBUG_MSG(("VSD5Parser::readCharList\n"));
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   handleChunkRecords(input);
+}
+
+void libvisio::VSD5Parser::readCharList(WPXInputStream *input)
+{
+  VSD_DEBUG_MSG(("VSD5Parser::readCharList\n"));
+  readList(input);
 }
 
 void libvisio::VSD5Parser::readParaList(WPXInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readParaList\n"));
-  if (!m_isStencilStarted)
-    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-  handleChunkRecords(input);
+  readList(input);
 }
 
 void libvisio::VSD5Parser::readShapeList(WPXInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readShapeList\n"));
-  if (!m_isStencilStarted)
-    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-  handleChunkRecords(input);
+  readList(input);
 }
 
 void libvisio::VSD5Parser::readPropList(WPXInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readPropList\n"));
-  if (!m_isStencilStarted)
-    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-  handleChunkRecords(input);
+  readList(input);
 }
 
 void libvisio::VSD5Parser::readFieldList(WPXInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readFieldList\n"));
-  if (!m_isStencilStarted)
-    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
-  handleChunkRecords(input);
+  readList(input);
+}
+
+void libvisio::VSD5Parser::readNameList2(WPXInputStream *input)
+{
+  VSD_DEBUG_MSG(("VSD5Parser::readNameList2\n"));
+  readList(input);
 }
 
 void libvisio::VSD5Parser::readLine(WPXInputStream *input)
@@ -378,7 +381,7 @@ void libvisio::VSD5Parser::readShape(WPXInputStream *input)
 void libvisio::VSD5Parser::readPage(WPXInputStream *input)
 {
   unsigned backgroundPageID = getUInt(input);
-  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage);
+  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage, WPXString());
 }
 
 void libvisio::VSD5Parser::readTextBlock(WPXInputStream *input)

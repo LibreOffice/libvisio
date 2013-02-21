@@ -32,14 +32,14 @@
 #include "libvisio_utils.h"
 
 libvisio::VSDPage::VSDPage()
-  : m_pageWidth(0.0), m_pageHeight(0.0),
+  : m_pageWidth(0.0), m_pageHeight(0.0), m_pageName(),
     m_currentPageID(0), m_backgroundPageID(MINUS_ONE),
     m_pageElements()
 {
 }
 
 libvisio::VSDPage::VSDPage(const libvisio::VSDPage &page)
-  : m_pageWidth(page.m_pageWidth), m_pageHeight(page.m_pageHeight),
+  : m_pageWidth(page.m_pageWidth), m_pageHeight(page.m_pageHeight), m_pageName(page.m_pageName),
     m_currentPageID(page.m_currentPageID), m_backgroundPageID(page.m_backgroundPageID),
     m_pageElements(page.m_pageElements)
 {
@@ -55,6 +55,7 @@ libvisio::VSDPage &libvisio::VSDPage::operator=(const libvisio::VSDPage &page)
   {
     m_pageWidth = page.m_pageWidth;
     m_pageHeight = page.m_pageHeight;
+    m_pageName = page.m_pageName;
     m_currentPageID = page.m_currentPageID;
     m_backgroundPageID = page.m_backgroundPageID;
     m_pageElements = page.m_pageElements;

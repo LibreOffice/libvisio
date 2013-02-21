@@ -58,6 +58,7 @@ protected:
   virtual void readShapeList(WPXInputStream *input);
   virtual void readPropList(WPXInputStream *input);
   virtual void readFieldList(WPXInputStream *input);
+  virtual void readNameList2(WPXInputStream *input);
 
   virtual void readLine(WPXInputStream *input);
   virtual void readFillAndShadow(WPXInputStream *input);
@@ -79,6 +80,8 @@ private:
   VSD5Parser();
   VSD5Parser(const VSDParser &);
   VSD5Parser &operator=(const VSDParser &);
+
+  void readList(WPXInputStream *input);
 };
 
 } // namespace libvisio

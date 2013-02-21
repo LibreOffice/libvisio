@@ -46,6 +46,7 @@ public:
   void append(const VSDOutputElementList &outputElements);
   void draw(libwpg::WPGPaintInterface *painter) const;
   double m_pageWidth, m_pageHeight;
+  WPXString m_pageName;
   unsigned m_currentPageID, m_backgroundPageID;
   VSDOutputElementList m_pageElements;
 };

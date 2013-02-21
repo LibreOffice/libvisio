@@ -110,6 +110,9 @@ protected:
   void readNameList(WPXInputStream *input);
   virtual void readName(WPXInputStream *input);
 
+  virtual void readNameList2(WPXInputStream *input);
+  virtual void readName2(WPXInputStream *input);
+
   virtual void readFieldList(WPXInputStream *input);
   virtual void readTextField(WPXInputStream *input);
 
@@ -172,6 +175,7 @@ protected:
   unsigned m_currentGeomListCount;
 
   std::map<unsigned, VSDName> m_fonts;
+  std::map<unsigned, VSDName> m_names;
 
 private:
   VSDParser();

@@ -282,6 +282,17 @@ void libvisio::VSD6Parser::readName(WPXInputStream *input)
   }
 }
 
+void libvisio::VSD6Parser::readName2(WPXInputStream *input)
+{
+  unsigned char character = 0;
+  ::WPXBinaryData name;
+  getInt(input); // skip a dword that seems to be always 1
+  while ((character = readU8(input)))
+    name.append(character);
+  name.append(character);
+  m_names[m_header.id] = VSDName(name, libvisio::VSD_TEXT_ANSI);
+}
+
 void libvisio::VSD6Parser::readTextField(WPXInputStream *input)
 {
   unsigned long initialPosition = input->tell();
