@@ -381,7 +381,7 @@ void libvisio::VSD5Parser::readShape(WPXInputStream *input)
 void libvisio::VSD5Parser::readPage(WPXInputStream *input)
 {
   unsigned backgroundPageID = getUInt(input);
-  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage, WPXString());
+  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage, VSDName());
 }
 
 void libvisio::VSD5Parser::readTextBlock(WPXInputStream *input)

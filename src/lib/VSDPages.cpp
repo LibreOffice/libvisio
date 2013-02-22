@@ -99,6 +99,8 @@ void libvisio::VSDPages::draw(libwpg::WPGPaintInterface *painter)
     WPXPropertyList pageProps;
     pageProps.insert("svg:width", m_pages[i].m_pageWidth);
     pageProps.insert("svg:height", m_pages[i].m_pageHeight);
+    if (m_pages[i].m_pageName.len())
+      pageProps.insert("draw:name", m_pages[i].m_pageName);
     painter->startGraphics(pageProps);
     _drawWithBackground(painter, m_pages[i]);
     painter->endGraphics();
@@ -110,6 +112,8 @@ void libvisio::VSDPages::draw(libwpg::WPGPaintInterface *painter)
     WPXPropertyList pageProps;
     pageProps.insert("svg:width", iter->second.m_pageWidth);
     pageProps.insert("svg:height", iter->second.m_pageHeight);
+    if (iter->second.m_pageName.len())
+      pageProps.insert("draw:name", iter->second.m_pageName);
     painter->startGraphics(pageProps);
     _drawWithBackground(painter, iter->second);
     painter->endGraphics();

@@ -32,6 +32,7 @@
 #define __VSDPAGES_H__
 
 #include "VSDOutputElementList.h"
+#include "VSDTypes.h"
 
 namespace libvisio
 {

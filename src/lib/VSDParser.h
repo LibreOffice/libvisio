@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
+#include <stack>
 #include <map>
 #include <libwpd/libwpd.h>
 #include <libwpd-stream/libwpd-stream.h>
@@ -127,6 +128,8 @@ protected:
   void readOLEList(WPXInputStream *input);
   void readOLEData(WPXInputStream *input);
 
+  virtual void readNameIDX(WPXInputStream *input);
+
   // parser of one pass
   bool parseDocument(WPXInputStream *input, unsigned shift);
 
@@ -143,6 +146,7 @@ protected:
   void _handleLevelChange(unsigned level);
   Colour _colourFromIndex(unsigned idx);
   void _flushShape();
+  void _nameFromId(VSDName &name, unsigned id, unsigned level);
 
   virtual unsigned getUInt(WPXInputStream *input);
   virtual int getInt(WPXInputStream *input);
@@ -176,6 +180,8 @@ protected:
 
   std::map<unsigned, VSDName> m_fonts;
   std::map<unsigned, VSDName> m_names;
+  std::map<unsigned, std::map<unsigned, VSDName> > m_namesMapMap;
+  VSDName m_currentPageName;
 
 private:
   VSDParser();

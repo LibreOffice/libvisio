@@ -1699,11 +1699,13 @@ void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned
   m_currentPage.m_pageHeight = m_scale*m_pageHeight;
 }
 
-void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID, bool isBackgroundPage, const WPXString &pageName)
+void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned level, unsigned backgroundPageID, bool isBackgroundPage, const VSDName &pageName)
 {
   _handleLevelChange(level);
   m_currentPage.m_backgroundPageID = backgroundPageID;
-  m_currentPage.m_pageName = pageName;
+  m_currentPage.m_pageName.clear();
+  if (!pageName.empty())
+    _convertDataToString(m_currentPage.m_pageName, pageName.m_data, pageName.m_format);
   m_isBackgroundPage = isBackgroundPage;
 }
 

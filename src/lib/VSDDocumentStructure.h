@@ -140,6 +140,7 @@
 #define VSD_ANNOTATION 0xc6
 #define VSD_SMART_TAG_DEF 0xc7
 #define VSD_PRINT_PROPS 0xc8
+#define VSD_NAMEIDX 0xc9
 
 #define VSD_SHAPE_DATA 0xd1
 #define VSD_FONTFACE 0xd7
