@@ -226,7 +226,7 @@ void libvisio::VSDParser::handleStreams(WPXInputStream *input, unsigned ptrType,
         FontFaces[i] = ptr;
       else if (ptr.Type == VSD_NAME_LIST2)
         NameList[i] = ptr;
-      else if (ptr.Type == VSD_NAMEIDX)
+      else if (ptr.Type == VSD_NAMEIDX || ptr.Type == VSD_NAMEIDX123)
         NameIDX[i] = ptr;
       else if (ptr.Type != 0)
         PtrList[i] = ptr;
@@ -337,8 +337,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
 
   if ((ptr.Format >> 4) == 0x4 || (ptr.Format >> 4) == 0x5 || (ptr.Format >> 4) == 0x0)
   {
-    if (ptr.Length > 4)
-      handleBlob(&tmpInput, shift, level+1);
+    handleBlob(&tmpInput, shift, level+1);
     if ((ptr.Format >> 4) == 0x5 && ptr.Type != VSD_COLORS)
       handleStreams(&tmpInput, ptr.Type, shift, level+1);
   }
@@ -503,6 +502,9 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
     break;
   case VSD_NAMEIDX:
     readNameIDX(input);
+    break;
+  case VSD_NAMEIDX123:
+    readNameIDX123(input);
     break;
   case VSD_PAGE_PROPS:
     readPageProps(input);
@@ -743,6 +745,22 @@ void libvisio::VSDParser::readNameIDX(WPXInputStream *input)
       names[elementId] = iter->second;
   }
   m_namesMapMap[m_header.level] = names;
+}
+
+void libvisio::VSDParser::readNameIDX123(WPXInputStream *input)
+{
+  std::map<unsigned, VSDName> names;
+  long endPosition = input->tell() + m_header.dataLength;
+  while (!input->atEOS() && input->tell() < endPosition)
+  {
+    unsigned nameId = getUInt(input);
+    unsigned elementId = getUInt(input);
+    std::map<unsigned, VSDName>::const_iterator iter = m_names.find(nameId);
+    if (iter != m_names.end())
+      names[elementId] = iter->second;
+  }
+  m_namesMapMap[m_header.level] = names;
+
 }
 
 void libvisio::VSDParser::readEllipse(WPXInputStream *input)

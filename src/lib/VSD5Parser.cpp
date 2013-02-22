@@ -381,7 +381,7 @@ void libvisio::VSD5Parser::readShape(WPXInputStream *input)
 void libvisio::VSD5Parser::readPage(WPXInputStream *input)
 {
   unsigned backgroundPageID = getUInt(input);
-  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage, VSDName());
+  m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage, m_currentPageName);
 }
 
 void libvisio::VSD5Parser::readTextBlock(WPXInputStream *input)
@@ -422,6 +422,22 @@ void libvisio::VSD5Parser::readTextField(WPXInputStream *input)
     double numericValue = readDouble(input);
     m_shape.m_fields.addNumericField(m_header.id, m_header.level, 0xffff, numericValue, 0xffff);
   }
+}
+
+void libvisio::VSD5Parser::readNameIDX(WPXInputStream *input)
+{
+  VSD_DEBUG_MSG(("VSD5Parser::readNameIDX\n"));
+  std::map<unsigned, VSDName> names;
+  unsigned recordCount = readU16(input);
+  for (unsigned i = 0; i < recordCount; ++i)
+  {
+    unsigned elementId = readU16(input);
+    unsigned nameId = readU16(input);
+    std::map<unsigned, VSDName>::const_iterator iter = m_names.find(nameId);
+    if (iter != m_names.end())
+      names[elementId] = iter->second;
+  }
+  m_namesMapMap[m_header.level] = names;
 }
 
 

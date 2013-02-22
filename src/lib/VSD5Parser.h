@@ -73,7 +73,7 @@ protected:
 
   virtual void readStyleSheet(WPXInputStream *input);
 
-  virtual void readNameIDX(WPXInputStream *) {}
+  virtual void readNameIDX(WPXInputStream *input);
 
   virtual unsigned getUInt(WPXInputStream *input);
   virtual int getInt(WPXInputStream *input);

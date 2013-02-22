@@ -129,6 +129,7 @@ protected:
   void readOLEData(WPXInputStream *input);
 
   virtual void readNameIDX(WPXInputStream *input);
+  virtual void readNameIDX123(WPXInputStream *input);
 
   // parser of one pass
   bool parseDocument(WPXInputStream *input, unsigned shift);

@@ -52,6 +52,7 @@
 
 #define VSD_NAME_LIST2 0x32
 #define VSD_NAME2 0x33
+#define VSD_NAMEIDX123 0x34
 
 #define VSD_PAGE_SHEET 0x46
 #define VSD_SHAPE_GROUP 0x47
