@@ -431,8 +431,8 @@ void libvisio::VSD5Parser::readNameIDX(WPXInputStream *input)
   unsigned recordCount = readU16(input);
   for (unsigned i = 0; i < recordCount; ++i)
   {
-    unsigned elementId = readU16(input);
     unsigned nameId = readU16(input);
+    unsigned elementId = readU16(input);
     std::map<unsigned, VSDName>::const_iterator iter = m_names.find(nameId);
     if (iter != m_names.end())
       names[elementId] = iter->second;
