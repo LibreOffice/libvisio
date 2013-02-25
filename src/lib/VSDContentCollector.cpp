@@ -36,7 +36,9 @@
 #include "VSDParser.h"
 #include "VSDInternalStream.h"
 
+#ifndef DUMP_BITMAP
 #define DUMP_BITMAP 0
+#endif
 
 #if DUMP_BITMAP
 static unsigned bitmapId = 0;
@@ -1122,43 +1124,6 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
     }
     m_currentForeignData.append(binaryData);
 
-#if DUMP_BITMAP
-    if (m_foreignType == 1 || m_foreignType == 4)
-    {
-      ::WPXString filename;
-      switch(m_foreignFormat)
-      {
-      case 0:
-      case 255:
-        filename.sprintf("binarydump%i.bmp", bitmapId++);
-        break;
-      case 1:
-        filename.sprintf("binarydump%i.jpeg", bitmapId++);
-        break;
-      case 2:
-        filename.sprintf("binarydump%i.gif", bitmapId++);
-        break;
-      case 3:
-        filename.sprintf("binarydump%i.tiff", bitmapId++);
-        break;
-      case 4:
-        filename.sprintf("binarydump%i.png", bitmapId++);
-        break;
-      default:
-        filename.sprintf("binarydump%i.bin", bitmapId++);
-        break;
-      }
-      FILE *f = fopen(filename.cstr(), "wb");
-      if (f)
-      {
-        const unsigned char *tmpBuffer = m_currentForeignData.getDataBuffer();
-        for (unsigned long k = 0; k < m_currentForeignData.size(); k++)
-          fprintf(f, "%c",tmpBuffer[k]);
-        fclose(f);
-      }
-    }
-#endif
-
     if (m_foreignType == 1)
     {
       switch(m_foreignFormat)
@@ -1200,6 +1165,57 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
     m_currentForeignProps.insert("libwpg:mime-type", "object/ole");
     m_currentForeignData.append(binaryData);
   }
+
+#if DUMP_BITMAP
+  ::WPXString filename;
+  if (m_foreignType == 1)
+  {
+    switch(m_foreignFormat)
+    {
+    case 0:
+    case 255:
+      filename.sprintf("binarydump%i.bmp", bitmapId++);
+      break;
+    case 1:
+      filename.sprintf("binarydump%i.jpeg", bitmapId++);
+      break;
+    case 2:
+      filename.sprintf("binarydump%i.gif", bitmapId++);
+      break;
+    case 3:
+      filename.sprintf("binarydump%i.tiff", bitmapId++);
+      break;
+    case 4:
+      filename.sprintf("binarydump%i.png", bitmapId++);
+      break;
+    default:
+      filename.sprintf("binarydump%i.bin", bitmapId++);
+      break;
+    }
+  }
+  else if  (m_foreignType == 4)
+  {
+    const unsigned char *tmpBinData = m_currentForeignData.getDataBuffer();
+    // Check for EMF signature
+    if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
+      filename.sprintf("binarydump%i.emf", bitmapId++);
+    else
+      filename.sprintf("binarydump%i.wmf", bitmapId++);
+  }
+  else if (m_foreignType == 2)
+  {
+    filename.sprintf("binarydump%i.ole", bitmapId++);
+  }
+
+  FILE *f = fopen(filename.cstr(), "wb");
+  if (f)
+  {
+    const unsigned char *tmpBuffer = m_currentForeignData.getDataBuffer();
+    for (unsigned long k = 0; k < m_currentForeignData.size(); k++)
+      fprintf(f, "%c",tmpBuffer[k]);
+    fclose(f);
+  }
+#endif
 }
 
 void libvisio::VSDContentCollector::collectGeometry(unsigned /* id */, unsigned level, bool noFill, bool noLine, bool noShow)
