@@ -366,14 +366,25 @@ WPGPaintInterface class implementation when needed. This is often commonly calle
 */
 bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
 {
-  if (isBinaryVisioDocument(input) && parseBinaryVisioDocument(input, painter, false))
-    return true;
-  else if (isOpcVisioDocument(input) && parseOpcVisioDocument(input, painter, false))
-    return true;
-  else if (isXmlVisioDocument(input) && parseXmlVisioDocument(input, painter, false))
-    return true;
-  else
+  if (isBinaryVisioDocument(input))
+  {
+    if (parseBinaryVisioDocument(input, painter, false))
+      return true;
     return false;
+  }
+  else if (isOpcVisioDocument(input))
+  {
+    if (parseOpcVisioDocument(input, painter, false))
+      return true;
+    return false;
+  }
+  else if (isXmlVisioDocument(input))
+  {
+    if (parseXmlVisioDocument(input, painter, false))
+      return true;
+    return false;
+  }
+  return false;
 }
 
 /**
@@ -386,15 +397,27 @@ when needed.
 */
 bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
 {
-  if (isBinaryVisioDocument(input) && parseBinaryVisioDocument(input, painter, true))
-    return true;
-  else if (isOpcVisioDocument(input) && parseOpcVisioDocument(input, painter, true))
-    return true;
-  else if (isXmlVisioDocument(input) && parseXmlVisioDocument(input, painter, true))
-    return true;
-  else
+  if (isBinaryVisioDocument(input))
+  {
+    if (parseBinaryVisioDocument(input, painter, true))
+      return true;
     return false;
+  }
+  else if (isOpcVisioDocument(input))
+  {
+    if (parseOpcVisioDocument(input, painter, true))
+      return true;
+    return false;
+  }
+  else if (isXmlVisioDocument(input))
+  {
+    if (parseXmlVisioDocument(input, painter, true))
+      return true;
+    return false;
+  }
+  return false;
 }
+
 
 /**
 Parses the input stream content and generates a valid Scalable Vector Graphics

@@ -1637,9 +1637,10 @@ void libvisio::VSDParser::readText(WPXInputStream *input)
     }
     textStream.append(tmpBuffer, numBytesRead);
     m_shape.m_text = textStream;
-    m_shape.m_textFormat = libvisio::VSD_TEXT_UTF16;
   }
-
+  else
+    m_shape.m_text.clear();
+  m_shape.m_textFormat = libvisio::VSD_TEXT_UTF16;
 }
 
 void libvisio::VSDParser::readCharIX(WPXInputStream *input)
