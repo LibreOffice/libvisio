@@ -372,13 +372,13 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
       return true;
     return false;
   }
-  else if (isOpcVisioDocument(input))
+  if (isOpcVisioDocument(input))
   {
     if (parseOpcVisioDocument(input, painter, false))
       return true;
     return false;
   }
-  else if (isXmlVisioDocument(input))
+  if (isXmlVisioDocument(input))
   {
     if (parseXmlVisioDocument(input, painter, false))
       return true;
@@ -403,13 +403,13 @@ bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPG
       return true;
     return false;
   }
-  else if (isOpcVisioDocument(input))
+  if (isOpcVisioDocument(input))
   {
     if (parseOpcVisioDocument(input, painter, true))
       return true;
     return false;
   }
-  else if (isXmlVisioDocument(input))
+  if (isXmlVisioDocument(input))
   {
     if (parseXmlVisioDocument(input, painter, true))
       return true;
