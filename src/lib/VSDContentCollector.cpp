@@ -2920,10 +2920,8 @@ void libvisio::VSDContentCollector::appendCharacters(WPXString &text, const std:
     while (true)
     {
       if (iter == characters.end())
-      {
-        fail = true;
         break;
-      }
+
       uint16_t character = *iter++;
       character |= (uint16_t)(*iter++) << 8;
       if (character == 0xfffc)
@@ -2965,7 +2963,10 @@ void libvisio::VSDContentCollector::appendCharacters(WPXString &text, const std:
       }
     }
     if (fail)
+    {
+      VSD_DEBUG_MSG(("Throwing GenericException\n"));
       throw libvisio::GenericException();
+    }
 
     if (ucs4Character == 0xa)
       _appendUCS4(text, (uint32_t)'\n');
