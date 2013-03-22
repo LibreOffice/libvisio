@@ -239,6 +239,42 @@ double libvisio::VSDContentCollector::_linePropertiesMarkerScale(unsigned marker
   }
 }
 
+void libvisio::VSDContentCollector::_flushShape()
+{
+  unsigned numPathElements = 0;
+  unsigned numForeignElements = 0;
+  unsigned numTextElements = 0;
+  if (m_fillStyle.pattern && !m_currentFillGeometry.empty())
+    numPathElements++;
+  if (m_lineStyle.pattern && !m_currentLineGeometry.empty())
+    numPathElements++;
+  if (m_currentForeignData.size() && m_currentForeignProps["libwpg:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0)
+    numForeignElements++;
+  if (m_textStream.size())
+    numTextElements++;
+
+  if (numPathElements+numForeignElements+numTextElements > 1)
+    m_shapeOutputDrawing->addStartLayer(WPXPropertyList());
+
+  if (numPathElements > 1 && (numForeignElements || numTextElements))
+    m_shapeOutputDrawing->addStartLayer(WPXPropertyList());
+  _flushCurrentPath();
+  if (numPathElements > 1 && (numForeignElements || numTextElements))
+    m_shapeOutputDrawing->addEndLayer();
+  _flushCurrentForeignData();
+  _flushText();
+
+  if (numPathElements+numForeignElements+numTextElements > 1)
+  {
+    if (numTextElements)
+      m_shapeOutputText->addEndLayer();
+    else
+      m_shapeOutputDrawing->addEndLayer();
+  }
+
+  m_isShapeStarted = false;
+}
+
 void libvisio::VSDContentCollector::_flushCurrentPath()
 {
   WPXPropertyList styleProps;
@@ -248,22 +284,9 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
   fillPathProps.insert("draw:stroke", "none");
   WPXPropertyList linePathProps(styleProps);
   linePathProps.insert("draw:fill", "none");
-  bool needsGroup = true;
-
-  if (!m_fillStyle.pattern)
-    needsGroup = false;
-  if (m_currentFillGeometry.empty())
-    needsGroup = false;
-  if (!m_lineStyle.pattern)
-    needsGroup = false;
-  if (m_currentLineGeometry.empty())
-    needsGroup = false;
-
-  if (needsGroup)
-    m_shapeOutputDrawing->addStartLayer(WPXPropertyList());
 
   std::vector<WPXPropertyList> tmpPath;
-  if (m_fillStyle.pattern)
+  if (m_fillStyle.pattern && !m_currentFillGeometry.empty())
   {
     bool firstPoint = true;
     bool wasMove = false;
@@ -324,7 +347,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
   m_currentFillGeometry.clear();
   tmpPath.clear();
 
-  if (m_lineStyle.pattern)
+  if (m_lineStyle.pattern && !m_currentLineGeometry.empty())
   {
     bool firstPoint = true;
     bool wasMove = false;
@@ -403,9 +426,6 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     }
   }
   m_currentLineGeometry.clear();
-
-  if (needsGroup)
-    m_shapeOutputDrawing->addEndLayer();
 }
 
 void libvisio::VSDContentCollector::_flushText()
@@ -668,6 +688,7 @@ void libvisio::VSDContentCollector::_flushText()
   }
 
   m_shapeOutputText->addEndTextObject();
+  m_textStream.clear();
 }
 
 void libvisio::VSDContentCollector::_flushCurrentForeignData()
@@ -2492,7 +2513,7 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
   {
     if (m_isShapeStarted)
     {
-      if (m_stencilShape != 0 && !m_isStencilStarted)
+      if (m_stencilShape && !m_isStencilStarted)
       {
         m_isStencilStarted = true;
         m_NURBSData = m_stencilShape->m_nurbsData;
@@ -2510,12 +2531,7 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
         }
         m_isStencilStarted = false;
       }
-
-      _flushCurrentPath();
-      _flushCurrentForeignData();
-      if (m_textStream.size())
-        _flushText();
-      m_isShapeStarted = false;
+      _flushShape();
     }
     m_originalX = 0.0;
     m_originalY = 0.0;
@@ -2535,13 +2551,7 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
 void libvisio::VSDContentCollector::startPage(unsigned pageId)
 {
   if (m_isShapeStarted)
-  {
-    _flushCurrentPath();
-    _flushCurrentForeignData();
-    m_isShapeStarted = false;
-    if (m_textStream.size())
-      _flushText();
-  }
+    _flushShape();
   m_originalX = 0.0;
   m_originalY = 0.0;
   if (m_txtxform)
