@@ -1568,6 +1568,9 @@ void libvisio::VSDParser::readFontIX(WPXInputStream *input)
   case 0: // ANSI
     format = libvisio::VSD_TEXT_ANSI;
     break;
+  case 0x02:
+    format = libvisio::VSD_TEXT_SYMBOL;
+    break;
   case 0xa1: // GREEK
     format = libvisio::VSD_TEXT_GREEK;
     break;
@@ -1594,6 +1597,18 @@ void libvisio::VSDParser::readFontIX(WPXInputStream *input)
     break;
   case 0xee: // CENTRAL EUROPE
     format = libvisio::VSD_TEXT_CENTRAL_EUROPE;
+    break;
+  case 0x80: // SHIFTJIS
+    format = libvisio::VSD_TEXT_JAPANESE;
+    break;
+  case 0x81: // HANGUL
+    format = libvisio::VSD_TEXT_KOREAN;
+    break;
+  case 0x86: // GB2312
+    format = libvisio::VSD_TEXT_CHINESE_SIMPLIFIED;
+    break;
+  case 0x88: // CHINESEBIG5
+    format = libvisio::VSD_TEXT_CHINESE_TRADITIONAL;
     break;
   default:
     break;
