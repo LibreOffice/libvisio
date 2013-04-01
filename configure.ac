@@ -68,6 +68,27 @@ PKG_CHECK_MODULES([LIBXML],[
 	libxml-2.0
 ])
 
+# ========
+# Find icu
+# ========
+AS_IF([test "${ICU_CFLAGS+set}" = set],[
+	ICU_CFLAGS_overriden=yes],[
+	ICU_CFLAGS_overriden=no])
+PKG_CHECK_MODULES([ICU],[icu-i18n],[
+	AS_IF([test "${ICU_CFLAGS_overriden}" = no], [
+		ICU_CFLAGS="${ICU_CFLAGS} `${PKG_CONFIG} icu-i18n --variable=CXXFLAGS`"])
+	], [
+	AC_PATH_PROG([ICU_CONFIG],[icu-config])
+	AC_MSG_CHECKING([ICU installation])
+	AS_IF([${ICU_CONFIG} --cflags >/dev/null 2>&1],[
+		ICU_CFLAGS=`${ICU_CONFIG} --cppflags-searchpath --cxxflags`
+		ICU_LIBS=`${ICU_CONFIG} --ldflags`
+		AC_MSG_RESULT([found])],[
+		AC_MSG_ERROR([libicu config program icu-config not found])])]
+)
+AC_SUBST(ICU_CFLAGS)
+AC_SUBST(ICU_LIBS)
+
 # =========
 # Find zlib
 # =========
@@ -222,8 +243,8 @@ AS_IF([test "x$native_win32" = "xyes"], [
 		CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow -pedantic"
 	])
 ])
-LIBVISIO_CXXFLAGS="${WPD_CFLAGS} ${WPG_CFLAGS} ${LIBXML_CFLAGS} ${ZLIB_CFLAGS}"
-LIBVISIO_LIBS="${WPD_LIBS} ${WPG_LIBS} ${LIBXML_LIBS} ${ZLIB_LIBS}"
+LIBVISIO_CXXFLAGS="${WPD_CFLAGS} ${WPG_CFLAGS} ${LIBXML_CFLAGS} ${ZLIB_CFLAGS} ${ICU_CFLAGS}"
+LIBVISIO_LIBS="${WPD_LIBS} ${WPG_LIBS} ${LIBXML_LIBS} ${ZLIB_LIBS} ${ICU_LIBS}"
 AC_SUBST(LIBVISIO_CXXFLAGS)
 AC_SUBST(LIBVISIO_LIBS)
 
