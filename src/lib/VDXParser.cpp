@@ -55,7 +55,6 @@ bool libvisio::VDXParser::parseMain()
   if (!m_input)
     return false;
 
-  WPXInputStream *tmpInput = 0;
   try
   {
     std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
@@ -80,8 +79,6 @@ bool libvisio::VDXParser::parseMain()
   }
   catch (...)
   {
-    if (tmpInput)
-      delete tmpInput;
     return false;
   }
 }
