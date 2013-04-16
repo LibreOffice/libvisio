@@ -590,8 +590,12 @@ void libvisio::VSDContentCollector::_flushText()
           }
           if (tmpBuffer.size() >= 2)
           {
-            tmpBuffer[tmpBuffer.size() - 2] = 0;
-            tmpBuffer[tmpBuffer.size() - 1] = 0;
+            if (tmpBuffer[tmpBuffer.size() - 1] == 0 && (tmpBuffer[tmpBuffer.size() - 2] == 0x0a ||
+                tmpBuffer[tmpBuffer.size() - 2] == '\n' || tmpBuffer[tmpBuffer.size() - 2] == 0x0e))
+            {
+              tmpBuffer.pop_back();
+              tmpBuffer.pop_back();
+            }
           }
           else
             tmpBuffer.clear();
