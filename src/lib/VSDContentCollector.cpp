@@ -1161,22 +1161,22 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
     {
     case 0:
     case 255:
-      filename.sprintf("binarydump%i.bmp", bitmapId++);
+      filename.sprintf("binarydump%08u.bmp", bitmapId++);
       break;
     case 1:
-      filename.sprintf("binarydump%i.jpeg", bitmapId++);
+      filename.sprintf("binarydump%08u.jpeg", bitmapId++);
       break;
     case 2:
-      filename.sprintf("binarydump%i.gif", bitmapId++);
+      filename.sprintf("binarydump%08u.gif", bitmapId++);
       break;
     case 3:
-      filename.sprintf("binarydump%i.tiff", bitmapId++);
+      filename.sprintf("binarydump%08u.tiff", bitmapId++);
       break;
     case 4:
-      filename.sprintf("binarydump%i.png", bitmapId++);
+      filename.sprintf("binarydump%08u.png", bitmapId++);
       break;
     default:
-      filename.sprintf("binarydump%i.bin", bitmapId++);
+      filename.sprintf("binarydump%08u.bin", bitmapId++);
       break;
     }
   }
@@ -1185,14 +1185,14 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
     const unsigned char *tmpBinData = m_currentForeignData.getDataBuffer();
     // Check for EMF signature
     if (m_currentForeignData.size() > 0x2B && tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
-      filename.sprintf("binarydump%i.emf", bitmapId++);
+      filename.sprintf("binarydump%08u.emf", bitmapId++);
     else
-      filename.sprintf("binarydump%i.wmf", bitmapId++);
+      filename.sprintf("binarydump%08u.wmf", bitmapId++);
   }
   else if (m_foreignType == 2)
-    filename.sprintf("binarydump%i.ole", bitmapId++);
+    filename.sprintf("binarydump%08u.ole", bitmapId++);
   else
-    filename.sprintf("binarydump%i.bin", bitmapId++);
+    filename.sprintf("binarydump%08u.bin", bitmapId++);
 
   FILE *f = fopen(filename.cstr(), "wb");
   if (f)

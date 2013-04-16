@@ -1765,7 +1765,7 @@ void libvisio::VSDXMLParserBase::_flushShape()
     }
   }
 
-  if (m_shape.m_foreign)
+  if (m_shape.m_foreign && m_shape.m_foreign->data.size())
     m_collector->collectForeignData(m_currentShapeLevel+1, m_shape.m_foreign->data);
 
   if (!m_shape.m_fields.empty())
