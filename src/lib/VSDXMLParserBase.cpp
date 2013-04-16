@@ -1679,6 +1679,8 @@ void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
       m_shape.m_foreign->type = 2;
     else if (xmlStrEqual(foreignTypeString, BAD_CAST("EnhMetaFile")))
       m_shape.m_foreign->type = 4;
+    else if (xmlStrEqual(foreignTypeString, BAD_CAST("MetaFile")))
+      m_shape.m_foreign->type = 0;
     xmlFree(foreignTypeString);
   }
   xmlChar *foreignFormatString = xmlTextReaderGetAttribute(reader, BAD_CAST("CompressionType"));

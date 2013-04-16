@@ -86,7 +86,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
   m_txtxform(0), m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? 0 : &groupXFormsSequence[0]),
-  m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType(0),
+  m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType((unsigned)-1),
   m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
   m_noLine(false), m_noFill(false), m_noShow(false), m_fonts(),
   m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
@@ -1089,7 +1089,7 @@ void libvisio::VSDContentCollector::collectOLEData(unsigned /* id */, unsigned l
 
 void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &binaryData)
 {
-  if (m_foreignType == 1 || m_foreignType == 4) // Image
+  if (m_foreignType == 0 || m_foreignType == 1 || m_foreignType == 4) // Image
   {
     m_currentForeignData.clear();
     // If bmp data found, reconstruct header
@@ -1137,18 +1137,14 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
         break;
       }
     }
-    else if (m_foreignType == 4)
+    else if (m_foreignType == 0 || m_foreignType == 4)
     {
       const unsigned char *tmpBinData = m_currentForeignData.getDataBuffer();
       // Check for EMF signature
-      if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
-      {
+      if (m_currentForeignData.size() > 0x2B && tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
         m_currentForeignProps.insert("libwpg:mime-type", "image/emf");
-      }
       else
-      {
         m_currentForeignProps.insert("libwpg:mime-type", "image/wmf");
-      }
     }
   }
   else if (m_foreignType == 2)
@@ -1184,19 +1180,19 @@ void libvisio::VSDContentCollector::_handleForeignData(const WPXBinaryData &bina
       break;
     }
   }
-  else if  (m_foreignType == 4)
+  else if  (m_foreignType == 0 || m_foreignType == 4)
   {
     const unsigned char *tmpBinData = m_currentForeignData.getDataBuffer();
     // Check for EMF signature
-    if (tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
+    if (m_currentForeignData.size() > 0x2B && tmpBinData[0x28] == 0x20 && tmpBinData[0x29] == 0x45 && tmpBinData[0x2A] == 0x4D && tmpBinData[0x2B] == 0x46)
       filename.sprintf("binarydump%i.emf", bitmapId++);
     else
       filename.sprintf("binarydump%i.wmf", bitmapId++);
   }
   else if (m_foreignType == 2)
-  {
     filename.sprintf("binarydump%i.ole", bitmapId++);
-  }
+  else
+    filename.sprintf("binarydump%i.bin", bitmapId++);
 
   FILE *f = fopen(filename.cstr(), "wb");
   if (f)
@@ -1721,7 +1717,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   _handleLevelChange(level);
   m_currentShapeLevel = level;
 
-  m_foreignType = 0; // Tracks current foreign data type
+  m_foreignType = (unsigned)-1; // Tracks current foreign data type
   m_foreignFormat = 0; // Tracks foreign data format
   m_foreignOffsetX = 0.0;
   m_foreignOffsetY = 0.0;
