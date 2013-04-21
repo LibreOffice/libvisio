@@ -134,6 +134,7 @@ public:
   }
   void collectName(unsigned id, unsigned level, const ::WPXBinaryData &name, TextFormat format);
   void collectPageSheet(unsigned id, unsigned level);
+  void collectMisc(unsigned level, const VSDMisc &misc);
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level,unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);

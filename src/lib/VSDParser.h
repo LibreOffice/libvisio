@@ -131,6 +131,8 @@ protected:
   virtual void readNameIDX(WPXInputStream *input);
   virtual void readNameIDX123(WPXInputStream *input);
 
+  void readMisc(WPXInputStream *input);
+
   // parser of one pass
   bool parseDocument(WPXInputStream *input, unsigned shift);
 

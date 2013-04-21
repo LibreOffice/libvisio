@@ -260,6 +260,11 @@ void libvisio::VSDStylesCollector::collectShape(unsigned id, unsigned level, uns
     m_groupMemberships[m_currentShapeId] = parent;
 }
 
+void libvisio::VSDStylesCollector::collectMisc(unsigned level, const VSDMisc & /* misc */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDStylesCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);

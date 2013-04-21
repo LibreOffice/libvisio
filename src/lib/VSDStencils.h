@@ -73,6 +73,7 @@ public:
   std::map<unsigned, PolylineData> m_polylineData;
   XForm m_xform;
   XForm *m_txtxform;
+  VSDMisc m_misc;
 };
 
 class VSDStencil

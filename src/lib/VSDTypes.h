@@ -208,6 +208,13 @@ struct VSDFont
     m_name(font.m_name), m_encoding(font.m_encoding) {}
 };
 
+struct VSDMisc
+{
+  bool m_hideText;
+  VSDMisc() : m_hideText(false) {}
+  VSDMisc(const VSDMisc &misc) : m_hideText(misc.m_hideText) {}
+};
+
 } // namespace libvisio
 
 #endif /* VSDTYPES_H */

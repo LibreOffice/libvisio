@@ -250,6 +250,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readXFormData(reader);
     break;
+  case XML_MISC:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readMisc(reader);
+    break;
   case XML_GEOM:
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readGeometry(reader);
@@ -460,6 +464,33 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
                                  shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY));
   }
+}
+
+void libvisio::VDXParser::readMisc(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readMisc: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_HIDETEXT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readBoolData(m_shape.m_misc.m_hideText, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while ((XML_MISC != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)

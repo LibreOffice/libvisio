@@ -84,8 +84,8 @@ libvisio::VSDContentCollector::VSDContentCollector(
 ) :
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
-  m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(),
-  m_txtxform(0), m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? 0 : &groupXFormsSequence[0]),
+  m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(), m_txtxform(0), m_misc(),
+  m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? 0 : &groupXFormsSequence[0]),
   m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType((unsigned)-1),
   m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
   m_noLine(false), m_noFill(false), m_noShow(false), m_fonts(),
@@ -400,7 +400,8 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
 
 void libvisio::VSDContentCollector::_flushText()
 {
-  if (!m_textStream.size()) return;
+  if (!m_textStream.size() || m_misc.m_hideText)
+    return;
 
   double xmiddle = m_txtxform ? m_txtxform->width / 2.0 : m_xform.width / 2.0;
   double ymiddle = m_txtxform ? m_txtxform->height / 2.0 : m_xform.height / 2.0;
@@ -1739,6 +1740,8 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_noShow = false;
   m_isFirstGeometry = true;
 
+  m_misc = VSDMisc();
+
   // Save line colour and pattern, fill type and pattern
   m_textStream.clear();
   m_charFormats.clear();
@@ -2757,6 +2760,12 @@ void libvisio::VSDContentCollector::_appendField(WPXString &text)
     text.append(m_fields[m_fieldIndex++].cstr());
   else
     m_fieldIndex++;
+}
+
+void libvisio::VSDContentCollector::collectMisc(unsigned level, const VSDMisc &misc)
+{
+  _handleLevelChange(level);
+  m_misc = misc;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

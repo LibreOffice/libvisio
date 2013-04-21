@@ -573,6 +573,9 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
   case VSD_FONTFACE: // substreams of FONTAFACES stream, ver 11 only
     readFont(input);
     break;
+  case VSD_MISC:
+    readMisc(input);
+    break;
   default:
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
@@ -588,6 +591,8 @@ void libvisio::VSDParser::_flushShape()
   m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
 
   m_collector->collectXFormData(m_currentShapeLevel+2, m_shape.m_xform);
+
+  m_collector->collectMisc(m_currentShapeLevel+2, m_shape.m_misc);
 
   if (m_shape.m_txtxform)
     m_collector->collectTxtXForm(m_currentShapeLevel+2, *(m_shape.m_txtxform));
@@ -1116,6 +1121,7 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
       m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
     m_shape.m_text = tmpShape->m_text;
     m_shape.m_textFormat = tmpShape->m_textFormat;
+    m_shape.m_misc = tmpShape->m_misc;
   }
 
   m_shape.m_lineStyleId = lineStyle;
@@ -1922,6 +1928,15 @@ void libvisio::VSDParser::readTextField(WPXInputStream *input)
 
     m_shape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
   }
+}
+
+void libvisio::VSDParser::readMisc(WPXInputStream *input)
+{
+  unsigned char flags = readU8(input);
+  if (flags & 0x20)
+    m_shape.m_misc.m_hideText = true;
+  else
+    m_shape.m_misc.m_hideText = false;
 }
 
 libvisio::Colour libvisio::VSDParser::_colourFromIndex(unsigned idx)

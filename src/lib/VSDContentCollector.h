@@ -141,6 +141,7 @@ public:
   void collectNameList(unsigned id, unsigned level);
   void collectName(unsigned id, unsigned level,  const WPXBinaryData &name, TextFormat format);
   void collectPageSheet(unsigned id, unsigned level);
+  void collectMisc(unsigned level, const VSDMisc &misc);
 
 
   // Style collectors
@@ -231,6 +232,7 @@ private:
   double m_originalY;
   XForm m_xform;
   XForm *m_txtxform;
+  VSDMisc m_misc;
   std::vector<WPXPropertyList> m_currentFillGeometry;
   std::vector<WPXPropertyList> m_currentLineGeometry;
   std::map<unsigned, XForm> *m_groupXForms;
