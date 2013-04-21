@@ -1180,6 +1180,10 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readText(reader);
       break;
+    case XML_HIDETEXT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readBoolData(m_shape.m_misc.m_hideText, reader);
+      break;
     case XML_RESIZEMODE:
       break;
     default:

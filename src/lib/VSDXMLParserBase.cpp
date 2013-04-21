@@ -1010,6 +1010,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
       m_shape.m_charList = tmpShape->m_charList;
       m_shape.m_paraList = tmpShape->m_paraList;
       m_shape.m_text = tmpShape->m_text;
+      m_shape.m_misc = tmpShape->m_misc;
     }
   }
 
@@ -1714,6 +1715,8 @@ void libvisio::VSDXMLParserBase::_flushShape()
   m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
 
   m_collector->collectXFormData(m_currentShapeLevel+2, m_shape.m_xform);
+
+  m_collector->collectMisc(m_currentShapeLevel+2, m_shape.m_misc);
 
   if (m_shape.m_txtxform)
     m_collector->collectTxtXForm(m_currentShapeLevel+2, *(m_shape.m_txtxform));
