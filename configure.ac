@@ -30,7 +30,7 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-LT_INIT(win32-dll disable-static)
+LT_INIT([win32-dll disable-static pic-only])
 AC_CANONICAL_HOST
 
 PKG_PROG_PKG_CONFIG([0.20])
