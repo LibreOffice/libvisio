@@ -30,8 +30,9 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_LIBTOOL
-AC_LIBTOOL_WIN32_DLL
+LT_INIT(win32-dll disable-static)
+AC_CANONICAL_HOST
+
 PKG_PROG_PKG_CONFIG([0.20])
 
 AC_PROG_EGREP
@@ -40,6 +41,7 @@ AC_PROG_SED
 dnl ===================================================================
 dnl Check for gperf
 dnl ===================================================================
+AC_ARG_VAR(GPERF, [Setting this variable will override the gperf detection])
 AC_PATH_PROG(GPERF, gperf)
 if test -z "$GPERF"; then
     AC_MSG_ERROR([gperf not found but needed. Install it.])
