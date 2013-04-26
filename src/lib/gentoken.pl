@@ -71,9 +71,9 @@ print ( HXX "\n" );
 $i = 0;
 foreach( sort(keys(%tokens)) )
 {
+    $i = $i + 1;
     print( HXX "const int $tokens{$_} = $i;\n" );
     print( GPERF "$_,$tokens{$_}\n" );
-    $i = $i + 1;
 }
 print ( GPERF "%%\n" );
 print ( HXX "\n" );
