@@ -35,10 +35,10 @@
 
 static std::string doubleToString(const double value)
 {
-	WPXProperty *prop = WPXPropertyFactory::newDoubleProp(value);
-	std::string retVal = prop->getStr().cstr();
-	delete prop;
-	return retVal;
+  WPXProperty *prop = WPXPropertyFactory::newDoubleProp(value);
+  std::string retVal = prop->getStr().cstr();
+  delete prop;
+  return retVal;
 }
 
 static unsigned stringToColour(const ::WPXString &s)
