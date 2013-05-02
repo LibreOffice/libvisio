@@ -8,3 +8,4 @@ Makefile.in
 vsd2raw
 vss2raw
 *.rc
+*.exe
