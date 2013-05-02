@@ -35,23 +35,10 @@
 
 static std::string doubleToString(const double value)
 {
-  std::ostringstream tempStream;
-  tempStream << value;
-#ifndef __ANDROID__
-  std::string decimalPoint(localeconv()->decimal_point);
-#else
-  std::string decimalPoint(".");
-#endif
-  if ((decimalPoint.size() == 0) || (decimalPoint == "."))
-    return tempStream.str();
-  std::string stringValue(tempStream.str());
-  if (!stringValue.empty())
-  {
-    std::string::size_type pos;
-    while ((pos = stringValue.find(decimalPoint)) != std::string::npos)
-      stringValue.replace(pos,decimalPoint.size(),".");
-  }
-  return stringValue;
+	WPXProperty *prop = WPXPropertyFactory::newDoubleProp(value);
+	std::string retVal = prop->getStr().cstr();
+	delete prop;
+	return retVal;
 }
 
 static unsigned stringToColour(const ::WPXString &s)
