@@ -1228,7 +1228,7 @@ void libvisio::VSDParser::readNURBSTo(WPXInputStream *input)
     unsigned long bytesRead = input->tell() - inputPos;
     unsigned char flag = 0;
     if (paramType != 0x8a) flag = readU8(input);
-    while ((flag != 0x81 || (paramType == 0x8a && repetitions > 0)) && bytesRead < length)
+    while ((paramType == 0x8a ? repetitions > 0 : flag != 0x81) && bytesRead < length)
     {
       inputPos = input->tell();
       double knot_ = 0;
