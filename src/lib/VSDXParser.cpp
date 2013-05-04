@@ -1242,12 +1242,12 @@ void libvisio::VSDXParser::readCharacter(xmlTextReaderPtr reader)
 
 void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
 {
-  xmlTextReaderRead(reader);
+  const int ret = xmlTextReaderRead(reader);
   int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
   int tokenType = xmlTextReaderNodeType(reader);
 
   m_currentBinaryData.clear();
-  if (XML_REL == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
+  if (1 == ret && XML_REL == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
   {
     xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("r:id"));
     if (id)

@@ -212,9 +212,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_SOLUTIONXML:
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
+      int ret = 0;
       do
       {
-        xmlTextReaderRead(reader);
+        ret = xmlTextReaderRead(reader);
 #if 0
         // SolutionXML inside VDX file can have invalid namespace URIs
         xmlResetLastError();
@@ -222,7 +223,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
         tokenId = getElementToken(reader);
         tokenType = xmlTextReaderNodeType(reader);
       }
-      while (XML_SOLUTIONXML != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType);
+      while ((XML_SOLUTIONXML != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
     }
     break;
   case XML_STYLESHEET:
@@ -847,8 +848,8 @@ int libvisio::VDXParser::getElementDepth(xmlTextReaderPtr reader)
 
 void libvisio::VDXParser::getBinaryData(xmlTextReaderPtr reader)
 {
-  xmlTextReaderRead(reader);
-  if (XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
+  const int ret = xmlTextReaderRead(reader);
+  if (1 == ret && XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
   {
     const xmlChar *data = xmlTextReaderConstValue(reader);
     if (data)
