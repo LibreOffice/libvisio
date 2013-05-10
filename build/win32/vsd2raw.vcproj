@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\lib,$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR)"
+				AdditionalIncludeDirectories="..\..\inc,$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR)"
 				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_CONSOLE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -136,7 +136,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="..\..\src\lib,$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR)"
+				AdditionalIncludeDirectories="..\..\inc,$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR)"
 				PreprocessorDefinitions="NDEBUG;WIN32;_CONSOLE"
 				RuntimeLibrary="2"
 				TreatWChar_tAsBuiltInType="false"

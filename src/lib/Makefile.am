@@ -8,11 +8,11 @@ lib_LTLIBRARIES = libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la
 noinst_LTLIBRARIES = libtokenmap.la
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_includedir = $(includedir)/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@/libvisio
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_include_HEADERS = \
-	libvisio.h \
-	VSDStringVector.h \
-	VisioDocument.h
+	$(top_srcdir)/inc/libvisio/libvisio.h \
+	$(top_srcdir)/inc/libvisio/VSDStringVector.h \
+	$(top_srcdir)/inc/libvisio/VisioDocument.h
 
-AM_CXXFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
 
 generated_files = \
 	$(top_builddir)/src/lib/tokens.h \

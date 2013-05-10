@@ -33,9 +33,9 @@
 #include <string.h>
 #include <stack>
 
-#include "libvisio.h"
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpd/libwpd.h>
+#include <libvisio/libvisio.h>
 
 enum PainterCallback
 {

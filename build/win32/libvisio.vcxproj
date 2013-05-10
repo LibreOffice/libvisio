@@ -43,7 +43,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(LIBWPD_INCLUDE_DIR);$(LIBWPG_INCLUDE_DIR);$(BOOST_INCLUDE_DIR);$(LIBXML_INCLUDE_DIR);$(ZLIB_INCLUDE_DIR);$(ICU_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\inc;$(LIBWPD_INCLUDE_DIR);$(LIBWPG_INCLUDE_DIR);$(BOOST_INCLUDE_DIR);$(LIBXML_INCLUDE_DIR);$(ZLIB_INCLUDE_DIR);$(ICU_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -74,7 +74,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(LIBWPD_INCLUDE_DIR);$(LIBWPG_INCLUDE_DIR);$(BOOST_INCLUDE_DIR);$(LIBXML_INCLUDE_DIR);$(ZLIB_INCLUDE_DIR);$(ICU_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\inc;$(LIBWPD_INCLUDE_DIR);$(LIBWPG_INCLUDE_DIR);$(BOOST_INCLUDE_DIR);$(LIBXML_INCLUDE_DIR);$(ZLIB_INCLUDE_DIR);$(ICU_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -254,12 +254,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\lib\libvisio.h" />
+    <ClInclude Include="..\..\inc\libvisio\libvisio.h" />
+    <ClInclude Include="..\..\inc\libvisio\VisioDocument.h" />
+    <ClInclude Include="..\..\inc\libvisio\VSDStringVector.h" />
     <ClInclude Include="..\..\src\lib\libvisio_utils.h" />
     <ClInclude Include="..\..\src\lib\tokenhash.h" />
     <ClInclude Include="..\..\src\lib\tokens.h" />
     <ClInclude Include="..\..\src\lib\VDXParser.h" />
-    <ClInclude Include="..\..\src\lib\VisioDocument.h" />
     <ClInclude Include="..\..\src\lib\VSD5Parser.h" />
     <ClInclude Include="..\..\src\lib\VSD6Parser.h" />
     <ClInclude Include="..\..\src\lib\VSDCharacterList.h" />
@@ -275,7 +276,6 @@
     <ClInclude Include="..\..\src\lib\VSDParser.h" />
     <ClInclude Include="..\..\src\lib\VSDShapeList.h" />
     <ClInclude Include="..\..\src\lib\VSDStencils.h" />
-    <ClInclude Include="..\..\src\lib\VSDStringVector.h" />
     <ClInclude Include="..\..\src\lib\VSDStyles.h" />
     <ClInclude Include="..\..\src\lib\VSDStylesCollector.h" />
     <ClInclude Include="..\..\src\lib\VSDSVGGenerator.h" />

@@ -36,7 +36,7 @@
 #include <sstream>
 #include <libwpd/libwpd.h>
 #include <libwpg/libwpg.h>
-#include "VSDStringVector.h"
+#include <libvisio/libvisio.h>
 
 namespace libvisio
 {

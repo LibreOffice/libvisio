@@ -4,7 +4,7 @@ pkgconfdir = $(libdir)/pkgconfig
 
 pkgconf_DATA = libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.pc
 
-SUBDIRS = src build docs
+SUBDIRS = build inc src docs
 
 EXTRA_DIST = \
 	AUTHORS \
@@ -14,13 +14,13 @@ EXTRA_DIST = \
 	NEWS \
 	README \
 	autogen.sh \
-	libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.pc.in \
+	libvisio.pc.in \
 	libvisio-zip.in \
 	libvisio.spec \
 	libvisio.spec.in
 
 distclean-local:
-	rm -rf *.cache *~
+	rm -rf *.cache *~ *.out *.pc
 
 rpm: dist
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz

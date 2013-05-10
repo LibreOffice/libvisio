@@ -28,7 +28,7 @@
  */
 
 #include <vector>
-#include "VSDStringVector.h"
+#include <libvisio/libvisio.h>
 
 namespace libvisio
 {

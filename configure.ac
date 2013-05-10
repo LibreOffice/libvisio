@@ -318,11 +318,13 @@ src/conv/text/vsd2text.rc
 src/conv/text/vss2text.rc
 src/lib/Makefile
 src/lib/libvisio.rc
+inc/Makefile
+inc/libvisio/Makefile
 build/Makefile
 build/win32/Makefile
 docs/Makefile
 docs/doxygen/Makefile
-libvisio-0.0.pc
+libvisio-$VSD_MAJOR_VERSION.$VSD_MINOR_VERSION.pc:libvisio.pc.in
 libvisio.spec
 libvisio-zip
 ])

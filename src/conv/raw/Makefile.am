@@ -1,6 +1,6 @@
 bin_PROGRAMS = vsd2raw vss2raw
 
-AM_CXXFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
 
 vsd2raw_DEPENDENCIES = @VSD2RAW_WIN32_RESOURCE@
 

@@ -28,9 +28,9 @@
  * instead of those above.
  */
 
-#include <libwpd-stream/libwpd-stream.h>
 #include <string>
-#include "libvisio.h"
+#include <libwpd-stream/libwpd-stream.h>
+#include <libvisio/libvisio.h>
 #include "libvisio_utils.h"
 #include "VDXParser.h"
 #include "VSDSVGGenerator.h"

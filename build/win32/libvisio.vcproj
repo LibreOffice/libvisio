@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR),$(BOOST_INCLUDE_DIR),$(LIBXML_INCLUDE_DIR),$(ZLIB_INCLUDE_DIR),$(ICU_INCLUDE_DIR)"
+				AdditionalIncludeDirectories="..\..\inc,$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR),$(BOOST_INCLUDE_DIR),$(LIBXML_INCLUDE_DIR),$(ZLIB_INCLUDE_DIR),$(ICU_INCLUDE_DIR)"
 				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR),$(BOOST_INCLUDE_DIR),$(LIBXML_INCLUDE_DIR),$(ZLIB_INCLUDE_DIR),$(ICU_INCLUDE_DIR)"
+				AdditionalIncludeDirectories="..\..\inc,$(LIBWPD_INCLUDE_DIR),$(LIBWPG_INCLUDE_DIR),$(BOOST_INCLUDE_DIR),$(LIBXML_INCLUDE_DIR),$(ZLIB_INCLUDE_DIR),$(ICU_INCLUDE_DIR)"
 				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -728,7 +728,15 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath="..\..\src\lib\libvisio.h"
+				RelativePath="..\..\inc\libvisio\libvisio.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\inc\libvisio\VisioDocument.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\inc\libvisio\VSDStringVector.h"
 				>
 			</File>
 			<File
@@ -745,10 +753,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\lib\VDXParser.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\lib\VisioDocument.h"
 				>
 			</File>
 			<File
@@ -809,10 +813,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\lib\VSDStencils.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\lib\VSDStringVector.h"
 				>
 			</File>
 			<File

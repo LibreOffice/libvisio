@@ -1,6 +1,6 @@
 bin_PROGRAMS = vsd2text vss2text
 
-AM_CXXFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
 
 vsd2text_DEPENDENCIES = @VSD2TEXT_WIN32_RESOURCE@
 

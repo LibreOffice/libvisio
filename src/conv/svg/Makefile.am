@@ -1,6 +1,6 @@
 bin_PROGRAMS = vsd2xhtml vss2xhtml
 
-AM_CXXFLAGS = -I$(top_srcdir)/src/lib -I$(top_builddir)/src/lib $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
+AM_CXXFLAGS = -I$(top_srcdir)/inc $(LIBVISIO_CXXFLAGS) $(DEBUG_CXXFLAGS)
 
 vsd2xhtml_DEPENDENCIES = @VSD2XHTML_WIN32_RESOURCE@
 
