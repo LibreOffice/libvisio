@@ -252,15 +252,15 @@ private:
   std::map<unsigned short, VSDFont> m_fonts;
   unsigned m_currentLevel;
   bool m_isShapeStarted;
-  std::map<unsigned, unsigned> &m_groupMemberships;
   std::vector<std::map<unsigned, XForm> > &m_groupXFormsSequence;
   std::vector<std::map<unsigned, unsigned> > &m_groupMembershipsSequence;
+  std::vector<std::map<unsigned, unsigned> >::iterator m_groupMemberships;
   unsigned m_currentPageNumber;
   VSDOutputElementList *m_shapeOutputDrawing, *m_shapeOutputText;
   std::map<unsigned, VSDOutputElementList> m_pageOutputDrawing;
   std::map<unsigned, VSDOutputElementList> m_pageOutputText;
   std::vector<std::list<unsigned> > &m_documentPageShapeOrders;
-  std::list<unsigned> &m_pageShapeOrder;
+  std::vector<std::list<unsigned> >::iterator m_pageShapeOrder;
   bool m_isFirstGeometry;
 
   std::map<unsigned, NURBSData> m_NURBSData;

@@ -89,11 +89,12 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType((unsigned)-1),
   m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
   m_noLine(false), m_noFill(false), m_noShow(false), m_fonts(),
-  m_currentLevel(0), m_isShapeStarted(false), m_groupMemberships(groupMembershipsSequence[0]),
+  m_currentLevel(0), m_isShapeStarted(false),
   m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
+  m_groupMemberships(m_groupMembershipsSequence.begin()),
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
-  m_pageShapeOrder(documentPageShapeOrders[0]), m_isFirstGeometry(true), m_NURBSData(), m_polylineData(),
+  m_pageShapeOrder(m_documentPageShapeOrders.begin()), m_isFirstGeometry(true), m_NURBSData(), m_polylineData(),
   m_textStream(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
   m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(),
   m_textBlockStyle(), m_defaultCharStyle(), m_defaultParaStyle(), m_currentStyleSheet(0), m_styles(styles),
@@ -713,13 +714,14 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
 
 void libvisio::VSDContentCollector::_flushCurrentPage()
 {
-  if (!m_pageShapeOrder.empty())
+  if (m_pageShapeOrder != m_documentPageShapeOrders.end() && !m_pageShapeOrder->empty() &&
+      m_groupMemberships != m_groupMembershipsSequence.end())
   {
     std::stack<std::pair<unsigned, VSDOutputElementList> > groupTextStack;
-    for (std::list<unsigned>::iterator iterList = m_pageShapeOrder.begin(); iterList != m_pageShapeOrder.end(); ++iterList)
+    for (std::list<unsigned>::iterator iterList = m_pageShapeOrder->begin(); iterList != m_pageShapeOrder->end(); ++iterList)
     {
-      std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships.find(*iterList);
-      if (iterGroup == m_groupMemberships.end())
+      std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships->find(*iterList);
+      if (iterGroup == m_groupMemberships->end())
       {
         while (!groupTextStack.empty())
         {
@@ -1620,10 +1622,17 @@ void libvisio::VSDContentCollector::transformPoint(double &x, double &y, XForm *
     }
     else
       break;
-    std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
-    if (iter != m_groupMemberships.end() && shapeId != iter->second)
-      shapeId = iter->second;
-    else
+    bool shapeFound = false;
+    if (m_groupMemberships != m_groupMembershipsSequence.end())
+    {
+      std::map<unsigned, unsigned>::iterator iter = m_groupMemberships->find(shapeId);
+      if (iter != m_groupMemberships->end() && shapeId != iter->second)
+      {
+        shapeId = iter->second;
+        shapeFound = true;
+      }
+    }
+    if (!shapeFound)
       break;
   }
   y = m_pageHeight - y;
@@ -1670,10 +1679,17 @@ void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
     }
     else
       break;
-    std::map<unsigned, unsigned>::iterator iter = m_groupMemberships.find(shapeId);
-    if (iter != m_groupMemberships.end() && shapeId != iter->second)
-      shapeId = iter->second;
-    else
+    bool shapeFound = false;
+    if (m_groupMemberships != m_groupMembershipsSequence.end())
+    {
+      std::map<unsigned, unsigned>::iterator iter = m_groupMemberships->find(shapeId);
+      if (iter != m_groupMemberships->end() && shapeId != iter->second)
+      {
+        shapeId = iter->second;
+        shapeFound = true;
+      }
+    }
+    if (!shapeFound)
       break;
   }
 }
@@ -2537,9 +2553,9 @@ void libvisio::VSDContentCollector::startPage(unsigned pageId)
   if (m_groupXFormsSequence.size() >= m_currentPageNumber)
     m_groupXForms = m_groupXFormsSequence.size() > m_currentPageNumber-1 ? &m_groupXFormsSequence[m_currentPageNumber-1] : 0;
   if (m_groupMembershipsSequence.size() >= m_currentPageNumber)
-    m_groupMemberships = m_groupMembershipsSequence[m_currentPageNumber-1];
+    m_groupMemberships = m_groupMembershipsSequence.begin() + (m_currentPageNumber-1);
   if (m_documentPageShapeOrders.size() >= m_currentPageNumber)
-    m_pageShapeOrder = m_documentPageShapeOrders[m_currentPageNumber-1];
+    m_pageShapeOrder = m_documentPageShapeOrders.begin() + (m_currentPageNumber-1);
   m_currentPage = libvisio::VSDPage();
   m_currentPage.m_currentPageID = pageId;
   m_isPageStarted = true;
