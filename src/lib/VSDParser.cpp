@@ -369,7 +369,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     _handleLevelChange(0);
     if (m_extractStencils)
       m_collector->endPage();
-    else
+    else if (m_currentStencil)
     {
       m_stencils.addStencil(idx, *m_currentStencil);
       m_currentStencil = 0;
@@ -382,7 +382,8 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     if (m_isStencilStarted)
     {
       _handleLevelChange(0);
-      m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
+      if (m_currentStencil)
+        m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
     }
     break;
   default:
@@ -1079,7 +1080,7 @@ void libvisio::VSDParser::readPageProps(WPXInputStream *input)
   input->seek(1, WPX_SEEK_CUR);
   scale /= readDouble(input);
 
-  if (m_isStencilStarted)
+  if (m_isStencilStarted && m_currentStencil)
   {
     m_currentStencil->m_shadowOffsetX = m_shadowOffsetX;
     m_currentStencil->m_shadowOffsetY = m_shadowOffsetY;
