@@ -845,8 +845,12 @@ void libvisio::VSDParser::readTextBlock(WPXInputStream *input)
 void libvisio::VSDParser::readGeomList(WPXInputStream *input)
 {
   if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
+  {
     m_shape.m_geometries.erase(--m_currentGeomListCount);
-  m_currentGeometryList = &m_shape.m_geometries[m_currentGeomListCount++];
+    m_currentGeometryList = 0;
+  }
+  if (!m_shape.m_geometries.empty()) // broken file?
+    m_currentGeometryList = &m_shape.m_geometries[m_currentGeomListCount++];
 
   if (m_header.trailer)
   {
