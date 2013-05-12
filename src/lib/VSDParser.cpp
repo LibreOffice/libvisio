@@ -670,6 +670,7 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     {
       _flushShape();
       m_shape.clear();
+      m_currentGeometryList = 0;
     }
     m_isShapeStarted = false;
     m_currentShapeLevel = 0;
@@ -1121,6 +1122,7 @@ void libvisio::VSDParser::readShape(WPXInputStream *input)
   }
 
   m_shape.clear();
+  m_currentGeometryList = 0;
   const VSDShape *tmpShape = m_stencils.getStencilShape(masterPage, masterShape);
   if (tmpShape)
   {
