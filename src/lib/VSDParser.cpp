@@ -846,6 +846,9 @@ void libvisio::VSDParser::readGeomList(WPXInputStream *input)
 {
   if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
     m_shape.m_geometries.erase(--m_currentGeomListCount);
+  // Since this is a map, this will default construct an element and then
+  // the m_currentGeometryList pointer takes its address and we will work
+  // on it over that pointer.
   m_currentGeometryList = &m_shape.m_geometries[m_currentGeomListCount++];
 
   if (m_header.trailer)
