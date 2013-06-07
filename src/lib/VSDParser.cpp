@@ -430,8 +430,11 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
 {
   switch (m_header.chunkType)
   {
-  case VSD_SHAPE_GROUP:
   case VSD_SHAPE_GUIDE:
+    // Ignore guides, because they are not really a part of the drawing.
+    // TODO: Maybe we want to show them if they are marked as printable?
+    break;
+  case VSD_SHAPE_GROUP:
   case VSD_SHAPE_SHAPE:
   case VSD_SHAPE_FOREIGN:
     readShape(input);
