@@ -1352,7 +1352,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
     NURBS.insert("libwpg:path-action", "L");
     double nextX = 0;
     double nextY = 0;
-    double denominator = 1E-10;
+    double denominator = LIBVISIO_EPSILON;
 
     for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
     {
@@ -1399,10 +1399,10 @@ double libvisio::VSDContentCollector::_NURBSBasis(unsigned knot, unsigned degree
     else
       return 0;
   }
-  if (knotVector.size() > knot+degree && knotVector[knot+degree]-knotVector[knot] > 0)
+  if (knotVector.size() > knot+degree && fabs(knotVector[knot+degree]-knotVector[knot]) > LIBVISIO_EPSILON)
     basis = (point-knotVector[knot])/(knotVector[knot+degree]-knotVector[knot]) * _NURBSBasis(knot, degree-1, point, knotVector);
 
-  if (knotVector.size() > knot+degree+1 && knotVector[knot+degree+1] - knotVector[knot+1] > 0)
+  if (knotVector.size() > knot+degree+1 && fabs(knotVector[knot+degree+1] - knotVector[knot+1]) > LIBVISIO_EPSILON)
     basis += (knotVector[knot+degree+1]-point)/(knotVector[knot+degree+1]-knotVector[knot+1]) * _NURBSBasis(knot+1, degree-1, point, knotVector);
 
   return basis;
