@@ -32,7 +32,9 @@
 #include "VSDInternalStream.h"
 #include "libvisio_utils.h"
 
-#define VSD_NUM_ELEMENTS(array) sizeof(array)/sizeof(array[0])
+#include <boost/archive/iterators/binary_from_base64.hpp>
+#include <boost/archive/iterators/remove_whitespace.hpp>
+#include <boost/archive/iterators/transform_width.hpp>
 
 uint8_t libvisio::readU8(WPXInputStream *input)
 {
@@ -123,51 +125,15 @@ double libvisio::readDouble(WPXInputStream *input)
 
 void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64String, size_t base64StringLength)
 {
-  static const std::string base64Chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/";
+  typedef boost::archive::iterators::transform_width<
+  boost::archive::iterators::binary_from_base64<
+  boost::archive::iterators::remove_whitespace< const char * > >, 8, 6 > base64_decoder;
 
+  std::vector<unsigned char> buffer;
+  std::copy(base64_decoder(base64String), base64_decoder(base64String + base64StringLength), std::back_inserter(buffer));
 
-  VSDInternalStream tmpStream(base64String, base64StringLength);
-
-  unsigned i = 0;
-  char tmpCharsToDecode[4];
-  while (!tmpStream.atEOS())
-  {
-    const char tmpChar = (char)readU8(&tmpStream);
-    if (std::string::npos == base64Chars.find(tmpChar) && (tmpChar != '='))
-      continue;
-    if (tmpChar == '=')
-      break;
-    tmpCharsToDecode[i++] = tmpChar;
-    i %= 4;
-    if (!i)
-    {
-      for (unsigned k = 0; k < 4; k++)
-        tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
-
-      data.append((unsigned char)((tmpCharsToDecode[0] << 2) | ((tmpCharsToDecode[1] & 0x30) >> 4)));
-      data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) | ((tmpCharsToDecode[2] & 0x3c) >> 2)));
-      data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) | tmpCharsToDecode[3]));
-    }
-  }
-
-  if (i)
-  {
-    for (unsigned j = i; j < 4; j++)
-      tmpCharsToDecode[j] = 0;
-    for (unsigned k = 0; k < 4; k++)
-      tmpCharsToDecode[k] = base64Chars.find(tmpCharsToDecode[k]);
-
-    data.append((unsigned char)((tmpCharsToDecode[0] << 2) | ((tmpCharsToDecode[1] & 0x30) >> 4)));
-    if (i > 1)
-    {
-      data.append((unsigned char)(((tmpCharsToDecode[1] & 0xf) << 4) | ((tmpCharsToDecode[2] & 0x3c) >> 2)));
-      if (i > 2)
-        data.append((unsigned char)(((tmpCharsToDecode[2] & 0x3) << 6) | tmpCharsToDecode[3]));
-    }
-  }
+  if (!buffer.empty())
+    data.append(&buffer[0], buffer.size());
 }
 
 const ::WPXString libvisio::getColourString(const Colour &c)
