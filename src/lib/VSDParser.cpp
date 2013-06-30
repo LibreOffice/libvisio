@@ -414,7 +414,8 @@ void libvisio::VSDParser::handleChunks(WPXInputStream *input, unsigned level)
 
   while (!input->atEOS())
   {
-    getChunkHeader(input);
+    if (!getChunkHeader(input))
+      return;
     m_header.level += level;
     endPos = m_header.dataLength+m_header.trailer+input->tell();
 
