@@ -112,7 +112,6 @@ AC_CHECK_HEADERS(
 	boost/optional.hpp \
 	boost/spirit/include/classic.hpp \
 	boost/archive/iterators/binary_from_base64.hpp \
-	boost/archive/iterators/remove_whitespace.hpp \
 	boost/archive/iterators/transform_width.hpp,
 	[],
 	[AC_MSG_ERROR(Required boost headers not found. install boost >= 1.36)],
