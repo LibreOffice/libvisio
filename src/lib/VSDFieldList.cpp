@@ -74,8 +74,12 @@ WPXString libvisio::VSDNumericField::datetimeToString(const char *format, double
   WPXString result;
   char buffer[MAX_BUFFER];
   time_t timer = (time_t)(86400 * datetime - 2209161600.0);
-  strftime(&buffer[0], MAX_BUFFER-1, format, gmtime(&timer));
-  result.append(&buffer[0]);
+  const struct tm *const time = gmtime(&timer);
+  if (time)
+  {
+    strftime(&buffer[0], MAX_BUFFER-1, format, time);
+    result.append(&buffer[0]);
+  }
   return result;
 }
 
