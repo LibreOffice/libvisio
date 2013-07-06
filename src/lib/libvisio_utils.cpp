@@ -123,14 +123,15 @@ double libvisio::readDouble(WPXInputStream *input)
   return tmpUnion.d;
 }
 
-void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64String, size_t base64StringLength)
+void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64Data, size_t base64DataLength)
 {
+  std::string base64String((const char*)base64Data, base64DataLength);
   typedef boost::archive::iterators::transform_width<
   boost::archive::iterators::binary_from_base64<
-  boost::archive::iterators::remove_whitespace< const char * > >, 8, 6 > base64_decoder;
+  boost::archive::iterators::remove_whitespace< std::string::const_iterator > >, 8, 6 > base64_decoder;
 
   std::vector<unsigned char> buffer;
-  std::copy(base64_decoder(base64String), base64_decoder(base64String + base64StringLength), std::back_inserter(buffer));
+  std::copy(base64_decoder(base64String.begin()), base64_decoder(base64String.end()), std::back_inserter(buffer));
 
   if (!buffer.empty())
     data.append(&buffer[0], buffer.size());

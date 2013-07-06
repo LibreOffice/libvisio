@@ -98,7 +98,7 @@ uint64_t readU64(WPXInputStream *input);
 
 double readDouble(WPXInputStream *input);
 
-void appendFromBase64(WPXBinaryData &data, const unsigned char *base64String, size_t base64StringLength);
+void appendFromBase64(WPXBinaryData &data, const unsigned char *base64Data, size_t base64DataLength);
 
 const ::WPXString getColourString(const Colour &c);
 
