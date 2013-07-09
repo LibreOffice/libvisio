@@ -1319,17 +1319,6 @@ void libvisio::VSDContentCollector::_generateCubicBeziersFromNURBS(const std::ve
 
   WPXPropertyList node;
 
-  node.insert("libwpg:path-action", "M");
-  double x = controlPoints[0].first;
-  double y = controlPoints[0].second;
-  transformPoint(x,y);
-  node.insert("svg:x", m_scale*x);
-  node.insert("svg:y", m_scale*y);
-  if (!m_noFill && !m_noShow)
-    m_currentFillGeometry.push_back(node);
-  if (!m_noLine && !m_noShow)
-    m_currentLineGeometry.push_back(node);
-
   /* Decomposition of a spline of 3rd degree into Bezier segments
    * adapted from the algorithm DecomposeCurve (Les Piegl, Wayne Tiller:
    * The NURBS Book, 2nd Edition, 1997
@@ -1377,8 +1366,8 @@ void libvisio::VSDContentCollector::_generateCubicBeziersFromNURBS(const std::ve
 
     node.clear();
     node.insert("libwpg:path-action", "C");
-    x = Qw[1].first;
-    y = Qw[1].second;
+    double x = Qw[1].first;
+    double y = Qw[1].second;
     transformPoint(x, y);
     node.insert("svg:x1", m_scale*x);
     node.insert("svg:y1", m_scale*y);
@@ -1427,18 +1416,6 @@ void libvisio::VSDContentCollector::_generateQuadraticBeziersFromNURBS(const std
 
   WPXPropertyList node;
 
-  node.insert("libwpg:path-action", "M");
-  double x = controlPoints[0].first;
-  double y = controlPoints[0].second;
-  transformPoint(x,y);
-  node.insert("svg:x", m_scale*x);
-  node.insert("svg:y", m_scale*y);
-  if (!m_noFill && !m_noShow)
-    m_currentFillGeometry.push_back(node);
-  if (!m_noLine && !m_noShow)
-    m_currentLineGeometry.push_back(node);
-
-
   /* Decomposition of a spline of 2nd degree into Bezier segments
    * adapted from the algorithm DecomposeCurve (Les Piegl, Wayne Tiller:
    * The NURBS Book, 2nd Edition, 1997
@@ -1486,8 +1463,8 @@ void libvisio::VSDContentCollector::_generateQuadraticBeziersFromNURBS(const std
 
     node.clear();
     node.insert("libwpg:path-action", "Q");
-    x = Qw[1].first;
-    y = Qw[1].second;
+    double x = Qw[1].first;
+    double y = Qw[1].second;
     transformPoint(x, y);
     node.insert("svg:x1", m_scale*x);
     node.insert("svg:y1", m_scale*y);
