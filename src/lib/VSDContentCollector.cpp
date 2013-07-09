@@ -1311,9 +1311,285 @@ void libvisio::VSDContentCollector::collectArcTo(unsigned /* id */, unsigned lev
   }
 }
 
+void libvisio::VSDContentCollector::_generateCubicBeziersFromNURBS(const std::vector<std::pair<double, double> > &controlPoints,
+    const std::vector<double> &knotVector)
+{
+  if (controlPoints.empty() || knotVector.empty())
+    return;
+
+  WPXPropertyList node;
+
+  node.insert("libwpg:path-action", "M");
+  double x = controlPoints[0].first;
+  double y = controlPoints[0].second;
+  transformPoint(x,y);
+  node.insert("svg:x", m_scale*x);
+  node.insert("svg:y", m_scale*y);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(node);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(node);
+
+  /* Decomposition of a spline of 3rd degree into Bezier segments
+   * adapted from the algorithm DecomposeCurve (Les Piegl, Wayne Tiller:
+   * The NURBS Book, 2nd Edition, 1997
+   */
+
+  unsigned m = controlPoints.size() + 4;
+  unsigned a = 3;
+  unsigned b = 4;
+  std::vector< std::pair<double, double> > Qw(4), NextQw(4);
+  unsigned i = 0;
+  for (; i <= 3; i++)
+    Qw[i] = controlPoints[i];
+  while (b < m)
+  {
+    i = b;
+    while (b < m && knotVector[b+1] == knotVector[b])
+      b++;
+    unsigned mult = b - i + 1;
+    if (mult < 3)
+    {
+      double numer = (double)(knotVector[b] - knotVector[a]);
+      unsigned j = 3;
+      std::map<unsigned, double> alphas;
+      for (; j >mult; j--)
+        alphas[j-mult-1] = numer/double(knotVector[a+j]-knotVector[a]);
+      unsigned r = 3 - mult;
+      for (j=1; j<=r; j++)
+      {
+        unsigned save = r - j;
+        unsigned s = mult+j;
+        for (unsigned k = 3; k>=s; k--)
+        {
+          double alpha = alphas[k-s];
+          Qw[k].first = alpha*Qw[k].first + (1.0-alpha)*Qw[k-1].first;
+          Qw[k].second = alpha*Qw[k].second + (1.0-alpha)*Qw[k-1].second;
+        }
+        if (b < m)
+        {
+          NextQw[save].first = Qw[3].first;
+          NextQw[save].second = Qw[3].second;
+        }
+      }
+    }
+    // Pass the segment to the path
+
+    node.clear();
+    node.insert("libwpg:path-action", "C");
+    x = Qw[1].first;
+    y = Qw[1].second;
+    transformPoint(x, y);
+    node.insert("svg:x1", m_scale*x);
+    node.insert("svg:y1", m_scale*y);
+    x = Qw[2].first;
+    y = Qw[2].second;
+    transformPoint(x, y);
+    node.insert("svg:x2", m_scale*x);
+    node.insert("svg:y2", m_scale*y);
+    x = Qw[3].first;
+    y = Qw[3].second;
+    transformPoint(x, y);
+    node.insert("svg:x", m_scale*x);
+    node.insert("svg:y", m_scale*y);
+
+    if (!m_noFill && !m_noShow)
+      m_currentFillGeometry.push_back(node);
+    if (!m_noLine && !m_noShow)
+      m_currentLineGeometry.push_back(node);
+
+    std::swap(Qw, NextQw);
+
+    if (b < m)
+    {
+      for (i=3-mult; i <= 3; i++)
+      {
+        Qw[i].first = controlPoints[b-3+i].first;
+        Qw[i].second = controlPoints[b-3+i].second;
+      }
+      a = b;
+      b++;
+    }
+  }
+  m_originalX = controlPoints.back().first;
+  m_originalY = controlPoints.back().second;
+  m_x = controlPoints.back().first;
+  m_y = controlPoints.back().second;
+  transformPoint(m_x, m_y);
+}
+
+
+void libvisio::VSDContentCollector::_generateQuadraticBeziersFromNURBS(const std::vector<std::pair<double, double> > &controlPoints,
+    const std::vector<double> &knotVector)
+{
+  if (controlPoints.empty() || knotVector.empty())
+    return;
+
+  WPXPropertyList node;
+
+  node.insert("libwpg:path-action", "M");
+  double x = controlPoints[0].first;
+  double y = controlPoints[0].second;
+  transformPoint(x,y);
+  node.insert("svg:x", m_scale*x);
+  node.insert("svg:y", m_scale*y);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(node);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(node);
+
+
+  /* Decomposition of a spline of 2nd degree into Bezier segments
+   * adapted from the algorithm DecomposeCurve (Les Piegl, Wayne Tiller:
+   * The NURBS Book, 2nd Edition, 1997
+   */
+
+  unsigned m = controlPoints.size() + 3;
+  unsigned a = 2;
+  unsigned b = 3;
+  std::vector< std::pair<double, double> > Qw(3), NextQw(3);
+  unsigned i = 0;
+  for (; i <= 2; i++)
+    Qw[i] = controlPoints[i];
+  while (b < m)
+  {
+    i = b;
+    while (b < m && knotVector[b+1] == knotVector[b])
+      b++;
+    unsigned mult = b - i + 1;
+    if (mult < 2)
+    {
+      double numer = (double)(knotVector[b] - knotVector[a]);
+      unsigned j = 2;
+      std::map<unsigned, double> alphas;
+      for (; j >mult; j--)
+        alphas[j-mult-1] = numer/double(knotVector[a+j]-knotVector[a]);
+      unsigned r = 2 - mult;
+      for (j=1; j<=r; j++)
+      {
+        unsigned save = r - j;
+        unsigned s = mult+j;
+        for (unsigned k = 2; k>=s; k--)
+        {
+          double alpha = alphas[k-s];
+          Qw[k].first = alpha*Qw[k].first + (1.0-alpha)*Qw[k-1].first;
+          Qw[k].second = alpha*Qw[k].second + (1.0-alpha)*Qw[k-1].second;
+        }
+        if (b < m)
+        {
+          NextQw[save].first = Qw[2].first;
+          NextQw[save].second = Qw[2].second;
+        }
+      }
+    }
+    // Pass the segment to the path
+
+    node.clear();
+    node.insert("libwpg:path-action", "Q");
+    x = Qw[1].first;
+    y = Qw[1].second;
+    transformPoint(x, y);
+    node.insert("svg:x1", m_scale*x);
+    node.insert("svg:y1", m_scale*y);
+    x = Qw[2].first;
+    y = Qw[2].second;
+    transformPoint(x, y);
+    node.insert("svg:x", m_scale*x);
+    node.insert("svg:y", m_scale*y);
+
+    if (!m_noFill && !m_noShow)
+      m_currentFillGeometry.push_back(node);
+    if (!m_noLine && !m_noShow)
+      m_currentLineGeometry.push_back(node);
+
+    std::swap(Qw, NextQw);
+
+    if (b < m)
+    {
+      for (i=2-mult; i <= 2; i++)
+      {
+        Qw[i].first = controlPoints[b-2+i].first;
+        Qw[i].second = controlPoints[b-2+i].second;
+      }
+      a = b;
+      b++;
+    }
+  }
+  m_originalX = controlPoints.back().first;
+  m_originalY = controlPoints.back().second;
+  m_x = controlPoints.back().first;
+  m_y = controlPoints.back().second;
+  transformPoint(m_x, m_y);
+}
+
 #define VSD_NUM_POLYLINES_PER_NURBS 200
 
-void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights)
+void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, const std::vector<std::pair<double, double> > &controlPoints,
+    const std::vector<double> &knotVector, const std::vector<double> &weights)
+{
+  // Generate NURBS using VSD_NUM_POLYLINES_PER_NURBS polylines
+  WPXPropertyList node;
+  double step = (knotVector.back() - knotVector[0]) / VSD_NUM_POLYLINES_PER_NURBS;
+
+  for (unsigned i = 0; i < VSD_NUM_POLYLINES_PER_NURBS; i++)
+  {
+    node.clear();
+    node.insert("libwpg:path-action", "L");
+    double nextX = 0;
+    double nextY = 0;
+    double denominator = LIBVISIO_EPSILON;
+
+    for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
+    {
+      double basis = _NURBSBasis(p, degree, knotVector[0] + i * step, knotVector);
+      nextX += basis * controlPoints[p].first * weights[p];
+      nextY += basis * controlPoints[p].second * weights[p];
+      denominator += weights[p] * basis;
+    }
+    nextX = (nextX/denominator);
+    nextY = (nextY/denominator);
+    transformPoint(nextX, nextY);
+    node.insert("svg:x", m_scale*nextX);
+    node.insert("svg:y", m_scale*nextY);
+    if (!m_noFill && !m_noShow)
+      m_currentFillGeometry.push_back(node);
+    if (!m_noLine && !m_noShow)
+      m_currentLineGeometry.push_back(node);
+  }
+
+  m_originalX = controlPoints.back().first;
+  m_originalY = controlPoints.back().second;
+  m_x = controlPoints.back().first;
+  m_y = controlPoints.back().second;
+  transformPoint(m_x, m_y);
+  node.clear();
+  node.insert("libwpg:path-action", "L");
+  node.insert("svg:x", m_scale*m_x);
+  node.insert("svg:y", m_scale*m_y);
+  if (!m_noFill && !m_noShow)
+    m_currentFillGeometry.push_back(node);
+  if (!m_noLine && !m_noShow)
+    m_currentLineGeometry.push_back(node);
+}
+
+bool libvisio::VSDContentCollector::_areWeightsUniform(const std::vector<double> weights) const
+{
+  if (weights.empty())
+    return true;
+  double previousValue = weights[0];
+  for (std::vector<double>::size_type i = 0; i < weights.size(); ++i)
+  {
+    if (fabs(weights[i] - previousValue < LIBVISIO_EPSILON))
+      previousValue = weights[i];
+    else
+      return false;
+  }
+  return true;
+}
+
+void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2,
+    unsigned char xType, unsigned char yType, unsigned degree, std::vector<std::pair<double, double> > controlPoints,
+    std::vector<double> knotVector, std::vector<double> weights)
 {
   _handleLevelChange(level);
 
@@ -1322,7 +1598,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
     return;
 
   // Fill in end knots
-  while (knotVector.size() < (controlPoints.size() + degree + 2))
+  while (knotVector.size() < (controlPoints.size() + degree + 3))
   {
     double tmpBack = knotVector.back();
     knotVector.push_back(tmpBack);
@@ -1342,49 +1618,15 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   controlPoints.push_back(std::pair<double,double>(x2, y2));
   controlPoints.insert(controlPoints.begin(), std::pair<double, double>(m_originalX, m_originalY));
 
-  // Generate NURBS using VSD_NUM_POLYLINES_PER_NURBS polylines
-  WPXPropertyList NURBS;
-  double step = (knotVector.back() - knotVector[0]) / VSD_NUM_POLYLINES_PER_NURBS;
-
-  for (unsigned i = 0; i < VSD_NUM_POLYLINES_PER_NURBS; i++)
+  if ((degree == 2 || degree == 3) && _areWeightsUniform(weights))
   {
-    NURBS.clear();
-    NURBS.insert("libwpg:path-action", "L");
-    double nextX = 0;
-    double nextY = 0;
-    double denominator = LIBVISIO_EPSILON;
-
-    for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
-    {
-      double basis = _NURBSBasis(p, degree, knotVector[0] + i * step, knotVector);
-      nextX += basis * controlPoints[p].first * weights[p];
-      nextY += basis * controlPoints[p].second * weights[p];
-      denominator += weights[p] * basis;
-    }
-    nextX = (nextX/denominator);
-    nextY = (nextY/denominator);
-    transformPoint(nextX, nextY);
-    NURBS.insert("svg:x", m_scale*nextX);
-    NURBS.insert("svg:y", m_scale*nextY);
-    if (!m_noFill && !m_noShow)
-      m_currentFillGeometry.push_back(NURBS);
-    if (!m_noLine && !m_noShow)
-      m_currentLineGeometry.push_back(NURBS);
+    if (degree == 2)
+      _generateQuadraticBeziersFromNURBS(controlPoints, knotVector);
+    else
+      _generateCubicBeziersFromNURBS(controlPoints, knotVector);
   }
-
-  m_originalX = x2;
-  m_originalY = y2;
-  m_x = x2;
-  m_y = y2;
-  transformPoint(m_x, m_y);
-  NURBS.clear();
-  NURBS.insert("libwpg:path-action", "L");
-  NURBS.insert("svg:x", m_scale*m_x);
-  NURBS.insert("svg:y", m_scale*m_y);
-  if (!m_noFill && !m_noShow)
-    m_currentFillGeometry.push_back(NURBS);
-  if (!m_noLine && !m_noShow)
-    m_currentLineGeometry.push_back(NURBS);
+  else
+    _generatePolylineFromNURBS(degree, controlPoints, knotVector, weights);
 }
 
 double libvisio::VSDContentCollector::_NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector)

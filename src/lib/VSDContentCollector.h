@@ -220,6 +220,14 @@ private:
   bool parseFormatId( const char *formatString, unsigned short &result );
   void _appendField(WPXString &text);
 
+  void _generateCubicBeziersFromNURBS(const std::vector<std::pair<double, double> > &controlPoints,
+                                      const std::vector<double> &knotVector);
+  void _generateQuadraticBeziersFromNURBS(const std::vector<std::pair<double, double> > &controlPoints,
+                                          const std::vector<double> &knotVector);
+  void _generatePolylineFromNURBS(unsigned degree, const std::vector<std::pair<double, double> > &controlPoints,
+                                  const std::vector<double> &knotVector, const std::vector<double> &weights);
+  bool _areWeightsUniform(const std::vector<double> weights) const;
+
   bool m_isPageStarted;
   double m_pageWidth;
   double m_pageHeight;
