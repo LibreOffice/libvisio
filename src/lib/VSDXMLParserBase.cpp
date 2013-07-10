@@ -168,6 +168,14 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readRelQuadBezTo(reader);
       break;
+    case XML_SPLINESTART:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readSplineStart(reader);
+      break;
+    case XML_SPLINEKNOT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readSplineKnot(reader);
+      break;
     default:
       break;
     }
@@ -1589,7 +1597,7 @@ void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_ELLIPTICALARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_SPLINESTART != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
   if (ret == 1)
     m_currentGeometryList->addSplineStart(ix, level, x, y, a, b, c, d);
 }
