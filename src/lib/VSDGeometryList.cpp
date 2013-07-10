@@ -491,6 +491,7 @@ libvisio::VSDGeometryListElement *libvisio::VSDPolylineTo3::clone()
 
 void libvisio::VSDSplineStart::handle(VSDCollector *collector) const
 {
+  collector->collectSplineEnd();
   collector->collectSplineStart(m_id, m_level, m_x, m_y, m_secondKnot, m_firstKnot, m_lastKnot, m_degree);
 }
 
