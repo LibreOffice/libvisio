@@ -989,7 +989,6 @@ void libvisio::VSDContentCollector::collectRelCubBezTo(unsigned /* id */, unsign
   transformPoint(x, y);
   m_x = x;
   m_y = y;
-
   WPXPropertyList node;
   node.insert("libwpg:path-action", "C");
   node.insert("svg:x",m_scale*x);
@@ -1272,11 +1271,11 @@ void libvisio::VSDContentCollector::collectArcTo(unsigned /* id */, unsigned lev
   transformPoint(x2, y2);
   double angle = 0.0;
   transformAngle(angle);
-  m_x = x2;
-  m_y = y2;
 
   if (bow == 0)
   {
+    m_x = x2;
+    m_y = y2;
     WPXPropertyList end;
     end.insert("svg:x", m_scale*m_x);
     end.insert("svg:y", m_scale*m_y);
@@ -1295,6 +1294,8 @@ void libvisio::VSDContentCollector::collectArcTo(unsigned /* id */, unsigned lev
     bool sweep = (bow < 0);
     transformFlips(sweep, sweep);
 
+    m_x = x2;
+    m_y = y2;
     arc.insert("svg:rx", m_scale*radius);
     arc.insert("svg:ry", m_scale*radius);
     arc.insert("libwpg:rotate", angle*180/M_PI, WPX_GENERIC);
@@ -2083,9 +2084,9 @@ void libvisio::VSDContentCollector::collectSplineEnd()
     return;
   }
   m_splineKnotVector.push_back(m_splineLastKnot);
-  std::vector<double> weights;
+  std::vector<double> weights(m_splineControlPoints.size()+2);
   for (unsigned i=0; i < m_splineControlPoints.size()+2; i++)
-    weights.push_back(1.0);
+    weights[i] = 1.0;
   collectNURBSTo(0, m_splineLevel, m_splineX, m_splineY, 1, 1, m_splineDegree, m_splineControlPoints, m_splineKnotVector, weights);
   m_splineKnotVector.clear();
   m_splineControlPoints.clear();
