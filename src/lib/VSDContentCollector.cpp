@@ -1527,7 +1527,7 @@ bool libvisio::VSDContentCollector::_isUniform(const std::vector<double> weights
   double previousValue = weights[0];
   for (std::vector<double>::size_type i = 0; i < weights.size(); ++i)
   {
-    if (fabs(weights[i] - previousValue < LIBVISIO_EPSILON))
+    if (fabs(weights[i] - previousValue) < LIBVISIO_EPSILON)
       previousValue = weights[i];
     else
       return false;
