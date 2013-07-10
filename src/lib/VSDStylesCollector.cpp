@@ -117,9 +117,8 @@ void libvisio::VSDStylesCollector::collectArcTo(unsigned /* id */, unsigned leve
 }
 
 void libvisio::VSDStylesCollector::collectNURBSTo(unsigned /* id */, unsigned level, double /* x2 */, double /* y2 */,
-    unsigned char /* xType */, unsigned char /* yType */, unsigned /* degree */,
-    std::vector<std::pair<double, double> > /* controlPoints */,
-    std::vector<double> /* knotVector */, std::vector<double> /* weights */)
+    unsigned char /* xType */, unsigned char /* yType */, unsigned /* degree */, const std::vector<std::pair<double, double> > & /* ctrlPts */,
+    const std::vector<double> & /* kntVec */, const std::vector<double> & /* weights */)
 {
   _handleLevelChange(level);
 }
