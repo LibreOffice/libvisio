@@ -1392,24 +1392,23 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
    * The NURBS Book, 2nd Edition, 1997
    */
 
-  unsigned m = controlPoints.size() + degree + 1;
   unsigned a = degree;
   unsigned b = degree + 1;
   std::vector< std::pair<double, double> > points(degree + 1), nextPoints(degree + 1);
   unsigned i = 0;
   for (; i <= degree; i++)
     points[i] = controlPoints[i];
-  while (b < m)
+  while (b < knotVector.size() - 1)
   {
     i = b;
-    while (b < m && knotVector[b+1] == knotVector[b])
+    while (b < knotVector.size() - 1 && knotVector[b+1] == knotVector[b])
       b++;
     unsigned mult = b - i + 1;
     if (mult < degree)
     {
       double numer = (double)(knotVector[b] - knotVector[a]);
       unsigned j = degree;
-      std::map<unsigned, double> alphas;
+      std::vector<double> alphas(degree - 1, 0.0);
       for (; j >mult; j--)
         alphas[j-mult-1] = numer/double(knotVector[a+j]-knotVector[a]);
       unsigned r = degree - mult;
@@ -1423,7 +1422,7 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
           points[k].first = alpha*points[k].first + (1.0-alpha)*points[k-1].first;
           points[k].second = alpha*points[k].second + (1.0-alpha)*points[k-1].second;
         }
-        if (b < m)
+        if (b < knotVector.size() - 1)
         {
           nextPoints[save].first = points[degree].first;
           nextPoints[save].second = points[degree].second;
@@ -1449,7 +1448,7 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
 
     std::swap(points, nextPoints);
 
-    if (b < m)
+    if (b < knotVector.size() - 1)
     {
       for (i=degree-mult; i <= degree; i++)
       {
