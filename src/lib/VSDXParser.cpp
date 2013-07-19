@@ -649,13 +649,6 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(drawingScale, reader);
       break;
-    case XML_DRAWINGSIZETYPE:
-    case XML_DRAWINGSCALETYPE:
-    case XML_INHIBITSNAP:
-    case XML_UIVISIBILITY:
-    case XML_SHDWTYPE:
-    case XML_SHDWOBLIQUEANGLE:
-    case XML_SHDWSCALEFACTOR:
     default:
       break;
     }
@@ -860,12 +853,6 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readCharacter(reader);
       break;
-    case XML_SHDWFOREGNDTRANS:
-    case XML_SHDWBKGNDTRANS:
-    case XML_SHAPESHDWTYPE:
-    case XML_SHAPESHDWOBLIQUEANGLE:
-    case XML_SHAPESHDWSCALEFACTOR:
-    case XML_TEXTBKGNDTRANS:
     default:
       break;
     }
@@ -1183,8 +1170,6 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
     case XML_HIDETEXT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readBoolData(m_shape.m_misc.m_hideText, reader);
-      break;
-    case XML_RESIZEMODE:
       break;
     default:
       if (XML_SECTION == tokenClass && XML_READER_TYPE_ELEMENT == tokenType)

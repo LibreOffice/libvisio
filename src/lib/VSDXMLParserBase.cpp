@@ -1367,24 +1367,6 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readBoolData(doublestrikeout, reader);
       break;
-    case XML_RTLTEXT:
-      break;
-    case XML_USEVERTICAL:
-      break;
-    case XML_LETTERSPACE:
-      break;
-    case XML_COLORTRANS:
-      break;
-    case XML_ASIANFONT:
-      break;
-    case XML_COMPLEXSCRIPTFONT:
-      break;
-    case XML_LOCALIZEFONT:
-      break;
-    case XML_COMPLEXSCRIPTSIZE:
-      break;
-    case XML_LANGID:
-      break;
     default:
       break;
     }
@@ -1470,16 +1452,6 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
     case XML_HORZALIGN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readByteData(align, reader);
-      break;
-    case XML_BULLET:
-      break;
-    case XML_BULLETSTR:
-      break;
-    case XML_BULLETFONT:
-      break;
-    case XML_BULLETFONTSIZE:
-      break;
-    case XML_TEXTPOSAFTERBULLET:
       break;
     case XML_FLAGS:
       if (XML_READER_TYPE_ELEMENT == tokenType)
