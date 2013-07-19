@@ -321,7 +321,6 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
       m_currentStencil = &tmpStencil;
     break;
   case VSD_SHAPE_GROUP:
-  case VSD_SHAPE_GUIDE:
   case VSD_SHAPE_SHAPE:
   case VSD_SHAPE_FOREIGN:
     m_currentShapeID = idx;
@@ -376,7 +375,6 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     }
     break;
   case VSD_SHAPE_GROUP:
-  case VSD_SHAPE_GUIDE:
   case VSD_SHAPE_SHAPE:
   case VSD_SHAPE_FOREIGN:
     if (m_isStencilStarted)
@@ -430,10 +428,6 @@ void libvisio::VSDParser::handleChunk(WPXInputStream *input)
 {
   switch (m_header.chunkType)
   {
-  case VSD_SHAPE_GUIDE:
-    // Ignore guides, because they are not really a part of the drawing.
-    // TODO: Maybe we want to show them if they are marked as printable?
-    break;
   case VSD_SHAPE_GROUP:
   case VSD_SHAPE_SHAPE:
   case VSD_SHAPE_FOREIGN:
