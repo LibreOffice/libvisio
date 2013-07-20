@@ -183,6 +183,10 @@ SOURCE=..\..\src\lib\VSDXParser.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\lib\VSDXTheme.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\lib\VSDZipStream.cpp
 # End Source File
 # End Group
@@ -312,6 +316,10 @@ SOURCE=..\..\src\lib\VSDXMLTokenMap.h
 # Begin Source File
 
 SOURCE=..\..\src\lib\VSDXParser.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\lib\VSDXTheme.h
 # End Source File
 # Begin Source File
 

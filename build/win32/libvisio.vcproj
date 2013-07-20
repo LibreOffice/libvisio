@@ -701,6 +701,28 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\src\lib\VSDXTheme.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\src\lib\VSDZipStream.cpp"
 				>
 				<FileConfiguration
@@ -846,6 +868,9 @@
 			<File
 				RelativePath="..\..\src\lib\VSDXParser.h"
 				>
+			</File>
+			<File
+				RelativePath="..\..\src\lib\VSDXTheme.h"
 			</File>
 			<File
 				RelativePath="..\..\src\lib\VSDZipStream.h"

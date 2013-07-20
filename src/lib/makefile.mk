@@ -63,6 +63,7 @@ SLOFILES= \
 	$(SLO)$/VSDXMLParserBase.obj \
 	$(SLO)$/VSDXMLTokenMap.obj \
 	$(SLO)$/VSDXParser.obj \
+	$(SLO)$/VSDXTheme.obj \
 	$(SLO)$/VSDZipStream.obj
 
 LIB1ARCHIV=$(LB)$/libvisiolib.a
