@@ -27,6 +27,8 @@
  * instead of those above.
  */
 
+#include "VSDXMLHelper.h"
+#include "VSDXMLTokenMap.h"
 #include "VSDXTheme.h"
 
 libvisio::VSDXTheme::VSDXTheme()
@@ -42,15 +44,27 @@ bool libvisio::VSDXTheme::parse(WPXInputStream *input)
   if (!input)
     return false;
 
+  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET);
+  if (!reader)
+    return false;
+
   try
   {
-    return true;
+    int ret = xmlTextReaderRead(reader);
+    while (1 == ret)
+    {
+      /*    int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+            int tokenType = xmlTextReaderNodeType(reader); */
+      ret = xmlTextReaderRead(reader);
+    }
   }
   catch (...)
   {
+    xmlFreeTextReader(reader);
     return false;
   }
-  return false;
+  xmlFreeTextReader(reader);
+  return true;
 }
 
 
