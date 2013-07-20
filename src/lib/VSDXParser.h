@@ -32,6 +32,7 @@
 
 #include <libwpd-stream/libwpd-stream.h>
 #include <libwpg/libwpg.h>
+#include "VSDXTheme.h"
 #include "VSDXMLParserBase.h"
 
 namespace libvisio
@@ -99,6 +100,7 @@ private:
   libwpg::WPGPaintInterface *m_painter;
   int m_currentDepth;
   VSDXRelationships *m_rels;
+  VSDXTheme m_currentTheme;
 };
 
 } // namespace libvisio

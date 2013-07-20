@@ -75,6 +75,8 @@ libtokenmap_la_SOURCES = \
 	VSDXMLTokenMap.h \
 	VSDXParser.cpp \
 	VSDXParser.h \
+	VSDXTheme.cpp \
+	VSDXTheme.h \
 	$(generated_files)
 	
 
