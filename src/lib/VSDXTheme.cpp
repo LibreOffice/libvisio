@@ -29,6 +29,7 @@
 
 #include "VSDXTheme.h"
 #include "VSDXMLTokenMap.h"
+#include "libvisio_utils.h"
 
 libvisio::VSDXTheme::VSDXTheme()
 {
@@ -64,6 +65,27 @@ bool libvisio::VSDXTheme::parse(WPXInputStream *input)
   }
   xmlFreeTextReader(reader);
   return true;
+}
+
+boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSrgbClr(xmlTextReaderPtr reader)
+{
+  boost::optional<libvisio::Colour> retVal;
+  if (XML_A_SRGBCLR == VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader)))
+  {
+    xmlChar *val = xmlTextReaderGetAttribute(reader, BAD_CAST("val"));
+    if (val)
+    {
+      try
+      {
+        retVal = xmlStringToColour(val);
+      }
+      catch (const XmlParserException &)
+      {
+      }
+      xmlFree(val);
+    }
+  }
+  return retVal;
 }
 
 

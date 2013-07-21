@@ -30,6 +30,7 @@
 #ifndef __VSDXTHEME_H__
 #define __VSDXTHEME_H__
 
+#include <boost/optional.hpp>
 #include <libwpd-stream/libwpd-stream.h>
 #include "VSDXMLHelper.h"
 
@@ -48,6 +49,8 @@ public:
 private:
   VSDXTheme(const VSDXTheme &);
   VSDXTheme &operator=(const VSDXTheme &);
+
+  boost::optional<Colour> readSrgbClr(xmlTextReaderPtr reader);
 };
 
 } // namespace libvisio
