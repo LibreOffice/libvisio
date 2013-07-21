@@ -124,8 +124,11 @@ libvisio::Colour libvisio::xmlStringToColour(const xmlChar *s)
   }
   else
   {
-    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
-    throw XmlParserException();
+    if (str.length() != 6)
+    {
+      VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+      throw XmlParserException();
+    }
   }
 
   std::istringstream istr(str);
@@ -216,8 +219,6 @@ bool libvisio::xmlStringToBool(const xmlChar *s)
   return value;
 
 }
-
-
 
 // VSDXRelationship
 

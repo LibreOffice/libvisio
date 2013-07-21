@@ -27,9 +27,8 @@
  * instead of those above.
  */
 
-#include "VSDXMLHelper.h"
-#include "VSDXMLTokenMap.h"
 #include "VSDXTheme.h"
+#include "VSDXMLTokenMap.h"
 
 libvisio::VSDXTheme::VSDXTheme()
 {

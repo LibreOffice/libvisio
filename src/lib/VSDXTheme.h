@@ -31,6 +31,7 @@
 #define __VSDXTHEME_H__
 
 #include <libwpd-stream/libwpd-stream.h>
+#include "VSDXMLHelper.h"
 
 namespace libvisio
 {
