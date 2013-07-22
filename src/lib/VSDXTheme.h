@@ -30,6 +30,7 @@
 #ifndef __VSDXTHEME_H__
 #define __VSDXTHEME_H__
 
+#include <vector>
 #include <boost/optional.hpp>
 #include <libwpd-stream/libwpd-stream.h>
 #include "VSDXMLHelper.h"
@@ -64,7 +65,7 @@ struct VSDXClrScheme
   Colour m_accent6;
   Colour m_hlink;
   Colour m_folHlink;
-  std::vector<VSDXVariationClrScheme> variationClrSchemeLst;
+  std::vector<VSDXVariationClrScheme> m_variationClrSchemeLst;
 };
 
 class VSDXTheme
@@ -82,6 +83,13 @@ private:
   boost::optional<Colour> readSysClr(xmlTextReaderPtr reader);
 
   void readClrScheme(xmlTextReaderPtr reader);
+  void readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr);
+  void readVariationClrSchemeLst(xmlTextReaderPtr reader);
+  void readVariationClrScheme(xmlTextReaderPtr reader, VSDXVariationClrScheme &varClrSch);
+
+  int getElementToken(xmlTextReaderPtr reader);
+
+  VSDXClrScheme m_clrScheme;
 };
 
 } // namespace libvisio
