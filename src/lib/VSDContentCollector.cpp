@@ -1521,7 +1521,7 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
   }
 }
 
-bool libvisio::VSDContentCollector::_isUniform(const std::vector<double> weights) const
+bool libvisio::VSDContentCollector::_isUniform(const std::vector<double> &weights) const
 {
   if (weights.empty())
     return true;

@@ -221,7 +221,7 @@ private:
   void _appendField(WPXString &text);
 
   // NURBS processing functions
-  bool _isUniform(const std::vector<double> weights) const;
+  bool _isUniform(const std::vector<double> &weights) const;
   void _generatePolylineFromNURBS(unsigned degree, const std::vector<std::pair<double, double> > &controlPoints,
                                   const std::vector<double> &knotVector, const std::vector<double> &weights);
   void _generateBezierSegmentsFromNURBS(unsigned degree, const std::vector<std::pair<double, double> > &controlPoints,
