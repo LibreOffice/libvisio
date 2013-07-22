@@ -39,6 +39,34 @@ namespace libvisio
 
 class VSDCollector;
 
+struct VSDXVariationClrScheme
+{
+  Colour m_varColor1;
+  Colour m_varColor2;
+  Colour m_varColor3;
+  Colour m_varColor4;
+  Colour m_varColor5;
+  Colour m_varColor6;
+  Colour m_varColor7;
+};
+
+struct VSDXClrScheme
+{
+  Colour m_dk1;
+  Colour m_lt1;
+  Colour m_dk2;
+  Colour m_lt2;
+  Colour m_accent1;
+  Colour m_accent2;
+  Colour m_accent3;
+  Colour m_accent4;
+  Colour m_accent5;
+  Colour m_accent6;
+  Colour m_hlink;
+  Colour m_folHlink;
+  std::vector<VSDXVariationClrScheme> variationClrSchemeLst;
+};
+
 class VSDXTheme
 {
 public:
@@ -52,6 +80,8 @@ private:
 
   boost::optional<Colour> readSrgbClr(xmlTextReaderPtr reader);
   boost::optional<Colour> readSysClr(xmlTextReaderPtr reader);
+
+  void readClrScheme(xmlTextReaderPtr reader);
 };
 
 } // namespace libvisio

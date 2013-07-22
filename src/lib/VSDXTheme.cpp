@@ -53,8 +53,17 @@ bool libvisio::VSDXTheme::parse(WPXInputStream *input)
     int ret = xmlTextReaderRead(reader);
     while (1 == ret)
     {
-      /*    int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
-            int tokenType = xmlTextReaderNodeType(reader); */
+      int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
+      int tokenType = xmlTextReaderNodeType(reader);
+
+      switch (tokenId)
+      {
+      case XML_A_CLRSCHEME:
+        readClrScheme(reader);
+        break;
+      default:
+        break;
+      }
       ret = xmlTextReaderRead(reader);
     }
   }
@@ -109,5 +118,8 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSysClr(xmlTextReaderP
   return retVal;
 }
 
+void libvisio::VSDXTheme::readClrScheme(xmlTextReaderPtr reader)
+{
+}
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
