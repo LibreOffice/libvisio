@@ -46,6 +46,7 @@ a:schemeClr
 a:shade
 a:solidFill
 a:srgbClr
+a:sysClr
 a:theme
 a:themeElements
 a:tint

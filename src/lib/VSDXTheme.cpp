@@ -88,5 +88,26 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSrgbClr(xmlTextReader
   return retVal;
 }
 
+boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSysClr(xmlTextReaderPtr reader)
+{
+  boost::optional<libvisio::Colour> retVal;
+  if (XML_A_SYSCLR == VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader)))
+  {
+    xmlChar *lastClr = xmlTextReaderGetAttribute(reader, BAD_CAST("lastClr"));
+    if (lastClr)
+    {
+      try
+      {
+        retVal = xmlStringToColour(lastClr);
+      }
+      catch (const XmlParserException &)
+      {
+      }
+      xmlFree(lastClr);
+    }
+  }
+  return retVal;
+}
+
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

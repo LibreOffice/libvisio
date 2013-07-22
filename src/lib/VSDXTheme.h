@@ -51,6 +51,7 @@ private:
   VSDXTheme &operator=(const VSDXTheme &);
 
   boost::optional<Colour> readSrgbClr(xmlTextReaderPtr reader);
+  boost::optional<Colour> readSysClr(xmlTextReaderPtr reader);
 };
 
 } // namespace libvisio
