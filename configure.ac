@@ -58,8 +58,8 @@ AC_SUBST(GPERF)
 # Find additional apps
 # ====================
 PKG_CHECK_MODULES([WPD],[
-	libwpd-0.9
-	libwpd-stream-0.9
+	libwpd-0.9 >= 0.9.5
+	libwpd-stream-0.9 >= 0.9.5
 ])
 
 PKG_CHECK_MODULES([WPG],[
