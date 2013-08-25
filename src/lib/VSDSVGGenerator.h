@@ -40,11 +40,12 @@
 
 namespace libvisio
 {
+struct VSDSVGGeneratorPrivate;
 
 class VSDSVGGenerator : public libwpg::WPGPaintInterface
 {
 public:
-  VSDSVGGenerator(VSDStringVector &vec);
+  VSDSVGGenerator(VSDStringVector &vec, const WPXString &nmspace="svg");
   ~VSDSVGGenerator();
 
   void startGraphics(const ::WPXPropertyList &propList);
@@ -71,16 +72,9 @@ public:
   void insertText(const ::WPXString &str);
 
 private:
-  ::WPXPropertyListVector m_gradient;
-  ::WPXPropertyList m_style;
-  int m_gradientIndex;
-  int m_patternIndex;
-  int m_shadowIndex;
-  void writeStyle(bool isClosed=true);
-  void drawPolySomething(const ::WPXPropertyListVector &vertices, bool isClosed);
-
-  std::ostringstream m_outputSink;
-  VSDStringVector &m_vec;
+  VSDSVGGenerator(const VSDSVGGenerator &);
+  VSDSVGGenerator &operator=(const VSDSVGGenerator &);
+  VSDSVGGeneratorPrivate *m_pImpl;
 };
 
 } // namespace libvisio
