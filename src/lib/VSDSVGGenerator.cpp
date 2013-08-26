@@ -467,58 +467,42 @@ void VSDSVGGeneratorPrivate::writeStyle(bool /* isClosed */)
     int dots1 = m_style["draw:dots1"] ? m_style["draw:dots1"]->getInt() : 0;
     int dots2 = m_style["draw:dots2"] ? m_style["draw:dots2"]->getInt() : 0;
     double dots1len = 72.*width, dots2len = 72.*width, gap = 72.*width;
-    std::string dots1lenUnit="", dots2lenUnit="", gapUnit="";
     if (m_style["draw:dots1-length"])
     {
-      dots1len = m_style["draw:dots1-length"]->getDouble();
+      dots1len = 72.*m_style["draw:dots1-length"]->getDouble();
       std::string str = m_style["draw:dots1-length"]->getStr().cstr();
       if (str.size() > 1 && str[str.size()-1]=='%')
-      {
-        dots1len *=100.;
-        dots1lenUnit="%";
-      }
-      else
-        dots1len *=72.;
+        dots1len *=width;
     }
     if (m_style["draw:dots2-length"])
     {
-      dots2len = m_style["draw:dots2-length"]->getDouble();
+      dots2len = 72.*m_style["draw:dots2-length"]->getDouble();
       std::string str = m_style["draw:dots2-length"]->getStr().cstr();
       if (str.size() > 1 && str[str.size()-1]=='%')
-      {
-        dots2len *=100.;
-        dots2lenUnit="%";
-      }
-      else
-        dots2len *=72.;
+        dots2len *=width;
     }
     if (m_style["draw:distance"])
     {
-      gap = m_style["draw:distance"]->getDouble();
+      gap = 72.*m_style["draw:distance"]->getDouble();
       std::string str = m_style["draw:distance"]->getStr().cstr();
       if (str.size() > 1 && str[str.size()-1]=='%')
-      {
-        gap *=100.;
-        gapUnit="%";
-      }
-      else
-        gap *=72.;
+        gap *=width;
     }
     m_outputSink << "stroke-dasharray: ";
     for (int i = 0; i < dots1; i++)
     {
       if (i)
         m_outputSink << ", ";
-      m_outputSink << doubleToString(dots1len) << dots1lenUnit;
+      m_outputSink << doubleToString(dots1len);
       m_outputSink << ", ";
-      m_outputSink << doubleToString(gap) << gapUnit;
+      m_outputSink << doubleToString(gap);
     }
     for (int j = 0; j < dots2; j++)
     {
       m_outputSink << ", ";
-      m_outputSink << doubleToString(dots2len) << dots2lenUnit;
+      m_outputSink << doubleToString(dots2len);
       m_outputSink << ", ";
-      m_outputSink << doubleToString(gap) << gapUnit;
+      m_outputSink << doubleToString(gap);
     }
     m_outputSink << "; ";
   }
