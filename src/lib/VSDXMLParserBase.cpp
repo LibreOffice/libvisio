@@ -1647,7 +1647,7 @@ void libvisio::VSDXMLParserBase::readStencil(xmlTextReaderPtr reader)
 
 void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
 {
-  VSD_DEBUG_MSG(("VSDXParser::readForeignData\n"));
+  VSD_DEBUG_MSG(("VSDXMLParser::readForeignData\n"));
   if (!m_shape.m_foreign)
     m_shape.m_foreign = new ForeignData();
 
