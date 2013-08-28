@@ -28,7 +28,9 @@
  * instead of those above.
  */
 
+#include <vector>
 #include <string>
+#include <algorithm> // std::count
 #include "VSDInternalStream.h"
 #include "libvisio_utils.h"
 
@@ -126,16 +128,21 @@ double libvisio::readDouble(WPXInputStream *input)
 
 void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64Data, size_t base64DataLength)
 {
-  boost::iterator_range<const char *> base64String((const char *)base64Data, (const char *)base64Data + base64DataLength);
+  std::string base64String((const char *)base64Data, base64DataLength);
+  unsigned numPadding = std::count(base64String.begin(), base64String.end(), '=');
+  std::replace(base64String.begin(),base64String.end(),'=','A'); // replace '=' by base64 encoding of '\0'
   typedef boost::archive::iterators::transform_width<
   boost::archive::iterators::binary_from_base64<
   boost::archive::iterators::remove_whitespace< std::string::const_iterator > >, 8, 6 > base64_decoder;
 
   std::vector<unsigned char> buffer;
   std::copy(base64_decoder(base64String.begin()), base64_decoder(base64String.end()), std::back_inserter(buffer));
-
   if (!buffer.empty())
-    data.append(&buffer[0], buffer.size());
+  {
+    buffer.erase(buffer.end()-numPadding,buffer.end());  // erase padding '\0' characters
+    if (!buffer.empty())
+      data.append(&buffer[0], buffer.size());
+  }
 }
 
 const ::WPXString libvisio::getColourString(const Colour &c)
