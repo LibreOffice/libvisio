@@ -1,4 +1,20 @@
 #!/bin/sh
+
+set_git_hooks()
+{
+    # assume that the current directory is the source tree
+    if [ -d ".git" ] ; then
+        for hook in $(ls -1 .git-hooks) ; do
+            cd .git/hooks
+            if [ ! -e "${hook?}" -o -L "${hook?}" ] ; then
+                rm -f "${hook?}"
+                ln -sf "../../.git-hooks/${hook?}" "${hook?}"
+            fi
+            cd - > /dev/null
+        done
+    fi
+}
+
 TESTLIBTOOLIZE="glibtoolize libtoolize"
 
 LIBTOOLIZEFOUND="0"
@@ -8,6 +24,8 @@ test -z "$srcdir" && srcdir=.
 
 olddir=`pwd`
 cd $srcdir
+
+set_git_hooks
 
 aclocal --version > /dev/null 2> /dev/null || {
     echo "error: aclocal not found"
@@ -19,16 +37,16 @@ automake --version > /dev/null 2> /dev/null || {
 }
 
 for i in $TESTLIBTOOLIZE; do
-	if which $i > /dev/null 2>&1; then
-		LIBTOOLIZE=$i
-		LIBTOOLIZEFOUND="1"
-		break
-	fi
+    if which $i > /dev/null 2>&1; then
+        LIBTOOLIZE=$i
+        LIBTOOLIZEFOUND="1"
+        break
+    fi
 done
 
 if [ "$LIBTOOLIZEFOUND" = "0" ]; then
-	echo "$0: need libtoolize tool to build libvisio" >&2
-	exit 1
+    echo "$0: need libtoolize tool to build libvisio" >&2
+    exit 1
 fi
 
 amcheck=`automake --version | grep 'automake (GNU automake) 1.5'`
