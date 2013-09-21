@@ -49,6 +49,8 @@ struct VSDXVariationClrScheme
   Colour m_varColor5;
   Colour m_varColor6;
   Colour m_varColor7;
+
+  VSDXVariationClrScheme();
 };
 
 struct VSDXClrScheme
@@ -66,6 +68,8 @@ struct VSDXClrScheme
   Colour m_hlink;
   Colour m_folHlink;
   std::vector<VSDXVariationClrScheme> m_variationClrSchemeLst;
+
+  VSDXClrScheme();
 };
 
 class VSDXTheme

@@ -31,7 +31,36 @@
 #include "VSDXMLTokenMap.h"
 #include "libvisio_utils.h"
 
+libvisio::VSDXVariationClrScheme::VSDXVariationClrScheme()
+  : m_varColor1()
+  , m_varColor2()
+  , m_varColor3()
+  , m_varColor4()
+  , m_varColor5()
+  , m_varColor6()
+  , m_varColor7()
+{
+}
+
+libvisio::VSDXClrScheme::VSDXClrScheme()
+  : m_dk1()
+  , m_lt1()
+  , m_dk2()
+  , m_lt2()
+  , m_accent1()
+  , m_accent2()
+  , m_accent3()
+  , m_accent4()
+  , m_accent5()
+  , m_accent6()
+  , m_hlink()
+  , m_folHlink()
+  , m_variationClrSchemeLst()
+{
+}
+
 libvisio::VSDXTheme::VSDXTheme()
+  : m_clrScheme()
 {
 }
 
