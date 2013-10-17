@@ -203,6 +203,8 @@ bool libvisio::VSDZipStreamImpl::isZipStream()
     return false;
   if (!readCentralDirectory(end))
     return false;
+  if (m_cdir.empty())
+    return false;
   CentralDirectoryEntry entry = m_cdir.begin()->second;
   m_input->seek(entry.offset, WPX_SEEK_SET);
   LocalFileHeader header;
