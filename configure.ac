@@ -269,21 +269,6 @@ AS_IF([test "x$enable_debug" = "xyes"], [
 ])
 AC_SUBST(DEBUG_CXXFLAGS)
 
-# ============
-# Static tools
-# ============
-AC_ARG_ENABLE([static-tools],
-	[AS_HELP_STRING([--enable-static-tools], [Link tools (binaries) statically])],
-	[enable_static_tools="$enableval"],
-	[enable_static_tools=no]
-)
-AS_IF([test "x$enable_static_tools" = "xyes"], [
-	enable_static="yes"
-], [
-	AC_DISABLE_STATIC
-])
-AM_CONDITIONAL(STATIC_TOOLS, [test "x$enable_static_tools" = "xyes"])
-
 # =============
 # Documentation
 # =============
@@ -340,7 +325,6 @@ AC_MSG_NOTICE([
 Build configuration:
 	debug:           ${enable_debug}
 	docs:            ${build_docs}
-	static-tools:    ${enable_static_tools}
 	werror:          ${enable_werror}
 ==============================================================================
 ])
