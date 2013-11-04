@@ -34,8 +34,7 @@
 #include <map>
 #include <list>
 #include <vector>
-#include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
+#include <librevenge/librevenge.h>
 
 namespace libvisio
 {
@@ -50,18 +49,18 @@ public:
   VSDOutputElementList &operator=(const VSDOutputElementList &elementList);
   virtual ~VSDOutputElementList();
   void append(const VSDOutputElementList &elementList);
-  void draw(libwpg::WPGPaintInterface *painter) const;
-  void addStyle(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
-  void addPath(const WPXPropertyListVector &propListVec);
-  void addGraphicObject(const WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-  void addStartTextObject(const WPXPropertyList &propList, const WPXPropertyListVector &propListVec);
-  void addStartTextLine(const WPXPropertyList &propList);
-  void addStartTextSpan(const WPXPropertyList &propList);
-  void addInsertText(const WPXString &text);
-  void addEndTextSpan();
-  void addEndTextLine();
+  void draw(RVNGDrawingInterface *painter) const;
+  void addStyle(const RVNGPropertyList &propList, const RVNGPropertyListVector &propListVec);
+  void addPath(const RVNGPropertyListVector &propListVec);
+  void addGraphicObject(const RVNGPropertyList &propList, const ::RVNGBinaryData &binaryData);
+  void addStartTextObject(const RVNGPropertyList &propList, const RVNGPropertyListVector &propListVec);
+  void addOpenParagraph(const RVNGPropertyList &propList, const RVNGPropertyListVector &propListVec);
+  void addOpenSpan(const RVNGPropertyList &propList);
+  void addInsertText(const RVNGString &text);
+  void addCloseSpan();
+  void addCloseParagraph();
   void addEndTextObject();
-  void addStartLayer(const WPXPropertyList &propList);
+  void addStartLayer(const RVNGPropertyList &propList);
   void addEndLayer();
   bool empty() const
   {

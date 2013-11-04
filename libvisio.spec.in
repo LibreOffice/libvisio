@@ -11,7 +11,7 @@ Source: %{name}-%{version}.tar.gz
 Group: System Environment/Libraries
 URL: http://libvisio.sf.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
-BuildRequires: libwpd-devel >= 0.9.0, gcc-c++, libstdc++-devel, pkgconfig >= 0.9.0
+BuildRequires: librevenge-devel >= 0.9.0, gcc-c++, libstdc++-devel, pkgconfig >= 0.9.0
 License: LGPL
 Prefix: %{prefix}
 
@@ -29,7 +29,7 @@ Currently supported: raw xhtml (with embedded svg pages)
 
 %package devel
 Requires: %{name} >= %{version}
-Requires: libwpd-devel >= 0.9.0
+Requires: librevenge-devel >= 0.9.0
 Summary: Files for developing with libvisio.
 Group: Development/Libraries
 

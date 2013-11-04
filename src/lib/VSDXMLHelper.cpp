@@ -36,7 +36,7 @@
 #include <boost/algorithm/string.hpp>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 #include "VSDXMLHelper.h"
 #include "libvisio_utils.h"
 
@@ -53,12 +53,12 @@ extern "C" {
 
   static int vsdxInputReadFunc(void *context, char *buffer, int len)
   {
-    WPXInputStream *input = (WPXInputStream *)context;
+    RVNGInputStream *input = (RVNGInputStream *)context;
 
     if ((!input) || (!buffer) || (len < 0))
       return -1;
 
-    if (input->atEOS())
+    if (input->isEnd())
       return 0;
 
     unsigned long tmpNumBytesRead = 0;
@@ -100,7 +100,7 @@ extern "C" {
 
 // xmlTextReader helper function
 
-xmlTextReaderPtr libvisio::xmlReaderForStream(WPXInputStream *input, const char *URL, const char *encoding, int options)
+xmlTextReaderPtr libvisio::xmlReaderForStream(RVNGInputStream *input, const char *URL, const char *encoding, int options)
 {
   xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, URL, encoding, options);
   xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, 0);
@@ -288,7 +288,7 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
 
 // VSDXRelationships
 
-libvisio::VSDXRelationships::VSDXRelationships(WPXInputStream *input)
+libvisio::VSDXRelationships::VSDXRelationships(RVNGInputStream *input)
   : m_relsByType(), m_relsById()
 {
   if (input)

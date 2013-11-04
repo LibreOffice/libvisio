@@ -6,8 +6,8 @@ AC_PREREQ([2.65])
 # Version informations
 # ====================
 m4_define([libvisio_version_major],[0])
-m4_define([libvisio_version_minor],[0])
-m4_define([libvisio_version_micro],[31])
+m4_define([libvisio_version_minor],[1])
+m4_define([libvisio_version_micro],[0])
 m4_define([libvisio_version],[libvisio_version_major.libvisio_version_minor.libvisio_version_micro])
 
 # =============
@@ -57,13 +57,9 @@ AC_SUBST(GPERF)
 # ====================
 # Find additional apps
 # ====================
-PKG_CHECK_MODULES([WPD],[
-	libwpd-0.9 >= 0.9.5
-	libwpd-stream-0.9 >= 0.9.5
-])
-
-PKG_CHECK_MODULES([WPG],[
-	libwpg-0.2
+PKG_CHECK_MODULES([REVENGE],[
+	librevenge-0.0
+	librevenge-stream-0.0
 ])
 
 PKG_CHECK_MODULES([LIBXML],[
@@ -251,8 +247,8 @@ AS_IF([test "x$native_win32" = "xyes"], [
 		CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow -pedantic"
 	])
 ])
-LIBVISIO_CXXFLAGS="${WPD_CFLAGS} ${WPG_CFLAGS} ${LIBXML_CFLAGS} ${ZLIB_CFLAGS} ${ICU_CFLAGS}"
-LIBVISIO_LIBS="${WPD_LIBS} ${WPG_LIBS} ${LIBXML_LIBS} ${ZLIB_LIBS} ${ICU_LIBS}"
+LIBVISIO_CXXFLAGS="${REVENGE_CFLAGS} ${LIBXML_CFLAGS} ${ZLIB_CFLAGS} ${ICU_CFLAGS}"
+LIBVISIO_LIBS="${REVENGE_LIBS} ${LIBXML_LIBS} ${ZLIB_LIBS} ${ICU_LIBS}"
 AC_SUBST(LIBVISIO_CXXFLAGS)
 AC_SUBST(LIBVISIO_LIBS)
 

@@ -36,9 +36,7 @@
 #include <vector>
 #include <stack>
 #include <map>
-#include <libwpd/libwpd.h>
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpg/libwpg.h>
+#include <librevenge/librevenge.h>
 #include "VSDTypes.h"
 #include "VSDGeometryList.h"
 #include "VSDFieldList.h"
@@ -68,94 +66,94 @@ struct Pointer
 class VSDParser
 {
 public:
-  explicit VSDParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  explicit VSDParser(RVNGInputStream *input, RVNGDrawingInterface *painter);
   virtual ~VSDParser();
   bool parseMain();
   bool extractStencils();
 
 protected:
   // reader functions
-  void readEllipticalArcTo(WPXInputStream *input);
-  void readForeignData(WPXInputStream *input);
-  void readEllipse(WPXInputStream *input);
-  virtual void readLine(WPXInputStream *input);
-  virtual void readFillAndShadow(WPXInputStream *input);
-  virtual void readGeomList(WPXInputStream *input);
-  void readGeometry(WPXInputStream *input);
-  void readMoveTo(WPXInputStream *input);
-  void readLineTo(WPXInputStream *input);
-  void readArcTo(WPXInputStream *input);
-  void readNURBSTo(WPXInputStream *input);
-  void readPolylineTo(WPXInputStream *input);
-  void readInfiniteLine(WPXInputStream *input);
-  void readShapeData(WPXInputStream *input);
-  void readXFormData(WPXInputStream *input);
-  void readTxtXForm(WPXInputStream *input);
-  void readShapeId(WPXInputStream *input);
-  virtual void readShapeList(WPXInputStream *input);
-  void readForeignDataType(WPXInputStream *input);
-  void readPageProps(WPXInputStream *input);
-  virtual void readShape(WPXInputStream *input);
-  void readColours(WPXInputStream *input);
-  void readFont(WPXInputStream *input);
-  void readFontIX(WPXInputStream *input);
-  virtual void readCharList(WPXInputStream *input);
-  virtual void readParaList(WPXInputStream *input);
-  virtual void readPropList(WPXInputStream *input);
-  virtual void readPage(WPXInputStream *input);
-  virtual void readText(WPXInputStream *input);
-  virtual void readCharIX(WPXInputStream *input);
-  virtual void readParaIX(WPXInputStream *input);
-  virtual void readTextBlock(WPXInputStream *input);
+  void readEllipticalArcTo(RVNGInputStream *input);
+  void readForeignData(RVNGInputStream *input);
+  void readEllipse(RVNGInputStream *input);
+  virtual void readLine(RVNGInputStream *input);
+  virtual void readFillAndShadow(RVNGInputStream *input);
+  virtual void readGeomList(RVNGInputStream *input);
+  void readGeometry(RVNGInputStream *input);
+  void readMoveTo(RVNGInputStream *input);
+  void readLineTo(RVNGInputStream *input);
+  void readArcTo(RVNGInputStream *input);
+  void readNURBSTo(RVNGInputStream *input);
+  void readPolylineTo(RVNGInputStream *input);
+  void readInfiniteLine(RVNGInputStream *input);
+  void readShapeData(RVNGInputStream *input);
+  void readXFormData(RVNGInputStream *input);
+  void readTxtXForm(RVNGInputStream *input);
+  void readShapeId(RVNGInputStream *input);
+  virtual void readShapeList(RVNGInputStream *input);
+  void readForeignDataType(RVNGInputStream *input);
+  void readPageProps(RVNGInputStream *input);
+  virtual void readShape(RVNGInputStream *input);
+  void readColours(RVNGInputStream *input);
+  void readFont(RVNGInputStream *input);
+  void readFontIX(RVNGInputStream *input);
+  virtual void readCharList(RVNGInputStream *input);
+  virtual void readParaList(RVNGInputStream *input);
+  virtual void readPropList(RVNGInputStream *input);
+  virtual void readPage(RVNGInputStream *input);
+  virtual void readText(RVNGInputStream *input);
+  virtual void readCharIX(RVNGInputStream *input);
+  virtual void readParaIX(RVNGInputStream *input);
+  virtual void readTextBlock(RVNGInputStream *input);
 
-  void readNameList(WPXInputStream *input);
-  virtual void readName(WPXInputStream *input);
+  void readNameList(RVNGInputStream *input);
+  virtual void readName(RVNGInputStream *input);
 
-  virtual void readNameList2(WPXInputStream *input);
-  virtual void readName2(WPXInputStream *input);
+  virtual void readNameList2(RVNGInputStream *input);
+  virtual void readName2(RVNGInputStream *input);
 
-  virtual void readFieldList(WPXInputStream *input);
-  virtual void readTextField(WPXInputStream *input);
+  virtual void readFieldList(RVNGInputStream *input);
+  virtual void readTextField(RVNGInputStream *input);
 
-  virtual void readStyleSheet(WPXInputStream *input);
-  void readPageSheet(WPXInputStream *input);
+  virtual void readStyleSheet(RVNGInputStream *input);
+  void readPageSheet(RVNGInputStream *input);
 
-  void readSplineStart(WPXInputStream *input);
-  void readSplineKnot(WPXInputStream *input);
+  void readSplineStart(RVNGInputStream *input);
+  void readSplineKnot(RVNGInputStream *input);
 
-  void readStencilShape(WPXInputStream *input);
+  void readStencilShape(RVNGInputStream *input);
 
-  void readOLEList(WPXInputStream *input);
-  void readOLEData(WPXInputStream *input);
+  void readOLEList(RVNGInputStream *input);
+  void readOLEData(RVNGInputStream *input);
 
-  virtual void readNameIDX(WPXInputStream *input);
-  virtual void readNameIDX123(WPXInputStream *input);
+  virtual void readNameIDX(RVNGInputStream *input);
+  virtual void readNameIDX123(RVNGInputStream *input);
 
-  void readMisc(WPXInputStream *input);
+  void readMisc(RVNGInputStream *input);
 
   // parser of one pass
-  bool parseDocument(WPXInputStream *input, unsigned shift);
+  bool parseDocument(RVNGInputStream *input, unsigned shift);
 
   // Stream handlers
-  void handleStreams(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned level);
+  void handleStreams(RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned level);
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
-  void handleChunks(WPXInputStream *input, unsigned level);
-  void handleChunk(WPXInputStream *input);
-  void handleBlob(WPXInputStream *input, unsigned shift, unsigned level);
+  void handleChunks(RVNGInputStream *input, unsigned level);
+  void handleChunk(RVNGInputStream *input);
+  void handleBlob(RVNGInputStream *input, unsigned shift, unsigned level);
 
-  virtual void readPointer(WPXInputStream *input, Pointer &ptr);
-  virtual void readPointerInfo(WPXInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
-  virtual bool getChunkHeader(WPXInputStream *input);
+  virtual void readPointer(RVNGInputStream *input, Pointer &ptr);
+  virtual void readPointerInfo(RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
+  virtual bool getChunkHeader(RVNGInputStream *input);
   void _handleLevelChange(unsigned level);
   Colour _colourFromIndex(unsigned idx);
   void _flushShape();
   void _nameFromId(VSDName &name, unsigned id, unsigned level);
 
-  virtual unsigned getUInt(WPXInputStream *input);
-  virtual int getInt(WPXInputStream *input);
+  virtual unsigned getUInt(RVNGInputStream *input);
+  virtual int getInt(RVNGInputStream *input);
 
-  WPXInputStream *m_input;
-  libwpg::WPGPaintInterface *m_painter;
+  RVNGInputStream *m_input;
+  RVNGDrawingInterface *m_painter;
   ChunkHeader m_header;
   VSDCollector *m_collector;
   VSDShapeList m_shapeList;

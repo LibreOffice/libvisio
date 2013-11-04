@@ -69,7 +69,7 @@ protected:
   std::map<unsigned, Colour> m_colours;
   VSDFieldList m_fieldList;
   VSDShapeList m_shapeList;
-  WPXBinaryData m_currentBinaryData;
+  RVNGBinaryData m_currentBinaryData;
   std::stack<VSDShape> m_shapeStack;
   std::stack<unsigned> m_shapeLevelStack;
   bool m_isShapeStarted;

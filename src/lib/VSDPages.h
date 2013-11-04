@@ -45,9 +45,9 @@ public:
   ~VSDPage();
   VSDPage &operator=(const VSDPage &page);
   void append(const VSDOutputElementList &outputElements);
-  void draw(libwpg::WPGPaintInterface *painter) const;
+  void draw(RVNGDrawingInterface *painter) const;
   double m_pageWidth, m_pageHeight;
-  WPXString m_pageName;
+  RVNGString m_pageName;
   unsigned m_currentPageID, m_backgroundPageID;
   VSDOutputElementList m_pageElements;
 };
@@ -59,9 +59,9 @@ public:
   ~VSDPages();
   void addPage(const VSDPage &page);
   void addBackgroundPage(const VSDPage &page);
-  void draw(libwpg::WPGPaintInterface *painter);
+  void draw(RVNGDrawingInterface *painter);
 private:
-  void _drawWithBackground(libwpg::WPGPaintInterface *painter, const VSDPage &page);
+  void _drawWithBackground(RVNGDrawingInterface *painter, const VSDPage &page);
   std::vector<VSDPage> m_pages;
   std::map<unsigned, VSDPage> m_backgroundPages;
 };

@@ -37,13 +37,13 @@ namespace
 
 static std::string doubleToString(const double value)
 {
-  WPXProperty *prop = WPXPropertyFactory::newDoubleProp(value);
+  RVNGProperty *prop = RVNGPropertyFactory::newDoubleProp(value);
   std::string retVal = prop->getStr().cstr();
   delete prop;
   return retVal;
 }
 
-static unsigned stringToColour(const ::WPXString &s)
+static unsigned stringToColour(const ::RVNGString &s)
 {
   std::string str(s.cstr());
   if (str[0] == '#')
@@ -69,19 +69,19 @@ namespace libvisio
 
 struct VSDSVGGeneratorPrivate
 {
-  VSDSVGGeneratorPrivate(VSDStringVector &vec, const WPXString &nmSpace);
+  VSDSVGGeneratorPrivate(RVNGStringVector &vec, const RVNGString &nmSpace);
 
-  void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
+  void setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient);
   void writeStyle(bool isClosed=true);
-  void drawPolySomething(const ::WPXPropertyListVector &vertices, bool isClosed);
+  void drawPolySomething(const ::RVNGPropertyListVector &vertices, bool isClosed);
 
   //! return the namespace and the delimiter
   std::string const &getNamespaceAndDelim() const
   {
     return m_nmSpaceAndDelim;
   }
-  ::WPXPropertyListVector m_gradient;
-  ::WPXPropertyList m_style;
+  ::RVNGPropertyListVector m_gradient;
+  ::RVNGPropertyList m_style;
   int m_gradientIndex, m_shadowIndex;
   //! index uses when fill=bitmap
   int m_patternIndex;
@@ -93,10 +93,10 @@ struct VSDSVGGeneratorPrivate
   //! a prefix used to define the svg namespace with delimiter
   std::string m_nmSpaceAndDelim;
   std::ostringstream m_outputSink;
-  VSDStringVector &m_vec;
+  RVNGStringVector &m_vec;
 };
 
-VSDSVGGeneratorPrivate::VSDSVGGeneratorPrivate(VSDStringVector &vec, const WPXString &nmSpace) :
+VSDSVGGeneratorPrivate::VSDSVGGeneratorPrivate(RVNGStringVector &vec, const RVNGString &nmSpace) :
   m_gradient(),
   m_style(),
   m_gradientIndex(1),
@@ -114,7 +114,7 @@ VSDSVGGeneratorPrivate::VSDSVGGeneratorPrivate(VSDStringVector &vec, const WPXSt
     m_nmSpaceAndDelim = m_nmSpace+":";
 }
 
-void VSDSVGGeneratorPrivate::drawPolySomething(const ::WPXPropertyListVector &vertices, bool isClosed)
+void VSDSVGGeneratorPrivate::drawPolySomething(const ::RVNGPropertyListVector &vertices, bool isClosed)
 {
   if(vertices.count() < 2)
     return;
@@ -151,7 +151,7 @@ void VSDSVGGeneratorPrivate::drawPolySomething(const ::WPXPropertyListVector &ve
   }
 }
 
-void VSDSVGGeneratorPrivate::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient)
+void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient)
 {
   m_style.clear();
   m_style = propList;
@@ -229,7 +229,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::WPXPropertyList &propList, const :
       {
         for(unsigned c = 0; c < m_gradient.count(); c++)
         {
-          WPXPropertyList const &grad=m_gradient[c];
+          RVNGPropertyList const &grad=m_gradient[c];
           m_outputSink << "    <" << getNamespaceAndDelim() << "stop";
           if (grad["svg:offset"])
             m_outputSink << " offset=\"" << grad["svg:offset"]->getStr().cstr() << "\"";
@@ -267,13 +267,13 @@ void VSDSVGGeneratorPrivate::setStyle(const ::WPXPropertyList &propList, const :
           canBuildAxial = true;
           for(unsigned c = 0; c < m_gradient.count(); ++c)
           {
-            WPXPropertyList const &grad=m_gradient[c];
+            RVNGPropertyList const &grad=m_gradient[c];
             if (!grad["svg:offset"] || grad["svg:offset"]->getDouble()<0 || grad["svg:offset"]->getDouble() > 1)
             {
               canBuildAxial=false;
               break;
             }
-            WPXString str=grad["svg:offset"]->getStr();
+            RVNGString str=grad["svg:offset"]->getStr();
             int len=str.len();
             if (len<1 || str.cstr()[len-1]!='%')
             {
@@ -286,7 +286,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::WPXPropertyList &propList, const :
         {
           for(unsigned c = m_gradient.count(); c>0 ; )
           {
-            WPXPropertyList const &grad=m_gradient[--c];
+            RVNGPropertyList const &grad=m_gradient[--c];
             m_outputSink << "    <" << getNamespaceAndDelim() << "stop ";
             if (grad["svg:offset"])
               m_outputSink << "offset=\"" << doubleToString(50.-50.*grad["svg:offset"]->getDouble()) << "%\"";
@@ -298,7 +298,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::WPXPropertyList &propList, const :
           }
           for(unsigned c = 0; c < m_gradient.count(); ++c)
           {
-            WPXPropertyList const &grad=m_gradient[c];
+            RVNGPropertyList const &grad=m_gradient[c];
             if (c==0 && grad["svg:offset"] && grad["svg:offset"]->getDouble() <= 0)
               continue;
             m_outputSink << "    <" << getNamespaceAndDelim() << "stop ";
@@ -315,7 +315,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::WPXPropertyList &propList, const :
         {
           for(unsigned c = 0; c < m_gradient.count(); c++)
           {
-            WPXPropertyList const &grad=m_gradient[c];
+            RVNGPropertyList const &grad=m_gradient[c];
             m_outputSink << "    <" << getNamespaceAndDelim() << "stop";
             if (grad["svg:offset"])
               m_outputSink << " offset=\"" << grad["svg:offset"]->getStr().cstr() << "\"";
@@ -541,7 +541,7 @@ void VSDSVGGeneratorPrivate::writeStyle(bool /* isClosed */)
 }
 
 
-VSDSVGGenerator::VSDSVGGenerator(VSDStringVector &vec, const WPXString &nmSpace) :
+VSDSVGGenerator::VSDSVGGenerator(RVNGStringVector &vec, const RVNGString &nmSpace) :
   m_pImpl(new VSDSVGGeneratorPrivate(vec, nmSpace))
 {
 }
@@ -551,7 +551,7 @@ VSDSVGGenerator::~VSDSVGGenerator()
   delete m_pImpl;
 }
 
-void VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
+void VSDSVGGenerator::startPage(const RVNGPropertyList &propList)
 {
   if (m_pImpl->m_nmSpace.empty())
   {
@@ -569,7 +569,7 @@ void VSDSVGGenerator::startGraphics(const WPXPropertyList &propList)
   m_pImpl->m_outputSink << " >\n";
 }
 
-void VSDSVGGenerator::endGraphics()
+void VSDSVGGenerator::endPage()
 {
   m_pImpl->m_outputSink << "</" << m_pImpl->getNamespaceAndDelim() << "svg>\n";
   m_pImpl->m_vec.append(m_pImpl->m_outputSink.str().c_str());
@@ -577,7 +577,7 @@ void VSDSVGGenerator::endGraphics()
 }
 
 
-void VSDSVGGenerator::startLayer(const ::WPXPropertyList &propList)
+void VSDSVGGenerator::startLayer(const ::RVNGPropertyList &propList)
 {
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "g";
   if (propList["svg:id"])
@@ -594,12 +594,12 @@ void VSDSVGGenerator::endLayer()
   m_pImpl->m_outputSink << "</" << m_pImpl->getNamespaceAndDelim() << "g>\n";
 }
 
-void VSDSVGGenerator::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient)
+void VSDSVGGenerator::setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient)
 {
   m_pImpl->setStyle(propList, gradient);
 }
 
-void VSDSVGGenerator::drawRectangle(const ::WPXPropertyList &propList)
+void VSDSVGGenerator::drawRectangle(const ::RVNGPropertyList &propList)
 {
   if (!propList["svg:x"] || !propList["svg:y"] || !propList["svg:width"] || !propList["svg:height"])
     return;
@@ -612,7 +612,7 @@ void VSDSVGGenerator::drawRectangle(const ::WPXPropertyList &propList)
   m_pImpl->m_outputSink << "/>\n";
 }
 
-void VSDSVGGenerator::drawEllipse(const WPXPropertyList &propList)
+void VSDSVGGenerator::drawEllipse(const RVNGPropertyList &propList)
 {
   if (!propList["svg:cx"] || !propList["svg:cy"] || !propList["svg:rx"] || !propList["svg:ry"])
     return;
@@ -628,24 +628,24 @@ void VSDSVGGenerator::drawEllipse(const WPXPropertyList &propList)
   m_pImpl->m_outputSink << "/>\n";
 }
 
-void VSDSVGGenerator::drawPolyline(const ::WPXPropertyListVector &vertices)
+void VSDSVGGenerator::drawPolyline(const ::RVNGPropertyListVector &vertices)
 {
   m_pImpl->drawPolySomething(vertices, false);
 }
 
-void VSDSVGGenerator::drawPolygon(const ::WPXPropertyListVector &vertices)
+void VSDSVGGenerator::drawPolygon(const ::RVNGPropertyListVector &vertices)
 {
   m_pImpl->drawPolySomething(vertices, true);
 }
 
-void VSDSVGGenerator::drawPath(const ::WPXPropertyListVector &path)
+void VSDSVGGenerator::drawPath(const ::RVNGPropertyListVector &path)
 {
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "path d=\" ";
   bool isClosed = false;
   unsigned i=0;
   for(i=0; i < path.count(); i++)
   {
-    WPXPropertyList propList = path[i];
+    RVNGPropertyList propList = path[i];
     if (!propList["libwpg:path-action"]) continue;
     std::string action=propList["libwpg:path-action"]->getStr().cstr();
     if (action.length()!=1) continue;
@@ -695,11 +695,11 @@ void VSDSVGGenerator::drawPath(const ::WPXPropertyListVector &path)
   m_pImpl->m_outputSink << "/>\n";
 }
 
-void VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData)
+void VSDSVGGenerator::drawGraphicObject(const ::RVNGPropertyList &propList, const ::RVNGBinaryData &binaryData)
 {
   if (!propList["libwpg:mime-type"] || propList["libwpg:mime-type"]->getStr().len() <= 0)
     return;
-  WPXString base64 = binaryData.getBase64Data();
+  RVNGString base64 = binaryData.getBase64Data();
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "image ";
   if (propList["svg:x"] && propList["svg:y"] && propList["svg:width"] && propList["svg:height"])
   {
@@ -738,7 +738,7 @@ void VSDSVGGenerator::drawGraphicObject(const ::WPXPropertyList &propList, const
   m_pImpl->m_outputSink << "\" />\n";
 }
 
-void VSDSVGGenerator::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector & /* path */)
+void VSDSVGGenerator::startTextObject(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector & /* path */)
 {
   double x = 0.0;
   double y = 0.0;
@@ -803,7 +803,7 @@ void VSDSVGGenerator::endTextObject()
   m_pImpl->m_outputSink << "</" << m_pImpl->getNamespaceAndDelim() << "text>\n";
 }
 
-void VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
+void VSDSVGGenerator::openSpan(const ::RVNGPropertyList &propList)
 {
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "tspan ";
   if (propList["style:font-name"])
@@ -827,14 +827,14 @@ void VSDSVGGenerator::startTextSpan(const ::WPXPropertyList &propList)
   m_pImpl->m_outputSink << ">\n";
 }
 
-void VSDSVGGenerator::endTextSpan()
+void VSDSVGGenerator::closeSpan()
 {
   m_pImpl->m_outputSink << "</" << m_pImpl->getNamespaceAndDelim() << "tspan>\n";
 }
 
-void VSDSVGGenerator::insertText(const ::WPXString &str)
+void VSDSVGGenerator::insertText(const ::RVNGString &str)
 {
-  WPXString tempUTF8(str, true);
+  RVNGString tempUTF8(str, true);
   m_pImpl->m_outputSink << tempUTF8.cstr() << "\n";
 }
 

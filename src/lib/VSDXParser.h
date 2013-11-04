@@ -30,8 +30,7 @@
 #ifndef __VSDXPARSER_H__
 #define __VSDXPARSER_H__
 
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpg/libwpg.h>
+#include <librevenge/librevenge.h>
 #include "VSDXTheme.h"
 #include "VSDXMLParserBase.h"
 
@@ -48,7 +47,7 @@ class VSDXParser : public VSDXMLParserBase
   using VSDXMLParserBase::readLongData;
 
 public:
-  explicit VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  explicit VSDXParser(RVNGInputStream *input, RVNGDrawingInterface *painter);
   virtual ~VSDXParser();
   bool parseMain();
   bool extractStencils();
@@ -69,18 +68,18 @@ private:
 
   // Functions parsing the Visio 2013 OPC document structure
 
-  bool parseDocument(WPXInputStream *input, const char *name);
-  bool parseMasters(WPXInputStream *input, const char *name);
-  bool parseMaster(WPXInputStream *input, const char *name);
-  bool parsePages(WPXInputStream *input, const char *name);
-  bool parsePage(WPXInputStream *input, const char *name);
-  bool parseTheme(WPXInputStream *input, const char *name);
-  void processXmlDocument(WPXInputStream *input, VSDXRelationships &rels);
+  bool parseDocument(RVNGInputStream *input, const char *name);
+  bool parseMasters(RVNGInputStream *input, const char *name);
+  bool parseMaster(RVNGInputStream *input, const char *name);
+  bool parsePages(RVNGInputStream *input, const char *name);
+  bool parsePage(RVNGInputStream *input, const char *name);
+  bool parseTheme(RVNGInputStream *input, const char *name);
+  void processXmlDocument(RVNGInputStream *input, VSDXRelationships &rels);
   void processXmlNode(xmlTextReaderPtr reader);
 
   // Functions reading the Visio 2013 OPC document content
 
-  void extractBinaryData(WPXInputStream *input, const char *name);
+  void extractBinaryData(RVNGInputStream *input, const char *name);
 
   void readPageSheetProperties(xmlTextReaderPtr reader);
 
@@ -96,8 +95,8 @@ private:
 
   // Private data
 
-  WPXInputStream *m_input;
-  libwpg::WPGPaintInterface *m_painter;
+  RVNGInputStream *m_input;
+  RVNGDrawingInterface *m_painter;
   int m_currentDepth;
   VSDXRelationships *m_rels;
   VSDXTheme m_currentTheme;

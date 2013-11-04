@@ -33,8 +33,7 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
+#include <librevenge/librevenge.h>
 #include "VSDParser.h"
 #include "VSDInternalStream.h"
 
@@ -44,18 +43,18 @@ namespace libvisio
 class VSD6Parser : public VSDParser
 {
 public:
-  explicit VSD6Parser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  explicit VSD6Parser(RVNGInputStream *input, RVNGDrawingInterface *painter);
   ~VSD6Parser();
 protected:
-  virtual bool getChunkHeader(WPXInputStream *input);
+  virtual bool getChunkHeader(RVNGInputStream *input);
 private:
-  void readText(WPXInputStream *input);
-  virtual void readCharIX(WPXInputStream *input);
-  virtual void readParaIX(WPXInputStream *input);
-  virtual void readFillAndShadow(WPXInputStream *input);
-  virtual void readName(WPXInputStream *input);
-  virtual void readName2(WPXInputStream *input);
-  virtual void readTextField(WPXInputStream *input);
+  void readText(RVNGInputStream *input);
+  virtual void readCharIX(RVNGInputStream *input);
+  virtual void readParaIX(RVNGInputStream *input);
+  virtual void readFillAndShadow(RVNGInputStream *input);
+  virtual void readName(RVNGInputStream *input);
+  virtual void readName2(RVNGInputStream *input);
+  virtual void readTextField(RVNGInputStream *input);
 
   VSD6Parser();
   VSD6Parser(const VSDParser &);

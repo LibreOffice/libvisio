@@ -30,13 +30,12 @@
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
 #include "VSDXParser.h"
 #include "libvisio_utils.h"
 #include "VSDContentCollector.h"
 #include "VSDStylesCollector.h"
-#include "VSDZipStream.h"
 #include "VSDXMLHelper.h"
 #include "VSDXMLTokenMap.h"
 
@@ -66,7 +65,7 @@ std::string getRelationshipsForTarget(const char *target)
 } // anonymous namespace
 
 
-libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+libvisio::VSDXParser::VSDXParser(RVNGInputStream *input, RVNGDrawingInterface *painter)
   : VSDXMLParserBase(),
     m_input(input),
     m_painter(painter),
@@ -74,31 +73,21 @@ libvisio::VSDXParser::VSDXParser(WPXInputStream *input, libwpg::WPGPaintInterfac
     m_rels(0),
     m_currentTheme()
 {
-  input->seek(0, WPX_SEEK_CUR);
-  m_input = new VSDZipStream(input);
-  if (!m_input || !m_input->isOLEStream())
-  {
-    if (m_input)
-      delete m_input;
-    m_input = 0;
-  }
 }
 
 libvisio::VSDXParser::~VSDXParser()
 {
-  if (m_input)
-    delete m_input;
 }
 
 bool libvisio::VSDXParser::parseMain()
 {
-  if (!m_input)
+  if (!m_input || !m_input->isStructured())
     return false;
 
-  WPXInputStream *tmpInput = 0;
+  RVNGInputStream *tmpInput = 0;
   try
   {
-    tmpInput = m_input->getDocumentOLEStream("_rels/.rels");
+    tmpInput = m_input->getSubStreamByName("_rels/.rels");
     if (!tmpInput)
       return false;
 
@@ -142,19 +131,19 @@ bool libvisio::VSDXParser::extractStencils()
   return parseMain();
 }
 
-bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseDocument(RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
+  input->seek(0, RVNG_SEEK_SET);
+  if (!input->isStructured())
     return false;
-  WPXInputStream *stream = input->getDocumentOLEStream(name);
-  input->seek(0, WPX_SEEK_SET);
+  RVNGInputStream *stream = input->getSubStreamByName(name);
+  input->seek(0, RVNG_SEEK_SET);
   if (!stream)
     return false;
-  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  input->seek(0, WPX_SEEK_SET);
+  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -167,7 +156,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
     {
       VSD_DEBUG_MSG(("Could not parse theme\n"));
     }
-    input->seek(0, WPX_SEEK_SET);
+    input->seek(0, RVNG_SEEK_SET);
   }
 
   processXmlDocument(stream, rels);
@@ -179,7 +168,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
     {
       VSD_DEBUG_MSG(("Could not parse masters\n"));
     }
-    input->seek(0, WPX_SEEK_SET);
+    input->seek(0, RVNG_SEEK_SET);
   }
 
   rel = rels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/pages");
@@ -189,7 +178,7 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
     {
       VSD_DEBUG_MSG(("Could not parse pages\n"));
     }
-    input->seek(0, WPX_SEEK_SET);
+    input->seek(0, RVNG_SEEK_SET);
   }
 
   if (stream)
@@ -197,18 +186,18 @@ bool libvisio::VSDXParser::parseDocument(WPXInputStream *input, const char *name
   return true;
 }
 
-bool libvisio::VSDXParser::parseMasters(WPXInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseMasters(RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
+  input->seek(0, RVNG_SEEK_SET);
+  if (!input->isStructured())
     return false;
-  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
-  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  input->seek(0, WPX_SEEK_SET);
+  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -220,18 +209,18 @@ bool libvisio::VSDXParser::parseMasters(WPXInputStream *input, const char *name)
   return true;
 }
 
-bool libvisio::VSDXParser::parseMaster(WPXInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseMaster(RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
+  input->seek(0, RVNG_SEEK_SET);
+  if (!input->isStructured())
     return false;
-  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
-  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  input->seek(0, WPX_SEEK_SET);
+  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -243,18 +232,18 @@ bool libvisio::VSDXParser::parseMaster(WPXInputStream *input, const char *name)
   return true;
 }
 
-bool libvisio::VSDXParser::parsePages(WPXInputStream *input, const char *name)
+bool libvisio::VSDXParser::parsePages(RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
+  input->seek(0, RVNG_SEEK_SET);
+  if (!input->isStructured())
     return false;
-  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
-  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  input->seek(0, WPX_SEEK_SET);
+  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -266,18 +255,18 @@ bool libvisio::VSDXParser::parsePages(WPXInputStream *input, const char *name)
   return true;
 }
 
-bool libvisio::VSDXParser::parsePage(WPXInputStream *input, const char *name)
+bool libvisio::VSDXParser::parsePage(RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
+  input->seek(0, RVNG_SEEK_SET);
+  if (!input->isStructured())
     return false;
-  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
-  WPXInputStream *relStream = input->getDocumentOLEStream(getRelationshipsForTarget(name).c_str());
-  input->seek(0, WPX_SEEK_SET);
+  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -289,14 +278,14 @@ bool libvisio::VSDXParser::parsePage(WPXInputStream *input, const char *name)
   return true;
 }
 
-bool libvisio::VSDXParser::parseTheme(WPXInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseTheme(RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, WPX_SEEK_SET);
-  if (!input->isOLEStream())
+  input->seek(0, RVNG_SEEK_SET);
+  if (!input->isStructured())
     return false;
-  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
 
@@ -306,7 +295,7 @@ bool libvisio::VSDXParser::parseTheme(WPXInputStream *input, const char *name)
   return true;
 }
 
-void libvisio::VSDXParser::processXmlDocument(WPXInputStream *input, VSDXRelationships &rels)
+void libvisio::VSDXParser::processXmlDocument(RVNGInputStream *input, VSDXRelationships &rels)
 {
   if (!input)
     return;
@@ -525,13 +514,13 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
 
 #define VSDX_DATA_READ_SIZE 4096UL
 
-void libvisio::VSDXParser::extractBinaryData(WPXInputStream *input, const char *name)
+void libvisio::VSDXParser::extractBinaryData(RVNGInputStream *input, const char *name)
 {
   m_currentBinaryData.clear();
-  if (!input || !input->isOLEStream())
+  if (!input || !input->isStructured())
     return;
-  input->seek(0, WPX_SEEK_SET);
-  WPXInputStream *stream = input->getDocumentOLEStream(name);
+  input->seek(0, RVNG_SEEK_SET);
+  RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return;
   while (true)
@@ -540,7 +529,7 @@ void libvisio::VSDXParser::extractBinaryData(WPXInputStream *input, const char *
     const unsigned char *buffer = stream->read(VSDX_DATA_READ_SIZE, numBytesRead);
     if (numBytesRead)
       m_currentBinaryData.append(buffer, numBytesRead);
-    if (stream->atEOS())
+    if (stream->isEnd())
       break;
   }
   delete stream;
@@ -688,7 +677,7 @@ void libvisio::VSDXParser::readFonts(xmlTextReaderPtr reader)
       xmlChar *name = xmlTextReaderGetAttribute(reader, BAD_CAST("NameU"));
       if (name)
       {
-        WPXBinaryData textStream(name, xmlStrlen(name));
+        RVNGBinaryData textStream(name, xmlStrlen(name));
         m_fonts[idx] = VSDName(textStream, libvisio::VSD_TEXT_UTF8);
         xmlFree(name);
       }

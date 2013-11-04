@@ -74,7 +74,7 @@ int libvisio::VSDXTheme::getElementToken(xmlTextReaderPtr reader)
   return VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
 }
 
-bool libvisio::VSDXTheme::parse(WPXInputStream *input)
+bool libvisio::VSDXTheme::parse(RVNGInputStream *input)
 {
   if (!input)
     return false;

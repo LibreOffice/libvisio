@@ -33,8 +33,8 @@
 #include <string.h>
 #include <stack>
 
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpd/libwpd.h>
+#include <librevenge-stream/librevenge-stream.h>
+#include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 
 enum PainterCallback
@@ -72,35 +72,56 @@ enum PainterCallback
 		m_callStack.pop(); \
 	}
 
-class RawPainter : public libwpg::WPGPaintInterface
+class RawPainter : public RVNGDrawingInterface
 {
 public:
   RawPainter(bool printCallgraphScore);
 
   ~RawPainter();
 
-  void startGraphics(const ::WPXPropertyList &propList);
-  void endGraphics();
-  void startLayer(const ::WPXPropertyList &propList);
+  void startDocument(const ::RVNGPropertyList & /*propList*/) {}
+  void endDocument() {}
+  void setDocumentMetaData(const RVNGPropertyList & /*propList*/) {}
+  void startPage(const ::RVNGPropertyList &propList);
+  void endPage();
+  void startLayer(const ::RVNGPropertyList &propList);
   void endLayer();
-  void startEmbeddedGraphics(const ::WPXPropertyList &propList);
+  void startEmbeddedGraphics(const ::RVNGPropertyList &propList);
   void endEmbeddedGraphics();
 
-  void setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient);
+  void setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient);
 
-  void drawRectangle(const ::WPXPropertyList &propList);
-  void drawEllipse(const ::WPXPropertyList &propList);
-  void drawPolyline(const ::WPXPropertyListVector &vertices);
-  void drawPolygon(const ::WPXPropertyListVector &vertices);
-  void drawPath(const ::WPXPropertyListVector &path);
-  void drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData &binaryData);
-  void startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path);
+  void drawRectangle(const ::RVNGPropertyList &propList);
+  void drawEllipse(const ::RVNGPropertyList &propList);
+  void drawPolyline(const ::RVNGPropertyListVector &vertices);
+  void drawPolygon(const ::RVNGPropertyListVector &vertices);
+  void drawPath(const ::RVNGPropertyListVector &path);
+  void drawGraphicObject(const ::RVNGPropertyList &propList, const ::RVNGBinaryData &binaryData);
+  void startTextObject(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &path);
   void endTextObject();
-  void startTextLine(const ::WPXPropertyList &propList);
-  void endTextLine();
-  void startTextSpan(const ::WPXPropertyList &propList);
-  void endTextSpan();
-  void insertText(const ::WPXString &str);
+
+
+  void openOrderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void closeOrderedListLevel() {}
+
+  void openUnorderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void closeUnorderedListLevel() {}
+
+  void openListElement(const RVNGPropertyList & /*propList*/, const RVNGPropertyListVector & /* tabStops */) {}
+  void closeListElement() {}
+
+  void openParagraph(const RVNGPropertyList &propList, const RVNGPropertyListVector &tabStops);
+  void closeParagraph();
+
+  void openSpan(const RVNGPropertyList &propList);
+  void closeSpan();
+
+  void insertTab() {}
+  void insertSpace() {}
+  void insertText(const RVNGString &text);
+  void insertLineBreak() {}
+  void insertField(const RVNGString & /* type */, const RVNGPropertyList & /*propList*/) {}
+
 
 private:
   int m_indent;
@@ -122,10 +143,10 @@ private:
   void __idprintf(const char *format, ...);
 };
 
-WPXString getPropString(const WPXPropertyList &propList)
+RVNGString getPropString(const RVNGPropertyList &propList)
 {
-  WPXString propString;
-  WPXPropertyList::Iter i(propList);
+  RVNGString propString;
+  RVNGPropertyList::Iter i(propList);
   if (!i.last())
   {
     propString.append(i.key());
@@ -143,12 +164,12 @@ WPXString getPropString(const WPXPropertyList &propList)
   return propString;
 }
 
-WPXString getPropString(const WPXPropertyListVector &itemList)
+RVNGString getPropString(const RVNGPropertyListVector &itemList)
 {
-  WPXString propString;
+  RVNGString propString;
 
   propString.append("(");
-  WPXPropertyListVector::Iter i(itemList);
+  RVNGPropertyListVector::Iter i(itemList);
 
   if (!i.last())
   {
@@ -170,7 +191,7 @@ WPXString getPropString(const WPXPropertyListVector &itemList)
 }
 
 RawPainter::RawPainter(bool printCallgraphScore):
-  libwpg::WPGPaintInterface(),
+  RVNGDrawingInterface(),
   m_indent(0),
   m_callbackMisses(0),
   m_printCallgraphScore(printCallgraphScore),
@@ -218,17 +239,17 @@ void RawPainter::__idprintf(const char *format, ...)
   va_end(args);
 }
 
-void RawPainter::startGraphics(const ::WPXPropertyList &propList)
+void RawPainter::startPage(const ::RVNGPropertyList &propList)
 {
-  _U(("RawPainter::startGraphics(%s)\n", getPropString(propList).cstr()), PC_START_GRAPHICS);
+  _U(("RawPainter::startPage(%s)\n", getPropString(propList).cstr()), PC_START_GRAPHICS);
 }
 
-void RawPainter::endGraphics()
+void RawPainter::endPage()
 {
-  _D(("RawPainter::endGraphics\n"), PC_START_GRAPHICS);
+  _D(("RawPainter::endPage\n"), PC_START_GRAPHICS);
 }
 
-void RawPainter::startLayer(const ::WPXPropertyList &propList)
+void RawPainter::startLayer(const ::RVNGPropertyList &propList)
 {
   _U(("RawPainter::startLayer (%s)\n", getPropString(propList).cstr()), PC_START_LAYER);
 }
@@ -238,7 +259,7 @@ void RawPainter::endLayer()
   _D(("RawPainter::endLayer\n"), PC_START_LAYER);
 }
 
-void RawPainter::startEmbeddedGraphics(const ::WPXPropertyList &propList)
+void RawPainter::startEmbeddedGraphics(const ::RVNGPropertyList &propList)
 {
   _U(("RawPainter::startEmbeddedGraphics (%s)\n", getPropString(propList).cstr()), PC_START_EMBEDDED_GRAPHICS);
 }
@@ -248,7 +269,7 @@ void RawPainter::endEmbeddedGraphics()
   _D(("RawPainter::endEmbeddedGraphics \n"), PC_START_EMBEDDED_GRAPHICS);
 }
 
-void RawPainter::setStyle(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &gradient)
+void RawPainter::setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient)
 {
   if (m_printCallgraphScore)
     return;
@@ -256,7 +277,7 @@ void RawPainter::setStyle(const ::WPXPropertyList &propList, const ::WPXProperty
   __iprintf("RawPainter::setStyle(%s, gradient: (%s))\n", getPropString(propList).cstr(), getPropString(gradient).cstr());
 }
 
-void RawPainter::drawRectangle(const ::WPXPropertyList &propList)
+void RawPainter::drawRectangle(const ::RVNGPropertyList &propList)
 {
   if (m_printCallgraphScore)
     return;
@@ -264,7 +285,7 @@ void RawPainter::drawRectangle(const ::WPXPropertyList &propList)
   __iprintf("RawPainter::drawRectangle (%s)\n", getPropString(propList).cstr());
 }
 
-void RawPainter::drawEllipse(const ::WPXPropertyList &propList)
+void RawPainter::drawEllipse(const ::RVNGPropertyList &propList)
 {
   if (m_printCallgraphScore)
     return;
@@ -272,7 +293,7 @@ void RawPainter::drawEllipse(const ::WPXPropertyList &propList)
   __iprintf("RawPainter::drawEllipse (%s)\n", getPropString(propList).cstr());
 }
 
-void RawPainter::drawPolyline(const ::WPXPropertyListVector &vertices)
+void RawPainter::drawPolyline(const ::RVNGPropertyListVector &vertices)
 {
   if (m_printCallgraphScore)
     return;
@@ -280,7 +301,7 @@ void RawPainter::drawPolyline(const ::WPXPropertyListVector &vertices)
   __iprintf("RawPainter::drawPolyline (%s)\n", getPropString(vertices).cstr());
 }
 
-void RawPainter::drawPolygon(const ::WPXPropertyListVector &vertices)
+void RawPainter::drawPolygon(const ::RVNGPropertyListVector &vertices)
 {
   if (m_printCallgraphScore)
     return;
@@ -288,7 +309,7 @@ void RawPainter::drawPolygon(const ::WPXPropertyListVector &vertices)
   __iprintf("RawPainter::drawPolygon (%s)\n", getPropString(vertices).cstr());
 }
 
-void RawPainter::drawPath(const ::WPXPropertyListVector &path)
+void RawPainter::drawPath(const ::RVNGPropertyListVector &path)
 {
   if (m_printCallgraphScore)
     return;
@@ -296,7 +317,7 @@ void RawPainter::drawPath(const ::WPXPropertyListVector &path)
   __iprintf("RawPainter::drawPath (%s)\n", getPropString(path).cstr());
 }
 
-void RawPainter::drawGraphicObject(const ::WPXPropertyList &propList, const ::WPXBinaryData & /*binaryData*/)
+void RawPainter::drawGraphicObject(const ::RVNGPropertyList &propList, const ::RVNGBinaryData & /*binaryData*/)
 {
   if (m_printCallgraphScore)
     return;
@@ -304,7 +325,7 @@ void RawPainter::drawGraphicObject(const ::WPXPropertyList &propList, const ::WP
   __iprintf("RawPainter::drawGraphicObject (%s)\n", getPropString(propList).cstr());
 }
 
-void RawPainter::startTextObject(const ::WPXPropertyList &propList, const ::WPXPropertyListVector &path)
+void RawPainter::startTextObject(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &path)
 {
   _U(("RawPainter::startTextObject (%s, path: (%s))\n", getPropString(propList).cstr(), getPropString(path).cstr()), PC_START_TEXT_OBJECT);
 }
@@ -314,27 +335,27 @@ void RawPainter::endTextObject()
   _D(("RawPainter::endTextObject\n"), PC_START_TEXT_OBJECT);
 }
 
-void RawPainter::startTextLine(const ::WPXPropertyList &propList)
+void RawPainter::openParagraph(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &tabStops)
 {
-  _U(("RawPainter::startTextLine (%s)\n", getPropString(propList).cstr()), PC_START_TEXT_LINE);
+  _U(("RawPainter::openParagraph (%s, tabStops: (%s))\n", getPropString(propList).cstr(), getPropString(tabStops).cstr()), PC_START_TEXT_LINE);
 }
 
-void RawPainter::endTextLine()
+void RawPainter::closeParagraph()
 {
-  _D(("RawPainter::endTextLine\n"), PC_START_TEXT_LINE);
+  _D(("RawPainter::closeParagraph\n"), PC_START_TEXT_LINE);
 }
 
-void RawPainter::startTextSpan(const ::WPXPropertyList &propList)
+void RawPainter::openSpan(const ::RVNGPropertyList &propList)
 {
-  _U(("RawPainter::startTextSpan (%s)\n", getPropString(propList).cstr()), PC_START_TEXT_SPAN);
+  _U(("RawPainter::openSpan (%s)\n", getPropString(propList).cstr()), PC_START_TEXT_SPAN);
 }
 
-void RawPainter::endTextSpan()
+void RawPainter::closeSpan()
 {
-  _D(("RawPainter::endTextSpan\n"), PC_START_TEXT_SPAN);
+  _D(("RawPainter::closeSpan\n"), PC_START_TEXT_SPAN);
 }
 
-void RawPainter::insertText(const ::WPXString &str)
+void RawPainter::insertText(const ::RVNGString &str)
 {
   if (m_printCallgraphScore)
     return;
@@ -379,7 +400,7 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  WPXFileStream input(file);
+  RVNGFileStream input(file);
 
   if (!libvisio::VisioDocument::isSupported(&input))
   {

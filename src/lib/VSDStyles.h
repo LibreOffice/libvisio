@@ -34,7 +34,6 @@
 #include <map>
 #include <vector>
 #include <boost/optional.hpp>
-#include <libwpg/libwpg.h>
 #include "VSDTypes.h"
 
 namespace libvisio

@@ -53,12 +53,12 @@ public:
   virtual ~VSDStylesCollector() {}
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
-  void collectForeignData(unsigned level, const WPXBinaryData &binaryData);
+  void collectForeignData(unsigned level, const RVNGBinaryData &binaryData);
   void collectOLEList(unsigned id, unsigned level)
   {
     collectUnhandledChunk(id, level);
   }
-  void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData);
+  void collectOLEData(unsigned id, unsigned level, const RVNGBinaryData &oleData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
                    const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
@@ -103,7 +103,7 @@ public:
   void collectRelQuadBezTo(unsigned id, unsigned level, double x, double y, double a, double b);
   void collectUnhandledChunk(unsigned id, unsigned level);
 
-  void collectText(unsigned level, const ::WPXBinaryData &textStream, TextFormat format);
+  void collectText(unsigned level, const ::RVNGBinaryData &textStream, TextFormat format);
   void collectCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
                      const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                      const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
@@ -131,7 +131,7 @@ public:
   {
     collectUnhandledChunk(id, level);
   }
-  void collectName(unsigned id, unsigned level, const ::WPXBinaryData &name, TextFormat format);
+  void collectName(unsigned id, unsigned level, const ::RVNGBinaryData &name, TextFormat format);
   void collectPageSheet(unsigned id, unsigned level);
   void collectMisc(unsigned level, const VSDMisc &misc);
 

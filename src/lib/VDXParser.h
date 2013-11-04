@@ -30,8 +30,7 @@
 #ifndef __VDXPARSER_H__
 #define __VDXPARSER_H__
 
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpg/libwpg.h>
+#include <librevenge/librevenge.h>
 #include "VSDXMLParserBase.h"
 
 namespace libvisio
@@ -47,7 +46,7 @@ class VDXParser : public VSDXMLParserBase
   using VSDXMLParserBase::readLongData;
 
 public:
-  explicit VDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter);
+  explicit VDXParser(RVNGInputStream *input, RVNGDrawingInterface *painter);
   virtual ~VDXParser();
   bool parseMain();
   bool extractStencils();
@@ -66,7 +65,7 @@ private:
 
   // Functions to read the DatadiagramML document structure
 
-  bool processXmlDocument(WPXInputStream *input);
+  bool processXmlDocument(RVNGInputStream *input);
   void processXmlNode(xmlTextReaderPtr reader);
 
   // Functions reading the DiagramML document content
@@ -85,8 +84,8 @@ private:
 
   // Private data
 
-  WPXInputStream *m_input;
-  libwpg::WPGPaintInterface *m_painter;
+  RVNGInputStream *m_input;
+  RVNGDrawingInterface *m_painter;
 };
 
 } // namespace libvisio

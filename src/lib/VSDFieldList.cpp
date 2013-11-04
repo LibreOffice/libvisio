@@ -42,13 +42,13 @@ libvisio::VSDFieldListElement *libvisio::VSDTextField::clone()
   return new VSDTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
 
-WPXString libvisio::VSDTextField::getString(const std::map<unsigned, WPXString> &strVec)
+RVNGString libvisio::VSDTextField::getString(const std::map<unsigned, RVNGString> &strVec)
 {
-  std::map<unsigned, WPXString>::const_iterator iter = strVec.find(m_nameId);
+  std::map<unsigned, RVNGString>::const_iterator iter = strVec.find(m_nameId);
   if (iter != strVec.end())
     return iter->second;
   else
-    return WPXString();
+    return RVNGString();
 }
 
 void libvisio::VSDTextField::setNameId(int nameId)
@@ -69,9 +69,9 @@ libvisio::VSDFieldListElement *libvisio::VSDNumericField::clone()
 
 #define MAX_BUFFER 1024
 
-WPXString libvisio::VSDNumericField::datetimeToString(const char *format, double datetime)
+RVNGString libvisio::VSDNumericField::datetimeToString(const char *format, double datetime)
 {
-  WPXString result;
+  RVNGString result;
   char buffer[MAX_BUFFER];
   time_t timer = (time_t)(86400 * datetime - 2209161600.0);
   const struct tm *const time = gmtime(&timer);
@@ -83,10 +83,10 @@ WPXString libvisio::VSDNumericField::datetimeToString(const char *format, double
   return result;
 }
 
-WPXString libvisio::VSDNumericField::getString(const std::map<unsigned, WPXString> &)
+RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, RVNGString> &)
 {
   if (m_format == 0xffff)
-    return WPXString();
+    return RVNGString();
   switch (m_format)
   {
   case VSD_FIELD_FORMAT_DateMDYY:
@@ -161,8 +161,8 @@ WPXString libvisio::VSDNumericField::getString(const std::map<unsigned, WPXStrin
     return datetimeToString("%x %X", m_number);
   default:
   {
-    WPXString result;
-    WPXProperty *pProp = WPXPropertyFactory::newDoubleProp(m_number);
+    RVNGString result;
+    RVNGProperty *pProp = RVNGPropertyFactory::newDoubleProp(m_number);
     if (pProp)
     {
       result = pProp->getStr();

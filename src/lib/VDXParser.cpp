@@ -30,18 +30,17 @@
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
 #include "VDXParser.h"
 #include "libvisio_utils.h"
 #include "VSDContentCollector.h"
 #include "VSDStylesCollector.h"
-#include "VSDZipStream.h"
 #include "VSDXMLHelper.h"
 #include "VSDXMLTokenMap.h"
 
 
-libvisio::VDXParser::VDXParser(WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+libvisio::VDXParser::VDXParser(RVNGInputStream *input, RVNGDrawingInterface *painter)
   : VSDXMLParserBase(), m_input(input), m_painter(painter)
 {
 }
@@ -63,7 +62,7 @@ bool libvisio::VDXParser::parseMain()
 
     VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
     m_collector = &stylesCollector;
-    m_input->seek(0, WPX_SEEK_SET);
+    m_input->seek(0, RVNG_SEEK_SET);
     if (!processXmlDocument(m_input))
       return false;
 
@@ -71,7 +70,7 @@ bool libvisio::VDXParser::parseMain()
 
     VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
     m_collector = &contentCollector;
-    m_input->seek(0, WPX_SEEK_SET);
+    m_input->seek(0, RVNG_SEEK_SET);
     if (!processXmlDocument(m_input))
       return false;
 
@@ -89,7 +88,7 @@ bool libvisio::VDXParser::extractStencils()
   return parseMain();
 }
 
-bool libvisio::VDXParser::processXmlDocument(WPXInputStream *input)
+bool libvisio::VDXParser::processXmlDocument(RVNGInputStream *input)
 {
   if (!input)
     return false;
@@ -715,7 +714,7 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
       if (id && name)
       {
         unsigned idx = (unsigned)xmlStringToLong(id);
-        WPXBinaryData textStream(name, xmlStrlen(name));
+        RVNGBinaryData textStream(name, xmlStrlen(name));
         m_fonts[idx] = VSDName(textStream, libvisio::VSD_TEXT_UTF8);
       }
       xmlFree(name);

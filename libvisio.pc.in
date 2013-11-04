@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@
 Description: Library for parsing the visio file format structure
 Version: @VERSION@
-Requires: libwpd-0.9 libwpd-stream-0.9 libwpg-0.2
+Requires: librevenge-0.9 librevenge-stream-0.9 libwpg-0.2
 Libs: -L${libdir} -lvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@
 Cflags: -I${includedir}/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@

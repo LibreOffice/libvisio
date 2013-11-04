@@ -57,12 +57,12 @@ void libvisio::VSDStylesCollector::collectEllipticalArcTo(unsigned /* id */, uns
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectForeignData(unsigned level, const WPXBinaryData & /* binaryData */)
+void libvisio::VSDStylesCollector::collectForeignData(unsigned level, const RVNGBinaryData & /* binaryData */)
 {
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectOLEData(unsigned /* id */, unsigned level, const WPXBinaryData & /* oleData */)
+void libvisio::VSDStylesCollector::collectOLEData(unsigned /* id */, unsigned level, const RVNGBinaryData & /* oleData */)
 {
   _handleLevelChange(level);
 }
@@ -269,7 +269,7 @@ void libvisio::VSDStylesCollector::collectUnhandledChunk(unsigned /* id */, unsi
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectText(unsigned level, const ::WPXBinaryData & /*textStream*/, TextFormat /*format*/)
+void libvisio::VSDStylesCollector::collectText(unsigned level, const ::RVNGBinaryData & /*textStream*/, TextFormat /*format*/)
 {
   _handleLevelChange(level);
 }
@@ -316,7 +316,7 @@ void libvisio::VSDStylesCollector::collectTextBlock(unsigned level, const boost:
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectName(unsigned /*id*/, unsigned level, const ::WPXBinaryData & /*name*/, TextFormat /*format*/)
+void libvisio::VSDStylesCollector::collectName(unsigned /*id*/, unsigned level, const ::RVNGBinaryData & /*name*/, TextFormat /*format*/)
 {
   _handleLevelChange(level);
 }

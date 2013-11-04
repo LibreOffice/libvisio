@@ -44,16 +44,16 @@ RSC=rc.exe
 MTL=midl.exe
 # ADD BASE MTL /nologo /win32
 # ADD MTL /nologo /win32
-# ADD BASE CPP /nologo /MT /W3 /GX /Zi /I "..\..\src\lib" /I "libwpd-0.9" /I "libwpg-0.2" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /c
-# ADD CPP /nologo /MT /W3 /GX /I "..\..\src\lib" /I "libwpd-0.9" /I "libwpg-0.2" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /c
+# ADD BASE CPP /nologo /MT /W3 /GX /Zi /I "..\..\src\lib" /I "librevenge-0.9" /I "libwpg-0.2" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /c
+# ADD CPP /nologo /MT /W3 /GX /I "..\..\src\lib" /I "librevenge-0.9" /I "libwpg-0.2" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\vsd2xhtml.exe" /libpath:"Release\lib"
-# ADD LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\vsd2xhtml.exe" /libpath:"Release\lib"
+# ADD BASE LINK32 libvisio-0.0.lib libwpg-0.2.lib librevenge-0.9.lib librevenge-stream-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\vsd2xhtml.exe" /libpath:"Release\lib"
+# ADD LINK32 libvisio-0.0.lib libwpg-0.2.lib librevenge-0.9.lib librevenge-stream-0.9.lib /nologo /subsystem:console /machine:IX86 /out:"Release\bin\vsd2xhtml.exe" /libpath:"Release\lib"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "vsd2xhtml - Win32 Debug"
@@ -72,16 +72,16 @@ LINK32=link.exe
 MTL=midl.exe
 # ADD BASE MTL /nologo /win32
 # ADD MTL /nologo /win32
-# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\src\lib" /I "libwpd-0.9" /I "libwpg-0.2" /D "WIN32" /D "_DEBUG" /D "DEBUG" /D "_CONSOLE" /GZ /c
-# ADD CPP /nologo /MTd /W3 /GX /ZI /Od /I "..\..\src\lib" /I "libwpd-0.9" /I "libwpg-0.2" /D "_DEBUG" /D "DEBUG" /D "WIN32" /D "_CONSOLE" /GZ /c
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "..\..\src\lib" /I "librevenge-0.9" /I "libwpg-0.2" /D "WIN32" /D "_DEBUG" /D "DEBUG" /D "_CONSOLE" /GZ /c
+# ADD CPP /nologo /MTd /W3 /GX /ZI /Od /I "..\..\src\lib" /I "librevenge-0.9" /I "libwpg-0.2" /D "_DEBUG" /D "DEBUG" /D "WIN32" /D "_CONSOLE" /GZ /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\vsd2xhtml.exe" /libpath:"Debug\lib"
-# ADD LINK32 libvisio-0.0.lib libwpg-0.2.lib libwpd-0.9.lib libwpd-stream-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\vsd2xhtml.exe" /libpath:"Debug\lib"
+# ADD BASE LINK32 libvisio-0.0.lib libwpg-0.2.lib librevenge-0.9.lib librevenge-stream-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\vsd2xhtml.exe" /libpath:"Debug\lib"
+# ADD LINK32 libvisio-0.0.lib libwpg-0.2.lib librevenge-0.9.lib librevenge-stream-0.9.lib /nologo /subsystem:console /debug /machine:IX86 /out:"Debug\bin\vsd2xhtml.exe" /libpath:"Debug\lib"
 # SUBTRACT LINK32 /nodefaultlib
 
 !ENDIF 

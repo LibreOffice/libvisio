@@ -39,9 +39,9 @@
 #include <boost/archive/iterators/transform_width.hpp>
 #include <boost/range/iterator_range.hpp>
 
-uint8_t libvisio::readU8(WPXInputStream *input)
+uint8_t libvisio::readU8(RVNGInputStream *input)
 {
-  if (!input || input->atEOS())
+  if (!input || input->isEnd())
   {
     VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
     throw EndOfStreamException();
@@ -55,9 +55,9 @@ uint8_t libvisio::readU8(WPXInputStream *input)
   throw EndOfStreamException();
 }
 
-uint16_t libvisio::readU16(WPXInputStream *input)
+uint16_t libvisio::readU16(RVNGInputStream *input)
 {
-  if (!input || input->atEOS())
+  if (!input || input->isEnd())
   {
     VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
     throw EndOfStreamException();
@@ -71,14 +71,14 @@ uint16_t libvisio::readU16(WPXInputStream *input)
   throw EndOfStreamException();
 }
 
-int16_t libvisio::readS16(WPXInputStream *input)
+int16_t libvisio::readS16(RVNGInputStream *input)
 {
   return (int16_t)readU16(input);
 }
 
-uint32_t libvisio::readU32(WPXInputStream *input)
+uint32_t libvisio::readU32(RVNGInputStream *input)
 {
-  if (!input || input->atEOS())
+  if (!input || input->isEnd())
   {
     VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
     throw EndOfStreamException();
@@ -92,14 +92,14 @@ uint32_t libvisio::readU32(WPXInputStream *input)
   throw EndOfStreamException();
 }
 
-int32_t libvisio::readS32(WPXInputStream *input)
+int32_t libvisio::readS32(RVNGInputStream *input)
 {
   return (int32_t)readU32(input);
 }
 
-uint64_t libvisio::readU64(WPXInputStream *input)
+uint64_t libvisio::readU64(RVNGInputStream *input)
 {
-  if (!input || input->atEOS())
+  if (!input || input->isEnd())
   {
     VSD_DEBUG_MSG(("Throwing EndOfStreamException\n"));
     throw EndOfStreamException();
@@ -113,7 +113,7 @@ uint64_t libvisio::readU64(WPXInputStream *input)
   throw EndOfStreamException();
 }
 
-double libvisio::readDouble(WPXInputStream *input)
+double libvisio::readDouble(RVNGInputStream *input)
 {
   union
   {
@@ -126,7 +126,7 @@ double libvisio::readDouble(WPXInputStream *input)
   return tmpUnion.d;
 }
 
-void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64Data, size_t base64DataLength)
+void libvisio::appendFromBase64(RVNGBinaryData &data, const unsigned char *base64Data, size_t base64DataLength)
 {
   std::string base64String((const char *)base64Data, base64DataLength);
   unsigned numPadding = std::count(base64String.begin(), base64String.end(), '=');
@@ -145,9 +145,9 @@ void libvisio::appendFromBase64(WPXBinaryData &data, const unsigned char *base64
   }
 }
 
-const ::WPXString libvisio::getColourString(const Colour &c)
+const ::RVNGString libvisio::getColourString(const Colour &c)
 {
-  ::WPXString sColour;
+  ::RVNGString sColour;
   sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
   return sColour;
 }

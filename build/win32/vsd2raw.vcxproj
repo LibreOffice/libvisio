@@ -70,7 +70,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libvisio-0.0.lib;libwpd-0.9.lib;libwpd-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libvisio-0.0.lib;librevenge-0.9.lib;librevenge-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Debug\bin\vsd2raw.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>Debug\lib;$(LIBWPD_LIB_DIR);$(LIBXML_LIB_DIR);$(ZLIB_LIB_DIR);$(ICU_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -112,7 +112,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libvisio-0.0.lib;libwpd-0.9.lib;libwpd-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libvisio-0.0.lib;librevenge-0.9.lib;librevenge-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\bin\vsd2raw.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>Release\lib;$(LIBWPD_LIB_DIR);$(LIBXML_LIB_DIR);$(ZLIB_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

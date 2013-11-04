@@ -525,7 +525,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\src\lib\VSDStringVector.cpp"
+				RelativePath="..\..\src\lib\RVNGStringVector.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -758,7 +758,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\inc\libvisio\VSDStringVector.h"
+				RelativePath="..\..\inc\libvisio\RVNGStringVector.h"
 				>
 			</File>
 			<File

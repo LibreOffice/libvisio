@@ -32,17 +32,17 @@
 
 #include <map>
 #include <string>
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 #include <libxml/xmlreader.h>
 #include "VSDTypes.h"
 
 namespace libvisio
 {
 
-// create an xmlTextReader pointer from a WPXInputStream pointer
+// create an xmlTextReader pointer from a RVNGInputStream pointer
 // needs to be freed using xmlTextReaderFree function.
 
-xmlTextReaderPtr xmlReaderForStream(WPXInputStream *input,
+xmlTextReaderPtr xmlReaderForStream(RVNGInputStream *input,
                                     const char *URL,
                                     const char *encoding,
                                     int options);
@@ -91,7 +91,7 @@ private:
 class VSDXRelationships
 {
 public:
-  VSDXRelationships(WPXInputStream *input);
+  VSDXRelationships(RVNGInputStream *input);
   ~VSDXRelationships();
 
   void rebaseTargets(const char *baseDir);

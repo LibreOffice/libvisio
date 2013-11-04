@@ -31,8 +31,6 @@
 #ifndef __LIBVISIO_H__
 #define __LIBVISIO_H__
 
-#include <libwpd/libwpd.h>
-#include <libwpg/libwpg.h>
 #include "VisioDocument.h"
 
 #endif

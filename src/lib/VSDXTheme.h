@@ -32,7 +32,7 @@
 
 #include <vector>
 #include <boost/optional.hpp>
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 #include "VSDXMLHelper.h"
 
 namespace libvisio
@@ -77,7 +77,7 @@ class VSDXTheme
 public:
   VSDXTheme();
   ~VSDXTheme();
-  bool parse(WPXInputStream *input);
+  bool parse(RVNGInputStream *input);
 
 private:
   VSDXTheme(const VSDXTheme &);

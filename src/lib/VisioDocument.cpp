@@ -29,7 +29,7 @@
  */
 
 #include <string>
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 #include "libvisio_utils.h"
 #include "VDXParser.h"
@@ -39,14 +39,13 @@
 #include "VSD5Parser.h"
 #include "VSD6Parser.h"
 #include "VSDXMLHelper.h"
-#include "VSDZipStream.h"
 
 namespace
 {
 
 #define VISIO_MAGIC_LENGTH 21
 
-static bool checkVisioMagic(WPXInputStream *input)
+static bool checkVisioMagic(RVNGInputStream *input)
 {
   int startPosition = (int)input->tell();
   try
@@ -98,38 +97,38 @@ static bool checkVisioMagic(WPXInputStream *input)
       returnValue = false;
     else if (0x00 != buffer[20])
       returnValue = false;
-    input->seek(startPosition, WPX_SEEK_SET);
+    input->seek(startPosition, RVNG_SEEK_SET);
     return returnValue;
   }
   catch (...)
   {
-    input->seek(startPosition, WPX_SEEK_SET);
+    input->seek(startPosition, RVNG_SEEK_SET);
     return false;
   }
 }
 
-static bool isBinaryVisioDocument(WPXInputStream *input)
+static bool isBinaryVisioDocument(RVNGInputStream *input)
 {
-  WPXInputStream *docStream = 0;
+  RVNGInputStream *docStream = 0;
   try
   {
-    input->seek(0, WPX_SEEK_SET);
-    if (input->isOLEStream())
+    input->seek(0, RVNG_SEEK_SET);
+    if (input->isStructured())
     {
-      input->seek(0, WPX_SEEK_SET);
-      docStream = input->getDocumentOLEStream("VisioDocument");
+      input->seek(0, RVNG_SEEK_SET);
+      docStream = input->getSubStreamByName("VisioDocument");
     }
     if (!docStream)
       docStream = input;
 
-    docStream->seek(0, WPX_SEEK_SET);
+    docStream->seek(0, RVNG_SEEK_SET);
     unsigned char version = 0;
     if (checkVisioMagic(docStream))
     {
-      docStream->seek(0x1A, WPX_SEEK_SET);
+      docStream->seek(0x1A, RVNG_SEEK_SET);
       version = libvisio::readU8(docStream);
     }
-    input->seek(0, WPX_SEEK_SET);
+    input->seek(0, RVNG_SEEK_SET);
     if (docStream && docStream != input)
       delete docStream;
     docStream = 0;
@@ -152,17 +151,17 @@ static bool isBinaryVisioDocument(WPXInputStream *input)
   return false;
 }
 
-static bool parseBinaryVisioDocument(WPXInputStream *input, libwpg::WPGPaintInterface *painter, bool isStencilExtraction)
+static bool parseBinaryVisioDocument(RVNGInputStream *input, RVNGDrawingInterface *painter, bool isStencilExtraction)
 {
   VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
-  input->seek(0, WPX_SEEK_SET);
-  WPXInputStream *docStream = 0;
-  if (input->isOLEStream())
-    docStream = input->getDocumentOLEStream("VisioDocument");
+  input->seek(0, RVNG_SEEK_SET);
+  RVNGInputStream *docStream = 0;
+  if (input->isStructured())
+    docStream = input->getSubStreamByName("VisioDocument");
   if (!docStream)
     docStream = input;
 
-  docStream->seek(0x1A, WPX_SEEK_SET);
+  docStream->seek(0x1A, RVNG_SEEK_SET);
 
   libvisio::VSDParser *parser = 0;
   try
@@ -218,18 +217,16 @@ static bool parseBinaryVisioDocument(WPXInputStream *input, libwpg::WPGPaintInte
   return false;
 }
 
-static bool isOpcVisioDocument(WPXInputStream *input)
+static bool isOpcVisioDocument(RVNGInputStream *input)
 {
-  WPXInputStream *tmpInput = 0;
+  RVNGInputStream *tmpInput = 0;
   try
   {
-    input->seek(0, WPX_SEEK_SET);
-    libvisio::VSDZipStream zinput(input);
-    // Kidnapping the OLE document API and extending it to support zip files.
-    if (!zinput.isOLEStream())
+    input->seek(0, RVNG_SEEK_SET);
+    if (!input->isStructured())
       return false;
 
-    tmpInput = zinput.getDocumentOLEStream("_rels/.rels");
+    tmpInput = input->getSubStreamByName("_rels/.rels");
     if (!tmpInput)
       return false;
 
@@ -242,7 +239,7 @@ static bool isOpcVisioDocument(WPXInputStream *input)
       return false;
 
     // check whether the pointed Visio document stream exists in the document
-    tmpInput = zinput.getDocumentOLEStream(rel->getTarget().c_str());
+    tmpInput = input->getSubStreamByName(rel->getTarget().c_str());
     if (!tmpInput)
       return false;
     delete tmpInput;
@@ -256,10 +253,10 @@ static bool isOpcVisioDocument(WPXInputStream *input)
   }
 }
 
-static bool parseOpcVisioDocument(WPXInputStream *input, libwpg::WPGPaintInterface *painter, bool isStencilExtraction)
+static bool parseOpcVisioDocument(RVNGInputStream *input, RVNGDrawingInterface *painter, bool isStencilExtraction)
 {
   VSD_DEBUG_MSG(("Parsing Visio Document based on Open Packaging Convention\n"));
-  input->seek(0, WPX_SEEK_SET);
+  input->seek(0, RVNG_SEEK_SET);
   libvisio::VSDXParser parser(input, painter);
   if (isStencilExtraction && parser.extractStencils())
     return true;
@@ -268,12 +265,12 @@ static bool parseOpcVisioDocument(WPXInputStream *input, libwpg::WPGPaintInterfa
   return false;
 }
 
-static bool isXmlVisioDocument(WPXInputStream *input)
+static bool isXmlVisioDocument(RVNGInputStream *input)
 {
   xmlTextReaderPtr reader = 0;
   try
   {
-    input->seek(0, WPX_SEEK_SET);
+    input->seek(0, RVNG_SEEK_SET);
     reader = libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER);
     if (!reader)
       return false;
@@ -324,10 +321,10 @@ static bool isXmlVisioDocument(WPXInputStream *input)
   }
 }
 
-static bool parseXmlVisioDocument(WPXInputStream *input, libwpg::WPGPaintInterface *painter, bool isStencilExtraction)
+static bool parseXmlVisioDocument(RVNGInputStream *input, RVNGDrawingInterface *painter, bool isStencilExtraction)
 {
   VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
-  input->seek(0, WPX_SEEK_SET);
+  input->seek(0, RVNG_SEEK_SET);
   libvisio::VDXParser parser(input, painter);
   if (isStencilExtraction && parser.extractStencils())
     return true;
@@ -345,7 +342,7 @@ Analyzes the content of an input stream to see if it can be parsed
 \return A value that indicates whether the content from the input
 stream is a Visio Document that libvisio able to parse
 */
-bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
+bool libvisio::VisioDocument::isSupported(RVNGInputStream *input)
 {
   if (isBinaryVisioDocument(input))
     return true;
@@ -358,13 +355,13 @@ bool libvisio::VisioDocument::isSupported(WPXInputStream *input)
 
 /**
 Parses the input stream content. It will make callbacks to the functions provided by a
-WPGPaintInterface class implementation when needed. This is often commonly called the
+RVNGDrawingInterface class implementation when needed. This is often commonly called the
 'main parsing routine'.
 \param input The input stream
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+bool libvisio::VisioDocument::parse(::RVNGInputStream *input, RVNGDrawingInterface *painter)
 {
   if (isBinaryVisioDocument(input))
   {
@@ -389,13 +386,13 @@ bool libvisio::VisioDocument::parse(::WPXInputStream *input, libwpg::WPGPaintInt
 
 /**
 Parses the input stream content and extracts stencil pages, one stencil page per output page.
-It will make callbacks to the functions provided by a WPGPaintInterface class implementation
+It will make callbacks to the functions provided by a RVNGDrawingInterface class implementation
 when needed.
 \param input The input stream
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parseStencils(::WPXInputStream *input, libwpg::WPGPaintInterface *painter)
+bool libvisio::VisioDocument::parseStencils(RVNGInputStream *input, RVNGDrawingInterface *painter)
 {
   if (isBinaryVisioDocument(input))
   {
@@ -426,7 +423,7 @@ Provided as a convenience function for applications that support SVG internally.
 \param output The output string whose content is the resulting SVG
 \return A value that indicates whether the SVG generation was successful.
 */
-bool libvisio::VisioDocument::generateSVG(::WPXInputStream *input, libvisio::VSDStringVector &output)
+bool libvisio::VisioDocument::generateSVG(RVNGInputStream *input, RVNGStringVector &output)
 {
   libvisio::VSDSVGGenerator generator(output);
   bool result = libvisio::VisioDocument::parse(input, &generator);
@@ -441,7 +438,7 @@ Provided as a convenience function for applications that support SVG internally.
 \param output The output string whose content is the resulting SVG
 \return A value that indicates whether the SVG generation was successful.
 */
-bool libvisio::VisioDocument::generateSVGStencils(::WPXInputStream *input, libvisio::VSDStringVector &output)
+bool libvisio::VisioDocument::generateSVGStencils(RVNGInputStream *input, RVNGStringVector &output)
 {
   libvisio::VSDSVGGenerator generator(output);
   bool result = libvisio::VisioDocument::parseStencils(input, &generator);

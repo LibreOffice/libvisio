@@ -33,7 +33,7 @@
 
 #include <vector>
 #include <map>
-#include <libwpd/libwpd.h>
+#include <librevenge/librevenge.h>
 #include "VSDDocumentStructure.h"
 #include "VSDTypes.h"
 
@@ -49,7 +49,7 @@ public:
   virtual ~VSDFieldListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDFieldListElement *clone() = 0;
-  virtual WPXString getString(const std::map<unsigned, WPXString> &) = 0;
+  virtual RVNGString getString(const std::map<unsigned, RVNGString> &) = 0;
   virtual void setNameId(int) = 0;
   virtual void setFormat(unsigned short) = 0;
   virtual void setValue(double) = 0;
@@ -66,7 +66,7 @@ public:
   ~VSDTextField() {}
   void handle(VSDCollector *collector) const;
   VSDFieldListElement *clone();
-  WPXString getString(const std::map<unsigned, WPXString> &strVec);
+  RVNGString getString(const std::map<unsigned, RVNGString> &strVec);
   void setNameId(int nameId);
   void setFormat(unsigned short) {}
   void setValue(double) {}
@@ -87,12 +87,12 @@ public:
   ~VSDNumericField() {}
   void handle(VSDCollector *collector) const;
   VSDFieldListElement *clone();
-  WPXString getString(const std::map<unsigned, WPXString> &);
+  RVNGString getString(const std::map<unsigned, RVNGString> &);
   void setNameId(int) {}
   void setFormat(unsigned short format);
   void setValue(double number);
 private:
-  WPXString datetimeToString(const char *format, double datetime);
+  RVNGString datetimeToString(const char *format, double datetime);
   unsigned m_id, m_level;
   unsigned short m_format;
   double m_number;

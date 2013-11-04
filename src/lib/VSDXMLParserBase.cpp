@@ -30,14 +30,13 @@
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/spirit/include/classic.hpp>
 #include "VSDXMLParserBase.h"
 #include "libvisio_utils.h"
 #include "VSDContentCollector.h"
 #include "VSDStylesCollector.h"
-#include "VSDZipStream.h"
 #include "VSDXMLHelper.h"
 #include "VSDXMLTokenMap.h"
 
@@ -1114,7 +1113,7 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
     bool isBackgroundPage = background ? xmlStringToBool(background) : false;
     m_isPageStarted = true;
     m_collector->startPage(nId);
-    m_collector->collectPage(nId, (unsigned)getElementDepth(reader), backgroundPageID, isBackgroundPage, pageName ? VSDName(WPXBinaryData(pageName, xmlStrlen(pageName)), VSD_TEXT_UTF8) : VSDName());
+    m_collector->collectPage(nId, (unsigned)getElementDepth(reader), backgroundPageID, isBackgroundPage, pageName ? VSDName(RVNGBinaryData(pageName, xmlStrlen(pageName)), VSD_TEXT_UTF8) : VSDName());
   }
   if (id)
     xmlFree(id);
@@ -1161,7 +1160,7 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
     default:
       if (XML_READER_TYPE_TEXT == tokenType || XML_READER_TYPE_SIGNIFICANT_WHITESPACE == tokenType)
       {
-        WPXBinaryData tmpText;
+        RVNGBinaryData tmpText;
         const unsigned char *tmpBuffer = xmlTextReaderConstValue(reader);
         int tmpLength = xmlStrlen(tmpBuffer);
         for (int i = 0; i < tmpLength && tmpBuffer[i]; ++i)
@@ -1263,11 +1262,11 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
             if (iter != m_fonts.end())
               font = iter->second;
             else
-              font = VSDName(WPXBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
+              font = VSDName(RVNGBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
           }
           catch (const XmlParserException &)
           {
-            font = VSDName(WPXBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
+            font = VSDName(RVNGBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
           }
         }
         if (stringValue)

@@ -31,49 +31,70 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpd/libwpd.h>
+#include <librevenge-stream/librevenge-stream.h>
+#include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 
-class TextPainter : public libwpg::WPGPaintInterface
+class TextPainter : public RVNGDrawingInterface
 {
 public:
   TextPainter();
 
-  void startGraphics(const ::WPXPropertyList &) {}
-  void endGraphics() {}
-  void startLayer(const ::WPXPropertyList &) {}
+  void startDocument(const ::RVNGPropertyList & /*propList*/) {}
+  void endDocument() {}
+  void setDocumentMetaData(const RVNGPropertyList & /*propList*/) {}
+  void startPage(const ::RVNGPropertyList &) {}
+  void endPage() {}
+  void startLayer(const ::RVNGPropertyList &) {}
   void endLayer() {}
-  void startEmbeddedGraphics(const ::WPXPropertyList &) {}
+  void startEmbeddedGraphics(const ::RVNGPropertyList &) {}
   void endEmbeddedGraphics() {}
 
-  void setStyle(const ::WPXPropertyList &, const ::WPXPropertyListVector &) {}
+  void setStyle(const ::RVNGPropertyList &, const ::RVNGPropertyListVector &) {}
 
-  void drawRectangle(const ::WPXPropertyList &) {}
-  void drawEllipse(const ::WPXPropertyList &) {}
-  void drawPolyline(const ::WPXPropertyListVector &) {}
-  void drawPolygon(const ::WPXPropertyListVector &) {}
-  void drawPath(const ::WPXPropertyListVector &) {}
-  void drawGraphicObject(const ::WPXPropertyList &, const ::WPXBinaryData &) {}
-  void startTextObject(const ::WPXPropertyList &, const ::WPXPropertyListVector &) {}
+  void drawRectangle(const ::RVNGPropertyList &) {}
+  void drawEllipse(const ::RVNGPropertyList &) {}
+  void drawPolyline(const ::RVNGPropertyListVector &) {}
+  void drawPolygon(const ::RVNGPropertyListVector &) {}
+  void drawPath(const ::RVNGPropertyListVector &) {}
+  void drawGraphicObject(const ::RVNGPropertyList &, const ::RVNGBinaryData &) {}
+  void startTextObject(const ::RVNGPropertyList &, const ::RVNGPropertyListVector &) {}
   void endTextObject() {}
-  void startTextLine(const ::WPXPropertyList &) {}
-  void endTextLine();
-  void startTextSpan(const ::WPXPropertyList &) {}
-  void endTextSpan() {}
-  void insertText(const ::WPXString &str);
+
+
+  void openOrderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void closeOrderedListLevel() {}
+
+  void openUnorderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void closeUnorderedListLevel() {}
+
+  void openListElement(const RVNGPropertyList & /*propList*/, const RVNGPropertyListVector & /* tabStops */) {}
+  void closeListElement() {}
+
+  void openParagraph(const RVNGPropertyList & /*propList*/, const RVNGPropertyListVector & /* tabStops */) {}
+  void closeParagraph();
+
+  void openSpan(const RVNGPropertyList & /*propList*/) {}
+  void closeSpan() {}
+
+  void insertTab() {}
+  void insertSpace() {}
+  void insertText(const RVNGString &text);
+  void insertLineBreak() {}
+  void insertField(const RVNGString & /* type */, const RVNGPropertyList & /*propList*/) {}
+
 };
 
-TextPainter::TextPainter(): libwpg::WPGPaintInterface()
+TextPainter::TextPainter(): RVNGDrawingInterface()
 {
 }
 
-void TextPainter::insertText(const ::WPXString &str)
+void TextPainter::insertText(const ::RVNGString &str)
 {
   printf("%s", str.cstr());
 }
 
-void TextPainter::endTextLine()
+void TextPainter::closeParagraph()
 {
   printf("\n");
 }
@@ -110,7 +131,7 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  WPXFileStream input(file);
+  RVNGFileStream input(file);
 
   if (!libvisio::VisioDocument::isSupported(&input))
   {

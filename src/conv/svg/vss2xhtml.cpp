@@ -32,8 +32,8 @@
 #include <sstream>
 #include <stdio.h>
 #include <string.h>
-#include <libwpd-stream/libwpd-stream.h>
-#include <libwpd/libwpd.h>
+#include <librevenge-stream/librevenge-stream.h>
+#include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 
 namespace
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  WPXFileStream input(file);
+  RVNGFileStream input(file);
 
   if (!libvisio::VisioDocument::isSupported(&input))
   {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  libvisio::VSDStringVector output;
+  RVNGStringVector output;
   if (!libvisio::VisioDocument::generateSVGStencils(&input, output))
   {
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;

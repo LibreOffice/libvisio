@@ -38,7 +38,6 @@
 #include <map>
 #include <list>
 #include <vector>
-#include <libwpg/libwpg.h>
 #include "libvisio_utils.h"
 #include "VSDCollector.h"
 #include "VSDParser.h"
@@ -53,7 +52,7 @@ class VSDContentCollector : public VSDCollector
 {
 public:
   VSDContentCollector(
-    libwpg::WPGPaintInterface *painter,
+    RVNGDrawingInterface *painter,
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
     std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
     std::vector<std::list<unsigned> > &documentPageShapeOrders,
@@ -65,9 +64,9 @@ public:
   };
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
-  void collectForeignData(unsigned level, const WPXBinaryData &binaryData);
+  void collectForeignData(unsigned level, const RVNGBinaryData &binaryData);
   void collectOLEList(unsigned id, unsigned level);
-  void collectOLEData(unsigned id, unsigned level, const WPXBinaryData &oleData);
+  void collectOLEData(unsigned id, unsigned level, const RVNGBinaryData &oleData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
                    const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
@@ -114,7 +113,7 @@ public:
 
   void collectUnhandledChunk(unsigned id, unsigned level);
 
-  void collectText(unsigned level, const WPXBinaryData &textStream, TextFormat format);
+  void collectText(unsigned level, const RVNGBinaryData &textStream, TextFormat format);
   void collectCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
                      const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                      const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
@@ -139,7 +138,7 @@ public:
                         const boost::optional<Colour> &bgColour, const boost::optional<double> &defaultTabStop,
                         const boost::optional<unsigned char> &textDirection);
   void collectNameList(unsigned id, unsigned level);
-  void collectName(unsigned id, unsigned level,  const WPXBinaryData &name, TextFormat format);
+  void collectName(unsigned id, unsigned level,  const RVNGBinaryData &name, TextFormat format);
   void collectPageSheet(unsigned id, unsigned level);
   void collectMisc(unsigned level, const VSDMisc &misc);
 
@@ -186,7 +185,7 @@ public:
 private:
   VSDContentCollector(const VSDContentCollector &);
   VSDContentCollector &operator=(const VSDContentCollector &);
-  libwpg::WPGPaintInterface *m_painter;
+  RVNGDrawingInterface *m_painter;
 
   void applyXForm(double &x, double &y, const XForm &xform);
 
@@ -204,21 +203,21 @@ private:
 
   void _handleLevelChange(unsigned level);
 
-  void _handleForeignData(const WPXBinaryData &data);
+  void _handleForeignData(const RVNGBinaryData &data);
 
-  void _lineProperties(const VSDLineStyle &style, WPXPropertyList &styleProps);
-  void _fillAndShadowProperties(const VSDFillStyle &style, WPXPropertyList &styleProps);
+  void _lineProperties(const VSDLineStyle &style, RVNGPropertyList &styleProps);
+  void _fillAndShadowProperties(const VSDFillStyle &style, RVNGPropertyList &styleProps);
 
   void _applyLinePattern();
   const char *_linePropertiesMarkerViewbox(unsigned marker);
   const char *_linePropertiesMarkerPath(unsigned marker);
   double _linePropertiesMarkerScale(unsigned marker);
 
-  void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
-  void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
-  void _convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format);
+  void appendCharacters(RVNGString &text, const std::vector<unsigned char> &characters, TextFormat format);
+  void appendCharacters(RVNGString &text, const std::vector<unsigned char> &characters);
+  void _convertDataToString(RVNGString &result, const RVNGBinaryData &data, TextFormat format);
   bool parseFormatId( const char *formatString, unsigned short &result );
-  void _appendField(WPXString &text);
+  void _appendField(RVNGString &text);
 
   // NURBS processing functions
   bool _isUniform(const std::vector<double> &weights) const;
@@ -243,12 +242,12 @@ private:
   XForm m_xform;
   XForm *m_txtxform;
   VSDMisc m_misc;
-  std::vector<WPXPropertyList> m_currentFillGeometry;
-  std::vector<WPXPropertyList> m_currentLineGeometry;
+  std::vector<RVNGPropertyList> m_currentFillGeometry;
+  std::vector<RVNGPropertyList> m_currentLineGeometry;
   std::map<unsigned, XForm> *m_groupXForms;
-  WPXBinaryData m_currentForeignData;
-  WPXBinaryData m_currentOLEData;
-  WPXPropertyList m_currentForeignProps;
+  RVNGBinaryData m_currentForeignData;
+  RVNGBinaryData m_currentOLEData;
+  RVNGPropertyList m_currentForeignProps;
   unsigned m_currentShapeId;
   unsigned m_foreignType;
   unsigned m_foreignFormat;
@@ -275,9 +274,9 @@ private:
 
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
-  WPXBinaryData m_textStream;
-  std::map<unsigned, WPXString> m_names, m_stencilNames;
-  std::vector<WPXString> m_fields;
+  RVNGBinaryData m_textStream;
+  std::map<unsigned, RVNGString> m_names, m_stencilNames;
+  std::vector<RVNGString> m_fields;
   VSDFieldList m_stencilFields;
   unsigned m_fieldIndex;
   TextFormat m_textFormat;
