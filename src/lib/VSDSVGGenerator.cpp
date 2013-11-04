@@ -244,11 +244,11 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
       {
         m_outputSink << "    <" << getNamespaceAndDelim() << "stop offset=\"0%\"";
         m_outputSink << " stop-color=\"" << m_style["draw:end-color"]->getStr().cstr() << "\"";
-        m_outputSink << " stop-opacity=\"" << doubleToString(m_style["libwpg:end-opacity"] ? m_style["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+        m_outputSink << " stop-opacity=\"" << doubleToString(m_style["librevenge:end-opacity"] ? m_style["librevenge:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
 
         m_outputSink << "    <" << getNamespaceAndDelim() << "stop offset=\"100%\"";
         m_outputSink << " stop-color=\"" << m_style["draw:start-color"]->getStr().cstr() << "\"";
-        m_outputSink << " stop-opacity=\"" << doubleToString(m_style["libwpg:start-opacity"] ? m_style["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+        m_outputSink << " stop-opacity=\"" << doubleToString(m_style["librevenge:start-opacity"] ? m_style["librevenge:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
       }
       m_outputSink << "  </" << getNamespaceAndDelim() << "radialGradient>\n";
       m_outputSink << "</" << getNamespaceAndDelim() << "defs>\n";
@@ -333,25 +333,25 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
         {
           m_outputSink << "    <" << getNamespaceAndDelim() << "stop offset=\"0%\"";
           m_outputSink << " stop-color=\"" << m_style["draw:start-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["libwpg:start-opacity"] ? m_style["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["librevenge:start-opacity"] ? m_style["librevenge:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
 
           m_outputSink << "    <" << getNamespaceAndDelim() << "stop offset=\"100%\"";
           m_outputSink << " stop-color=\"" << m_style["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["libwpg:end-opacity"] ? m_style["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["librevenge:end-opacity"] ? m_style["librevenge:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
         }
         else
         {
           m_outputSink << "    <" << getNamespaceAndDelim() << "stop offset=\"0%\"";
           m_outputSink << " stop-color=\"" << m_style["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["libwpg:end-opacity"] ? m_style["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["librevenge:end-opacity"] ? m_style["librevenge:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
 
           m_outputSink << "    <" << getNamespaceAndDelim() << "stop offset=\"50%\"";
           m_outputSink << " stop-color=\"" << m_style["draw:start-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["libwpg:start-opacity"] ? m_style["libwpg:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["librevenge:start-opacity"] ? m_style["librevenge:start-opacity"]->getDouble() : 1) << "\" />" << std::endl;
 
           m_outputSink << "    <" << getNamespaceAndDelim() << "stop offset=\"100%\"";
           m_outputSink << " stop-color=\"" << m_style["draw:end-color"]->getStr().cstr() << "\"";
-          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["libwpg:end-opacity"] ? m_style["libwpg:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
+          m_outputSink << " stop-opacity=\"" << doubleToString(m_style["librevenge:end-opacity"] ? m_style["librevenge:end-opacity"]->getDouble() : 1) << "\" />" << std::endl;
         }
       }
       m_outputSink << "  </" << getNamespaceAndDelim() << "linearGradient>\n";
@@ -370,7 +370,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
       m_outputSink << "</" << getNamespaceAndDelim() << "defs>\n";
     }
   }
-  else if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "bitmap" && m_style["draw:fill-image"] && m_style["libwpg:mime-type"])
+  else if(m_style["draw:fill"] && m_style["draw:fill"]->getStr() == "bitmap" && m_style["draw:fill-image"] && m_style["librevenge:mime-type"])
   {
     m_outputSink << "<" << getNamespaceAndDelim() << "defs>\n";
     m_outputSink << "  <" << getNamespaceAndDelim() << "pattern id=\"img" << m_patternIndex++ << "\" patternUnits=\"userSpaceOnUse\" ";
@@ -405,7 +405,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
     else
       m_outputSink << "height=\"100\" ";
 
-    m_outputSink << "xlink:href=\"data:" << m_style["libwpg:mime-type"]->getStr().cstr() << ";base64,";
+    m_outputSink << "xlink:href=\"data:" << m_style["librevenge:mime-type"]->getStr().cstr() << ";base64,";
     m_outputSink << m_style["draw:fill-image"]->getStr().cstr();
     m_outputSink << "\" />\n";
     m_outputSink << "  </" << getNamespaceAndDelim() << "pattern>\n";
@@ -620,8 +620,8 @@ void VSDSVGGenerator::drawEllipse(const RVNGPropertyList &propList)
   m_pImpl->m_outputSink << "cx=\"" << doubleToString(72*propList["svg:cx"]->getDouble()) << "\" cy=\"" << doubleToString(72*propList["svg:cy"]->getDouble()) << "\" ";
   m_pImpl->m_outputSink << "rx=\"" << doubleToString(72*propList["svg:rx"]->getDouble()) << "\" ry=\"" << doubleToString(72*propList["svg:ry"]->getDouble()) << "\" ";
   m_pImpl->writeStyle();
-  if (propList["libwpg:rotate"] && propList["libwpg:rotate"]->getDouble() != 0.0)
-    m_pImpl->m_outputSink << " transform=\" rotate(" << doubleToString(-propList["libwpg:rotate"]->getDouble())
+  if (propList["librevenge:rotate"] && propList["librevenge:rotate"]->getDouble() != 0.0)
+    m_pImpl->m_outputSink << " transform=\" rotate(" << doubleToString(-propList["librevenge:rotate"]->getDouble())
                           << ", " << doubleToString(72*propList["svg:cy"]->getDouble())
                           << ", " << doubleToString(72*propList["svg:cy"]->getDouble())
                           << ")\" ";
@@ -646,8 +646,8 @@ void VSDSVGGenerator::drawPath(const ::RVNGPropertyListVector &path)
   for(i=0; i < path.count(); i++)
   {
     RVNGPropertyList propList = path[i];
-    if (!propList["libwpg:path-action"]) continue;
-    std::string action=propList["libwpg:path-action"]->getStr().cstr();
+    if (!propList["librevenge:path-action"]) continue;
+    std::string action=propList["librevenge:path-action"]->getStr().cstr();
     if (action.length()!=1) continue;
     bool coordOk=propList["svg:x"]&&propList["svg:y"];
     bool coord1Ok=coordOk && propList["svg:x1"]&&propList["svg:y1"];
@@ -678,9 +678,9 @@ void VSDSVGGenerator::drawPath(const ::RVNGPropertyListVector &path)
     {
       m_pImpl->m_outputSink << "\nA";
       m_pImpl->m_outputSink << doubleToString(72*(propList["svg:rx"]->getDouble())) << "," << doubleToString(72*(propList["svg:ry"]->getDouble())) << " ";
-      m_pImpl->m_outputSink << doubleToString(propList["libwpg:rotate"] ? propList["libwpg:rotate"]->getDouble() : 0) << " ";
-      m_pImpl->m_outputSink << (propList["libwpg:large-arc"] ? propList["libwpg:large-arc"]->getInt() : 1) << ",";
-      m_pImpl->m_outputSink << (propList["libwpg:sweep"] ? propList["libwpg:sweep"]->getInt() : 1) << " ";
+      m_pImpl->m_outputSink << doubleToString(propList["librevenge:rotate"] ? propList["librevenge:rotate"]->getDouble() : 0) << " ";
+      m_pImpl->m_outputSink << (propList["librevenge:large-arc"] ? propList["librevenge:large-arc"]->getInt() : 1) << ",";
+      m_pImpl->m_outputSink << (propList["librevenge:sweep"] ? propList["librevenge:sweep"]->getInt() : 1) << " ";
       m_pImpl->m_outputSink << doubleToString(72*(propList["svg:x"]->getDouble())) << "," << doubleToString(72*(propList["svg:y"]->getDouble()));
     }
     else if (action[0] == 'Z' )
@@ -697,7 +697,7 @@ void VSDSVGGenerator::drawPath(const ::RVNGPropertyListVector &path)
 
 void VSDSVGGenerator::drawGraphicObject(const ::RVNGPropertyList &propList, const ::RVNGBinaryData &binaryData)
 {
-  if (!propList["libwpg:mime-type"] || propList["libwpg:mime-type"]->getStr().len() <= 0)
+  if (!propList["librevenge:mime-type"] || propList["librevenge:mime-type"]->getStr().len() <= 0)
     return;
   RVNGString base64 = binaryData.getBase64Data();
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "image ";
@@ -712,7 +712,7 @@ void VSDSVGGenerator::drawGraphicObject(const ::RVNGPropertyList &propList, cons
 
     m_pImpl->m_outputSink << "x=\"" << doubleToString(72*x) << "\" y=\"" << doubleToString(72*y) << "\" ";
     m_pImpl->m_outputSink << "width=\"" << doubleToString(72*width) << "\" height=\"" << doubleToString(72*height) << "\" ";
-    if (flipX || flipY || propList["libwpg:rotate"])
+    if (flipX || flipY || propList["librevenge:rotate"])
     {
       double xmiddle = x + width / 2.0;
       double ymiddle = y + height / 2.0;
@@ -720,9 +720,9 @@ void VSDSVGGenerator::drawGraphicObject(const ::RVNGPropertyList &propList, cons
       m_pImpl->m_outputSink << " translate(" << doubleToString(72*xmiddle) << ", " << doubleToString (72*ymiddle) << ") ";
       m_pImpl->m_outputSink << " scale(" << (flipX ? "-1" : "1") << ", " << (flipY ? "-1" : "1") << ") ";
       // rotation is around the center of the object's bounding box
-      if (propList["libwpg:rotate"])
+      if (propList["librevenge:rotate"])
       {
-        double angle(propList["libwpg:rotate"]->getDouble());
+        double angle(propList["librevenge:rotate"]->getDouble());
         while (angle > 180.0)
           angle -= 360.0;
         while (angle < -180.0)
@@ -733,7 +733,7 @@ void VSDSVGGenerator::drawGraphicObject(const ::RVNGPropertyList &propList, cons
       m_pImpl->m_outputSink << "\" ";
     }
   }
-  m_pImpl->m_outputSink << "xlink:href=\"data:" << propList["libwpg:mime-type"]->getStr().cstr() << ";base64,";
+  m_pImpl->m_outputSink << "xlink:href=\"data:" << propList["librevenge:mime-type"]->getStr().cstr() << ";base64,";
   m_pImpl->m_outputSink << base64.cstr();
   m_pImpl->m_outputSink << "\" />\n";
 }
@@ -785,9 +785,9 @@ void VSDSVGGenerator::startTextObject(const ::RVNGPropertyList &propList, const 
   m_pImpl->m_outputSink << "x=\"" << doubleToString(72*x) << "\" y=\"" << doubleToString(72*y) << "\"";
 
   // rotation is around the center of the object's bounding box
-  if (propList["libwpg:rotate"] && propList["libwpg:rotate"]->getDouble() != 0.0)
+  if (propList["librevenge:rotate"] && propList["librevenge:rotate"]->getDouble() != 0.0)
   {
-    double angle(propList["libwpg:rotate"]->getDouble());
+    double angle(propList["librevenge:rotate"]->getDouble());
     while (angle > 180.0)
       angle -= 360.0;
     while (angle < -180.0)
