@@ -34,8 +34,12 @@
 #include <stack>
 
 #include <librevenge-stream/librevenge-stream.h>
+#include <librevenge-generators/librevenge-generators.h>
 #include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
+
+
+#if 0
 
 enum PainterCallback
 {
@@ -363,6 +367,7 @@ void RawPainter::insertText(const librevenge::RVNGString &str)
   __iprintf("RawPainter::insertText (%s)\n", str.cstr());
 }
 
+#endif
 
 namespace
 {
@@ -408,7 +413,8 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  RawPainter painter(printIndentLevel);
+  (void)printIndentLevel;
+  librevenge::RVNGRawDrawingGenerator painter /* (printIndentLevel) */;
   if (!libvisio::VisioDocument::parse(&input, &painter))
   {
     fprintf(stderr, "ERROR: Parsing of document failed!\n");

@@ -45,10 +45,6 @@ public:
   static bool parse(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
 
   static bool parseStencils(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
-
-  static bool generateSVG(librevenge::RVNGInputStream *input, librevenge::RVNGStringVector &output);
-
-  static bool generateSVGStencils(librevenge::RVNGInputStream *input, librevenge::RVNGStringVector &output);
 };
 
 } // namespace libvisio

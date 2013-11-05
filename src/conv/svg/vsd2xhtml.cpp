@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <librevenge-stream/librevenge-stream.h>
+#include <librevenge-generators/librevenge-generators.h>
 #include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 
@@ -77,12 +78,12 @@ int main(int argc, char *argv[])
   }
 
   librevenge::RVNGStringVector output;
-  if (!libvisio::VisioDocument::generateSVG(&input, output))
+  librevenge::RVNGSVGDrawingGenerator generator(output, "");
+  if (!libvisio::VisioDocument::parse(&input, &generator))
   {
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;
     return 1;
   }
-
   if (output.empty())
   {
     std::cerr << "ERROR: No SVG document generated!" << std::endl;

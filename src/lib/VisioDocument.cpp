@@ -33,7 +33,6 @@
 #include <libvisio/libvisio.h>
 #include "libvisio_utils.h"
 #include "VDXParser.h"
-#include "VSDSVGGenerator.h"
 #include "VSDParser.h"
 #include "VSDXParser.h"
 #include "VSD5Parser.h"
@@ -413,35 +412,5 @@ bool libvisio::VisioDocument::parseStencils(librevenge::RVNGInputStream *input, 
     return false;
   }
   return false;
-}
-
-
-/**
-Parses the input stream content and generates a valid Scalable Vector Graphics
-Provided as a convenience function for applications that support SVG internally.
-\param input The input stream
-\param output The output string whose content is the resulting SVG
-\return A value that indicates whether the SVG generation was successful.
-*/
-bool libvisio::VisioDocument::generateSVG(librevenge::RVNGInputStream *input, librevenge::RVNGStringVector &output)
-{
-  libvisio::VSDSVGGenerator generator(output);
-  bool result = libvisio::VisioDocument::parse(input, &generator);
-  return result;
-}
-
-/**
-Parses the input stream content and extracts stencil pages. It generates a valid
-Scalable Vector Graphics document per stencil.
-Provided as a convenience function for applications that support SVG internally.
-\param input The input stream
-\param output The output string whose content is the resulting SVG
-\return A value that indicates whether the SVG generation was successful.
-*/
-bool libvisio::VisioDocument::generateSVGStencils(librevenge::RVNGInputStream *input, librevenge::RVNGStringVector &output)
-{
-  libvisio::VSDSVGGenerator generator(output);
-  bool result = libvisio::VisioDocument::parseStencils(input, &generator);
-  return result;
 }
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

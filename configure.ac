@@ -59,7 +59,6 @@ AC_SUBST(GPERF)
 # ====================
 PKG_CHECK_MODULES([REVENGE],[
 	librevenge-0.0
-	librevenge-stream-0.0
 ])
 
 PKG_CHECK_MODULES([LIBXML],[
@@ -115,6 +114,28 @@ AC_CHECK_HEADERS(
 	[AC_MSG_ERROR(Required boost headers not found. install boost >= 1.36)],
 	[]
 )
+
+# =====
+# Tools
+# =====
+AC_ARG_ENABLE([tools],
+	[AS_HELP_STRING([--disable-tools], [Build conversion tools])],
+	[enable_tools="$enableval"],
+	[enable_tools=yes]
+)
+AS_IF([test "x$enable_tools" = "xyes"], [
+	PKG_CHECK_MODULES([REVENGE_GENERATORS],[
+		librevenge-generators-0.0
+	])
+	PKG_CHECK_MODULES([REVENGE_STREAM],[
+		librevenge-stream-0.0
+	])
+])
+AC_SUBST([REVENGE_GENERATORS_CFLAGS])
+AC_SUBST([REVENGE_GENERATORS_LIBS])
+AC_SUBST([REVENGE_STREAM_CFLAGS])
+AC_SUBST([REVENGE_STREAM_LIBS])
+AM_CONDITIONAL(BUILD_TOOLS, [test "x$enable_tools" = "xyes"])
 
 # =================================
 # Libtool/Version Makefile settings
