@@ -28,11 +28,6 @@
  * instead of those above.
  */
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stack>
-
 #include <librevenge-stream/librevenge-stream.h>
 #include <librevenge-generators/librevenge-generators.h>
 #include <librevenge/librevenge.h>
@@ -83,7 +78,7 @@ int main(int argc, char *argv[])
   }
 
   (void)printIndentLevel;
-  librevenge::RVNGRawDrawingGenerator painter /* (printIndentLevel) */;
+  librevenge::RVNGRawDrawingGenerator painter(printIndentLevel);
   if (!libvisio::VisioDocument::parseStencils(&input, &painter))
   {
     fprintf(stderr, "ERROR: Parsing of document failed!\n");
