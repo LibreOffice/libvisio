@@ -36,10 +36,10 @@
 #include <vector>
 #include <librevenge-stream/librevenge-stream.h>
 
-class VSDInternalStream : public RVNGInputStream
+class VSDInternalStream : public librevenge::RVNGInputStream
 {
 public:
-  VSDInternalStream(RVNGInputStream *input, unsigned long size, bool compressed=false);
+  VSDInternalStream(librevenge::RVNGInputStream *input, unsigned long size, bool compressed=false);
   VSDInternalStream(const std::vector<unsigned char> &buffer);
   VSDInternalStream(const unsigned char *buffer, size_t bufferLength);
   ~VSDInternalStream() {}
@@ -56,16 +56,16 @@ public:
   {
     return 0;
   }
-  virtual RVNGInputStream *getSubStreamByName(const char *)
+  virtual librevenge::RVNGInputStream *getSubStreamByName(const char *)
   {
     return 0;
   }
-  virtual RVNGInputStream *getSubStreamById(unsigned)
+  virtual librevenge::RVNGInputStream *getSubStreamById(unsigned)
   {
     return 0;
   }
   const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-  int seek(long offset, RVNG_SEEK_TYPE seekType);
+  int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
   long tell();
   bool isEnd();
   unsigned long getSize() const

@@ -43,18 +43,18 @@ namespace libvisio
 class VSD6Parser : public VSDParser
 {
 public:
-  explicit VSD6Parser(RVNGInputStream *input, RVNGDrawingInterface *painter);
+  explicit VSD6Parser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
   ~VSD6Parser();
 protected:
-  virtual bool getChunkHeader(RVNGInputStream *input);
+  virtual bool getChunkHeader(librevenge::RVNGInputStream *input);
 private:
-  void readText(RVNGInputStream *input);
-  virtual void readCharIX(RVNGInputStream *input);
-  virtual void readParaIX(RVNGInputStream *input);
-  virtual void readFillAndShadow(RVNGInputStream *input);
-  virtual void readName(RVNGInputStream *input);
-  virtual void readName2(RVNGInputStream *input);
-  virtual void readTextField(RVNGInputStream *input);
+  void readText(librevenge::RVNGInputStream *input);
+  virtual void readCharIX(librevenge::RVNGInputStream *input);
+  virtual void readParaIX(librevenge::RVNGInputStream *input);
+  virtual void readFillAndShadow(librevenge::RVNGInputStream *input);
+  virtual void readName(librevenge::RVNGInputStream *input);
+  virtual void readName2(librevenge::RVNGInputStream *input);
+  virtual void readTextField(librevenge::RVNGInputStream *input);
 
   VSD6Parser();
   VSD6Parser(const VSDParser &);

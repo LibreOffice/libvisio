@@ -52,7 +52,7 @@ class VSDContentCollector : public VSDCollector
 {
 public:
   VSDContentCollector(
-    RVNGDrawingInterface *painter,
+    librevenge::RVNGDrawingInterface *painter,
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
     std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
     std::vector<std::list<unsigned> > &documentPageShapeOrders,
@@ -64,9 +64,9 @@ public:
   };
 
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
-  void collectForeignData(unsigned level, const RVNGBinaryData &binaryData);
+  void collectForeignData(unsigned level, const librevenge::RVNGBinaryData &binaryData);
   void collectOLEList(unsigned id, unsigned level);
-  void collectOLEData(unsigned id, unsigned level, const RVNGBinaryData &oleData);
+  void collectOLEData(unsigned id, unsigned level, const librevenge::RVNGBinaryData &oleData);
   void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop);
   void collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
                    const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
@@ -113,7 +113,7 @@ public:
 
   void collectUnhandledChunk(unsigned id, unsigned level);
 
-  void collectText(unsigned level, const RVNGBinaryData &textStream, TextFormat format);
+  void collectText(unsigned level, const librevenge::RVNGBinaryData &textStream, TextFormat format);
   void collectCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
                      const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                      const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
@@ -138,7 +138,7 @@ public:
                         const boost::optional<Colour> &bgColour, const boost::optional<double> &defaultTabStop,
                         const boost::optional<unsigned char> &textDirection);
   void collectNameList(unsigned id, unsigned level);
-  void collectName(unsigned id, unsigned level,  const RVNGBinaryData &name, TextFormat format);
+  void collectName(unsigned id, unsigned level,  const librevenge::RVNGBinaryData &name, TextFormat format);
   void collectPageSheet(unsigned id, unsigned level);
   void collectMisc(unsigned level, const VSDMisc &misc);
 
@@ -185,7 +185,7 @@ public:
 private:
   VSDContentCollector(const VSDContentCollector &);
   VSDContentCollector &operator=(const VSDContentCollector &);
-  RVNGDrawingInterface *m_painter;
+  librevenge::RVNGDrawingInterface *m_painter;
 
   void applyXForm(double &x, double &y, const XForm &xform);
 
@@ -203,21 +203,21 @@ private:
 
   void _handleLevelChange(unsigned level);
 
-  void _handleForeignData(const RVNGBinaryData &data);
+  void _handleForeignData(const librevenge::RVNGBinaryData &data);
 
-  void _lineProperties(const VSDLineStyle &style, RVNGPropertyList &styleProps);
-  void _fillAndShadowProperties(const VSDFillStyle &style, RVNGPropertyList &styleProps);
+  void _lineProperties(const VSDLineStyle &style, librevenge::RVNGPropertyList &styleProps);
+  void _fillAndShadowProperties(const VSDFillStyle &style, librevenge::RVNGPropertyList &styleProps);
 
   void _applyLinePattern();
   const char *_linePropertiesMarkerViewbox(unsigned marker);
   const char *_linePropertiesMarkerPath(unsigned marker);
   double _linePropertiesMarkerScale(unsigned marker);
 
-  void appendCharacters(RVNGString &text, const std::vector<unsigned char> &characters, TextFormat format);
-  void appendCharacters(RVNGString &text, const std::vector<unsigned char> &characters);
-  void _convertDataToString(RVNGString &result, const RVNGBinaryData &data, TextFormat format);
+  void appendCharacters(librevenge::RVNGString &text, const std::vector<unsigned char> &characters, TextFormat format);
+  void appendCharacters(librevenge::RVNGString &text, const std::vector<unsigned char> &characters);
+  void _convertDataToString(librevenge::RVNGString &result, const librevenge::RVNGBinaryData &data, TextFormat format);
   bool parseFormatId( const char *formatString, unsigned short &result );
-  void _appendField(RVNGString &text);
+  void _appendField(librevenge::RVNGString &text);
 
   // NURBS processing functions
   bool _isUniform(const std::vector<double> &weights) const;
@@ -242,12 +242,12 @@ private:
   XForm m_xform;
   XForm *m_txtxform;
   VSDMisc m_misc;
-  std::vector<RVNGPropertyList> m_currentFillGeometry;
-  std::vector<RVNGPropertyList> m_currentLineGeometry;
+  std::vector<librevenge::RVNGPropertyList> m_currentFillGeometry;
+  std::vector<librevenge::RVNGPropertyList> m_currentLineGeometry;
   std::map<unsigned, XForm> *m_groupXForms;
-  RVNGBinaryData m_currentForeignData;
-  RVNGBinaryData m_currentOLEData;
-  RVNGPropertyList m_currentForeignProps;
+  librevenge::RVNGBinaryData m_currentForeignData;
+  librevenge::RVNGBinaryData m_currentOLEData;
+  librevenge::RVNGPropertyList m_currentForeignProps;
   unsigned m_currentShapeId;
   unsigned m_foreignType;
   unsigned m_foreignFormat;
@@ -274,9 +274,9 @@ private:
 
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
-  RVNGBinaryData m_textStream;
-  std::map<unsigned, RVNGString> m_names, m_stencilNames;
-  std::vector<RVNGString> m_fields;
+  librevenge::RVNGBinaryData m_textStream;
+  std::map<unsigned, librevenge::RVNGString> m_names, m_stencilNames;
+  std::vector<librevenge::RVNGString> m_fields;
   VSDFieldList m_stencilFields;
   unsigned m_fieldIndex;
   TextFormat m_textFormat;

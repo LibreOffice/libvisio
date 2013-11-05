@@ -35,61 +35,61 @@
 #include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 
-class TextPainter : public RVNGDrawingInterface
+class TextPainter : public librevenge::RVNGDrawingInterface
 {
 public:
   TextPainter();
 
-  void startDocument(const ::RVNGPropertyList & /*propList*/) {}
+  void startDocument(const librevenge::RVNGPropertyList & /*propList*/) {}
   void endDocument() {}
-  void setDocumentMetaData(const RVNGPropertyList & /*propList*/) {}
-  void startPage(const ::RVNGPropertyList &) {}
+  void setDocumentMetaData(const librevenge::RVNGPropertyList & /*propList*/) {}
+  void startPage(const librevenge::RVNGPropertyList &) {}
   void endPage() {}
-  void startLayer(const ::RVNGPropertyList &) {}
+  void startLayer(const librevenge::RVNGPropertyList &) {}
   void endLayer() {}
-  void startEmbeddedGraphics(const ::RVNGPropertyList &) {}
+  void startEmbeddedGraphics(const librevenge::RVNGPropertyList &) {}
   void endEmbeddedGraphics() {}
 
-  void setStyle(const ::RVNGPropertyList &, const ::RVNGPropertyListVector &) {}
+  void setStyle(const librevenge::RVNGPropertyList &, const librevenge::RVNGPropertyListVector &) {}
 
-  void drawRectangle(const ::RVNGPropertyList &) {}
-  void drawEllipse(const ::RVNGPropertyList &) {}
-  void drawPolyline(const ::RVNGPropertyListVector &) {}
-  void drawPolygon(const ::RVNGPropertyListVector &) {}
-  void drawPath(const ::RVNGPropertyListVector &) {}
-  void drawGraphicObject(const ::RVNGPropertyList &, const ::RVNGBinaryData &) {}
-  void startTextObject(const ::RVNGPropertyList &, const ::RVNGPropertyListVector &) {}
+  void drawRectangle(const librevenge::RVNGPropertyList &) {}
+  void drawEllipse(const librevenge::RVNGPropertyList &) {}
+  void drawPolyline(const librevenge::RVNGPropertyListVector &) {}
+  void drawPolygon(const librevenge::RVNGPropertyListVector &) {}
+  void drawPath(const librevenge::RVNGPropertyListVector &) {}
+  void drawGraphicObject(const librevenge::RVNGPropertyList &, const librevenge::RVNGBinaryData &) {}
+  void startTextObject(const librevenge::RVNGPropertyList &, const librevenge::RVNGPropertyListVector &) {}
   void endTextObject() {}
 
 
-  void openOrderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void openOrderedListLevel(const librevenge::RVNGPropertyList & /*propList*/) {}
   void closeOrderedListLevel() {}
 
-  void openUnorderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void openUnorderedListLevel(const librevenge::RVNGPropertyList & /*propList*/) {}
   void closeUnorderedListLevel() {}
 
-  void openListElement(const RVNGPropertyList & /*propList*/, const RVNGPropertyListVector & /* tabStops */) {}
+  void openListElement(const librevenge::RVNGPropertyList & /*propList*/, const librevenge::RVNGPropertyListVector & /* tabStops */) {}
   void closeListElement() {}
 
-  void openParagraph(const RVNGPropertyList & /*propList*/, const RVNGPropertyListVector & /* tabStops */) {}
+  void openParagraph(const librevenge::RVNGPropertyList & /*propList*/, const librevenge::RVNGPropertyListVector & /* tabStops */) {}
   void closeParagraph();
 
-  void openSpan(const RVNGPropertyList & /* propList */) {}
+  void openSpan(const librevenge::RVNGPropertyList & /* propList */) {}
   void closeSpan() {}
 
   void insertTab() {}
   void insertSpace() {}
-  void insertText(const RVNGString &text);
+  void insertText(const librevenge::RVNGString &text);
   void insertLineBreak() {}
-  void insertField(const RVNGString & /* type */, const RVNGPropertyList & /*propList*/) {}
+  void insertField(const librevenge::RVNGString & /* type */, const librevenge::RVNGPropertyList & /*propList*/) {}
 
 };
 
-TextPainter::TextPainter(): RVNGDrawingInterface()
+TextPainter::TextPainter(): librevenge::RVNGDrawingInterface()
 {
 }
 
-void TextPainter::insertText(const ::RVNGString &str)
+void TextPainter::insertText(const librevenge::RVNGString &str)
 {
   printf("%s", str.cstr());
 }
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  RVNGFileStream input(file);
+  librevenge::RVNGFileStream input(file);
 
   if (!libvisio::VisioDocument::isSupported(&input))
   {

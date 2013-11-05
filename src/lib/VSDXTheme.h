@@ -77,7 +77,7 @@ class VSDXTheme
 public:
   VSDXTheme();
   ~VSDXTheme();
-  bool parse(RVNGInputStream *input);
+  bool parse(librevenge::RVNGInputStream *input);
 
 private:
   VSDXTheme(const VSDXTheme &);

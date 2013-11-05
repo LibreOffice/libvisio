@@ -151,7 +151,7 @@ SOURCE=..\..\src\lib\VSDStencils.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\RVNGStringVector.cpp
+SOURCE=..\..\src\lib\librevenge::RVNGStringVector.cpp
 # End Source File
 # Begin Source File
 
@@ -203,7 +203,7 @@ SOURCE=..\..\inc\libvisio\VisioDocument.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\inc\libvisio\RVNGStringVector.h
+SOURCE=..\..\inc\libvisio\librevenge::RVNGStringVector.h
 # End Source File
 # Begin Source File
 
@@ -283,7 +283,7 @@ SOURCE=..\..\src\lib\VSDStencils.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\lib\RVNGStringVector.h
+SOURCE=..\..\src\lib\librevenge::RVNGStringVector.h
 # End Source File
 # Begin Source File
 

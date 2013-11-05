@@ -37,13 +37,13 @@ namespace
 
 static std::string doubleToString(const double value)
 {
-  RVNGProperty *prop = RVNGPropertyFactory::newDoubleProp(value);
+  librevenge::RVNGProperty *prop = librevenge::RVNGPropertyFactory::newDoubleProp(value);
   std::string retVal = prop->getStr().cstr();
   delete prop;
   return retVal;
 }
 
-static unsigned stringToColour(const ::RVNGString &s)
+static unsigned stringToColour(const librevenge::RVNGString &s)
 {
   std::string str(s.cstr());
   if (str[0] == '#')
@@ -69,19 +69,19 @@ namespace libvisio
 
 struct VSDSVGGeneratorPrivate
 {
-  VSDSVGGeneratorPrivate(RVNGStringVector &vec, const RVNGString &nmSpace);
+  VSDSVGGeneratorPrivate(librevenge::RVNGStringVector &vec, const librevenge::RVNGString &nmSpace);
 
-  void setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient);
+  void setStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &gradient);
   void writeStyle(bool isClosed=true);
-  void drawPolySomething(const ::RVNGPropertyListVector &vertices, bool isClosed);
+  void drawPolySomething(const librevenge::RVNGPropertyListVector &vertices, bool isClosed);
 
   //! return the namespace and the delimiter
   std::string const &getNamespaceAndDelim() const
   {
     return m_nmSpaceAndDelim;
   }
-  ::RVNGPropertyListVector m_gradient;
-  ::RVNGPropertyList m_style;
+  librevenge::RVNGPropertyListVector m_gradient;
+  librevenge::RVNGPropertyList m_style;
   int m_gradientIndex, m_shadowIndex;
   //! index uses when fill=bitmap
   int m_patternIndex;
@@ -93,10 +93,10 @@ struct VSDSVGGeneratorPrivate
   //! a prefix used to define the svg namespace with delimiter
   std::string m_nmSpaceAndDelim;
   std::ostringstream m_outputSink;
-  RVNGStringVector &m_vec;
+  librevenge::RVNGStringVector &m_vec;
 };
 
-VSDSVGGeneratorPrivate::VSDSVGGeneratorPrivate(RVNGStringVector &vec, const RVNGString &nmSpace) :
+VSDSVGGeneratorPrivate::VSDSVGGeneratorPrivate(librevenge::RVNGStringVector &vec, const librevenge::RVNGString &nmSpace) :
   m_gradient(),
   m_style(),
   m_gradientIndex(1),
@@ -114,7 +114,7 @@ VSDSVGGeneratorPrivate::VSDSVGGeneratorPrivate(RVNGStringVector &vec, const RVNG
     m_nmSpaceAndDelim = m_nmSpace+":";
 }
 
-void VSDSVGGeneratorPrivate::drawPolySomething(const ::RVNGPropertyListVector &vertices, bool isClosed)
+void VSDSVGGeneratorPrivate::drawPolySomething(const librevenge::RVNGPropertyListVector &vertices, bool isClosed)
 {
   if(vertices.count() < 2)
     return;
@@ -151,7 +151,7 @@ void VSDSVGGeneratorPrivate::drawPolySomething(const ::RVNGPropertyListVector &v
   }
 }
 
-void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient)
+void VSDSVGGeneratorPrivate::setStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &gradient)
 {
   m_style.clear();
   m_style = propList;
@@ -229,7 +229,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
       {
         for(unsigned c = 0; c < m_gradient.count(); c++)
         {
-          RVNGPropertyList const &grad=m_gradient[c];
+          librevenge::RVNGPropertyList const &grad=m_gradient[c];
           m_outputSink << "    <" << getNamespaceAndDelim() << "stop";
           if (grad["svg:offset"])
             m_outputSink << " offset=\"" << grad["svg:offset"]->getStr().cstr() << "\"";
@@ -267,13 +267,13 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
           canBuildAxial = true;
           for(unsigned c = 0; c < m_gradient.count(); ++c)
           {
-            RVNGPropertyList const &grad=m_gradient[c];
+            librevenge::RVNGPropertyList const &grad=m_gradient[c];
             if (!grad["svg:offset"] || grad["svg:offset"]->getDouble()<0 || grad["svg:offset"]->getDouble() > 1)
             {
               canBuildAxial=false;
               break;
             }
-            RVNGString str=grad["svg:offset"]->getStr();
+            librevenge::RVNGString str=grad["svg:offset"]->getStr();
             int len=str.len();
             if (len<1 || str.cstr()[len-1]!='%')
             {
@@ -286,7 +286,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
         {
           for(unsigned c = m_gradient.count(); c>0 ; )
           {
-            RVNGPropertyList const &grad=m_gradient[--c];
+            librevenge::RVNGPropertyList const &grad=m_gradient[--c];
             m_outputSink << "    <" << getNamespaceAndDelim() << "stop ";
             if (grad["svg:offset"])
               m_outputSink << "offset=\"" << doubleToString(50.-50.*grad["svg:offset"]->getDouble()) << "%\"";
@@ -298,7 +298,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
           }
           for(unsigned c = 0; c < m_gradient.count(); ++c)
           {
-            RVNGPropertyList const &grad=m_gradient[c];
+            librevenge::RVNGPropertyList const &grad=m_gradient[c];
             if (c==0 && grad["svg:offset"] && grad["svg:offset"]->getDouble() <= 0)
               continue;
             m_outputSink << "    <" << getNamespaceAndDelim() << "stop ";
@@ -315,7 +315,7 @@ void VSDSVGGeneratorPrivate::setStyle(const ::RVNGPropertyList &propList, const 
         {
           for(unsigned c = 0; c < m_gradient.count(); c++)
           {
-            RVNGPropertyList const &grad=m_gradient[c];
+            librevenge::RVNGPropertyList const &grad=m_gradient[c];
             m_outputSink << "    <" << getNamespaceAndDelim() << "stop";
             if (grad["svg:offset"])
               m_outputSink << " offset=\"" << grad["svg:offset"]->getStr().cstr() << "\"";
@@ -541,7 +541,7 @@ void VSDSVGGeneratorPrivate::writeStyle(bool /* isClosed */)
 }
 
 
-VSDSVGGenerator::VSDSVGGenerator(RVNGStringVector &vec, const RVNGString &nmSpace) :
+VSDSVGGenerator::VSDSVGGenerator(librevenge::RVNGStringVector &vec, const librevenge::RVNGString &nmSpace) :
   m_pImpl(new VSDSVGGeneratorPrivate(vec, nmSpace))
 {
 }
@@ -551,7 +551,7 @@ VSDSVGGenerator::~VSDSVGGenerator()
   delete m_pImpl;
 }
 
-void VSDSVGGenerator::startPage(const RVNGPropertyList &propList)
+void VSDSVGGenerator::startPage(const librevenge::RVNGPropertyList &propList)
 {
   if (m_pImpl->m_nmSpace.empty())
   {
@@ -577,7 +577,7 @@ void VSDSVGGenerator::endPage()
 }
 
 
-void VSDSVGGenerator::startLayer(const ::RVNGPropertyList &propList)
+void VSDSVGGenerator::startLayer(const librevenge::RVNGPropertyList &propList)
 {
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "g";
   if (propList["svg:id"])
@@ -594,12 +594,12 @@ void VSDSVGGenerator::endLayer()
   m_pImpl->m_outputSink << "</" << m_pImpl->getNamespaceAndDelim() << "g>\n";
 }
 
-void VSDSVGGenerator::setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient)
+void VSDSVGGenerator::setStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &gradient)
 {
   m_pImpl->setStyle(propList, gradient);
 }
 
-void VSDSVGGenerator::drawRectangle(const ::RVNGPropertyList &propList)
+void VSDSVGGenerator::drawRectangle(const librevenge::RVNGPropertyList &propList)
 {
   if (!propList["svg:x"] || !propList["svg:y"] || !propList["svg:width"] || !propList["svg:height"])
     return;
@@ -612,7 +612,7 @@ void VSDSVGGenerator::drawRectangle(const ::RVNGPropertyList &propList)
   m_pImpl->m_outputSink << "/>\n";
 }
 
-void VSDSVGGenerator::drawEllipse(const RVNGPropertyList &propList)
+void VSDSVGGenerator::drawEllipse(const librevenge::RVNGPropertyList &propList)
 {
   if (!propList["svg:cx"] || !propList["svg:cy"] || !propList["svg:rx"] || !propList["svg:ry"])
     return;
@@ -628,24 +628,24 @@ void VSDSVGGenerator::drawEllipse(const RVNGPropertyList &propList)
   m_pImpl->m_outputSink << "/>\n";
 }
 
-void VSDSVGGenerator::drawPolyline(const ::RVNGPropertyListVector &vertices)
+void VSDSVGGenerator::drawPolyline(const librevenge::RVNGPropertyListVector &vertices)
 {
   m_pImpl->drawPolySomething(vertices, false);
 }
 
-void VSDSVGGenerator::drawPolygon(const ::RVNGPropertyListVector &vertices)
+void VSDSVGGenerator::drawPolygon(const librevenge::RVNGPropertyListVector &vertices)
 {
   m_pImpl->drawPolySomething(vertices, true);
 }
 
-void VSDSVGGenerator::drawPath(const ::RVNGPropertyListVector &path)
+void VSDSVGGenerator::drawPath(const librevenge::RVNGPropertyListVector &path)
 {
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "path d=\" ";
   bool isClosed = false;
   unsigned i=0;
   for(i=0; i < path.count(); i++)
   {
-    RVNGPropertyList propList = path[i];
+    librevenge::RVNGPropertyList propList = path[i];
     if (!propList["librevenge:path-action"]) continue;
     std::string action=propList["librevenge:path-action"]->getStr().cstr();
     if (action.length()!=1) continue;
@@ -695,11 +695,11 @@ void VSDSVGGenerator::drawPath(const ::RVNGPropertyListVector &path)
   m_pImpl->m_outputSink << "/>\n";
 }
 
-void VSDSVGGenerator::drawGraphicObject(const ::RVNGPropertyList &propList, const ::RVNGBinaryData &binaryData)
+void VSDSVGGenerator::drawGraphicObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGBinaryData &binaryData)
 {
   if (!propList["librevenge:mime-type"] || propList["librevenge:mime-type"]->getStr().len() <= 0)
     return;
-  RVNGString base64 = binaryData.getBase64Data();
+  librevenge::RVNGString base64 = binaryData.getBase64Data();
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "image ";
   if (propList["svg:x"] && propList["svg:y"] && propList["svg:width"] && propList["svg:height"])
   {
@@ -738,7 +738,7 @@ void VSDSVGGenerator::drawGraphicObject(const ::RVNGPropertyList &propList, cons
   m_pImpl->m_outputSink << "\" />\n";
 }
 
-void VSDSVGGenerator::startTextObject(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector & /* path */)
+void VSDSVGGenerator::startTextObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector & /* path */)
 {
   double x = 0.0;
   double y = 0.0;
@@ -803,7 +803,7 @@ void VSDSVGGenerator::endTextObject()
   m_pImpl->m_outputSink << "</" << m_pImpl->getNamespaceAndDelim() << "text>\n";
 }
 
-void VSDSVGGenerator::openSpan(const ::RVNGPropertyList &propList)
+void VSDSVGGenerator::openSpan(const librevenge::RVNGPropertyList &propList)
 {
   m_pImpl->m_outputSink << "<" << m_pImpl->getNamespaceAndDelim() << "tspan ";
   if (propList["style:font-name"])
@@ -832,9 +832,9 @@ void VSDSVGGenerator::closeSpan()
   m_pImpl->m_outputSink << "</" << m_pImpl->getNamespaceAndDelim() << "tspan>\n";
 }
 
-void VSDSVGGenerator::insertText(const ::RVNGString &str)
+void VSDSVGGenerator::insertText(const librevenge::RVNGString &str)
 {
-  RVNGString tempUTF8(str, true);
+  librevenge::RVNGString tempUTF8(str, true);
   m_pImpl->m_outputSink << tempUTF8.cstr() << "\n";
 }
 

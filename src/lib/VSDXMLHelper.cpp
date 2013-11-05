@@ -53,7 +53,7 @@ extern "C" {
 
   static int vsdxInputReadFunc(void *context, char *buffer, int len)
   {
-    RVNGInputStream *input = (RVNGInputStream *)context;
+    librevenge::RVNGInputStream *input = (librevenge::RVNGInputStream *)context;
 
     if ((!input) || (!buffer) || (len < 0))
       return -1;
@@ -100,7 +100,7 @@ extern "C" {
 
 // xmlTextReader helper function
 
-xmlTextReaderPtr libvisio::xmlReaderForStream(RVNGInputStream *input, const char *URL, const char *encoding, int options)
+xmlTextReaderPtr libvisio::xmlReaderForStream(librevenge::RVNGInputStream *input, const char *URL, const char *encoding, int options)
 {
   xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, URL, encoding, options);
   xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, 0);
@@ -288,7 +288,7 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
 
 // VSDXRelationships
 
-libvisio::VSDXRelationships::VSDXRelationships(RVNGInputStream *input)
+libvisio::VSDXRelationships::VSDXRelationships(librevenge::RVNGInputStream *input)
   : m_relsByType(), m_relsById()
 {
   if (input)

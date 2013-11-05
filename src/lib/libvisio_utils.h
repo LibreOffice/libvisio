@@ -89,18 +89,18 @@ typedef unsigned __int64 uint64_t;
 namespace libvisio
 {
 
-uint8_t readU8(RVNGInputStream *input);
-uint16_t readU16(RVNGInputStream *input);
-int16_t readS16(RVNGInputStream *input);
-uint32_t readU32(RVNGInputStream *input);
-int32_t readS32(RVNGInputStream *input);
-uint64_t readU64(RVNGInputStream *input);
+uint8_t readU8(librevenge::RVNGInputStream *input);
+uint16_t readU16(librevenge::RVNGInputStream *input);
+int16_t readS16(librevenge::RVNGInputStream *input);
+uint32_t readU32(librevenge::RVNGInputStream *input);
+int32_t readS32(librevenge::RVNGInputStream *input);
+uint64_t readU64(librevenge::RVNGInputStream *input);
 
-double readDouble(RVNGInputStream *input);
+double readDouble(librevenge::RVNGInputStream *input);
 
-void appendFromBase64(RVNGBinaryData &data, const unsigned char *base64Data, size_t base64DataLength);
+void appendFromBase64(librevenge::RVNGBinaryData &data, const unsigned char *base64Data, size_t base64DataLength);
 
-const ::RVNGString getColourString(const Colour &c);
+const librevenge::RVNGString getColourString(const Colour &c);
 
 class EndOfStreamException
 {

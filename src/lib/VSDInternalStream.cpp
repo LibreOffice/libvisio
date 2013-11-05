@@ -34,14 +34,14 @@
 
 
 VSDInternalStream::VSDInternalStream(const std::vector<unsigned char> &buffer) :
-  RVNGInputStream(),
+  librevenge::RVNGInputStream(),
   m_offset(0),
   m_buffer(buffer)
 {
 }
 
 VSDInternalStream::VSDInternalStream(const unsigned char *buffer, size_t bufferLength) :
-  RVNGInputStream(),
+  librevenge::RVNGInputStream(),
   m_offset(0),
   m_buffer(bufferLength)
 {
@@ -49,8 +49,8 @@ VSDInternalStream::VSDInternalStream(const unsigned char *buffer, size_t bufferL
 }
 
 
-VSDInternalStream::VSDInternalStream(RVNGInputStream *input, unsigned long size, bool compressed) :
-  RVNGInputStream(),
+VSDInternalStream::VSDInternalStream(librevenge::RVNGInputStream *input, unsigned long size, bool compressed) :
+  librevenge::RVNGInputStream(),
   m_offset(0),
   m_buffer()
 {
@@ -139,11 +139,11 @@ const unsigned char *VSDInternalStream::read(unsigned long numBytes, unsigned lo
   return &m_buffer[oldOffset];
 }
 
-int VSDInternalStream::seek(long offset, RVNG_SEEK_TYPE seekType)
+int VSDInternalStream::seek(long offset, librevenge::RVNG_SEEK_TYPE seekType)
 {
-  if (seekType == RVNG_SEEK_CUR)
+  if (seekType == librevenge::RVNG_SEEK_CUR)
     m_offset += offset;
-  else if (seekType == RVNG_SEEK_SET)
+  else if (seekType == librevenge::RVNG_SEEK_SET)
     m_offset = offset;
 
   if (m_offset < 0)

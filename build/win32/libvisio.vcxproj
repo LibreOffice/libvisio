@@ -198,7 +198,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\src\lib\RVNGStringVector.cpp">
+    <ClCompile Include="..\..\src\lib\librevenge::RVNGStringVector.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -262,7 +262,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\inc\libvisio\libvisio.h" />
     <ClInclude Include="..\..\inc\libvisio\VisioDocument.h" />
-    <ClInclude Include="..\..\inc\libvisio\RVNGStringVector.h" />
+    <ClInclude Include="..\..\inc\libvisio\librevenge::RVNGStringVector.h" />
     <ClInclude Include="..\..\src\lib\libvisio_utils.h" />
     <ClInclude Include="..\..\src\lib\tokenhash.h" />
     <ClInclude Include="..\..\src\lib\tokens.h" />

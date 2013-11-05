@@ -45,9 +45,9 @@ public:
   ~VSDPage();
   VSDPage &operator=(const VSDPage &page);
   void append(const VSDOutputElementList &outputElements);
-  void draw(RVNGDrawingInterface *painter) const;
+  void draw(librevenge::RVNGDrawingInterface *painter) const;
   double m_pageWidth, m_pageHeight;
-  RVNGString m_pageName;
+  librevenge::RVNGString m_pageName;
   unsigned m_currentPageID, m_backgroundPageID;
   VSDOutputElementList m_pageElements;
 };
@@ -59,9 +59,9 @@ public:
   ~VSDPages();
   void addPage(const VSDPage &page);
   void addBackgroundPage(const VSDPage &page);
-  void draw(RVNGDrawingInterface *painter);
+  void draw(librevenge::RVNGDrawingInterface *painter);
 private:
-  void _drawWithBackground(RVNGDrawingInterface *painter, const VSDPage &page);
+  void _drawWithBackground(librevenge::RVNGDrawingInterface *painter, const VSDPage &page);
   std::vector<VSDPage> m_pages;
   std::map<unsigned, VSDPage> m_backgroundPages;
 };

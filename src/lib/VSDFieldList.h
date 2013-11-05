@@ -49,7 +49,7 @@ public:
   virtual ~VSDFieldListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDFieldListElement *clone() = 0;
-  virtual RVNGString getString(const std::map<unsigned, RVNGString> &) = 0;
+  virtual librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &) = 0;
   virtual void setNameId(int) = 0;
   virtual void setFormat(unsigned short) = 0;
   virtual void setValue(double) = 0;
@@ -66,7 +66,7 @@ public:
   ~VSDTextField() {}
   void handle(VSDCollector *collector) const;
   VSDFieldListElement *clone();
-  RVNGString getString(const std::map<unsigned, RVNGString> &strVec);
+  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &strVec);
   void setNameId(int nameId);
   void setFormat(unsigned short) {}
   void setValue(double) {}
@@ -87,12 +87,12 @@ public:
   ~VSDNumericField() {}
   void handle(VSDCollector *collector) const;
   VSDFieldListElement *clone();
-  RVNGString getString(const std::map<unsigned, RVNGString> &);
+  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &);
   void setNameId(int) {}
   void setFormat(unsigned short format);
   void setValue(double number);
 private:
-  RVNGString datetimeToString(const char *format, double datetime);
+  librevenge::RVNGString datetimeToString(const char *format, double datetime);
   unsigned m_id, m_level;
   unsigned short m_format;
   double m_number;

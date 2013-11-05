@@ -65,7 +65,7 @@ std::string getRelationshipsForTarget(const char *target)
 } // anonymous namespace
 
 
-libvisio::VSDXParser::VSDXParser(RVNGInputStream *input, RVNGDrawingInterface *painter)
+libvisio::VSDXParser::VSDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
   : VSDXMLParserBase(),
     m_input(input),
     m_painter(painter),
@@ -84,7 +84,7 @@ bool libvisio::VSDXParser::parseMain()
   if (!m_input || !m_input->isStructured())
     return false;
 
-  RVNGInputStream *tmpInput = 0;
+  librevenge::RVNGInputStream *tmpInput = 0;
   try
   {
     tmpInput = m_input->getSubStreamByName("_rels/.rels");
@@ -131,19 +131,19 @@ bool libvisio::VSDXParser::extractStencils()
   return parseMain();
 }
 
-bool libvisio::VSDXParser::parseDocument(RVNGInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseDocument(librevenge::RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, RVNG_SEEK_SET);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  RVNGInputStream *stream = input->getSubStreamByName(name);
-  input->seek(0, RVNG_SEEK_SET);
+  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!stream)
     return false;
-  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
-  input->seek(0, RVNG_SEEK_SET);
+  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -156,7 +156,7 @@ bool libvisio::VSDXParser::parseDocument(RVNGInputStream *input, const char *nam
     {
       VSD_DEBUG_MSG(("Could not parse theme\n"));
     }
-    input->seek(0, RVNG_SEEK_SET);
+    input->seek(0, librevenge::RVNG_SEEK_SET);
   }
 
   processXmlDocument(stream, rels);
@@ -168,7 +168,7 @@ bool libvisio::VSDXParser::parseDocument(RVNGInputStream *input, const char *nam
     {
       VSD_DEBUG_MSG(("Could not parse masters\n"));
     }
-    input->seek(0, RVNG_SEEK_SET);
+    input->seek(0, librevenge::RVNG_SEEK_SET);
   }
 
   rel = rels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/pages");
@@ -178,7 +178,7 @@ bool libvisio::VSDXParser::parseDocument(RVNGInputStream *input, const char *nam
     {
       VSD_DEBUG_MSG(("Could not parse pages\n"));
     }
-    input->seek(0, RVNG_SEEK_SET);
+    input->seek(0, librevenge::RVNG_SEEK_SET);
   }
 
   if (stream)
@@ -186,18 +186,18 @@ bool libvisio::VSDXParser::parseDocument(RVNGInputStream *input, const char *nam
   return true;
 }
 
-bool libvisio::VSDXParser::parseMasters(RVNGInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseMasters(librevenge::RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, RVNG_SEEK_SET);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  RVNGInputStream *stream = input->getSubStreamByName(name);
+  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
-  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
-  input->seek(0, RVNG_SEEK_SET);
+  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -209,18 +209,18 @@ bool libvisio::VSDXParser::parseMasters(RVNGInputStream *input, const char *name
   return true;
 }
 
-bool libvisio::VSDXParser::parseMaster(RVNGInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseMaster(librevenge::RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, RVNG_SEEK_SET);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  RVNGInputStream *stream = input->getSubStreamByName(name);
+  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
-  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
-  input->seek(0, RVNG_SEEK_SET);
+  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -232,18 +232,18 @@ bool libvisio::VSDXParser::parseMaster(RVNGInputStream *input, const char *name)
   return true;
 }
 
-bool libvisio::VSDXParser::parsePages(RVNGInputStream *input, const char *name)
+bool libvisio::VSDXParser::parsePages(librevenge::RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, RVNG_SEEK_SET);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  RVNGInputStream *stream = input->getSubStreamByName(name);
+  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
-  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
-  input->seek(0, RVNG_SEEK_SET);
+  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -255,18 +255,18 @@ bool libvisio::VSDXParser::parsePages(RVNGInputStream *input, const char *name)
   return true;
 }
 
-bool libvisio::VSDXParser::parsePage(RVNGInputStream *input, const char *name)
+bool libvisio::VSDXParser::parsePage(librevenge::RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, RVNG_SEEK_SET);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  RVNGInputStream *stream = input->getSubStreamByName(name);
+  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
-  RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
-  input->seek(0, RVNG_SEEK_SET);
+  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   VSDXRelationships rels(relStream);
   if (relStream)
     delete relStream;
@@ -278,14 +278,14 @@ bool libvisio::VSDXParser::parsePage(RVNGInputStream *input, const char *name)
   return true;
 }
 
-bool libvisio::VSDXParser::parseTheme(RVNGInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseTheme(librevenge::RVNGInputStream *input, const char *name)
 {
   if (!input)
     return false;
-  input->seek(0, RVNG_SEEK_SET);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  RVNGInputStream *stream = input->getSubStreamByName(name);
+  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return false;
 
@@ -295,7 +295,7 @@ bool libvisio::VSDXParser::parseTheme(RVNGInputStream *input, const char *name)
   return true;
 }
 
-void libvisio::VSDXParser::processXmlDocument(RVNGInputStream *input, VSDXRelationships &rels)
+void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input, VSDXRelationships &rels)
 {
   if (!input)
     return;
@@ -514,13 +514,13 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
 
 #define VSDX_DATA_READ_SIZE 4096UL
 
-void libvisio::VSDXParser::extractBinaryData(RVNGInputStream *input, const char *name)
+void libvisio::VSDXParser::extractBinaryData(librevenge::RVNGInputStream *input, const char *name)
 {
   m_currentBinaryData.clear();
   if (!input || !input->isStructured())
     return;
-  input->seek(0, RVNG_SEEK_SET);
-  RVNGInputStream *stream = input->getSubStreamByName(name);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
+  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
   if (!stream)
     return;
   while (true)
@@ -677,7 +677,7 @@ void libvisio::VSDXParser::readFonts(xmlTextReaderPtr reader)
       xmlChar *name = xmlTextReaderGetAttribute(reader, BAD_CAST("NameU"));
       if (name)
       {
-        RVNGBinaryData textStream(name, xmlStrlen(name));
+        librevenge::RVNGBinaryData textStream(name, xmlStrlen(name));
         m_fonts[idx] = VSDName(textStream, libvisio::VSD_TEXT_UTF8);
         xmlFree(name);
       }

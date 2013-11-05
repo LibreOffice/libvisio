@@ -39,7 +39,7 @@
 #include <boost/archive/iterators/transform_width.hpp>
 #include <boost/range/iterator_range.hpp>
 
-uint8_t libvisio::readU8(RVNGInputStream *input)
+uint8_t libvisio::readU8(librevenge::RVNGInputStream *input)
 {
   if (!input || input->isEnd())
   {
@@ -55,7 +55,7 @@ uint8_t libvisio::readU8(RVNGInputStream *input)
   throw EndOfStreamException();
 }
 
-uint16_t libvisio::readU16(RVNGInputStream *input)
+uint16_t libvisio::readU16(librevenge::RVNGInputStream *input)
 {
   if (!input || input->isEnd())
   {
@@ -71,12 +71,12 @@ uint16_t libvisio::readU16(RVNGInputStream *input)
   throw EndOfStreamException();
 }
 
-int16_t libvisio::readS16(RVNGInputStream *input)
+int16_t libvisio::readS16(librevenge::RVNGInputStream *input)
 {
   return (int16_t)readU16(input);
 }
 
-uint32_t libvisio::readU32(RVNGInputStream *input)
+uint32_t libvisio::readU32(librevenge::RVNGInputStream *input)
 {
   if (!input || input->isEnd())
   {
@@ -92,12 +92,12 @@ uint32_t libvisio::readU32(RVNGInputStream *input)
   throw EndOfStreamException();
 }
 
-int32_t libvisio::readS32(RVNGInputStream *input)
+int32_t libvisio::readS32(librevenge::RVNGInputStream *input)
 {
   return (int32_t)readU32(input);
 }
 
-uint64_t libvisio::readU64(RVNGInputStream *input)
+uint64_t libvisio::readU64(librevenge::RVNGInputStream *input)
 {
   if (!input || input->isEnd())
   {
@@ -113,7 +113,7 @@ uint64_t libvisio::readU64(RVNGInputStream *input)
   throw EndOfStreamException();
 }
 
-double libvisio::readDouble(RVNGInputStream *input)
+double libvisio::readDouble(librevenge::RVNGInputStream *input)
 {
   union
   {
@@ -126,7 +126,7 @@ double libvisio::readDouble(RVNGInputStream *input)
   return tmpUnion.d;
 }
 
-void libvisio::appendFromBase64(RVNGBinaryData &data, const unsigned char *base64Data, size_t base64DataLength)
+void libvisio::appendFromBase64(librevenge::RVNGBinaryData &data, const unsigned char *base64Data, size_t base64DataLength)
 {
   std::string base64String((const char *)base64Data, base64DataLength);
   unsigned numPadding = std::count(base64String.begin(), base64String.end(), '=');
@@ -145,9 +145,9 @@ void libvisio::appendFromBase64(RVNGBinaryData &data, const unsigned char *base6
   }
 }
 
-const ::RVNGString libvisio::getColourString(const Colour &c)
+const librevenge::RVNGString libvisio::getColourString(const Colour &c)
 {
-  ::RVNGString sColour;
+  librevenge::RVNGString sColour;
   sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
   return sColour;
 }

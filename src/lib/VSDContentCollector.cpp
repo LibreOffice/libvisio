@@ -57,7 +57,7 @@ static unsigned bitmapId = 0;
 namespace
 {
 
-static void _appendUCS4(RVNGString &text, UChar32 ucs4Character)
+static void _appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character)
 {
   // Convert carriage returns to new line characters
   // Writerperfect/LibreOffice will replace them by <text:line-break>
@@ -76,7 +76,7 @@ static void _appendUCS4(RVNGString &text, UChar32 ucs4Character)
 
 
 libvisio::VSDContentCollector::VSDContentCollector(
-  RVNGDrawingInterface *painter,
+  librevenge::RVNGDrawingInterface *painter,
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
   std::vector<std::list<unsigned> > &documentPageShapeOrders,
@@ -225,10 +225,10 @@ void libvisio::VSDContentCollector::_flushShape()
     numTextElements++;
 
   if (numPathElements+numForeignElements+numTextElements > 1)
-    m_shapeOutputDrawing->addStartLayer(RVNGPropertyList());
+    m_shapeOutputDrawing->addStartLayer(librevenge::RVNGPropertyList());
 
   if (numPathElements > 1 && (numForeignElements || numTextElements))
-    m_shapeOutputDrawing->addStartLayer(RVNGPropertyList());
+    m_shapeOutputDrawing->addStartLayer(librevenge::RVNGPropertyList());
   _flushCurrentPath();
   if (numPathElements > 1 && (numForeignElements || numTextElements))
     m_shapeOutputDrawing->addEndLayer();
@@ -248,15 +248,15 @@ void libvisio::VSDContentCollector::_flushShape()
 
 void libvisio::VSDContentCollector::_flushCurrentPath()
 {
-  RVNGPropertyList styleProps;
+  librevenge::RVNGPropertyList styleProps;
   _lineProperties(m_lineStyle, styleProps);
   _fillAndShadowProperties(m_fillStyle, styleProps);
-  RVNGPropertyList fillPathProps(styleProps);
+  librevenge::RVNGPropertyList fillPathProps(styleProps);
   fillPathProps.insert("draw:stroke", "none");
-  RVNGPropertyList linePathProps(styleProps);
+  librevenge::RVNGPropertyList linePathProps(styleProps);
   linePathProps.insert("draw:fill", "none");
 
-  std::vector<RVNGPropertyList> tmpPath;
+  std::vector<librevenge::RVNGPropertyList> tmpPath;
   if (m_fillStyle.pattern && !m_currentFillGeometry.empty())
   {
     bool firstPoint = true;
@@ -276,7 +276,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
           {
             if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
             {
-              RVNGPropertyList closedPath;
+              librevenge::RVNGPropertyList closedPath;
               closedPath.insert("librevenge:path-action", "Z");
               tmpPath.push_back(closedPath);
             }
@@ -298,7 +298,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       {
         if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
         {
-          RVNGPropertyList closedPath;
+          librevenge::RVNGPropertyList closedPath;
           closedPath.insert("librevenge:path-action", "Z");
           tmpPath.push_back(closedPath);
         }
@@ -308,10 +308,10 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     }
     if (!tmpPath.empty())
     {
-      RVNGPropertyListVector path;
+      librevenge::RVNGPropertyListVector path;
       for (unsigned i = 0; i < tmpPath.size(); ++i)
         path.append(tmpPath[i]);
-      m_shapeOutputDrawing->addStyle(fillPathProps, RVNGPropertyListVector());
+      m_shapeOutputDrawing->addStyle(fillPathProps, librevenge::RVNGPropertyListVector());
       m_shapeOutputDrawing->addPath(path);
     }
   }
@@ -345,7 +345,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
             {
               if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
               {
-                RVNGPropertyList closedPath;
+                librevenge::RVNGPropertyList closedPath;
                 closedPath.insert("librevenge:path-action", "Z");
                 tmpPath.push_back(closedPath);
               }
@@ -376,7 +376,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
         {
           if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
           {
-            RVNGPropertyList closedPath;
+            librevenge::RVNGPropertyList closedPath;
             closedPath.insert("librevenge:path-action", "Z");
             tmpPath.push_back(closedPath);
           }
@@ -389,10 +389,10 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     }
     if (!tmpPath.empty())
     {
-      RVNGPropertyListVector path;
+      librevenge::RVNGPropertyListVector path;
       for (unsigned i = 0; i < tmpPath.size(); ++i)
         path.append(tmpPath[i]);
-      m_shapeOutputDrawing->addStyle(linePathProps, RVNGPropertyListVector());
+      m_shapeOutputDrawing->addStyle(linePathProps, librevenge::RVNGPropertyListVector());
       m_shapeOutputDrawing->addPath(path);
     }
   }
@@ -415,7 +415,7 @@ void libvisio::VSDContentCollector::_flushText()
   double angle = 0.0;
   transformAngle(angle, m_txtxform);
 
-  RVNGPropertyList textBlockProps;
+  librevenge::RVNGPropertyList textBlockProps;
 
   bool flipX = false;
   bool flipY = false;
@@ -437,7 +437,7 @@ void libvisio::VSDContentCollector::_flushText()
   textBlockProps.insert("fo:padding-bottom", m_textBlockStyle.bottomMargin);
   textBlockProps.insert("fo:padding-left", m_textBlockStyle.leftMargin);
   textBlockProps.insert("fo:padding-right", m_textBlockStyle.rightMargin);
-  textBlockProps.insert("librevenge:rotate", angle*180/M_PI, RVNG_GENERIC);
+  textBlockProps.insert("librevenge:rotate", angle*180/M_PI, librevenge::RVNG_GENERIC);
 
   switch (m_textBlockStyle.verticalAlign)
   {
@@ -477,7 +477,7 @@ void libvisio::VSDContentCollector::_flushText()
       m_paraFormats[iPara].charCount = numCharsInText;
   }
 
-  m_shapeOutputText->addStartTextObject(textBlockProps, RVNGPropertyListVector());
+  m_shapeOutputText->addStartTextObject(textBlockProps, librevenge::RVNGPropertyListVector());
 
   unsigned int charIndex = 0;
   unsigned int paraCharCount = 0;
@@ -488,7 +488,7 @@ void libvisio::VSDContentCollector::_flushText()
   for (std::vector<VSDParaStyle>::iterator paraIt = m_paraFormats.begin();
        paraIt != m_paraFormats.end() && charIndex < m_charFormats.size(); ++paraIt)
   {
-    RVNGPropertyList paraProps;
+    librevenge::RVNGPropertyList paraProps;
 
     paraProps.insert("fo:text-indent", (*paraIt).indFirst);
     paraProps.insert("fo:margin-left", (*paraIt).indLeft);
@@ -522,9 +522,9 @@ void libvisio::VSDContentCollector::_flushText()
     if ((*paraIt).spLine > 0)
       paraProps.insert("fo:line-height", (*paraIt).spLine);
     else
-      paraProps.insert("fo:line-height", -(*paraIt).spLine, RVNG_PERCENT);
+      paraProps.insert("fo:line-height", -(*paraIt).spLine, librevenge::RVNG_PERCENT);
 
-    m_shapeOutputText->addOpenParagraph(paraProps, RVNGPropertyListVector());
+    m_shapeOutputText->addOpenParagraph(paraProps, librevenge::RVNGPropertyListVector());
 
     paraCharCount = (*paraIt).charCount;
 
@@ -533,9 +533,9 @@ void libvisio::VSDContentCollector::_flushText()
     {
       paraCharCount -= m_charFormats[charIndex].charCount;
 
-      RVNGPropertyList textProps;
+      librevenge::RVNGPropertyList textProps;
 
-      RVNGString fontName;
+      librevenge::RVNGString fontName;
       if (m_charFormats[charIndex].font.m_data.size())
         _convertDataToString(fontName, m_charFormats[charIndex].font.m_data, m_charFormats[charIndex].font.m_format);
       else
@@ -554,24 +554,24 @@ void libvisio::VSDContentCollector::_flushText()
       if (m_charFormats[charIndex].smallcaps) textProps.insert("fo:font-variant", "small-caps");
       if (m_charFormats[charIndex].superscript) textProps.insert("style:text-position", "super");
       if (m_charFormats[charIndex].subscript) textProps.insert("style:text-position", "sub");
-      textProps.insert("fo:font-size", m_charFormats[charIndex].size*72.0, RVNG_POINT);
+      textProps.insert("fo:font-size", m_charFormats[charIndex].size*72.0, librevenge::RVNG_POINT);
       textProps.insert("fo:color", getColourString(m_charFormats[charIndex].colour));
       double opacity = 1.0;
       if (m_charFormats[charIndex].colour.a)
         opacity -= (double)(m_charFormats[charIndex].colour.a)/255.0;
-      textProps.insert("svg:stroke-opacity", opacity, RVNG_PERCENT);
-      textProps.insert("svg:fill-opacity", opacity, RVNG_PERCENT);
+      textProps.insert("svg:stroke-opacity", opacity, librevenge::RVNG_PERCENT);
+      textProps.insert("svg:fill-opacity", opacity, librevenge::RVNG_PERCENT);
       // TODO: In draw, text span background cannot be specified the same way as in writer span
       if (m_textBlockStyle.isTextBkgndFilled)
       {
         textProps.insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
 #if 0
         if (m_textBlockStyle.textBkgndColour.a)
-          textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, RVNG_PERCENT);
+          textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, librevenge::RVNG_PERCENT);
 #endif
       }
 
-      RVNGString text;
+      librevenge::RVNGString text;
 
       if (m_textFormat == VSD_TEXT_UTF16)
       {
@@ -680,7 +680,7 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
 
   transformFlips(flipX, flipY);
 
-  RVNGPropertyList styleProps;
+  librevenge::RVNGPropertyList styleProps;
 
   m_currentForeignProps.insert("svg:x", m_scale*(xmiddle - (m_foreignWidth / 2.0)));
   m_currentForeignProps.insert("svg:width", m_scale*m_foreignWidth);
@@ -702,11 +702,11 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
   }
 
   if (angle != 0.0)
-    m_currentForeignProps.insert("librevenge:rotate", angle * 180 / M_PI, RVNG_GENERIC);
+    m_currentForeignProps.insert("librevenge:rotate", angle * 180 / M_PI, librevenge::RVNG_GENERIC);
 
   if (m_currentForeignData.size() && m_currentForeignProps["librevenge:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0)
   {
-    m_shapeOutputDrawing->addStyle(styleProps, RVNGPropertyListVector());
+    m_shapeOutputDrawing->addStyle(styleProps, librevenge::RVNGPropertyListVector());
     m_shapeOutputDrawing->addGraphicObject(m_currentForeignProps, m_currentForeignData);
   }
   m_currentForeignData.clear();
@@ -783,7 +783,7 @@ void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, un
   if (fabs(((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n))) <= LIBVISIO_EPSILON || fabs(((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n))) <= LIBVISIO_EPSILON)
     // most probably all of the points lie on the same line, so use lineTo instead
   {
-    RVNGPropertyList end;
+    librevenge::RVNGPropertyList end;
     end.insert("svg:x", m_scale*m_x);
     end.insert("svg:y", m_scale*m_y);
     end.insert("librevenge:path-action", "L");
@@ -805,7 +805,7 @@ void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, un
 
   double rx = sqrt(pow(x1-x0, 2) + pow(y1-y0, 2));
   double ry = rx / ecc;
-  RVNGPropertyList arc;
+  librevenge::RVNGPropertyList arc;
   int largeArc = 0;
   int sweep = 1;
 
@@ -821,7 +821,7 @@ void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, un
 
   arc.insert("svg:rx", m_scale*rx);
   arc.insert("svg:ry", m_scale*ry);
-  arc.insert("librevenge:rotate", angle * 180 / M_PI, RVNG_GENERIC);
+  arc.insert("librevenge:rotate", angle * 180 / M_PI, librevenge::RVNG_GENERIC);
   arc.insert("librevenge:large-arc", largeArc);
   arc.insert("librevenge:sweep", sweep);
   arc.insert("svg:x", m_scale*m_x);
@@ -836,7 +836,7 @@ void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, un
 void libvisio::VSDContentCollector::collectEllipse(unsigned /* id */, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop)
 {
   _handleLevelChange(level);
-  RVNGPropertyList ellipse;
+  librevenge::RVNGPropertyList ellipse;
   double angle = fmod(2.0*M_PI + (cy > yleft ? 1.0 : -1.0)*acos((cx-xleft) / sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy))), 2.0*M_PI);
   transformPoint(cx, cy);
   transformPoint(xleft, yleft);
@@ -865,7 +865,7 @@ void libvisio::VSDContentCollector::collectEllipse(unsigned /* id */, unsigned l
   ellipse.insert("svg:y",m_scale*ytop);
   ellipse.insert("librevenge:large-arc", largeArc?1:0);
   ellipse.insert("librevenge:path-action", "A");
-  ellipse.insert("librevenge:rotate", angle * 180/M_PI, RVNG_GENERIC);
+  ellipse.insert("librevenge:rotate", angle * 180/M_PI, librevenge::RVNG_GENERIC);
   if (!m_noFill && !m_noShow)
     m_currentFillGeometry.push_back(ellipse);
   if (!m_noLine && !m_noShow)
@@ -957,7 +957,7 @@ void libvisio::VSDContentCollector::collectInfiniteLine(unsigned /* id */, unsig
     }
   }
 
-  RVNGPropertyList infLine;
+  librevenge::RVNGPropertyList infLine;
   infLine.insert("svg:x",m_scale*xmove);
   infLine.insert("svg:y",m_scale*ymove);
   infLine.insert("librevenge:path-action", "M");
@@ -990,7 +990,7 @@ void libvisio::VSDContentCollector::collectRelCubBezTo(unsigned /* id */, unsign
   transformPoint(x, y);
   m_x = x;
   m_y = y;
-  RVNGPropertyList node;
+  librevenge::RVNGPropertyList node;
   node.insert("librevenge:path-action", "C");
   node.insert("svg:x",m_scale*x);
   node.insert("svg:y",m_scale*y);
@@ -1040,7 +1040,7 @@ void libvisio::VSDContentCollector::collectRelQuadBezTo(unsigned /* id */, unsig
   transformPoint(x, y);
   m_x = x;
   m_y = y;
-  RVNGPropertyList node;
+  librevenge::RVNGPropertyList node;
   node.insert("librevenge:path-action", "Q");
   node.insert("svg:x",m_scale*x);
   node.insert("svg:y",m_scale*y);
@@ -1075,7 +1075,7 @@ void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const b
   collectFillAndShadow(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
 
-void libvisio::VSDContentCollector::collectForeignData(unsigned level, const RVNGBinaryData &binaryData)
+void libvisio::VSDContentCollector::collectForeignData(unsigned level, const librevenge::RVNGBinaryData &binaryData)
 {
   _handleLevelChange(level);
   _handleForeignData(binaryData);
@@ -1085,17 +1085,17 @@ void libvisio::VSDContentCollector::collectOLEList(unsigned /* id */, unsigned l
 {
   _handleLevelChange(level);
   m_currentForeignData.clear();
-  RVNGBinaryData binaryData;
+  librevenge::RVNGBinaryData binaryData;
   _handleForeignData(binaryData);
 }
 
-void libvisio::VSDContentCollector::collectOLEData(unsigned /* id */, unsigned level, const RVNGBinaryData &oleData)
+void libvisio::VSDContentCollector::collectOLEData(unsigned /* id */, unsigned level, const librevenge::RVNGBinaryData &oleData)
 {
   _handleLevelChange(level);
   m_currentForeignData.append(oleData);
 }
 
-void libvisio::VSDContentCollector::_handleForeignData(const RVNGBinaryData &binaryData)
+void libvisio::VSDContentCollector::_handleForeignData(const librevenge::RVNGBinaryData &binaryData)
 {
   if (m_foreignType == 0 || m_foreignType == 1 || m_foreignType == 4) // Image
   {
@@ -1162,7 +1162,7 @@ void libvisio::VSDContentCollector::_handleForeignData(const RVNGBinaryData &bin
   }
 
 #if DUMP_BITMAP
-  ::RVNGString filename;
+  librevenge::RVNGString filename;
   if (m_foreignType == 1)
   {
     switch(m_foreignFormat)
@@ -1236,7 +1236,7 @@ void libvisio::VSDContentCollector::collectMoveTo(unsigned /* id */, unsigned le
   transformPoint(x, y);
   m_x = x;
   m_y = y;
-  RVNGPropertyList end;
+  librevenge::RVNGPropertyList end;
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("librevenge:path-action", "M");
@@ -1254,7 +1254,7 @@ void libvisio::VSDContentCollector::collectLineTo(unsigned /* id */, unsigned le
   transformPoint(x, y);
   m_x = x;
   m_y = y;
-  RVNGPropertyList end;
+  librevenge::RVNGPropertyList end;
   end.insert("svg:x", m_scale*m_x);
   end.insert("svg:y", m_scale*m_y);
   end.insert("librevenge:path-action", "L");
@@ -1277,7 +1277,7 @@ void libvisio::VSDContentCollector::collectArcTo(unsigned /* id */, unsigned lev
   {
     m_x = x2;
     m_y = y2;
-    RVNGPropertyList end;
+    librevenge::RVNGPropertyList end;
     end.insert("svg:x", m_scale*m_x);
     end.insert("svg:y", m_scale*m_y);
     end.insert("librevenge:path-action", "L");
@@ -1288,7 +1288,7 @@ void libvisio::VSDContentCollector::collectArcTo(unsigned /* id */, unsigned lev
   }
   else
   {
-    RVNGPropertyList arc;
+    librevenge::RVNGPropertyList arc;
     double chord = sqrt(pow((y2 - m_y),2) + pow((x2 - m_x),2));
     double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
     int largeArc = fabs(bow) > radius ? 1 : 0;
@@ -1299,7 +1299,7 @@ void libvisio::VSDContentCollector::collectArcTo(unsigned /* id */, unsigned lev
     m_y = y2;
     arc.insert("svg:rx", m_scale*radius);
     arc.insert("svg:ry", m_scale*radius);
-    arc.insert("librevenge:rotate", angle*180/M_PI, RVNG_GENERIC);
+    arc.insert("librevenge:rotate", angle*180/M_PI, librevenge::RVNG_GENERIC);
     arc.insert("librevenge:large-arc", largeArc);
     arc.insert("librevenge:sweep", sweep);
     arc.insert("svg:x", m_scale*m_x);
@@ -1317,7 +1317,7 @@ void libvisio::VSDContentCollector::_outputCubicBezierSegment(const std::vector<
 {
   if (points.size() < 4)
     return;
-  RVNGPropertyList node;
+  librevenge::RVNGPropertyList node;
   node.insert("librevenge:path-action", "C");
   double x = points[1].first;
   double y = points[1].second;
@@ -1345,7 +1345,7 @@ void libvisio::VSDContentCollector::_outputQuadraticBezierSegment(const std::vec
 {
   if (points.size() < 3)
     return;
-  RVNGPropertyList node;
+  librevenge::RVNGPropertyList node;
   node.insert("librevenge:path-action", "Q");
   double x = points[1].first;
   double y = points[1].second;
@@ -1368,7 +1368,7 @@ void libvisio::VSDContentCollector::_outputLinearBezierSegment(const std::vector
 {
   if (points.size() < 2)
     return;
-  RVNGPropertyList node;
+  librevenge::RVNGPropertyList node;
   node.insert("librevenge:path-action", "L");
   double x = points[1].first;
   double y = points[1].second;
@@ -1491,7 +1491,7 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
   if (m_noShow)
     return;
 
-  RVNGPropertyList node;
+  librevenge::RVNGPropertyList node;
 
   for (unsigned i = 0; i < VSD_NUM_POLYLINES_PER_KNOT * knotVector.size(); i++)
   {
@@ -1589,7 +1589,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   m_y = y2;
   transformPoint(m_x, m_y);
 #if 1
-  RVNGPropertyList node;
+  librevenge::RVNGPropertyList node;
   node.insert("librevenge:path-action", "L");
   node.insert("svg:x", m_scale*m_x);
   node.insert("svg:y", m_scale*m_y);
@@ -1653,7 +1653,7 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */ , unsign
 {
   _handleLevelChange(level);
 
-  RVNGPropertyList polyline;
+  librevenge::RVNGPropertyList polyline;
   std::vector<std::pair<double, double> > tmpPoints(points);
   for (unsigned i = 0; i< points.size(); i++)
   {
@@ -1995,7 +1995,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
 
     for (std::map< unsigned, VSDName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
     {
-      RVNGString nameString;
+      librevenge::RVNGString nameString;
       _convertDataToString(nameString, iterData->second.m_data, iterData->second.m_format);
       m_stencilNames[iterData->first] = nameString;
     }
@@ -2007,7 +2007,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
       if (elem)
         m_fields.push_back(elem->getString(m_stencilNames));
       else
-        m_fields.push_back(RVNGString());
+        m_fields.push_back(librevenge::RVNGString());
     }
 
     if (m_stencilShape->m_lineStyleId != MINUS_ONE)
@@ -2093,7 +2093,7 @@ void libvisio::VSDContentCollector::collectSplineEnd()
 }
 
 
-void libvisio::VSDContentCollector::collectText(unsigned level, const RVNGBinaryData &textStream, TextFormat format)
+void libvisio::VSDContentCollector::collectText(unsigned level, const librevenge::RVNGBinaryData &textStream, TextFormat format)
 {
   _handleLevelChange(level);
 
@@ -2159,7 +2159,7 @@ void libvisio::VSDContentCollector::collectNameList(unsigned /*id*/, unsigned le
   m_names.clear();
 }
 
-void libvisio::VSDContentCollector::_convertDataToString(RVNGString &result, const RVNGBinaryData &data, TextFormat format)
+void libvisio::VSDContentCollector::_convertDataToString(librevenge::RVNGString &result, const librevenge::RVNGBinaryData &data, TextFormat format)
 {
   if (!data.size())
     return;
@@ -2168,11 +2168,11 @@ void libvisio::VSDContentCollector::_convertDataToString(RVNGString &result, con
   appendCharacters(result, tmpData, format);
 }
 
-void libvisio::VSDContentCollector::collectName(unsigned id, unsigned level, const RVNGBinaryData &name, TextFormat format)
+void libvisio::VSDContentCollector::collectName(unsigned id, unsigned level, const librevenge::RVNGBinaryData &name, TextFormat format)
 {
   _handleLevelChange(level);
 
-  RVNGString nameString;
+  librevenge::RVNGString nameString;
   _convertDataToString(nameString, name, format);
   m_names[id] = nameString;
 }
@@ -2250,7 +2250,7 @@ void libvisio::VSDContentCollector::collectTextBlockStyle(unsigned /* level */, 
   m_styles.addTextBlockStyle(m_currentStyleSheet, textBlockStyle);
 }
 
-void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, RVNGPropertyList &styleProps)
+void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, librevenge::RVNGPropertyList &styleProps)
 {
   if (!style.pattern)
   {
@@ -2261,9 +2261,9 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, R
   styleProps.insert("svg:stroke-width", m_scale*style.width);
   styleProps.insert("svg:stroke-color", getColourString(style.colour));
   if (style.colour.a)
-    styleProps.insert("svg:stroke-opacity", (1 - style.colour.a/255.0), RVNG_PERCENT);
+    styleProps.insert("svg:stroke-opacity", (1 - style.colour.a/255.0), librevenge::RVNG_PERCENT);
   else
-    styleProps.insert("svg:stroke-opacity", 1.0, RVNG_PERCENT);
+    styleProps.insert("svg:stroke-opacity", 1.0, librevenge::RVNG_PERCENT);
   switch (style.cap)
   {
   case 0:
@@ -2455,10 +2455,10 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, R
   {
     styleProps.insert("draw:stroke", "dash");
     styleProps.insert("draw:dots1", dots1);
-    styleProps.insert("draw:dots1-length", dots1len, RVNG_PERCENT);
+    styleProps.insert("draw:dots1-length", dots1len, librevenge::RVNG_PERCENT);
     styleProps.insert("draw:dots2", dots2);
-    styleProps.insert("draw:dots2-length", dots2len, RVNG_PERCENT);
-    styleProps.insert("draw:distance", gap, RVNG_PERCENT);
+    styleProps.insert("draw:dots2-length", dots2len, librevenge::RVNG_PERCENT);
+    styleProps.insert("draw:distance", gap, librevenge::RVNG_PERCENT);
   }
   else
     // FIXME: later it will require special treatment for custom line patterns
@@ -2466,7 +2466,7 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, R
     styleProps.insert("draw:stroke", "solid");
 }
 
-void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle &style, RVNGPropertyList &styleProps)
+void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle &style, librevenge::RVNGPropertyList &styleProps)
 {
   if (style.pattern)
     styleProps.insert("svg:fill-rule", "evenodd");
@@ -2478,7 +2478,7 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
     styleProps.insert("draw:fill", "solid");
     styleProps.insert("draw:fill-color", getColourString(style.fgColour));
     if (style.fgTransparency > 0)
-      styleProps.insert("draw:opacity", 1 - style.fgTransparency, RVNG_PERCENT);
+      styleProps.insert("draw:opacity", 1 - style.fgTransparency, librevenge::RVNG_PERCENT);
     else
       styleProps.remove("draw:opacity");
   }
@@ -2490,14 +2490,14 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
     styleProps.insert("draw:end-color", getColourString(style.bgColour));
     styleProps.remove("draw:opacity");
     if (style.bgTransparency > 0.0)
-      styleProps.insert("librevenge:start-opacity", 1 - style.bgTransparency, RVNG_PERCENT);
+      styleProps.insert("librevenge:start-opacity", 1 - style.bgTransparency, librevenge::RVNG_PERCENT);
     else
-      styleProps.insert("librevenge:start-opacity", 1, RVNG_PERCENT);
+      styleProps.insert("librevenge:start-opacity", 1, librevenge::RVNG_PERCENT);
     if (style.fgTransparency > 0.0)
-      styleProps.insert("librevenge:end-opacity", 1 - style.fgTransparency, RVNG_PERCENT);
+      styleProps.insert("librevenge:end-opacity", 1 - style.fgTransparency, librevenge::RVNG_PERCENT);
     else
-      styleProps.insert("librevenge:end-opacity", 1, RVNG_PERCENT);
-    styleProps.insert("draw:border", 0, RVNG_PERCENT);
+      styleProps.insert("librevenge:end-opacity", 1, librevenge::RVNG_PERCENT);
+    styleProps.insert("draw:border", 0, librevenge::RVNG_PERCENT);
 
     if (style.pattern == 26)
       styleProps.insert("draw:angle", 90);
@@ -2512,14 +2512,14 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
     styleProps.insert("draw:end-color", getColourString(style.fgColour));
     styleProps.remove("draw:opacity");
     if (style.bgTransparency > 0)
-      styleProps.insert("librevenge:start-opacity", 1 - style.bgTransparency, RVNG_PERCENT);
+      styleProps.insert("librevenge:start-opacity", 1 - style.bgTransparency, librevenge::RVNG_PERCENT);
     else
-      styleProps.insert("librevenge:start-opacity", 1, RVNG_PERCENT);
+      styleProps.insert("librevenge:start-opacity", 1, librevenge::RVNG_PERCENT);
     if (style.fgTransparency > 0)
-      styleProps.insert("librevenge:end-opacity", 1 - style.fgTransparency, RVNG_PERCENT);
+      styleProps.insert("librevenge:end-opacity", 1 - style.fgTransparency, librevenge::RVNG_PERCENT);
     else
-      styleProps.insert("librevenge:end-opacity", 1, RVNG_PERCENT);
-    styleProps.insert("draw:border", 0, RVNG_PERCENT);
+      styleProps.insert("librevenge:end-opacity", 1, librevenge::RVNG_PERCENT);
+    styleProps.insert("draw:border", 0, librevenge::RVNG_PERCENT);
 
     switch(style.pattern)
     {
@@ -2553,21 +2553,21 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
   {
     styleProps.insert("draw:fill", "gradient");
     styleProps.insert("draw:style", "rectangular");
-    styleProps.insert("svg:cx", 0.5, RVNG_PERCENT);
-    styleProps.insert("svg:cy", 0.5, RVNG_PERCENT);
+    styleProps.insert("svg:cx", 0.5, librevenge::RVNG_PERCENT);
+    styleProps.insert("svg:cy", 0.5, librevenge::RVNG_PERCENT);
     styleProps.insert("draw:start-color", getColourString(style.bgColour));
     styleProps.insert("draw:end-color", getColourString(style.fgColour));
     styleProps.remove("draw:opacity");
     if (style.bgTransparency > 0)
-      styleProps.insert("librevenge:start-opacity", 1 - style.bgTransparency, RVNG_PERCENT);
+      styleProps.insert("librevenge:start-opacity", 1 - style.bgTransparency, librevenge::RVNG_PERCENT);
     else
-      styleProps.insert("librevenge:start-opacity", 1, RVNG_PERCENT);
+      styleProps.insert("librevenge:start-opacity", 1, librevenge::RVNG_PERCENT);
     if (style.fgTransparency > 0)
-      styleProps.insert("librevenge:end-opacity", 1 - style.fgTransparency, RVNG_PERCENT);
+      styleProps.insert("librevenge:end-opacity", 1 - style.fgTransparency, librevenge::RVNG_PERCENT);
     else
-      styleProps.insert("librevenge:end-opacity", 1, RVNG_PERCENT);
+      styleProps.insert("librevenge:end-opacity", 1, librevenge::RVNG_PERCENT);
     styleProps.insert("draw:angle", 0);
-    styleProps.insert("draw:border", 0, RVNG_PERCENT);
+    styleProps.insert("draw:border", 0, librevenge::RVNG_PERCENT);
   }
   else if (style.pattern >= 36 && style.pattern <= 40)
   {
@@ -2577,36 +2577,36 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
     styleProps.insert("draw:end-color", getColourString(style.fgColour));
     styleProps.remove("draw:opacity");
     if (style.bgTransparency > 0)
-      styleProps.insert("librevenge:start-opacity", 1 - style.bgTransparency, RVNG_PERCENT);
+      styleProps.insert("librevenge:start-opacity", 1 - style.bgTransparency, librevenge::RVNG_PERCENT);
     else
-      styleProps.insert("librevenge:start-opacity", 1, RVNG_PERCENT);
+      styleProps.insert("librevenge:start-opacity", 1, librevenge::RVNG_PERCENT);
     if (style.fgTransparency > 0)
-      styleProps.insert("librevenge:end-opacity", 1 - style.fgTransparency, RVNG_PERCENT);
+      styleProps.insert("librevenge:end-opacity", 1 - style.fgTransparency, librevenge::RVNG_PERCENT);
     else
-      styleProps.insert("librevenge:end-opacity", 1, RVNG_PERCENT);
-    styleProps.insert("draw:border", 0, RVNG_PERCENT);
+      styleProps.insert("librevenge:end-opacity", 1, librevenge::RVNG_PERCENT);
+    styleProps.insert("draw:border", 0, librevenge::RVNG_PERCENT);
 
     switch(style.pattern)
     {
     case 36:
-      styleProps.insert("svg:cx", 0, RVNG_PERCENT);
-      styleProps.insert("svg:cy", 0, RVNG_PERCENT);
+      styleProps.insert("svg:cx", 0, librevenge::RVNG_PERCENT);
+      styleProps.insert("svg:cy", 0, librevenge::RVNG_PERCENT);
       break;
     case 37:
-      styleProps.insert("svg:cx", 1, RVNG_PERCENT);
-      styleProps.insert("svg:cy", 0, RVNG_PERCENT);
+      styleProps.insert("svg:cx", 1, librevenge::RVNG_PERCENT);
+      styleProps.insert("svg:cy", 0, librevenge::RVNG_PERCENT);
       break;
     case 38:
-      styleProps.insert("svg:cx", 0, RVNG_PERCENT);
-      styleProps.insert("svg:cy", 1, RVNG_PERCENT);
+      styleProps.insert("svg:cx", 0, librevenge::RVNG_PERCENT);
+      styleProps.insert("svg:cy", 1, librevenge::RVNG_PERCENT);
       break;
     case 39:
-      styleProps.insert("svg:cx", 1, RVNG_PERCENT);
-      styleProps.insert("svg:cy", 1, RVNG_PERCENT);
+      styleProps.insert("svg:cx", 1, librevenge::RVNG_PERCENT);
+      styleProps.insert("svg:cy", 1, librevenge::RVNG_PERCENT);
       break;
     case 40:
-      styleProps.insert("svg:cx", 0.5, RVNG_PERCENT);
-      styleProps.insert("svg:cy", 0.5, RVNG_PERCENT);
+      styleProps.insert("svg:cx", 0.5, librevenge::RVNG_PERCENT);
+      styleProps.insert("svg:cy", 0.5, librevenge::RVNG_PERCENT);
       break;
     }
   }
@@ -2623,7 +2623,7 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
     styleProps.insert("draw:shadow-offset-x",style.shadowOffsetX != 0.0 ? style.shadowOffsetX : m_shadowOffsetX);
     styleProps.insert("draw:shadow-offset-y",style.shadowOffsetY != 0.0 ? -style.shadowOffsetY : -m_shadowOffsetY);
     styleProps.insert("draw:shadow-color",getColourString(style.shadowFgColour));
-    styleProps.insert("draw:shadow-opacity",(double)(1 - style.shadowFgColour.a/255.), RVNG_PERCENT);
+    styleProps.insert("draw:shadow-opacity",(double)(1 - style.shadowFgColour.a/255.), librevenge::RVNG_PERCENT);
   }
 }
 
@@ -2646,7 +2646,7 @@ void libvisio::VSDContentCollector::collectTextField(unsigned id, unsigned level
       if (nameId >= 0)
         m_fields.push_back(m_names[nameId]);
       else
-        m_fields.push_back(RVNGString());
+        m_fields.push_back(librevenge::RVNGString());
     }
   }
   else
@@ -2668,7 +2668,7 @@ void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned le
       element->setValue(number);
       if (format == 0xffff)
       {
-        std::map<unsigned, RVNGString>::const_iterator iter = m_names.find(formatStringId);
+        std::map<unsigned, librevenge::RVNGString>::const_iterator iter = m_names.find(formatStringId);
         if (iter != m_names.end())
           parseFormatId(iter->second.cstr(), format);
       }
@@ -2803,7 +2803,7 @@ bool libvisio::VSDContentCollector::parseFormatId( const char *formatString, uns
   return false;
 }
 
-void libvisio::VSDContentCollector::appendCharacters(RVNGString &text, const std::vector<unsigned char> &characters, TextFormat format)
+void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &text, const std::vector<unsigned char> &characters, TextFormat format)
 {
   if (format == VSD_TEXT_UTF16)
     return appendCharacters(text, characters);
@@ -2937,7 +2937,7 @@ void libvisio::VSDContentCollector::appendCharacters(RVNGString &text, const std
   }
 }
 
-void libvisio::VSDContentCollector::appendCharacters(RVNGString &text, const std::vector<unsigned char> &characters)
+void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &text, const std::vector<unsigned char> &characters)
 {
   UErrorCode status = U_ZERO_ERROR;
   UConverter *conv = ucnv_open("UTF-16LE", &status);
@@ -2962,7 +2962,7 @@ void libvisio::VSDContentCollector::appendCharacters(RVNGString &text, const std
     ucnv_close(conv);
 }
 
-void libvisio::VSDContentCollector::_appendField(RVNGString &text)
+void libvisio::VSDContentCollector::_appendField(librevenge::RVNGString &text)
 {
   if (m_fieldIndex < m_fields.size())
     text.append(m_fields[m_fieldIndex++].cstr());

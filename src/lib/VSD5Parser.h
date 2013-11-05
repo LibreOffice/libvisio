@@ -43,46 +43,46 @@ namespace libvisio
 class VSD5Parser : public VSD6Parser
 {
 public:
-  explicit VSD5Parser(RVNGInputStream *input, RVNGDrawingInterface *painter);
+  explicit VSD5Parser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
   ~VSD5Parser();
 
 protected:
-  virtual void readPointer(RVNGInputStream *input, Pointer &ptr);
-  virtual bool getChunkHeader(RVNGInputStream *input);
-  virtual void readPointerInfo(RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
+  virtual void readPointer(librevenge::RVNGInputStream *input, Pointer &ptr);
+  virtual bool getChunkHeader(librevenge::RVNGInputStream *input);
+  virtual void readPointerInfo(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
 
-  virtual void readGeomList(RVNGInputStream *input);
-  virtual void readCharList(RVNGInputStream *input);
-  virtual void readParaList(RVNGInputStream *input);
-  virtual void readShapeList(RVNGInputStream *input);
-  virtual void readPropList(RVNGInputStream *input);
-  virtual void readFieldList(RVNGInputStream *input);
-  virtual void readNameList2(RVNGInputStream *input);
+  virtual void readGeomList(librevenge::RVNGInputStream *input);
+  virtual void readCharList(librevenge::RVNGInputStream *input);
+  virtual void readParaList(librevenge::RVNGInputStream *input);
+  virtual void readShapeList(librevenge::RVNGInputStream *input);
+  virtual void readPropList(librevenge::RVNGInputStream *input);
+  virtual void readFieldList(librevenge::RVNGInputStream *input);
+  virtual void readNameList2(librevenge::RVNGInputStream *input);
 
-  virtual void readLine(RVNGInputStream *input);
-  virtual void readFillAndShadow(RVNGInputStream *input);
-  virtual void readTextBlock(RVNGInputStream *input);
-  virtual void readCharIX(RVNGInputStream *input);
-  virtual void readTextField(RVNGInputStream *input);
+  virtual void readLine(librevenge::RVNGInputStream *input);
+  virtual void readFillAndShadow(librevenge::RVNGInputStream *input);
+  virtual void readTextBlock(librevenge::RVNGInputStream *input);
+  virtual void readCharIX(librevenge::RVNGInputStream *input);
+  virtual void readTextField(librevenge::RVNGInputStream *input);
 
-  virtual void readShape(RVNGInputStream *input);
-  virtual void readPage(RVNGInputStream *input);
+  virtual void readShape(librevenge::RVNGInputStream *input);
+  virtual void readPage(librevenge::RVNGInputStream *input);
 
-  virtual void handleChunkRecords(RVNGInputStream *input);
+  virtual void handleChunkRecords(librevenge::RVNGInputStream *input);
 
-  virtual void readStyleSheet(RVNGInputStream *input);
+  virtual void readStyleSheet(librevenge::RVNGInputStream *input);
 
-  virtual void readNameIDX(RVNGInputStream *input);
+  virtual void readNameIDX(librevenge::RVNGInputStream *input);
 
-  virtual unsigned getUInt(RVNGInputStream *input);
-  virtual int getInt(RVNGInputStream *input);
+  virtual unsigned getUInt(librevenge::RVNGInputStream *input);
+  virtual int getInt(librevenge::RVNGInputStream *input);
 
 private:
   VSD5Parser();
   VSD5Parser(const VSDParser &);
   VSD5Parser &operator=(const VSDParser &);
 
-  void readList(RVNGInputStream *input);
+  void readList(librevenge::RVNGInputStream *input);
 };
 
 } // namespace libvisio

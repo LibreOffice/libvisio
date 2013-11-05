@@ -72,55 +72,55 @@ enum PainterCallback
 		m_callStack.pop(); \
 	}
 
-class RawPainter : public RVNGDrawingInterface
+class RawPainter : public librevenge::RVNGDrawingInterface
 {
 public:
   RawPainter(bool printCallgraphScore);
 
   ~RawPainter();
 
-  void startDocument(const ::RVNGPropertyList & /*propList*/) {}
+  void startDocument(const librevenge::RVNGPropertyList & /*propList*/) {}
   void endDocument() {}
-  void setDocumentMetaData(const RVNGPropertyList & /*propList*/) {}
-  void startPage(const ::RVNGPropertyList &propList);
+  void setDocumentMetaData(const librevenge::RVNGPropertyList & /*propList*/) {}
+  void startPage(const librevenge::RVNGPropertyList &propList);
   void endPage();
-  void startLayer(const ::RVNGPropertyList &propList);
+  void startLayer(const librevenge::RVNGPropertyList &propList);
   void endLayer();
-  void startEmbeddedGraphics(const ::RVNGPropertyList &propList);
+  void startEmbeddedGraphics(const librevenge::RVNGPropertyList &propList);
   void endEmbeddedGraphics();
 
-  void setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient);
+  void setStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &gradient);
 
-  void drawRectangle(const ::RVNGPropertyList &propList);
-  void drawEllipse(const ::RVNGPropertyList &propList);
-  void drawPolyline(const ::RVNGPropertyListVector &vertices);
-  void drawPolygon(const ::RVNGPropertyListVector &vertices);
-  void drawPath(const ::RVNGPropertyListVector &path);
-  void drawGraphicObject(const ::RVNGPropertyList &propList, const ::RVNGBinaryData &binaryData);
-  void startTextObject(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &path);
+  void drawRectangle(const librevenge::RVNGPropertyList &propList);
+  void drawEllipse(const librevenge::RVNGPropertyList &propList);
+  void drawPolyline(const librevenge::RVNGPropertyListVector &vertices);
+  void drawPolygon(const librevenge::RVNGPropertyListVector &vertices);
+  void drawPath(const librevenge::RVNGPropertyListVector &path);
+  void drawGraphicObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGBinaryData &binaryData);
+  void startTextObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &path);
   void endTextObject();
 
 
-  void openOrderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void openOrderedListLevel(const librevenge::RVNGPropertyList & /*propList*/) {}
   void closeOrderedListLevel() {}
 
-  void openUnorderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void openUnorderedListLevel(const librevenge::RVNGPropertyList & /*propList*/) {}
   void closeUnorderedListLevel() {}
 
-  void openListElement(const RVNGPropertyList & /*propList*/, const RVNGPropertyListVector & /* tabStops */) {}
+  void openListElement(const librevenge::RVNGPropertyList & /*propList*/, const librevenge::RVNGPropertyListVector & /* tabStops */) {}
   void closeListElement() {}
 
-  void openParagraph(const RVNGPropertyList &propList, const RVNGPropertyListVector &tabStops);
+  void openParagraph(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &tabStops);
   void closeParagraph();
 
-  void openSpan(const RVNGPropertyList &propList);
+  void openSpan(const librevenge::RVNGPropertyList &propList);
   void closeSpan();
 
   void insertTab() {}
   void insertSpace() {}
-  void insertText(const RVNGString &text);
+  void insertText(const librevenge::RVNGString &text);
   void insertLineBreak() {}
-  void insertField(const RVNGString & /* type */, const RVNGPropertyList & /*propList*/) {}
+  void insertField(const librevenge::RVNGString & /* type */, const librevenge::RVNGPropertyList & /*propList*/) {}
 
 
 private:
@@ -143,10 +143,10 @@ private:
   void __idprintf(const char *format, ...);
 };
 
-RVNGString getPropString(const RVNGPropertyList &propList)
+librevenge::RVNGString getPropString(const librevenge::RVNGPropertyList &propList)
 {
-  RVNGString propString;
-  RVNGPropertyList::Iter i(propList);
+  librevenge::RVNGString propString;
+  librevenge::RVNGPropertyList::Iter i(propList);
   if (!i.last())
   {
     propString.append(i.key());
@@ -164,12 +164,12 @@ RVNGString getPropString(const RVNGPropertyList &propList)
   return propString;
 }
 
-RVNGString getPropString(const RVNGPropertyListVector &itemList)
+librevenge::RVNGString getPropString(const librevenge::RVNGPropertyListVector &itemList)
 {
-  RVNGString propString;
+  librevenge::RVNGString propString;
 
   propString.append("(");
-  RVNGPropertyListVector::Iter i(itemList);
+  librevenge::RVNGPropertyListVector::Iter i(itemList);
 
   if (!i.last())
   {
@@ -191,7 +191,7 @@ RVNGString getPropString(const RVNGPropertyListVector &itemList)
 }
 
 RawPainter::RawPainter(bool printCallgraphScore):
-  RVNGDrawingInterface(),
+  librevenge::RVNGDrawingInterface(),
   m_indent(0),
   m_callbackMisses(0),
   m_printCallgraphScore(printCallgraphScore),
@@ -239,7 +239,7 @@ void RawPainter::__idprintf(const char *format, ...)
   va_end(args);
 }
 
-void RawPainter::startPage(const ::RVNGPropertyList &propList)
+void RawPainter::startPage(const librevenge::RVNGPropertyList &propList)
 {
   _U(("RawPainter::startPage(%s)\n", getPropString(propList).cstr()), PC_START_GRAPHICS);
 }
@@ -249,7 +249,7 @@ void RawPainter::endPage()
   _D(("RawPainter::endPage\n"), PC_START_GRAPHICS);
 }
 
-void RawPainter::startLayer(const ::RVNGPropertyList &propList)
+void RawPainter::startLayer(const librevenge::RVNGPropertyList &propList)
 {
   _U(("RawPainter::startLayer (%s)\n", getPropString(propList).cstr()), PC_START_LAYER);
 }
@@ -259,7 +259,7 @@ void RawPainter::endLayer()
   _D(("RawPainter::endLayer\n"), PC_START_LAYER);
 }
 
-void RawPainter::startEmbeddedGraphics(const ::RVNGPropertyList &propList)
+void RawPainter::startEmbeddedGraphics(const librevenge::RVNGPropertyList &propList)
 {
   _U(("RawPainter::startEmbeddedGraphics (%s)\n", getPropString(propList).cstr()), PC_START_EMBEDDED_GRAPHICS);
 }
@@ -269,7 +269,7 @@ void RawPainter::endEmbeddedGraphics()
   _D(("RawPainter::endEmbeddedGraphics \n"), PC_START_EMBEDDED_GRAPHICS);
 }
 
-void RawPainter::setStyle(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &gradient)
+void RawPainter::setStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &gradient)
 {
   if (m_printCallgraphScore)
     return;
@@ -277,7 +277,7 @@ void RawPainter::setStyle(const ::RVNGPropertyList &propList, const ::RVNGProper
   __iprintf("RawPainter::setStyle(%s, gradient: (%s))\n", getPropString(propList).cstr(), getPropString(gradient).cstr());
 }
 
-void RawPainter::drawRectangle(const ::RVNGPropertyList &propList)
+void RawPainter::drawRectangle(const librevenge::RVNGPropertyList &propList)
 {
   if (m_printCallgraphScore)
     return;
@@ -285,7 +285,7 @@ void RawPainter::drawRectangle(const ::RVNGPropertyList &propList)
   __iprintf("RawPainter::drawRectangle (%s)\n", getPropString(propList).cstr());
 }
 
-void RawPainter::drawEllipse(const ::RVNGPropertyList &propList)
+void RawPainter::drawEllipse(const librevenge::RVNGPropertyList &propList)
 {
   if (m_printCallgraphScore)
     return;
@@ -293,7 +293,7 @@ void RawPainter::drawEllipse(const ::RVNGPropertyList &propList)
   __iprintf("RawPainter::drawEllipse (%s)\n", getPropString(propList).cstr());
 }
 
-void RawPainter::drawPolyline(const ::RVNGPropertyListVector &vertices)
+void RawPainter::drawPolyline(const librevenge::RVNGPropertyListVector &vertices)
 {
   if (m_printCallgraphScore)
     return;
@@ -301,7 +301,7 @@ void RawPainter::drawPolyline(const ::RVNGPropertyListVector &vertices)
   __iprintf("RawPainter::drawPolyline (%s)\n", getPropString(vertices).cstr());
 }
 
-void RawPainter::drawPolygon(const ::RVNGPropertyListVector &vertices)
+void RawPainter::drawPolygon(const librevenge::RVNGPropertyListVector &vertices)
 {
   if (m_printCallgraphScore)
     return;
@@ -309,7 +309,7 @@ void RawPainter::drawPolygon(const ::RVNGPropertyListVector &vertices)
   __iprintf("RawPainter::drawPolygon (%s)\n", getPropString(vertices).cstr());
 }
 
-void RawPainter::drawPath(const ::RVNGPropertyListVector &path)
+void RawPainter::drawPath(const librevenge::RVNGPropertyListVector &path)
 {
   if (m_printCallgraphScore)
     return;
@@ -317,7 +317,7 @@ void RawPainter::drawPath(const ::RVNGPropertyListVector &path)
   __iprintf("RawPainter::drawPath (%s)\n", getPropString(path).cstr());
 }
 
-void RawPainter::drawGraphicObject(const ::RVNGPropertyList &propList, const ::RVNGBinaryData & /*binaryData*/)
+void RawPainter::drawGraphicObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGBinaryData & /*binaryData*/)
 {
   if (m_printCallgraphScore)
     return;
@@ -325,7 +325,7 @@ void RawPainter::drawGraphicObject(const ::RVNGPropertyList &propList, const ::R
   __iprintf("RawPainter::drawGraphicObject (%s)\n", getPropString(propList).cstr());
 }
 
-void RawPainter::startTextObject(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &path)
+void RawPainter::startTextObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &path)
 {
   _U(("RawPainter::startTextObject (%s, path: (%s))\n", getPropString(propList).cstr(), getPropString(path).cstr()), PC_START_TEXT_OBJECT);
 }
@@ -335,7 +335,7 @@ void RawPainter::endTextObject()
   _D(("RawPainter::endTextObject\n"), PC_START_TEXT_OBJECT);
 }
 
-void RawPainter::openParagraph(const ::RVNGPropertyList &propList, const ::RVNGPropertyListVector &tabStops)
+void RawPainter::openParagraph(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &tabStops)
 {
   _U(("RawPainter::openParagraph (%s, tabStops: (%s))\n", getPropString(propList).cstr(), getPropString(tabStops).cstr()), PC_START_TEXT_LINE);
 }
@@ -345,7 +345,7 @@ void RawPainter::closeParagraph()
   _D(("RawPainter::closeParagraph\n"), PC_START_TEXT_LINE);
 }
 
-void RawPainter::openSpan(const ::RVNGPropertyList &propList)
+void RawPainter::openSpan(const librevenge::RVNGPropertyList &propList)
 {
   _U(("RawPainter::openSpan (%s)\n", getPropString(propList).cstr()), PC_START_TEXT_SPAN);
 }
@@ -355,7 +355,7 @@ void RawPainter::closeSpan()
   _D(("RawPainter::closeSpan\n"), PC_START_TEXT_SPAN);
 }
 
-void RawPainter::insertText(const ::RVNGString &str)
+void RawPainter::insertText(const librevenge::RVNGString &str)
 {
   if (m_printCallgraphScore)
     return;
@@ -400,7 +400,7 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  RVNGFileStream input(file);
+  librevenge::RVNGFileStream input(file);
 
   if (!libvisio::VisioDocument::isSupported(&input))
   {

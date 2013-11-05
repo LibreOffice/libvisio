@@ -49,18 +49,18 @@ public:
   VSDOutputElementList &operator=(const VSDOutputElementList &elementList);
   virtual ~VSDOutputElementList();
   void append(const VSDOutputElementList &elementList);
-  void draw(RVNGDrawingInterface *painter) const;
-  void addStyle(const RVNGPropertyList &propList, const RVNGPropertyListVector &propListVec);
-  void addPath(const RVNGPropertyListVector &propListVec);
-  void addGraphicObject(const RVNGPropertyList &propList, const ::RVNGBinaryData &binaryData);
-  void addStartTextObject(const RVNGPropertyList &propList, const RVNGPropertyListVector &propListVec);
-  void addOpenParagraph(const RVNGPropertyList &propList, const RVNGPropertyListVector &propListVec);
-  void addOpenSpan(const RVNGPropertyList &propList);
-  void addInsertText(const RVNGString &text);
+  void draw(librevenge::RVNGDrawingInterface *painter) const;
+  void addStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec);
+  void addPath(const librevenge::RVNGPropertyListVector &propListVec);
+  void addGraphicObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGBinaryData &binaryData);
+  void addStartTextObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec);
+  void addOpenParagraph(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec);
+  void addOpenSpan(const librevenge::RVNGPropertyList &propList);
+  void addInsertText(const librevenge::RVNGString &text);
   void addCloseSpan();
   void addCloseParagraph();
   void addEndTextObject();
-  void addStartLayer(const RVNGPropertyList &propList);
+  void addStartLayer(const librevenge::RVNGPropertyList &propList);
   void addEndLayer();
   bool empty() const
   {

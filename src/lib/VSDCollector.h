@@ -45,9 +45,9 @@ public:
   virtual ~VSDCollector() {}
 
   virtual void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc) = 0;
-  virtual void collectForeignData(unsigned level, const RVNGBinaryData &binaryData) = 0;
+  virtual void collectForeignData(unsigned level, const librevenge::RVNGBinaryData &binaryData) = 0;
   virtual void collectOLEList(unsigned id, unsigned level) = 0;
-  virtual void collectOLEData(unsigned id, unsigned level, const RVNGBinaryData &oleData) = 0;
+  virtual void collectOLEData(unsigned id, unsigned level, const librevenge::RVNGBinaryData &oleData) = 0;
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
   virtual void collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
                            const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
@@ -93,7 +93,7 @@ public:
 
   virtual void collectUnhandledChunk(unsigned id, unsigned level) = 0;
 
-  virtual void collectText(unsigned level, const ::RVNGBinaryData &textStream, TextFormat format) = 0;
+  virtual void collectText(unsigned level, const librevenge::RVNGBinaryData &textStream, TextFormat format) = 0;
   virtual void collectCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
                              const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                              const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
@@ -118,7 +118,7 @@ public:
                                 const boost::optional<Colour> &bgColour, const boost::optional<double> &defaultTabStop,
                                 const boost::optional<unsigned char> &textDirection) = 0;
   virtual void collectNameList(unsigned id, unsigned level) = 0;
-  virtual void collectName(unsigned id, unsigned level,  const ::RVNGBinaryData &name, TextFormat format) = 0;
+  virtual void collectName(unsigned id, unsigned level,  const librevenge::RVNGBinaryData &name, TextFormat format) = 0;
   virtual void collectPageSheet(unsigned id, unsigned level) = 0;
   virtual void collectMisc(unsigned level, const VSDMisc &misc) = 0;
 

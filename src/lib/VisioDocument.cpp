@@ -45,7 +45,7 @@ namespace
 
 #define VISIO_MAGIC_LENGTH 21
 
-static bool checkVisioMagic(RVNGInputStream *input)
+static bool checkVisioMagic(librevenge::RVNGInputStream *input)
 {
   int startPosition = (int)input->tell();
   try
@@ -97,38 +97,38 @@ static bool checkVisioMagic(RVNGInputStream *input)
       returnValue = false;
     else if (0x00 != buffer[20])
       returnValue = false;
-    input->seek(startPosition, RVNG_SEEK_SET);
+    input->seek(startPosition, librevenge::RVNG_SEEK_SET);
     return returnValue;
   }
   catch (...)
   {
-    input->seek(startPosition, RVNG_SEEK_SET);
+    input->seek(startPosition, librevenge::RVNG_SEEK_SET);
     return false;
   }
 }
 
-static bool isBinaryVisioDocument(RVNGInputStream *input)
+static bool isBinaryVisioDocument(librevenge::RVNGInputStream *input)
 {
-  RVNGInputStream *docStream = 0;
+  librevenge::RVNGInputStream *docStream = 0;
   try
   {
-    input->seek(0, RVNG_SEEK_SET);
+    input->seek(0, librevenge::RVNG_SEEK_SET);
     if (input->isStructured())
     {
-      input->seek(0, RVNG_SEEK_SET);
+      input->seek(0, librevenge::RVNG_SEEK_SET);
       docStream = input->getSubStreamByName("VisioDocument");
     }
     if (!docStream)
       docStream = input;
 
-    docStream->seek(0, RVNG_SEEK_SET);
+    docStream->seek(0, librevenge::RVNG_SEEK_SET);
     unsigned char version = 0;
     if (checkVisioMagic(docStream))
     {
-      docStream->seek(0x1A, RVNG_SEEK_SET);
+      docStream->seek(0x1A, librevenge::RVNG_SEEK_SET);
       version = libvisio::readU8(docStream);
     }
-    input->seek(0, RVNG_SEEK_SET);
+    input->seek(0, librevenge::RVNG_SEEK_SET);
     if (docStream && docStream != input)
       delete docStream;
     docStream = 0;
@@ -151,17 +151,17 @@ static bool isBinaryVisioDocument(RVNGInputStream *input)
   return false;
 }
 
-static bool parseBinaryVisioDocument(RVNGInputStream *input, RVNGDrawingInterface *painter, bool isStencilExtraction)
+static bool parseBinaryVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction)
 {
   VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
-  input->seek(0, RVNG_SEEK_SET);
-  RVNGInputStream *docStream = 0;
+  input->seek(0, librevenge::RVNG_SEEK_SET);
+  librevenge::RVNGInputStream *docStream = 0;
   if (input->isStructured())
     docStream = input->getSubStreamByName("VisioDocument");
   if (!docStream)
     docStream = input;
 
-  docStream->seek(0x1A, RVNG_SEEK_SET);
+  docStream->seek(0x1A, librevenge::RVNG_SEEK_SET);
 
   libvisio::VSDParser *parser = 0;
   try
@@ -217,12 +217,12 @@ static bool parseBinaryVisioDocument(RVNGInputStream *input, RVNGDrawingInterfac
   return false;
 }
 
-static bool isOpcVisioDocument(RVNGInputStream *input)
+static bool isOpcVisioDocument(librevenge::RVNGInputStream *input)
 {
-  RVNGInputStream *tmpInput = 0;
+  librevenge::RVNGInputStream *tmpInput = 0;
   try
   {
-    input->seek(0, RVNG_SEEK_SET);
+    input->seek(0, librevenge::RVNG_SEEK_SET);
     if (!input->isStructured())
       return false;
 
@@ -253,10 +253,10 @@ static bool isOpcVisioDocument(RVNGInputStream *input)
   }
 }
 
-static bool parseOpcVisioDocument(RVNGInputStream *input, RVNGDrawingInterface *painter, bool isStencilExtraction)
+static bool parseOpcVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction)
 {
   VSD_DEBUG_MSG(("Parsing Visio Document based on Open Packaging Convention\n"));
-  input->seek(0, RVNG_SEEK_SET);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   libvisio::VSDXParser parser(input, painter);
   if (isStencilExtraction && parser.extractStencils())
     return true;
@@ -265,12 +265,12 @@ static bool parseOpcVisioDocument(RVNGInputStream *input, RVNGDrawingInterface *
   return false;
 }
 
-static bool isXmlVisioDocument(RVNGInputStream *input)
+static bool isXmlVisioDocument(librevenge::RVNGInputStream *input)
 {
   xmlTextReaderPtr reader = 0;
   try
   {
-    input->seek(0, RVNG_SEEK_SET);
+    input->seek(0, librevenge::RVNG_SEEK_SET);
     reader = libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER);
     if (!reader)
       return false;
@@ -321,10 +321,10 @@ static bool isXmlVisioDocument(RVNGInputStream *input)
   }
 }
 
-static bool parseXmlVisioDocument(RVNGInputStream *input, RVNGDrawingInterface *painter, bool isStencilExtraction)
+static bool parseXmlVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction)
 {
   VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
-  input->seek(0, RVNG_SEEK_SET);
+  input->seek(0, librevenge::RVNG_SEEK_SET);
   libvisio::VDXParser parser(input, painter);
   if (isStencilExtraction && parser.extractStencils())
     return true;
@@ -342,7 +342,7 @@ Analyzes the content of an input stream to see if it can be parsed
 \return A value that indicates whether the content from the input
 stream is a Visio Document that libvisio able to parse
 */
-bool libvisio::VisioDocument::isSupported(RVNGInputStream *input)
+bool libvisio::VisioDocument::isSupported(librevenge::RVNGInputStream *input)
 {
   if (isBinaryVisioDocument(input))
     return true;
@@ -355,13 +355,13 @@ bool libvisio::VisioDocument::isSupported(RVNGInputStream *input)
 
 /**
 Parses the input stream content. It will make callbacks to the functions provided by a
-RVNGDrawingInterface class implementation when needed. This is often commonly called the
+librevenge::RVNGDrawingInterface class implementation when needed. This is often commonly called the
 'main parsing routine'.
 \param input The input stream
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parse(::RVNGInputStream *input, RVNGDrawingInterface *painter)
+bool libvisio::VisioDocument::parse(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
 {
   if (isBinaryVisioDocument(input))
   {
@@ -386,13 +386,13 @@ bool libvisio::VisioDocument::parse(::RVNGInputStream *input, RVNGDrawingInterfa
 
 /**
 Parses the input stream content and extracts stencil pages, one stencil page per output page.
-It will make callbacks to the functions provided by a RVNGDrawingInterface class implementation
+It will make callbacks to the functions provided by a librevenge::RVNGDrawingInterface class implementation
 when needed.
 \param input The input stream
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parseStencils(RVNGInputStream *input, RVNGDrawingInterface *painter)
+bool libvisio::VisioDocument::parseStencils(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
 {
   if (isBinaryVisioDocument(input))
   {
@@ -423,7 +423,7 @@ Provided as a convenience function for applications that support SVG internally.
 \param output The output string whose content is the resulting SVG
 \return A value that indicates whether the SVG generation was successful.
 */
-bool libvisio::VisioDocument::generateSVG(RVNGInputStream *input, RVNGStringVector &output)
+bool libvisio::VisioDocument::generateSVG(librevenge::RVNGInputStream *input, librevenge::RVNGStringVector &output)
 {
   libvisio::VSDSVGGenerator generator(output);
   bool result = libvisio::VisioDocument::parse(input, &generator);
@@ -438,7 +438,7 @@ Provided as a convenience function for applications that support SVG internally.
 \param output The output string whose content is the resulting SVG
 \return A value that indicates whether the SVG generation was successful.
 */
-bool libvisio::VisioDocument::generateSVGStencils(RVNGInputStream *input, RVNGStringVector &output)
+bool libvisio::VisioDocument::generateSVGStencils(librevenge::RVNGInputStream *input, librevenge::RVNGStringVector &output)
 {
   libvisio::VSDSVGGenerator generator(output);
   bool result = libvisio::VisioDocument::parseStencils(input, &generator);

@@ -39,10 +39,10 @@
 namespace libvisio
 {
 
-// create an xmlTextReader pointer from a RVNGInputStream pointer
+// create an xmlTextReader pointer from a librevenge::RVNGInputStream pointer
 // needs to be freed using xmlTextReaderFree function.
 
-xmlTextReaderPtr xmlReaderForStream(RVNGInputStream *input,
+xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input,
                                     const char *URL,
                                     const char *encoding,
                                     int options);
@@ -91,7 +91,7 @@ private:
 class VSDXRelationships
 {
 public:
-  VSDXRelationships(RVNGInputStream *input);
+  VSDXRelationships(librevenge::RVNGInputStream *input);
   ~VSDXRelationships();
 
   void rebaseTargets(const char *baseDir);

@@ -40,15 +40,15 @@ class VisioDocument
 {
 public:
 
-  static bool isSupported(RVNGInputStream *input);
+  static bool isSupported(librevenge::RVNGInputStream *input);
 
-  static bool parse(RVNGInputStream *input, RVNGDrawingInterface *painter);
+  static bool parse(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
 
-  static bool parseStencils(RVNGInputStream *input, RVNGDrawingInterface *painter);
+  static bool parseStencils(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
 
-  static bool generateSVG(RVNGInputStream *input, RVNGStringVector &output);
+  static bool generateSVG(librevenge::RVNGInputStream *input, librevenge::RVNGStringVector &output);
 
-  static bool generateSVGStencils(RVNGInputStream *input, RVNGStringVector &output);
+  static bool generateSVGStencils(librevenge::RVNGInputStream *input, librevenge::RVNGStringVector &output);
 };
 
 } // namespace libvisio

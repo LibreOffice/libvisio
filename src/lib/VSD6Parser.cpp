@@ -39,14 +39,14 @@
 #include "VSDContentCollector.h"
 #include "VSDStylesCollector.h"
 
-libvisio::VSD6Parser::VSD6Parser(RVNGInputStream *input, RVNGDrawingInterface *painter)
+libvisio::VSD6Parser::VSD6Parser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
   : VSDParser(input, painter)
 {}
 
 libvisio::VSD6Parser::~VSD6Parser()
 {}
 
-bool libvisio::VSD6Parser::getChunkHeader(RVNGInputStream *input)
+bool libvisio::VSD6Parser::getChunkHeader(librevenge::RVNGInputStream *input)
 {
   unsigned char tmpChar = 0;
   while (!input->isEnd() && !tmpChar)
@@ -55,7 +55,7 @@ bool libvisio::VSD6Parser::getChunkHeader(RVNGInputStream *input)
   if (input->isEnd())
     return false;
   else
-    input->seek(-1, RVNG_SEEK_CUR);
+    input->seek(-1, librevenge::RVNG_SEEK_CUR);
 
   m_header.chunkType = readU32(input);
   m_header.id = readU32(input);
@@ -84,10 +84,10 @@ bool libvisio::VSD6Parser::getChunkHeader(RVNGInputStream *input)
   return true;
 }
 
-void libvisio::VSD6Parser::readText(RVNGInputStream *input)
+void libvisio::VSD6Parser::readText(librevenge::RVNGInputStream *input)
 {
-  input->seek(8, RVNG_SEEK_CUR);
-  ::RVNGBinaryData  textStream;
+  input->seek(8, librevenge::RVNG_SEEK_CUR);
+  librevenge::RVNGBinaryData  textStream;
 
   unsigned long numBytesRead = 0;
   const unsigned char *tmpBuffer = input->read(m_header.dataLength - 8, numBytesRead);
@@ -103,7 +103,7 @@ void libvisio::VSD6Parser::readText(RVNGInputStream *input)
   }
 }
 
-void libvisio::VSD6Parser::readCharIX(RVNGInputStream *input)
+void libvisio::VSD6Parser::readCharIX(librevenge::RVNGInputStream *input)
 {
   unsigned charCount = readU32(input);
   unsigned fontID = readU16(input);
@@ -111,7 +111,7 @@ void libvisio::VSD6Parser::readCharIX(RVNGInputStream *input)
   std::map<unsigned, VSDName>::const_iterator iter = m_fonts.find(fontID);
   if (iter != m_fonts.end())
     font = iter->second;
-  input->seek(1, RVNG_SEEK_CUR);  // Color ID
+  input->seek(1, librevenge::RVNG_SEEK_CUR);  // Color ID
   Colour fontColour;            // Font Colour
   fontColour.r = readU8(input);
   fontColour.g = readU8(input);
@@ -141,7 +141,7 @@ void libvisio::VSD6Parser::readCharIX(RVNGInputStream *input)
   if (fontMod & 1) superscript = true;
   if (fontMod & 2) subscript = true;
 
-  input->seek(4, RVNG_SEEK_CUR);
+  input->seek(4, librevenge::RVNG_SEEK_CUR);
   double fontSize = readDouble(input);
 
   fontMod = readU8(input);
@@ -169,20 +169,20 @@ void libvisio::VSD6Parser::readCharIX(RVNGInputStream *input)
   }
 }
 
-void libvisio::VSD6Parser::readParaIX(RVNGInputStream *input)
+void libvisio::VSD6Parser::readParaIX(librevenge::RVNGInputStream *input)
 {
   unsigned charCount = getUInt(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double indFirst = readDouble(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double indLeft = readDouble(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double indRight = readDouble(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double spLine = readDouble(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double spBefore = readDouble(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double spAfter = readDouble(input);
   unsigned char align = readU8(input);
 
@@ -204,7 +204,7 @@ void libvisio::VSD6Parser::readParaIX(RVNGInputStream *input)
 }
 
 
-void libvisio::VSD6Parser::readFillAndShadow(RVNGInputStream *input)
+void libvisio::VSD6Parser::readFillAndShadow(librevenge::RVNGInputStream *input)
 {
   unsigned char colourFGIndex = readU8(input);
   Colour colourFG;
@@ -271,21 +271,21 @@ void libvisio::VSD6Parser::readFillAndShadow(RVNGInputStream *input)
   }
 }
 
-void libvisio::VSD6Parser::readName(RVNGInputStream *input)
+void libvisio::VSD6Parser::readName(librevenge::RVNGInputStream *input)
 {
   unsigned long numBytesRead = 0;
   const unsigned char *tmpBuffer = input->read(m_header.dataLength, numBytesRead);
   if (numBytesRead)
   {
-    ::RVNGBinaryData name(tmpBuffer, numBytesRead);
+    librevenge::RVNGBinaryData name(tmpBuffer, numBytesRead);
     m_shape.m_names[m_header.id] = VSDName(name, libvisio::VSD_TEXT_ANSI);
   }
 }
 
-void libvisio::VSD6Parser::readName2(RVNGInputStream *input)
+void libvisio::VSD6Parser::readName2(librevenge::RVNGInputStream *input)
 {
   unsigned char character = 0;
-  ::RVNGBinaryData name;
+  librevenge::RVNGBinaryData name;
   getInt(input); // skip a dword that seems to be always 1
   while ((character = readU8(input)))
     name.append(character);
@@ -293,52 +293,52 @@ void libvisio::VSD6Parser::readName2(RVNGInputStream *input)
   m_names[m_header.id] = VSDName(name, libvisio::VSD_TEXT_ANSI);
 }
 
-void libvisio::VSD6Parser::readTextField(RVNGInputStream *input)
+void libvisio::VSD6Parser::readTextField(librevenge::RVNGInputStream *input)
 {
   unsigned long initialPosition = input->tell();
-  input->seek(7, RVNG_SEEK_CUR);
+  input->seek(7, librevenge::RVNG_SEEK_CUR);
   unsigned char tmpCode = readU8(input);
   if (tmpCode == 0xe8)
   {
     int nameId = readS32(input);
-    input->seek(6, RVNG_SEEK_CUR);
+    input->seek(6, librevenge::RVNG_SEEK_CUR);
     int formatStringId = readS32(input);
     m_shape.m_fields.addTextField(m_header.id, m_header.level, nameId, formatStringId);
   }
   else
   {
     double numericValue = readDouble(input);
-    input->seek(2, RVNG_SEEK_CUR);
+    input->seek(2, librevenge::RVNG_SEEK_CUR);
     int formatStringId = readS32(input);
 
     unsigned blockIdx = 0;
     unsigned length = 0;
     unsigned short formatNumber = 0;
-    input->seek(initialPosition+0x24, RVNG_SEEK_SET);
+    input->seek(initialPosition+0x24, librevenge::RVNG_SEEK_SET);
     while (blockIdx != 2 && !input->isEnd() && (unsigned long) input->tell() < (unsigned long)(initialPosition+m_header.dataLength+m_header.trailer))
     {
       unsigned long inputPos = input->tell();
       length = readU32(input);
       if (!length)
         break;
-      input->seek(1, RVNG_SEEK_CUR);
+      input->seek(1, librevenge::RVNG_SEEK_CUR);
       blockIdx = readU8(input);
       if (blockIdx != 2)
-        input->seek(inputPos + length, RVNG_SEEK_SET);
+        input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
       else
       {
-        input->seek(1, RVNG_SEEK_CUR);
+        input->seek(1, librevenge::RVNG_SEEK_CUR);
         formatNumber = readU16(input);
         if (0x80 != readU8(input))
         {
-          input->seek(inputPos + length, RVNG_SEEK_SET);
+          input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
           blockIdx = 0;
         }
         else
         {
           if (0xc2 != readU8(input))
           {
-            input->seek(inputPos + length, RVNG_SEEK_SET);
+            input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
             blockIdx = 0;
           }
           else

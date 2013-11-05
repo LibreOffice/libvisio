@@ -40,7 +40,7 @@
 #include "VSDXMLTokenMap.h"
 
 
-libvisio::VDXParser::VDXParser(RVNGInputStream *input, RVNGDrawingInterface *painter)
+libvisio::VDXParser::VDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
   : VSDXMLParserBase(), m_input(input), m_painter(painter)
 {
 }
@@ -62,7 +62,7 @@ bool libvisio::VDXParser::parseMain()
 
     VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
     m_collector = &stylesCollector;
-    m_input->seek(0, RVNG_SEEK_SET);
+    m_input->seek(0, librevenge::RVNG_SEEK_SET);
     if (!processXmlDocument(m_input))
       return false;
 
@@ -70,7 +70,7 @@ bool libvisio::VDXParser::parseMain()
 
     VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
     m_collector = &contentCollector;
-    m_input->seek(0, RVNG_SEEK_SET);
+    m_input->seek(0, librevenge::RVNG_SEEK_SET);
     if (!processXmlDocument(m_input))
       return false;
 
@@ -88,7 +88,7 @@ bool libvisio::VDXParser::extractStencils()
   return parseMain();
 }
 
-bool libvisio::VDXParser::processXmlDocument(RVNGInputStream *input)
+bool libvisio::VDXParser::processXmlDocument(librevenge::RVNGInputStream *input)
 {
   if (!input)
     return false;
@@ -714,7 +714,7 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
       if (id && name)
       {
         unsigned idx = (unsigned)xmlStringToLong(id);
-        RVNGBinaryData textStream(name, xmlStrlen(name));
+        librevenge::RVNGBinaryData textStream(name, xmlStrlen(name));
         m_fonts[idx] = VSDName(textStream, libvisio::VSD_TEXT_UTF8);
       }
       xmlFree(name);

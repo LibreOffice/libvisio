@@ -46,7 +46,7 @@ class VDXParser : public VSDXMLParserBase
   using VSDXMLParserBase::readLongData;
 
 public:
-  explicit VDXParser(RVNGInputStream *input, RVNGDrawingInterface *painter);
+  explicit VDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
   virtual ~VDXParser();
   bool parseMain();
   bool extractStencils();
@@ -65,7 +65,7 @@ private:
 
   // Functions to read the DatadiagramML document structure
 
-  bool processXmlDocument(RVNGInputStream *input);
+  bool processXmlDocument(librevenge::RVNGInputStream *input);
   void processXmlNode(xmlTextReaderPtr reader);
 
   // Functions reading the DiagramML document content
@@ -84,8 +84,8 @@ private:
 
   // Private data
 
-  RVNGInputStream *m_input;
-  RVNGDrawingInterface *m_painter;
+  librevenge::RVNGInputStream *m_input;
+  librevenge::RVNGDrawingInterface *m_painter;
 };
 
 } // namespace libvisio

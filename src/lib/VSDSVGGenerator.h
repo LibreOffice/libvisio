@@ -41,53 +41,53 @@ namespace libvisio
 {
 struct VSDSVGGeneratorPrivate;
 
-class VSDSVGGenerator : public RVNGDrawingInterface
+class VSDSVGGenerator : public librevenge::RVNGDrawingInterface
 {
 public:
-  VSDSVGGenerator(RVNGStringVector &vec, const RVNGString &nmspace="svg");
+  VSDSVGGenerator(librevenge::RVNGStringVector &vec, const librevenge::RVNGString &nmspace="svg");
   ~VSDSVGGenerator();
 
-  void startDocument(const ::RVNGPropertyList & /*propList*/) {}
+  void startDocument(const librevenge::RVNGPropertyList & /*propList*/) {}
   void endDocument() {}
-  void setDocumentMetaData(const RVNGPropertyList & /*propList*/) {}
-  void startPage(const RVNGPropertyList &propList);
+  void setDocumentMetaData(const librevenge::RVNGPropertyList & /*propList*/) {}
+  void startPage(const librevenge::RVNGPropertyList &propList);
   void endPage();
-  void startLayer(const RVNGPropertyList &propList);
+  void startLayer(const librevenge::RVNGPropertyList &propList);
   void endLayer();
-  void startEmbeddedGraphics(const RVNGPropertyList & /*propList*/) {}
+  void startEmbeddedGraphics(const librevenge::RVNGPropertyList & /*propList*/) {}
   void endEmbeddedGraphics() {}
 
-  void setStyle(const RVNGPropertyList &propList, const RVNGPropertyListVector &gradient);
+  void setStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &gradient);
 
-  void drawRectangle(const RVNGPropertyList &propList);
-  void drawEllipse(const RVNGPropertyList &propList);
-  void drawPolyline(const RVNGPropertyListVector &vertices);
-  void drawPolygon(const RVNGPropertyListVector &vertices);
-  void drawPath(const RVNGPropertyListVector &path);
-  void drawGraphicObject(const RVNGPropertyList &propList, const RVNGBinaryData &binaryData);
-  void startTextObject(const RVNGPropertyList &propList, const RVNGPropertyListVector &path);
+  void drawRectangle(const librevenge::RVNGPropertyList &propList);
+  void drawEllipse(const librevenge::RVNGPropertyList &propList);
+  void drawPolyline(const librevenge::RVNGPropertyListVector &vertices);
+  void drawPolygon(const librevenge::RVNGPropertyListVector &vertices);
+  void drawPath(const librevenge::RVNGPropertyListVector &path);
+  void drawGraphicObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGBinaryData &binaryData);
+  void startTextObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &path);
   void endTextObject();
 
-  void openOrderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void openOrderedListLevel(const librevenge::RVNGPropertyList & /*propList*/) {}
   void closeOrderedListLevel() {}
 
-  void openUnorderedListLevel(const RVNGPropertyList & /*propList*/) {}
+  void openUnorderedListLevel(const librevenge::RVNGPropertyList & /*propList*/) {}
   void closeUnorderedListLevel() {}
 
-  void openListElement(const RVNGPropertyList & /*propList*/, const RVNGPropertyListVector & /* tabStops */) {}
+  void openListElement(const librevenge::RVNGPropertyList & /*propList*/, const librevenge::RVNGPropertyListVector & /* tabStops */) {}
   void closeListElement() {}
 
-  void openParagraph(const RVNGPropertyList & /*propList*/, const RVNGPropertyListVector & /* tabStops */) {}
+  void openParagraph(const librevenge::RVNGPropertyList & /*propList*/, const librevenge::RVNGPropertyListVector & /* tabStops */) {}
   void closeParagraph() {}
 
-  void openSpan(const RVNGPropertyList &propList);
+  void openSpan(const librevenge::RVNGPropertyList &propList);
   void closeSpan();
 
   void insertTab() {}
   void insertSpace() {}
-  void insertText(const RVNGString &text);
+  void insertText(const librevenge::RVNGString &text);
   void insertLineBreak() {}
-  void insertField(const RVNGString & /* type */, const RVNGPropertyList & /*propList*/) {}
+  void insertField(const librevenge::RVNGString & /* type */, const librevenge::RVNGPropertyList & /*propList*/) {}
 
 private:
   VSDSVGGenerator(const VSDSVGGenerator &);

@@ -47,7 +47,7 @@ class VSDXParser : public VSDXMLParserBase
   using VSDXMLParserBase::readLongData;
 
 public:
-  explicit VSDXParser(RVNGInputStream *input, RVNGDrawingInterface *painter);
+  explicit VSDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
   virtual ~VSDXParser();
   bool parseMain();
   bool extractStencils();
@@ -68,18 +68,18 @@ private:
 
   // Functions parsing the Visio 2013 OPC document structure
 
-  bool parseDocument(RVNGInputStream *input, const char *name);
-  bool parseMasters(RVNGInputStream *input, const char *name);
-  bool parseMaster(RVNGInputStream *input, const char *name);
-  bool parsePages(RVNGInputStream *input, const char *name);
-  bool parsePage(RVNGInputStream *input, const char *name);
-  bool parseTheme(RVNGInputStream *input, const char *name);
-  void processXmlDocument(RVNGInputStream *input, VSDXRelationships &rels);
+  bool parseDocument(librevenge::RVNGInputStream *input, const char *name);
+  bool parseMasters(librevenge::RVNGInputStream *input, const char *name);
+  bool parseMaster(librevenge::RVNGInputStream *input, const char *name);
+  bool parsePages(librevenge::RVNGInputStream *input, const char *name);
+  bool parsePage(librevenge::RVNGInputStream *input, const char *name);
+  bool parseTheme(librevenge::RVNGInputStream *input, const char *name);
+  void processXmlDocument(librevenge::RVNGInputStream *input, VSDXRelationships &rels);
   void processXmlNode(xmlTextReaderPtr reader);
 
   // Functions reading the Visio 2013 OPC document content
 
-  void extractBinaryData(RVNGInputStream *input, const char *name);
+  void extractBinaryData(librevenge::RVNGInputStream *input, const char *name);
 
   void readPageSheetProperties(xmlTextReaderPtr reader);
 
@@ -95,8 +95,8 @@ private:
 
   // Private data
 
-  RVNGInputStream *m_input;
-  RVNGDrawingInterface *m_painter;
+  librevenge::RVNGInputStream *m_input;
+  librevenge::RVNGDrawingInterface *m_painter;
   int m_currentDepth;
   VSDXRelationships *m_rels;
   VSDXTheme m_currentTheme;

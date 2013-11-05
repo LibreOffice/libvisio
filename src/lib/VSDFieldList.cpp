@@ -42,13 +42,13 @@ libvisio::VSDFieldListElement *libvisio::VSDTextField::clone()
   return new VSDTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
 
-RVNGString libvisio::VSDTextField::getString(const std::map<unsigned, RVNGString> &strVec)
+librevenge::RVNGString libvisio::VSDTextField::getString(const std::map<unsigned, librevenge::RVNGString> &strVec)
 {
-  std::map<unsigned, RVNGString>::const_iterator iter = strVec.find(m_nameId);
+  std::map<unsigned, librevenge::RVNGString>::const_iterator iter = strVec.find(m_nameId);
   if (iter != strVec.end())
     return iter->second;
   else
-    return RVNGString();
+    return librevenge::RVNGString();
 }
 
 void libvisio::VSDTextField::setNameId(int nameId)
@@ -69,9 +69,9 @@ libvisio::VSDFieldListElement *libvisio::VSDNumericField::clone()
 
 #define MAX_BUFFER 1024
 
-RVNGString libvisio::VSDNumericField::datetimeToString(const char *format, double datetime)
+librevenge::RVNGString libvisio::VSDNumericField::datetimeToString(const char *format, double datetime)
 {
-  RVNGString result;
+  librevenge::RVNGString result;
   char buffer[MAX_BUFFER];
   time_t timer = (time_t)(86400 * datetime - 2209161600.0);
   const struct tm *const time = gmtime(&timer);
@@ -83,10 +83,10 @@ RVNGString libvisio::VSDNumericField::datetimeToString(const char *format, doubl
   return result;
 }
 
-RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, RVNGString> &)
+librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, librevenge::RVNGString> &)
 {
   if (m_format == 0xffff)
-    return RVNGString();
+    return librevenge::RVNGString();
   switch (m_format)
   {
   case VSD_FIELD_FORMAT_DateMDYY:
@@ -161,8 +161,8 @@ RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, RVNGStr
     return datetimeToString("%x %X", m_number);
   default:
   {
-    RVNGString result;
-    RVNGProperty *pProp = RVNGPropertyFactory::newDoubleProp(m_number);
+    librevenge::RVNGString result;
+    librevenge::RVNGProperty *pProp = librevenge::RVNGPropertyFactory::newDoubleProp(m_number);
     if (pProp)
     {
       result = pProp->getStr();

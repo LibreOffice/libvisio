@@ -40,51 +40,51 @@
 #include "VSDContentCollector.h"
 #include "VSDStylesCollector.h"
 
-libvisio::VSD5Parser::VSD5Parser(RVNGInputStream *input, RVNGDrawingInterface *painter)
+libvisio::VSD5Parser::VSD5Parser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
   : VSD6Parser(input, painter)
 {}
 
 libvisio::VSD5Parser::~VSD5Parser()
 {}
 
-void libvisio::VSD5Parser::readPointer(RVNGInputStream *input, Pointer &ptr)
+void libvisio::VSD5Parser::readPointer(librevenge::RVNGInputStream *input, Pointer &ptr)
 {
   ptr.Type = readU16(input) & 0x00ff;
   ptr.Format = readU16(input) & 0x00ff;
-  input->seek(4, RVNG_SEEK_CUR); // Skip dword
+  input->seek(4, librevenge::RVNG_SEEK_CUR); // Skip dword
   ptr.Offset = readU32(input);
   ptr.Length = readU32(input);
 }
 
-void libvisio::VSD5Parser::readPointerInfo(RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount)
+void libvisio::VSD5Parser::readPointerInfo(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readPointerInfo\n"));
   switch (ptrType)
   {
   case VSD_TRAILER_STREAM:
-    input->seek(shift+0x82, RVNG_SEEK_SET);
+    input->seek(shift+0x82, librevenge::RVNG_SEEK_SET);
     break;
   case VSD_PAGE:
-    input->seek(shift+0x42, RVNG_SEEK_SET);
+    input->seek(shift+0x42, librevenge::RVNG_SEEK_SET);
     break;
   case VSD_FONT_LIST:
-    input->seek(shift+0x2e, RVNG_SEEK_SET);
+    input->seek(shift+0x2e, librevenge::RVNG_SEEK_SET);
     break;
   case VSD_STYLES:
-    input->seek(shift+0x12, RVNG_SEEK_SET);
+    input->seek(shift+0x12, librevenge::RVNG_SEEK_SET);
     break;
   case VSD_STENCILS:
   case VSD_SHAPE_FOREIGN:
-    input->seek(shift+0x1e, RVNG_SEEK_SET);
+    input->seek(shift+0x1e, librevenge::RVNG_SEEK_SET);
     break;
   case VSD_STENCIL_PAGE:
-    input->seek(shift+0x36, RVNG_SEEK_SET);
+    input->seek(shift+0x36, librevenge::RVNG_SEEK_SET);
     break;
   default:
     if (ptrType > 0x45)
-      input->seek(shift+0x1e, RVNG_SEEK_SET);
+      input->seek(shift+0x1e, librevenge::RVNG_SEEK_SET);
     else
-      input->seek(shift+0xa, RVNG_SEEK_SET);
+      input->seek(shift+0xa, librevenge::RVNG_SEEK_SET);
     break;
   }
   pointerCount = readS16(input);
@@ -92,7 +92,7 @@ void libvisio::VSD5Parser::readPointerInfo(RVNGInputStream *input, unsigned ptrT
   VSD_DEBUG_MSG(("VSD5Parser::readPointerInfo ptrType %u shift %u pointerCount %i\n", ptrType, shift, pointerCount));
 }
 
-bool libvisio::VSD5Parser::getChunkHeader(RVNGInputStream *input)
+bool libvisio::VSD5Parser::getChunkHeader(librevenge::RVNGInputStream *input)
 {
   unsigned char tmpChar = 0;
   while (!input->isEnd() && !tmpChar)
@@ -101,7 +101,7 @@ bool libvisio::VSD5Parser::getChunkHeader(RVNGInputStream *input)
   if (input->isEnd())
     return false;
   else
-    input->seek(-1, RVNG_SEEK_CUR);
+    input->seek(-1, librevenge::RVNG_SEEK_CUR);
 
   m_header.chunkType = getUInt(input);
   m_header.id = getUInt(input);
@@ -117,15 +117,15 @@ bool libvisio::VSD5Parser::getChunkHeader(RVNGInputStream *input)
   return true;
 }
 
-void libvisio::VSD5Parser::handleChunkRecords(RVNGInputStream *input)
+void libvisio::VSD5Parser::handleChunkRecords(librevenge::RVNGInputStream *input)
 {
   long startPosition = input->tell();
   long endPosition = input->tell() + m_header.dataLength;
-  input->seek(endPosition - 4, RVNG_SEEK_SET);
+  input->seek(endPosition - 4, librevenge::RVNG_SEEK_SET);
   unsigned numRecords = readU16(input);
   unsigned endOffset = readU16(input);
   std::map<unsigned, ChunkHeader> records;
-  input->seek(endPosition-4*(numRecords+1), RVNG_SEEK_SET);
+  input->seek(endPosition-4*(numRecords+1), librevenge::RVNG_SEEK_SET);
   unsigned i = 0;
   for (i = 0; i < numRecords; ++i)
   {
@@ -145,12 +145,12 @@ void libvisio::VSD5Parser::handleChunkRecords(RVNGInputStream *input)
   {
     m_header = iter->second;
     m_header.id = i++;
-    input->seek(startPosition + iter->first, RVNG_SEEK_SET);
+    input->seek(startPosition + iter->first, librevenge::RVNG_SEEK_SET);
     handleChunk(input);
   }
 }
 
-void libvisio::VSD5Parser::readGeomList(RVNGInputStream *input)
+void libvisio::VSD5Parser::readGeomList(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readGeomList\n"));
   if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
@@ -162,57 +162,57 @@ void libvisio::VSD5Parser::readGeomList(RVNGInputStream *input)
   handleChunkRecords(input);
 }
 
-void libvisio::VSD5Parser::readList(RVNGInputStream *input)
+void libvisio::VSD5Parser::readList(librevenge::RVNGInputStream *input)
 {
   if (!m_isStencilStarted)
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   handleChunkRecords(input);
 }
 
-void libvisio::VSD5Parser::readCharList(RVNGInputStream *input)
+void libvisio::VSD5Parser::readCharList(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readCharList\n"));
   readList(input);
 }
 
-void libvisio::VSD5Parser::readParaList(RVNGInputStream *input)
+void libvisio::VSD5Parser::readParaList(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readParaList\n"));
   readList(input);
 }
 
-void libvisio::VSD5Parser::readShapeList(RVNGInputStream *input)
+void libvisio::VSD5Parser::readShapeList(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readShapeList\n"));
   readList(input);
 }
 
-void libvisio::VSD5Parser::readPropList(RVNGInputStream *input)
+void libvisio::VSD5Parser::readPropList(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readPropList\n"));
   readList(input);
 }
 
-void libvisio::VSD5Parser::readFieldList(RVNGInputStream *input)
+void libvisio::VSD5Parser::readFieldList(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readFieldList\n"));
   readList(input);
 }
 
-void libvisio::VSD5Parser::readNameList2(RVNGInputStream *input)
+void libvisio::VSD5Parser::readNameList2(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readNameList2\n"));
   readList(input);
 }
 
-void libvisio::VSD5Parser::readLine(RVNGInputStream *input)
+void libvisio::VSD5Parser::readLine(librevenge::RVNGInputStream *input)
 {
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double strokeWidth = readDouble(input);
   unsigned char colourIndex = readU8(input);
   Colour c = _colourFromIndex(colourIndex);
   unsigned char linePattern = readU8(input);
-  input->seek(10, RVNG_SEEK_CUR);
+  input->seek(10, librevenge::RVNG_SEEK_CUR);
   unsigned char startMarker = readU8(input);
   unsigned char endMarker = readU8(input);
   unsigned char lineCap = readU8(input);
@@ -223,7 +223,7 @@ void libvisio::VSD5Parser::readLine(RVNGInputStream *input)
     m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap));
 }
 
-void libvisio::VSD5Parser::readCharIX(RVNGInputStream *input)
+void libvisio::VSD5Parser::readCharIX(librevenge::RVNGInputStream *input)
 {
   unsigned charCount = readU16(input);
   unsigned fontID = readU16(input);
@@ -256,7 +256,7 @@ void libvisio::VSD5Parser::readCharIX(RVNGInputStream *input)
   if (fontMod & 1) superscript = true;
   if (fontMod & 2) subscript = true;
 
-  input->seek(4, RVNG_SEEK_CUR);
+  input->seek(4, librevenge::RVNG_SEEK_CUR);
   double fontSize = readDouble(input);
 
 #if 0
@@ -286,13 +286,13 @@ void libvisio::VSD5Parser::readCharIX(RVNGInputStream *input)
   }
 }
 
-void libvisio::VSD5Parser::readFillAndShadow(RVNGInputStream *input)
+void libvisio::VSD5Parser::readFillAndShadow(librevenge::RVNGInputStream *input)
 {
   Colour colourFG = _colourFromIndex(readU8(input));
   Colour colourBG = _colourFromIndex(readU8(input));
   unsigned char fillPattern = readU8(input);
   Colour shfgc = _colourFromIndex(readU8(input));
-  input->seek(1, RVNG_SEEK_CUR); // Shadow Background Colour skipped
+  input->seek(1, librevenge::RVNG_SEEK_CUR); // Shadow Background Colour skipped
   unsigned char shadowPattern = readU8(input);
 
   if (m_isInStyles)
@@ -318,9 +318,9 @@ void libvisio::VSD5Parser::readFillAndShadow(RVNGInputStream *input)
   }
 }
 
-void libvisio::VSD5Parser::readStyleSheet(RVNGInputStream *input)
+void libvisio::VSD5Parser::readStyleSheet(librevenge::RVNGInputStream *input)
 {
-  input->seek(10, RVNG_SEEK_CUR);
+  input->seek(10, librevenge::RVNG_SEEK_CUR);
   unsigned lineStyle = getUInt(input);
   unsigned fillStyle = getUInt(input);
   unsigned textStyle = getUInt(input);
@@ -328,7 +328,7 @@ void libvisio::VSD5Parser::readStyleSheet(RVNGInputStream *input)
   m_collector->collectStyleSheet(m_header.id, m_header.level, lineStyle, fillStyle, textStyle);
 }
 
-void libvisio::VSD5Parser::readShape(RVNGInputStream *input)
+void libvisio::VSD5Parser::readShape(librevenge::RVNGInputStream *input)
 {
   m_currentGeomListCount = 0;
   m_isShapeStarted = true;
@@ -345,9 +345,9 @@ void libvisio::VSD5Parser::readShape(RVNGInputStream *input)
 
   try
   {
-    input->seek(2, RVNG_SEEK_CUR);
+    input->seek(2, librevenge::RVNG_SEEK_CUR);
     parent = getUInt(input);
-    input->seek(2, RVNG_SEEK_CUR);
+    input->seek(2, librevenge::RVNG_SEEK_CUR);
     masterPage = getUInt(input);
     masterShape = getUInt(input);
     lineStyle = getUInt(input);
@@ -378,21 +378,21 @@ void libvisio::VSD5Parser::readShape(RVNGInputStream *input)
   m_currentShapeID = MINUS_ONE;
 }
 
-void libvisio::VSD5Parser::readPage(RVNGInputStream *input)
+void libvisio::VSD5Parser::readPage(librevenge::RVNGInputStream *input)
 {
   unsigned backgroundPageID = getUInt(input);
   m_collector->collectPage(m_header.id, m_header.level, backgroundPageID, m_isBackgroundPage, m_currentPageName);
 }
 
-void libvisio::VSD5Parser::readTextBlock(RVNGInputStream *input)
+void libvisio::VSD5Parser::readTextBlock(librevenge::RVNGInputStream *input)
 {
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double leftMargin = readDouble(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double rightMargin = readDouble(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double topMargin = readDouble(input);
-  input->seek(1, RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double bottomMargin = readDouble(input);
   unsigned char verticalAlign = readU8(input);
   unsigned char colourIndex = readU8(input);
@@ -409,9 +409,9 @@ void libvisio::VSD5Parser::readTextBlock(RVNGInputStream *input)
                                       verticalAlign, isBgFilled, c, 0.0, (unsigned char)0));
 }
 
-void libvisio::VSD5Parser::readTextField(RVNGInputStream *input)
+void libvisio::VSD5Parser::readTextField(librevenge::RVNGInputStream *input)
 {
-  input->seek(3, RVNG_SEEK_CUR);
+  input->seek(3, librevenge::RVNG_SEEK_CUR);
   if (0xe8 == readU8(input))
   {
     int nameId = readS16(input);
@@ -424,7 +424,7 @@ void libvisio::VSD5Parser::readTextField(RVNGInputStream *input)
   }
 }
 
-void libvisio::VSD5Parser::readNameIDX(RVNGInputStream *input)
+void libvisio::VSD5Parser::readNameIDX(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readNameIDX\n"));
   std::map<unsigned, VSDName> names;
@@ -441,13 +441,13 @@ void libvisio::VSD5Parser::readNameIDX(RVNGInputStream *input)
 }
 
 
-unsigned libvisio::VSD5Parser::getUInt(RVNGInputStream *input)
+unsigned libvisio::VSD5Parser::getUInt(librevenge::RVNGInputStream *input)
 {
   int value = readS16(input);
   return (unsigned)value;
 }
 
-int libvisio::VSD5Parser::getInt(RVNGInputStream *input)
+int libvisio::VSD5Parser::getInt(librevenge::RVNGInputStream *input)
 {
   return readS16(input);
 }

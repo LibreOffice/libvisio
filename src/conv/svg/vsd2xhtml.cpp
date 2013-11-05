@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
   if (!file)
     return printUsage();
 
-  RVNGFileStream input(file);
+  librevenge::RVNGFileStream input(file);
 
   if (!libvisio::VisioDocument::isSupported(&input))
   {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  RVNGStringVector output;
+  librevenge::RVNGStringVector output;
   if (!libvisio::VisioDocument::generateSVG(&input, output))
   {
     std::cerr << "ERROR: SVG Generation failed!" << std::endl;
