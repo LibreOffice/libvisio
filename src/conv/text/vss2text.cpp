@@ -32,72 +32,9 @@
 #include <string.h>
 
 #include <librevenge-stream/librevenge-stream.h>
+#include <librevenge-generators/librevenge-generators.h>
 #include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
-
-class TextPainter : public librevenge::RVNGDrawingInterface
-{
-public:
-  TextPainter();
-
-  void startDocument(const librevenge::RVNGPropertyList & /*propList*/) {}
-  void endDocument() {}
-  void setDocumentMetaData(const librevenge::RVNGPropertyList & /*propList*/) {}
-  void startPage(const librevenge::RVNGPropertyList &) {}
-  void endPage() {}
-  void startLayer(const librevenge::RVNGPropertyList &) {}
-  void endLayer() {}
-  void startEmbeddedGraphics(const librevenge::RVNGPropertyList &) {}
-  void endEmbeddedGraphics() {}
-
-  void setStyle(const librevenge::RVNGPropertyList &, const librevenge::RVNGPropertyListVector &) {}
-
-  void drawRectangle(const librevenge::RVNGPropertyList &) {}
-  void drawEllipse(const librevenge::RVNGPropertyList &) {}
-  void drawPolyline(const librevenge::RVNGPropertyListVector &) {}
-  void drawPolygon(const librevenge::RVNGPropertyListVector &) {}
-  void drawPath(const librevenge::RVNGPropertyListVector &) {}
-  void drawGraphicObject(const librevenge::RVNGPropertyList &, const librevenge::RVNGBinaryData &) {}
-  void startTextObject(const librevenge::RVNGPropertyList &, const librevenge::RVNGPropertyListVector &) {}
-  void endTextObject() {}
-
-
-  void openOrderedListLevel(const librevenge::RVNGPropertyList & /*propList*/) {}
-  void closeOrderedListLevel() {}
-
-  void openUnorderedListLevel(const librevenge::RVNGPropertyList & /*propList*/) {}
-  void closeUnorderedListLevel() {}
-
-  void openListElement(const librevenge::RVNGPropertyList & /*propList*/, const librevenge::RVNGPropertyListVector & /* tabStops */) {}
-  void closeListElement() {}
-
-  void openParagraph(const librevenge::RVNGPropertyList & /*propList*/, const librevenge::RVNGPropertyListVector & /* tabStops */) {}
-  void closeParagraph();
-
-  void openSpan(const librevenge::RVNGPropertyList & /*propList*/) {}
-  void closeSpan() {}
-
-  void insertTab() {}
-  void insertSpace() {}
-  void insertText(const librevenge::RVNGString &text);
-  void insertLineBreak() {}
-  void insertField(const librevenge::RVNGString & /* type */, const librevenge::RVNGPropertyList & /*propList*/) {}
-
-};
-
-TextPainter::TextPainter(): librevenge::RVNGDrawingInterface()
-{
-}
-
-void TextPainter::insertText(const librevenge::RVNGString &str)
-{
-  printf("%s", str.cstr());
-}
-
-void TextPainter::closeParagraph()
-{
-  printf("\n");
-}
 
 namespace
 {
@@ -139,7 +76,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  TextPainter painter;
+  librevenge::RVNGTextDrawingGenerator painter;
   if (!libvisio::VisioDocument::parseStencils(&input, &painter))
   {
     fprintf(stderr, "ERROR: Parsing of document failed!\n");
