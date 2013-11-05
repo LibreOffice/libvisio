@@ -1,3 +1,5 @@
+if BUILD_TOOLS
+
 bin_PROGRAMS = vsd2raw vss2raw
 
 AM_CXXFLAGS = \
@@ -52,3 +54,5 @@ EXTRA_DIST = \
 BUILD_EXTRA_DIST = \
 	vsd2raw.rc \
 	vss2raw.rc	
+
+endif

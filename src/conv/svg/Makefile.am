@@ -1,3 +1,5 @@
+if BUILD_TOOLS
+
 bin_PROGRAMS = vsd2xhtml vss2xhtml
 
 AM_CXXFLAGS = \
@@ -52,3 +54,5 @@ EXTRA_DIST = \
 BUILD_EXTRA_DIST = \
 	vsd2xhtml.rc \
 	vss2xhtml.rc
+
+endif
