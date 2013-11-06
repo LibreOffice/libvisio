@@ -77,7 +77,11 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	$(generated_files)
 	
 
-$(libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_OBJECTS) : $(generated_files)
+VDXParser.lo : $(generated_files)
+VSDXMLParserBase.lo : $(generated_files)
+VSDXMLTokenMap.lo : $(generated_files)
+VSDXParser.lo : $(generated_files)
+VSDXTheme.lo : $(generated_files)
 
 $(top_builddir)/src/lib/tokens.h : $(top_builddir)/src/lib/tokens.gperf
 
