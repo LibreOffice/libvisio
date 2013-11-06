@@ -90,7 +90,6 @@ protected:
   int readDoubleData(double &value, xmlTextReaderPtr reader);
   int readBoolData(boost::optional<bool> &value, xmlTextReaderPtr reader);
   int readBoolData(bool &value, xmlTextReaderPtr reader);
-  int readColourData(Colour &value, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   int readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader);

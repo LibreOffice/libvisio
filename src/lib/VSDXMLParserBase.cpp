@@ -2090,31 +2090,6 @@ int libvisio::VSDXMLParserBase::readByteData(boost::optional<unsigned char> &val
   return ret;
 }
 
-int libvisio::VSDXMLParserBase::readColourData(Colour &value, xmlTextReaderPtr reader)
-{
-  xmlChar *stringValue = readStringData(reader);
-  if (stringValue)
-  {
-    VSD_DEBUG_MSG(("VSDXMLParserBase::readColourData stringValue %s\n", (const char *)stringValue));
-    if (!xmlStrEqual(stringValue, BAD_CAST("Themed")))
-    {
-      try
-      {
-        Colour tmpColour = xmlStringToColour(stringValue);
-        value = tmpColour;
-      }
-      catch (const XmlParserException &)
-      {
-        xmlFree(stringValue);
-        throw XmlParserException();
-      }
-    }
-    xmlFree(stringValue);
-    return 1;
-  }
-  return -1;
-}
-
 int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader)
 {
   xmlChar *stringValue = readStringData(reader);

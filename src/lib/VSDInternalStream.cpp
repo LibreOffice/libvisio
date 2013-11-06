@@ -33,22 +33,6 @@
 #include "VSDInternalStream.h"
 
 
-VSDInternalStream::VSDInternalStream(const std::vector<unsigned char> &buffer) :
-  librevenge::RVNGInputStream(),
-  m_offset(0),
-  m_buffer(buffer)
-{
-}
-
-VSDInternalStream::VSDInternalStream(const unsigned char *buffer, size_t bufferLength) :
-  librevenge::RVNGInputStream(),
-  m_offset(0),
-  m_buffer(bufferLength)
-{
-  memcpy(&m_buffer[0], buffer, bufferLength);
-}
-
-
 VSDInternalStream::VSDInternalStream(librevenge::RVNGInputStream *input, unsigned long size, bool compressed) :
   librevenge::RVNGInputStream(),
   m_offset(0),

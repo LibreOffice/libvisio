@@ -449,15 +449,11 @@ public:
   void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
   void addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster);
 
-  VSDLineStyle getLineStyle(unsigned lineStyleIndex) const;
   VSDOptionalLineStyle getOptionalLineStyle(unsigned lineStyleIndex) const;
   VSDFillStyle getFillStyle(unsigned fillStyleIndex) const;
   VSDOptionalFillStyle getOptionalFillStyle(unsigned fillStyleIndex) const;
-  VSDTextBlockStyle getTextBlockStyle(unsigned textStyleIndex) const;
   VSDOptionalTextBlockStyle getOptionalTextBlockStyle(unsigned textStyleIndex) const;
-  VSDCharStyle getCharStyle(unsigned textStyleIndex) const;
   VSDOptionalCharStyle getOptionalCharStyle(unsigned textStyleIndex) const;
-  VSDParaStyle getParaStyle(unsigned textStyleIndex) const;
   VSDOptionalParaStyle getOptionalParaStyle(unsigned textStyleIndex) const;
 
 private:

@@ -40,8 +40,6 @@ class VSDInternalStream : public librevenge::RVNGInputStream
 {
 public:
   VSDInternalStream(librevenge::RVNGInputStream *input, unsigned long size, bool compressed=false);
-  VSDInternalStream(const std::vector<unsigned char> &buffer);
-  VSDInternalStream(const unsigned char *buffer, size_t bufferLength);
   ~VSDInternalStream() {}
 
   virtual bool isStructured()

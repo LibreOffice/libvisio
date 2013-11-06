@@ -46,20 +46,4 @@ int libvisio::VSDXMLTokenMap::getTokenId(const xmlChar *name)
     return XML_TOKEN_INVALID;
 }
 
-const xmlChar *libvisio::VSDXMLTokenMap::getTokenName(int tokenId)
-{
-  if(tokenId >= XML_TOKEN_COUNT)
-    return 0;
-
-  const xmltoken *currentToken = wordlist;
-  while(currentToken != wordlist+sizeof(wordlist)/sizeof(*wordlist))
-  {
-    if(currentToken->tokenId == tokenId)
-      return BAD_CAST(currentToken->name);
-    ++currentToken;
-  }
-
-  return 0;
-}
-
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

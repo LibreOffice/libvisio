@@ -131,13 +131,6 @@ libvisio::VSDOptionalLineStyle libvisio::VSDStyles::getOptionalLineStyle(unsigne
   return lineStyle;
 }
 
-libvisio::VSDLineStyle libvisio::VSDStyles::getLineStyle(unsigned lineStyleIndex) const
-{
-  VSDLineStyle lineStyle;
-  lineStyle.override(getOptionalLineStyle(lineStyleIndex));
-  return lineStyle;
-}
-
 libvisio::VSDOptionalFillStyle libvisio::VSDStyles::getOptionalFillStyle(unsigned fillStyleIndex) const
 {
   VSDOptionalFillStyle fillStyle;
@@ -195,13 +188,6 @@ libvisio::VSDOptionalTextBlockStyle libvisio::VSDStyles::getOptionalTextBlockSty
   return textBlockStyle;
 }
 
-libvisio::VSDTextBlockStyle libvisio::VSDStyles::getTextBlockStyle(unsigned textStyleIndex) const
-{
-  VSDTextBlockStyle textBlockStyle;
-  textBlockStyle.override(getOptionalTextBlockStyle(textStyleIndex));
-  return textBlockStyle;
-}
-
 libvisio::VSDOptionalCharStyle libvisio::VSDStyles::getOptionalCharStyle(unsigned textStyleIndex) const
 {
   VSDOptionalCharStyle charStyle;
@@ -227,13 +213,6 @@ libvisio::VSDOptionalCharStyle libvisio::VSDStyles::getOptionalCharStyle(unsigne
   return charStyle;
 }
 
-libvisio::VSDCharStyle libvisio::VSDStyles::getCharStyle(unsigned textStyleIndex) const
-{
-  VSDCharStyle charStyle;
-  charStyle.override(getOptionalCharStyle(textStyleIndex));
-  return charStyle;
-}
-
 libvisio::VSDOptionalParaStyle libvisio::VSDStyles::getOptionalParaStyle(unsigned textStyleIndex) const
 {
   VSDOptionalParaStyle paraStyle;
@@ -256,13 +235,6 @@ libvisio::VSDOptionalParaStyle libvisio::VSDStyles::getOptionalParaStyle(unsigne
       paraStyle.override(iter->second);
     styleIdStack.pop();
   }
-  return paraStyle;
-}
-
-libvisio::VSDParaStyle libvisio::VSDStyles::getParaStyle(unsigned textStyleIndex) const
-{
-  VSDParaStyle paraStyle;
-  paraStyle.override(getOptionalParaStyle(textStyleIndex));
   return paraStyle;
 }
 

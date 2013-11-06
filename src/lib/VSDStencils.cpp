@@ -215,9 +215,4 @@ const libvisio::VSDShape *libvisio::VSDStencils::getStencilShape(unsigned pageId
   return tmpStencil->getStencilShape(shapeId);
 }
 
-void libvisio::VSDStencils::clear()
-{
-  m_stencils.clear();
-}
-
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
