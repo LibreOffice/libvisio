@@ -333,8 +333,6 @@ build/win32/Makefile
 docs/Makefile
 docs/doxygen/Makefile
 libvisio-$VSD_MAJOR_VERSION.$VSD_MINOR_VERSION.pc:libvisio.pc.in
-libvisio.spec
-libvisio-zip
 ])
 AC_OUTPUT
 
