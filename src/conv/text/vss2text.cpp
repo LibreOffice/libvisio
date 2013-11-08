@@ -76,12 +76,16 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  librevenge::RVNGTextDrawingGenerator painter;
+  librevenge::RVNGStringVector pages;
+  librevenge::RVNGTextDrawingGenerator painter(pages);
   if (!libvisio::VisioDocument::parseStencils(&input, &painter))
   {
     fprintf(stderr, "ERROR: Parsing of document failed!\n");
     return 1;
   }
+
+  for (unsigned i = 0; i != pages.size(); ++i)
+    printf("%s", pages[i].cstr());
 
   return 0;
 }
