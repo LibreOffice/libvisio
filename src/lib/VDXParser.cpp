@@ -843,7 +843,7 @@ void libvisio::VDXParser::getBinaryData(xmlTextReaderPtr reader)
       if (!m_shape.m_foreign)
         m_shape.m_foreign = new ForeignData();
       m_shape.m_foreign->data.clear();
-      appendFromBase64(m_shape.m_foreign->data, data, xmlStrlen(data));
+      m_shape.m_foreign->data.append(librevenge::RVNGString((const char *)data));
     }
   }
 }

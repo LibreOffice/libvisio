@@ -707,7 +707,8 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
   if (m_currentForeignData.size() && m_currentForeignProps["librevenge:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0)
   {
     m_shapeOutputDrawing->addStyle(styleProps, librevenge::RVNGPropertyListVector());
-    m_shapeOutputDrawing->addGraphicObject(m_currentForeignProps, m_currentForeignData);
+    m_currentForeignProps.insert("office:binary-data", m_currentForeignData);
+    m_shapeOutputDrawing->addGraphicObject(m_currentForeignProps);
   }
   m_currentForeignData.clear();
   m_currentForeignProps.clear();
@@ -1111,15 +1112,15 @@ void libvisio::VSDContentCollector::_handleForeignData(const librevenge::RVNGBin
       m_currentForeignData.append((unsigned char)(((binaryData.size() + 14) & 0x00ff0000) >> 16));
       m_currentForeignData.append((unsigned char)(((binaryData.size() + 14) & 0xff000000) >> 24));
 
-      m_currentForeignData.append(0x00);
-      m_currentForeignData.append(0x00);
-      m_currentForeignData.append(0x00);
-      m_currentForeignData.append(0x00);
+      m_currentForeignData.append((unsigned char)0x00);
+      m_currentForeignData.append((unsigned char)0x00);
+      m_currentForeignData.append((unsigned char)0x00);
+      m_currentForeignData.append((unsigned char)0x00);
 
-      m_currentForeignData.append(0x36);
-      m_currentForeignData.append(0x00);
-      m_currentForeignData.append(0x00);
-      m_currentForeignData.append(0x00);
+      m_currentForeignData.append((unsigned char)0x36);
+      m_currentForeignData.append((unsigned char)0x00);
+      m_currentForeignData.append((unsigned char)0x00);
+      m_currentForeignData.append((unsigned char)0x00);
     }
     m_currentForeignData.append(binaryData);
 

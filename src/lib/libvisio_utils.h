@@ -98,8 +98,6 @@ uint64_t readU64(librevenge::RVNGInputStream *input);
 
 double readDouble(librevenge::RVNGInputStream *input);
 
-void appendFromBase64(librevenge::RVNGBinaryData &data, const unsigned char *base64Data, size_t base64DataLength);
-
 const librevenge::RVNGString getColourString(const Colour &c);
 
 class EndOfStreamException

@@ -77,16 +77,15 @@ private:
 class VSDGraphicObjectOutputElement : public VSDOutputElement
 {
 public:
-  VSDGraphicObjectOutputElement(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGBinaryData &binaryData);
+  VSDGraphicObjectOutputElement(const librevenge::RVNGPropertyList &propList);
   virtual ~VSDGraphicObjectOutputElement() {}
   virtual void draw(librevenge::RVNGDrawingInterface *painter);
   virtual VSDOutputElement *clone()
   {
-    return new VSDGraphicObjectOutputElement(m_propList, m_binaryData);
+    return new VSDGraphicObjectOutputElement(m_propList);
   }
 private:
   librevenge::RVNGPropertyList m_propList;
-  librevenge::RVNGBinaryData m_binaryData;
 };
 
 
@@ -240,13 +239,13 @@ void libvisio::VSDPathOutputElement::draw(librevenge::RVNGDrawingInterface *pain
 }
 
 
-libvisio::VSDGraphicObjectOutputElement::VSDGraphicObjectOutputElement(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGBinaryData &binaryData) :
-  m_propList(propList), m_binaryData(binaryData) {}
+libvisio::VSDGraphicObjectOutputElement::VSDGraphicObjectOutputElement(const librevenge::RVNGPropertyList &propList) :
+  m_propList(propList) {}
 
 void libvisio::VSDGraphicObjectOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->drawGraphicObject(m_propList, m_binaryData);
+    painter->drawGraphicObject(m_propList);
 }
 
 
@@ -389,9 +388,9 @@ void libvisio::VSDOutputElementList::addPath(const librevenge::RVNGPropertyListV
   m_elements.push_back(new VSDPathOutputElement(propListVec));
 }
 
-void libvisio::VSDOutputElementList::addGraphicObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGBinaryData &binaryData)
+void libvisio::VSDOutputElementList::addGraphicObject(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new VSDGraphicObjectOutputElement(propList, binaryData));
+  m_elements.push_back(new VSDGraphicObjectOutputElement(propList));
 }
 
 void libvisio::VSDOutputElementList::addStartTextObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec)

@@ -34,11 +34,6 @@
 #include "VSDInternalStream.h"
 #include "libvisio_utils.h"
 
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/remove_whitespace.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
-#include <boost/range/iterator_range.hpp>
-
 uint8_t libvisio::readU8(librevenge::RVNGInputStream *input)
 {
   if (!input || input->isEnd())
@@ -124,25 +119,6 @@ double libvisio::readDouble(librevenge::RVNGInputStream *input)
   tmpUnion.u = readU64(input);
 
   return tmpUnion.d;
-}
-
-void libvisio::appendFromBase64(librevenge::RVNGBinaryData &data, const unsigned char *base64Data, size_t base64DataLength)
-{
-  std::string base64String((const char *)base64Data, base64DataLength);
-  unsigned numPadding = std::count(base64String.begin(), base64String.end(), '=');
-  std::replace(base64String.begin(),base64String.end(),'=','A'); // replace '=' by base64 encoding of '\0'
-  typedef boost::archive::iterators::transform_width<
-  boost::archive::iterators::binary_from_base64<
-  boost::archive::iterators::remove_whitespace< std::string::const_iterator > >, 8, 6 > base64_decoder;
-
-  std::vector<unsigned char> buffer;
-  std::copy(base64_decoder(base64String.begin()), base64_decoder(base64String.end()), std::back_inserter(buffer));
-  if (!buffer.empty())
-  {
-    buffer.erase(buffer.end()-numPadding,buffer.end());  // erase padding '\0' characters
-    if (!buffer.empty())
-      data.append(&buffer[0], buffer.size());
-  }
 }
 
 const librevenge::RVNGString libvisio::getColourString(const Colour &c)
