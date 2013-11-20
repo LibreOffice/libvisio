@@ -312,7 +312,9 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       for (unsigned i = 0; i < tmpPath.size(); ++i)
         path.append(tmpPath[i]);
       m_shapeOutputDrawing->addStyle(fillPathProps, librevenge::RVNGPropertyListVector());
-      m_shapeOutputDrawing->addPath(path);
+      librevenge::RVNGPropertyList propList;
+      propList.insert("svg:d", path);
+      m_shapeOutputDrawing->addPath(propList);
     }
   }
   m_currentFillGeometry.clear();
@@ -393,7 +395,9 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       for (unsigned i = 0; i < tmpPath.size(); ++i)
         path.append(tmpPath[i]);
       m_shapeOutputDrawing->addStyle(linePathProps, librevenge::RVNGPropertyListVector());
-      m_shapeOutputDrawing->addPath(path);
+      librevenge::RVNGPropertyList propList;
+      propList.insert("svg:d", path);
+      m_shapeOutputDrawing->addPath(propList);
     }
   }
   m_currentLineGeometry.clear();
@@ -477,7 +481,7 @@ void libvisio::VSDContentCollector::_flushText()
       m_paraFormats[iPara].charCount = numCharsInText;
   }
 
-  m_shapeOutputText->addStartTextObject(textBlockProps, librevenge::RVNGPropertyListVector());
+  m_shapeOutputText->addStartTextObject(textBlockProps);
 
   unsigned int charIndex = 0;
   unsigned int paraCharCount = 0;

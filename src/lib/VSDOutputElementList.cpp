@@ -62,15 +62,15 @@ private:
 class VSDPathOutputElement : public VSDOutputElement
 {
 public:
-  VSDPathOutputElement(const librevenge::RVNGPropertyListVector &propListVec);
+  VSDPathOutputElement(const librevenge::RVNGPropertyList &propList);
   virtual ~VSDPathOutputElement() {}
   virtual void draw(librevenge::RVNGDrawingInterface *painter);
   virtual VSDOutputElement *clone()
   {
-    return new VSDPathOutputElement(m_propListVec);
+    return new VSDPathOutputElement(m_propList);
   }
 private:
-  librevenge::RVNGPropertyListVector m_propListVec;
+  librevenge::RVNGPropertyList m_propList;
 };
 
 
@@ -92,16 +92,15 @@ private:
 class VSDStartTextObjectOutputElement : public VSDOutputElement
 {
 public:
-  VSDStartTextObjectOutputElement(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec);
+  VSDStartTextObjectOutputElement(const librevenge::RVNGPropertyList &propList);
   virtual ~VSDStartTextObjectOutputElement() {}
   virtual void draw(librevenge::RVNGDrawingInterface *painter);
   virtual VSDOutputElement *clone()
   {
-    return new VSDStartTextObjectOutputElement(m_propList, m_propListVec);
+    return new VSDStartTextObjectOutputElement(m_propList);
   }
 private:
   librevenge::RVNGPropertyList m_propList;
-  librevenge::RVNGPropertyListVector m_propListVec;
 };
 
 
@@ -229,13 +228,13 @@ void libvisio::VSDStyleOutputElement::draw(librevenge::RVNGDrawingInterface *pai
 }
 
 
-libvisio::VSDPathOutputElement::VSDPathOutputElement(const librevenge::RVNGPropertyListVector &propListVec) :
-  m_propListVec(propListVec) {}
+libvisio::VSDPathOutputElement::VSDPathOutputElement(const librevenge::RVNGPropertyList &propList) :
+  m_propList(propList) {}
 
 void libvisio::VSDPathOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->drawPath(m_propListVec);
+    painter->drawPath(m_propList);
 }
 
 
@@ -249,13 +248,13 @@ void libvisio::VSDGraphicObjectOutputElement::draw(librevenge::RVNGDrawingInterf
 }
 
 
-libvisio::VSDStartTextObjectOutputElement::VSDStartTextObjectOutputElement(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec) :
-  m_propList(propList), m_propListVec(propListVec) {}
+libvisio::VSDStartTextObjectOutputElement::VSDStartTextObjectOutputElement(const librevenge::RVNGPropertyList &propList) :
+  m_propList(propList) {}
 
 void libvisio::VSDStartTextObjectOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->startTextObject(m_propList, m_propListVec);
+    painter->startTextObject(m_propList);
 }
 
 libvisio::VSDOpenSpanOutputElement::VSDOpenSpanOutputElement(const librevenge::RVNGPropertyList &propList) :
@@ -383,9 +382,9 @@ void libvisio::VSDOutputElementList::addStyle(const librevenge::RVNGPropertyList
   m_elements.push_back(new VSDStyleOutputElement(propList, propListVec));
 }
 
-void libvisio::VSDOutputElementList::addPath(const librevenge::RVNGPropertyListVector &propListVec)
+void libvisio::VSDOutputElementList::addPath(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new VSDPathOutputElement(propListVec));
+  m_elements.push_back(new VSDPathOutputElement(propList));
 }
 
 void libvisio::VSDOutputElementList::addGraphicObject(const librevenge::RVNGPropertyList &propList)
@@ -393,9 +392,9 @@ void libvisio::VSDOutputElementList::addGraphicObject(const librevenge::RVNGProp
   m_elements.push_back(new VSDGraphicObjectOutputElement(propList));
 }
 
-void libvisio::VSDOutputElementList::addStartTextObject(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec)
+void libvisio::VSDOutputElementList::addStartTextObject(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new VSDStartTextObjectOutputElement(propList, propListVec));
+  m_elements.push_back(new VSDStartTextObjectOutputElement(propList));
 }
 
 void libvisio::VSDOutputElementList::addOpenParagraph(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec)
