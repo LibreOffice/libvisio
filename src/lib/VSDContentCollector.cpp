@@ -528,7 +528,7 @@ void libvisio::VSDContentCollector::_flushText()
     else
       paraProps.insert("fo:line-height", -(*paraIt).spLine, librevenge::RVNG_PERCENT);
 
-    m_shapeOutputText->addOpenParagraph(paraProps, librevenge::RVNGPropertyListVector());
+    m_shapeOutputText->addOpenParagraph(paraProps);
 
     paraCharCount = (*paraIt).charCount;
 

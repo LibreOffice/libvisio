@@ -107,16 +107,15 @@ private:
 class VSDOpenParagraphOutputElement : public VSDOutputElement
 {
 public:
-  VSDOpenParagraphOutputElement(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec);
+  VSDOpenParagraphOutputElement(const librevenge::RVNGPropertyList &propList);
   virtual ~VSDOpenParagraphOutputElement() {}
   virtual void draw(librevenge::RVNGDrawingInterface *painter);
   virtual VSDOutputElement *clone()
   {
-    return new VSDOpenParagraphOutputElement(m_propList, m_propListVec);
+    return new VSDOpenParagraphOutputElement(m_propList);
   }
 private:
   librevenge::RVNGPropertyList m_propList;
-  librevenge::RVNGPropertyListVector m_propListVec;
 };
 
 
@@ -286,13 +285,13 @@ void libvisio::VSDEndLayerOutputElement::draw(librevenge::RVNGDrawingInterface *
 }
 
 
-libvisio::VSDOpenParagraphOutputElement::VSDOpenParagraphOutputElement(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec) :
-  m_propList(propList), m_propListVec(propListVec) {}
+libvisio::VSDOpenParagraphOutputElement::VSDOpenParagraphOutputElement(const librevenge::RVNGPropertyList &propList) :
+  m_propList(propList) {}
 
 void libvisio::VSDOpenParagraphOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->openParagraph(m_propList, m_propListVec);
+    painter->openParagraph(m_propList);
 }
 
 
@@ -397,9 +396,9 @@ void libvisio::VSDOutputElementList::addStartTextObject(const librevenge::RVNGPr
   m_elements.push_back(new VSDStartTextObjectOutputElement(propList));
 }
 
-void libvisio::VSDOutputElementList::addOpenParagraph(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec)
+void libvisio::VSDOutputElementList::addOpenParagraph(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new VSDOpenParagraphOutputElement(propList, propListVec));
+  m_elements.push_back(new VSDOpenParagraphOutputElement(propList));
 }
 
 void libvisio::VSDOutputElementList::addOpenSpan(const librevenge::RVNGPropertyList &propList)
