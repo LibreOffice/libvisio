@@ -871,6 +871,7 @@
 			</File>
 			<File
 				RelativePath="..\..\src\lib\VSDXTheme.h"
+				>
 			</File>
 			<File
 				RelativePath="..\..\src\lib\VSDZipStream.h"
