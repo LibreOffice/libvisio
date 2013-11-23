@@ -311,7 +311,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       librevenge::RVNGPropertyListVector path;
       for (unsigned i = 0; i < tmpPath.size(); ++i)
         path.append(tmpPath[i]);
-      m_shapeOutputDrawing->addStyle(fillPathProps, librevenge::RVNGPropertyListVector());
+      m_shapeOutputDrawing->addStyle(fillPathProps);
       librevenge::RVNGPropertyList propList;
       propList.insert("svg:d", path);
       m_shapeOutputDrawing->addPath(propList);
@@ -394,7 +394,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       librevenge::RVNGPropertyListVector path;
       for (unsigned i = 0; i < tmpPath.size(); ++i)
         path.append(tmpPath[i]);
-      m_shapeOutputDrawing->addStyle(linePathProps, librevenge::RVNGPropertyListVector());
+      m_shapeOutputDrawing->addStyle(linePathProps);
       librevenge::RVNGPropertyList propList;
       propList.insert("svg:d", path);
       m_shapeOutputDrawing->addPath(propList);
@@ -710,7 +710,7 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
 
   if (m_currentForeignData.size() && m_currentForeignProps["librevenge:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0)
   {
-    m_shapeOutputDrawing->addStyle(styleProps, librevenge::RVNGPropertyListVector());
+    m_shapeOutputDrawing->addStyle(styleProps);
     m_currentForeignProps.insert("office:binary-data", m_currentForeignData);
     m_shapeOutputDrawing->addGraphicObject(m_currentForeignProps);
   }

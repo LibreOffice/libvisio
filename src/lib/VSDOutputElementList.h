@@ -50,7 +50,7 @@ public:
   virtual ~VSDOutputElementList();
   void append(const VSDOutputElementList &elementList);
   void draw(librevenge::RVNGDrawingInterface *painter) const;
-  void addStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec);
+  void addStyle(const librevenge::RVNGPropertyList &propList);
   void addPath(const librevenge::RVNGPropertyList &propList);
   void addGraphicObject(const librevenge::RVNGPropertyList &propList);
   void addStartTextObject(const librevenge::RVNGPropertyList &propList);

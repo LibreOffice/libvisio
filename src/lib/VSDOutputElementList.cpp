@@ -46,16 +46,15 @@ public:
 class VSDStyleOutputElement : public VSDOutputElement
 {
 public:
-  VSDStyleOutputElement(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec);
+  VSDStyleOutputElement(const librevenge::RVNGPropertyList &propList);
   virtual ~VSDStyleOutputElement() {}
   virtual void draw(librevenge::RVNGDrawingInterface *painter);
   virtual VSDOutputElement *clone()
   {
-    return new VSDStyleOutputElement(m_propList, m_propListVec);
+    return new VSDStyleOutputElement(m_propList);
   }
 private:
   librevenge::RVNGPropertyList m_propList;
-  librevenge::RVNGPropertyListVector m_propListVec;
 };
 
 
@@ -217,13 +216,13 @@ public:
 
 } // namespace libvisio
 
-libvisio::VSDStyleOutputElement::VSDStyleOutputElement(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec) :
-  m_propList(propList), m_propListVec(propListVec) {}
+libvisio::VSDStyleOutputElement::VSDStyleOutputElement(const librevenge::RVNGPropertyList &propList) :
+  m_propList(propList) {}
 
 void libvisio::VSDStyleOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->setStyle(m_propList, m_propListVec);
+    painter->setStyle(m_propList);
 }
 
 
@@ -376,9 +375,9 @@ void libvisio::VSDOutputElementList::draw(librevenge::RVNGDrawingInterface *pain
     (*iter)->draw(painter);
 }
 
-void libvisio::VSDOutputElementList::addStyle(const librevenge::RVNGPropertyList &propList, const librevenge::RVNGPropertyListVector &propListVec)
+void libvisio::VSDOutputElementList::addStyle(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(new VSDStyleOutputElement(propList, propListVec));
+  m_elements.push_back(new VSDStyleOutputElement(propList));
 }
 
 void libvisio::VSDOutputElementList::addPath(const librevenge::RVNGPropertyList &propList)
