@@ -216,7 +216,7 @@ private:
   void appendCharacters(librevenge::RVNGString &text, const std::vector<unsigned char> &characters, TextFormat format);
   void appendCharacters(librevenge::RVNGString &text, const std::vector<unsigned char> &characters);
   void _convertDataToString(librevenge::RVNGString &result, const librevenge::RVNGBinaryData &data, TextFormat format);
-  bool parseFormatId( const char *formatString, unsigned short &result );
+  bool parseFormatId(const char *formatString, unsigned short &result);
   void _appendField(librevenge::RVNGString &text);
 
   // NURBS processing functions

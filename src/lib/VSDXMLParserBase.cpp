@@ -1109,7 +1109,7 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
   if (id)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
-    unsigned backgroundPageID =  (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
+    unsigned backgroundPageID = (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
     bool isBackgroundPage = background ? xmlStringToBool(background) : false;
     m_isPageStarted = true;
     m_collector->startPage(nId);
@@ -1485,7 +1485,7 @@ void libvisio::VSDXMLParserBase::readStyleSheet(xmlTextReaderPtr reader)
   if (id)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
-    unsigned nLineStyle =  (unsigned)(lineStyle ? xmlStringToLong(lineStyle) : -1);
+    unsigned nLineStyle = (unsigned)(lineStyle ? xmlStringToLong(lineStyle) : -1);
     unsigned nFillStyle = (unsigned)(fillStyle ? xmlStringToLong(fillStyle) : -1);
     unsigned nTextStyle = (unsigned)(textStyle ? xmlStringToLong(textStyle) : -1);
     m_collector->collectStyleSheet(nId, (unsigned)getElementDepth(reader), nLineStyle, nFillStyle, nTextStyle);
@@ -1927,7 +1927,7 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
                          real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]
                         >> (',' | eps_p) >>
                         real_p[push_back_a(tmpData.knots)] >> (',' | eps_p) >>
-                        real_p[push_back_a(tmpData.weights)]), ',' | eps_p ))
+                        real_p[push_back_a(tmpData.weights)]), ',' | eps_p))
                  ) >> ')' >> end_p,
                  //  End grammar
                  space_p).full;
@@ -1935,7 +1935,7 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
     xmlFree(formula);
   }
 
-  if( !bRes )
+  if (!bRes)
     return -1;
   data = tmpData;
   return 1;
@@ -1965,7 +1965,7 @@ int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &
                    (list_p(
                       (
                         (real_p[assign_a(point.first)] >> (',' | eps_p) >>
-                         real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]), ',' | eps_p ))
+                         real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]), ',' | eps_p))
                  ) >> ')' >> end_p,
                  //  End grammar
                  space_p).full;
@@ -1973,7 +1973,7 @@ int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &
     xmlFree(formula);
   }
 
-  if( !bRes )
+  if (!bRes)
     return -1;
   data = tmpData;
   return 1;

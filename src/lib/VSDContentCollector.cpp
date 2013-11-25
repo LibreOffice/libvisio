@@ -461,7 +461,7 @@ void libvisio::VSDContentCollector::_flushText()
   if (m_paraFormats.empty())
     m_paraFormats.push_back(m_defaultParaStyle);
 
-  unsigned numCharsInText =  (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
+  unsigned numCharsInText = (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
 
   for (unsigned iChar = 0; iChar < m_charFormats.size(); iChar++)
   {
@@ -471,7 +471,7 @@ void libvisio::VSDContentCollector::_flushText()
       m_charFormats[iChar].charCount = numCharsInText;
   }
 
-  numCharsInText =  (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
+  numCharsInText = (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
 
   for (unsigned iPara = 0; iPara < m_paraFormats.size(); iPara++)
   {
@@ -1130,7 +1130,7 @@ void libvisio::VSDContentCollector::_handleForeignData(const librevenge::RVNGBin
 
     if (m_foreignType == 1)
     {
-      switch(m_foreignFormat)
+      switch (m_foreignFormat)
       {
       case 0:
       case 255:
@@ -1170,7 +1170,7 @@ void libvisio::VSDContentCollector::_handleForeignData(const librevenge::RVNGBin
   librevenge::RVNGString filename;
   if (m_foreignType == 1)
   {
-    switch(m_foreignFormat)
+    switch (m_foreignFormat)
     {
     case 0:
     case 255:
@@ -1193,7 +1193,7 @@ void libvisio::VSDContentCollector::_handleForeignData(const librevenge::RVNGBin
       break;
     }
   }
-  else if  (m_foreignType == 0 || m_foreignType == 4)
+  else if (m_foreignType == 0 || m_foreignType == 4)
   {
     const unsigned char *tmpBinData = m_currentForeignData.getDataBuffer();
     // Check for EMF signature
@@ -1577,7 +1577,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   // Let knotVector run from 0 to 1
   double firstKnot = knotVector[0];
   double lastKnot = knotVector.back()-knotVector[0];
-  for(std::vector<double>::iterator knot = knotVector.begin(); knot != knotVector.end(); ++knot)
+  for (std::vector<double>::iterator knot = knotVector.begin(); knot != knotVector.end(); ++knot)
   {
     *knot -= firstKnot;
     *knot /= lastKnot;
@@ -2526,7 +2526,7 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
       styleProps.insert("librevenge:end-opacity", 1, librevenge::RVNG_PERCENT);
     styleProps.insert("draw:border", 0, librevenge::RVNG_PERCENT);
 
-    switch(style.pattern)
+    switch (style.pattern)
     {
     case 25:
       styleProps.insert("draw:angle", 270);
@@ -2591,7 +2591,7 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
       styleProps.insert("librevenge:end-opacity", 1, librevenge::RVNG_PERCENT);
     styleProps.insert("draw:border", 0, librevenge::RVNG_PERCENT);
 
-    switch(style.pattern)
+    switch (style.pattern)
     {
     case 36:
       styleProps.insert("svg:cx", 0, librevenge::RVNG_PERCENT);
@@ -2778,7 +2778,7 @@ void libvisio::VSDContentCollector::endPages()
   m_pages.draw(m_painter);
 }
 
-bool libvisio::VSDContentCollector::parseFormatId( const char *formatString, unsigned short &result )
+bool libvisio::VSDContentCollector::parseFormatId(const char *formatString, unsigned short &result)
 {
   using namespace ::boost::spirit::classic;
 
@@ -2801,7 +2801,7 @@ bool libvisio::VSDContentCollector::parseFormatId( const char *formatString, uns
               )
             )>> end_p,
             // End grammar
-            space_p).full )
+            space_p).full)
   {
     return true;
   }

@@ -989,7 +989,7 @@ void libvisio::VSDParser::readXFormData(librevenge::RVNGInputStream *input)
 void libvisio::VSDParser::readTxtXForm(librevenge::RVNGInputStream *input)
 {
   if (m_shape.m_txtxform)
-    delete (m_shape.m_txtxform);
+    delete(m_shape.m_txtxform);
   m_shape.m_txtxform = new XForm();
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shape.m_txtxform->pinX = readDouble(input);

@@ -40,7 +40,7 @@ namespace
 int libvisio::VSDXMLTokenMap::getTokenId(const xmlChar *name)
 {
   const xmltoken *token = Perfect_Hash::in_word_set((const char *)name, xmlStrlen(name));
-  if(token)
+  if (token)
     return token->tokenId;
   else
     return XML_TOKEN_INVALID;
