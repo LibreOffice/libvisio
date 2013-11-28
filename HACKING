@@ -1,0 +1,8 @@
+= Coding style =
+
+This project uses mostly the same file naming and coding style like
+libwpd and the rest of Fridrich's libraries. Please run
+
+    astyle -A1 -HU -k3 -y -n -s2 -r \*.cpp \*.h
+
+before committing.
