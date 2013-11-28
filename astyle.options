@@ -1,0 +1,11 @@
+# formatting options
+style=allman
+indent=spaces=2
+align-pointer=name
+break-closing-brackets
+pad-header
+unpad-paren
+
+# processing options
+recursive
+suffix=none
