@@ -79,7 +79,6 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  (void)printIndentLevel;
   librevenge::RVNGRawDrawingGenerator painter(printIndentLevel);
   if (!libvisio::VisioDocument::parse(&input, &painter))
   {
