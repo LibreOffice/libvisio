@@ -40,15 +40,10 @@ static void separateTabsAndInsertText(librevenge::RVNGDrawingInterface *iface, c
 {
   if (!iface || text.empty())
     return;
-  bool isLineBreakDeferred(false);
   librevenge::RVNGString tmpText;
   librevenge::RVNGString::Iter i(text);
   for (i.rewind(); i.next();)
   {
-    if (isLineBreakDeferred && iface)
-      iface->insertLineBreak();
-    isLineBreakDeferred = false;
-
     if (*(i()) == '\t')
     {
       if (!tmpText.empty())
@@ -70,7 +65,8 @@ static void separateTabsAndInsertText(librevenge::RVNGDrawingInterface *iface, c
         tmpText.clear();
       }
 
-      isLineBreakDeferred = true;
+      if (iface)
+        iface->insertLineBreak();
     }
     else
     {
