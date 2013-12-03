@@ -79,8 +79,13 @@ static void separateTabsAndInsertText(librevenge::RVNGDrawingInterface *iface, c
 
 static void separateSpacesAndInsertText(librevenge::RVNGDrawingInterface *iface, const librevenge::RVNGString &text)
 {
-  if (!iface || text.empty())
+  if (!iface)
     return;
+  if (text.empty())
+  {
+    iface->insertText(text);
+    return;
+  }
   librevenge::RVNGString tmpText;
   int numConsecutiveSpaces = 0;
   librevenge::RVNGString::Iter i(text);
