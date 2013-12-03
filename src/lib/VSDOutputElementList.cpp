@@ -33,6 +33,89 @@
 namespace libvisio
 {
 
+namespace
+{
+
+static void separateTabsAndInsertText(librevenge::RVNGDrawingInterface *iface, const librevenge::RVNGString &text)
+{
+  if (!iface || text.empty())
+    return;
+  bool isLineBreakDeferred(false);
+  librevenge::RVNGString tmpText;
+  librevenge::RVNGString::Iter i(text);
+  for (i.rewind(); i.next();)
+  {
+    if (isLineBreakDeferred && iface)
+      iface->insertLineBreak();
+    isLineBreakDeferred = false;
+
+    if (*(i()) == '\t')
+    {
+      if (!tmpText.empty())
+      {
+        if (iface)
+          iface->insertText(tmpText);
+        tmpText.clear();
+      }
+
+      if (iface)
+        iface->insertTab();
+    }
+    else if (*(i()) == '\n')
+    {
+      if (!tmpText.empty())
+      {
+        if (iface)
+          iface->insertText(tmpText);
+        tmpText.clear();
+      }
+
+      isLineBreakDeferred = true;
+    }
+    else
+    {
+      tmpText.append(i());
+    }
+  }
+  if (iface && !tmpText.empty())
+    iface->insertText(tmpText);
+}
+
+static void separateSpacesAndInsertText(librevenge::RVNGDrawingInterface *iface, const librevenge::RVNGString &text)
+{
+  if (!iface || text.empty())
+    return;
+  librevenge::RVNGString tmpText;
+  int numConsecutiveSpaces = 0;
+  librevenge::RVNGString::Iter i(text);
+  for (i.rewind(); i.next();)
+  {
+    if (*(i()) == ' ')
+      numConsecutiveSpaces++;
+    else
+      numConsecutiveSpaces = 0;
+
+    if (numConsecutiveSpaces > 1)
+    {
+      if (!tmpText.empty())
+      {
+        separateTabsAndInsertText(iface, tmpText);
+        tmpText.clear();
+      }
+
+      if (iface)
+        iface->insertSpace();
+    }
+    else
+    {
+      tmpText.append(i());
+    }
+  }
+  separateTabsAndInsertText(iface, tmpText);
+}
+
+} // anonymous namespace
+
 class VSDOutputElement
 {
 public:
@@ -300,7 +383,7 @@ libvisio::VSDInsertTextOutputElement::VSDInsertTextOutputElement(const libreveng
 void libvisio::VSDInsertTextOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->insertText(m_text);
+    separateSpacesAndInsertText(painter, m_text);
 }
 
 libvisio::VSDCloseSpanOutputElement::VSDCloseSpanOutputElement() {}
