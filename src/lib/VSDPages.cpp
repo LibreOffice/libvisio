@@ -93,6 +93,10 @@ void libvisio::VSDPages::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (!painter)
     return;
+  if (m_pages.empty())
+    return;
+
+  painter->startDocument(librevenge::RVNGPropertyList());
 
   for (unsigned i = 0; i < m_pages.size(); ++i)
   {
@@ -118,6 +122,8 @@ void libvisio::VSDPages::draw(librevenge::RVNGDrawingInterface *painter)
     _drawWithBackground(painter, iter->second);
     painter->endPage();
   }
+
+  painter->endDocument();
 }
 
 void libvisio::VSDPages::_drawWithBackground(librevenge::RVNGDrawingInterface *painter, const libvisio::VSDPage &page)
