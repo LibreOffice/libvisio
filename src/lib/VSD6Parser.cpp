@@ -161,8 +161,8 @@ void libvisio::VSD6Parser::readCharIX(librevenge::RVNGInputStream *input)
     }
 
     m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize,
-                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript));
+                                                      bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                                      allcaps, initcaps, smallcaps, superscript, subscript));
     m_shape.m_charList.addCharIX(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                  allcaps, initcaps, smallcaps, superscript, subscript);
@@ -197,7 +197,7 @@ void libvisio::VSD6Parser::readParaIX(librevenge::RVNGInputStream *input)
     }
 
     m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
-                                 spLine, spBefore, spAfter, align, (unsigned)0));
+                                                      spLine, spBefore, spAfter, align, (unsigned)0));
     m_shape.m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, (unsigned)0);
   }
@@ -267,7 +267,7 @@ void libvisio::VSD6Parser::readFillAndShadow(librevenge::RVNGInputStream *input)
       shadowOffsetY = m_shadowOffsetY;
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
-                                 fillBGTransparency, shadowFG, shadowPattern, shadowOffsetX, shadowOffsetY));
+                                                      fillBGTransparency, shadowFG, shadowPattern, shadowOffsetX, shadowOffsetY));
   }
 }
 

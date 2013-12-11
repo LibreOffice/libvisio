@@ -1381,8 +1381,8 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   {
     if (!ix || m_shape.m_charList.empty()) // character style 0 is the default character style
       m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold,
-                                   italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                   allcaps, initcaps, smallcaps, superscript, subscript));
+                                                        italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                                        allcaps, initcaps, smallcaps, superscript, subscript));
 
     m_shape.m_charList.addCharIX(ix, level, charCount, font, fontColour, fontSize, bold, italic,
                                  underline, doubleunderline, strikeout, doublestrikeout, allcaps,
@@ -1469,7 +1469,7 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
   {
     if (!ix || m_shape.m_paraList.empty()) // paragraph style 0 is the default paragraph style
       m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
-                                   spLine, spBefore, spAfter, align, flags));
+                                                        spLine, spBefore, spAfter, align, flags));
 
     m_shape.m_paraList.addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, flags);

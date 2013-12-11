@@ -837,7 +837,7 @@ void libvisio::VSDParser::readTextBlock(librevenge::RVNGInputStream *input)
                                        verticalAlign, isBgFilled, c, defaultTabStop, textDirection);
   else
     m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-                                      verticalAlign, isBgFilled, c, defaultTabStop, textDirection));
+                                                                verticalAlign, isBgFilled, c, defaultTabStop, textDirection));
 }
 
 void libvisio::VSDParser::readGeomList(librevenge::RVNGInputStream *input)
@@ -1743,8 +1743,8 @@ void libvisio::VSDParser::readCharIX(librevenge::RVNGInputStream *input)
     }
 
     m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize,
-                                 bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript));
+                                                      bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                                      allcaps, initcaps, smallcaps, superscript, subscript));
     m_shape.m_charList.addCharIX(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
                                  allcaps, initcaps, smallcaps, superscript, subscript);
@@ -1781,7 +1781,7 @@ void libvisio::VSDParser::readParaIX(librevenge::RVNGInputStream *input)
     }
 
     m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
-                                 spLine, spBefore, spAfter, align, flags));
+                                                      spLine, spBefore, spAfter, align, flags));
     m_shape.m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, flags);
   }
@@ -1851,7 +1851,7 @@ void libvisio::VSDParser::readFillAndShadow(librevenge::RVNGInputStream *input)
       VSD_DEBUG_MSG(("Found stencil fill\n"));
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
-                                 fillBGTransparency, shadowFG, shadowPattern, shadowOffsetX, shadowOffsetY));
+                                                      fillBGTransparency, shadowFG, shadowPattern, shadowOffsetX, shadowOffsetY));
   }
 }
 

@@ -872,9 +872,9 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   {
     m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap));
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowColourFG,
-                                 shadowPattern, shadowOffsetX, shadowOffsetY));
+                                                      shadowPattern, shadowOffsetX, shadowOffsetY));
     m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, !!bgClrId, bgColour,
-                                      defaultTabStop, textDirection));
+                                                                defaultTabStop, textDirection));
   }
 }
 
