@@ -34,6 +34,7 @@
 #include <istream>
 #include <vector>
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
@@ -140,65 +141,38 @@ libvisio::Colour libvisio::xmlStringToColour(const xmlChar *s)
 
 long libvisio::xmlStringToLong(const xmlChar *s)
 {
+  using boost::lexical_cast;
+  using boost::bad_lexical_cast;
   if (xmlStrEqual(s, BAD_CAST("Themed")))
     return 0;
 
-  char *end;
-  errno = 0;
-  long value = strtol((const char *)s, &end, 0);
-
-  if ((ERANGE == errno && (LONG_MAX == value || LONG_MIN == value)) || (errno && !value))
+  try
+  {
+    return boost::lexical_cast<long, const char *>((const char *)s);
+  }
+  catch (const boost::bad_lexical_cast &)
   {
     VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
     throw XmlParserException();
   }
-  else if (*end)
-  {
-    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
-    throw XmlParserException();
-  }
-
-  return value;
+  return 0;
 }
 
 double libvisio::xmlStringToDouble(const xmlChar *s)
 {
   if (xmlStrEqual(s, BAD_CAST("Themed")))
-    return 0;
+    return 0.0;
 
-  char *end;
-  std::string doubleStr((const char *)s);
-
-#ifndef __ANDROID__
-  std::string decimalPoint(localeconv()->decimal_point);
-#else
-  std::string decimalPoint(".");
-#endif
-  if (!decimalPoint.empty() && decimalPoint != ".")
+  try
   {
-    if (!doubleStr.empty())
-    {
-      std::string::size_type pos;
-      while ((pos = doubleStr.find(".")) != std::string::npos)
-        doubleStr.replace(pos,1,decimalPoint);
-    }
+    return boost::lexical_cast<double, const char *>((const char *)s);
   }
-
-  errno = 0;
-  double value = strtod(doubleStr.c_str(), &end);
-
-  if ((ERANGE == errno) || (errno && !value))
+  catch (const boost::bad_lexical_cast &)
   {
     VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
     throw XmlParserException();
   }
-  else if (*end)
-  {
-    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
-    throw XmlParserException();
-  }
-
-  return value;
+  return 0.0;
 }
 
 bool libvisio::xmlStringToBool(const xmlChar *s)
