@@ -27,9 +27,10 @@
  * instead of those above.
  */
 
-#include <string.h>
-#include <errno.h>
-#include <limits.h>
+#ifndef BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
+#define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE 1
+#endif
+
 #include <sstream>
 #include <istream>
 #include <vector>
