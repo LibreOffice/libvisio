@@ -341,7 +341,7 @@ Analyzes the content of an input stream to see if it can be parsed
 \return A value that indicates whether the content from the input
 stream is a Visio Document that libvisio able to parse
 */
-bool libvisio::VisioDocument::isSupported(librevenge::RVNGInputStream *input)
+VSDAPI bool libvisio::VisioDocument::isSupported(librevenge::RVNGInputStream *input)
 {
   if (isBinaryVisioDocument(input))
     return true;
@@ -360,7 +360,7 @@ librevenge::RVNGDrawingInterface class implementation when needed. This is often
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parse(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
+VSDAPI bool libvisio::VisioDocument::parse(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
 {
   if (isBinaryVisioDocument(input))
   {
@@ -391,7 +391,7 @@ when needed.
 \param painter A WPGPainterInterface implementation
 \return A value that indicates whether the parsing was successful
 */
-bool libvisio::VisioDocument::parseStencils(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
+VSDAPI bool libvisio::VisioDocument::parseStencils(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
 {
   if (isBinaryVisioDocument(input))
   {

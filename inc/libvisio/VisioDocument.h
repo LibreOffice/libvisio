@@ -33,6 +33,16 @@
 
 #include <librevenge/librevenge.h>
 
+#ifdef DLL_EXPORT
+#ifdef LIBVISIO_BUILD
+#define VSDAPI __declspec(dllexport)
+#else
+#define VSDAPI __declspec(dllimport)
+#endif
+#else
+#define VSDAPI
+#endif
+
 namespace libvisio
 {
 
@@ -40,11 +50,11 @@ class VisioDocument
 {
 public:
 
-  static bool isSupported(librevenge::RVNGInputStream *input);
+  static VSDAPI bool isSupported(librevenge::RVNGInputStream *input);
 
-  static bool parse(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
+  static VSDAPI bool parse(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
 
-  static bool parseStencils(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
+  static VSDAPI bool parseStencils(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
 };
 
 } // namespace libvisio

@@ -11,6 +11,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_include_HEADERS = \
 	$(top_srcdir)/inc/libvisio/VisioDocument.h
 
 AM_CXXFLAGS = \
+	-DLIBVISIO_BUILD=1 \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/lib \
 	-I$(top_builddir)/src/lib \
