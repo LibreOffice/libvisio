@@ -8,8 +8,6 @@ SUBDIRS = build inc src docs
 
 EXTRA_DIST = \
 	AUTHORS \
-	COPYING.GPL \
-	COPYING.LGPL \
 	COPYING.MPL \
 	NEWS \
 	README \
