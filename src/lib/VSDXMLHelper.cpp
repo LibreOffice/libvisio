@@ -274,7 +274,7 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
   }
 
   target.clear();
-  for(unsigned j = 0; j < normalizedSegments.size(); ++j)
+  for (unsigned j = 0; j < normalizedSegments.size(); ++j)
   {
     if (!target.empty())
       target.append("/");

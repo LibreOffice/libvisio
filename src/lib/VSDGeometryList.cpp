@@ -615,7 +615,7 @@ libvisio::VSDGeometryList::~VSDGeometryList()
 }
 
 void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, const boost::optional<bool> &noFill,
-    const boost::optional<bool> &noLine, const boost::optional<bool> &noShow)
+                                            const boost::optional<bool> &noLine, const boost::optional<bool> &noShow)
 {
   VSDGeometry *tmpElement = dynamic_cast<VSDGeometry *>(m_elements[id]);
   if (!tmpElement)
@@ -638,7 +638,7 @@ void libvisio::VSDGeometryList::addEmpty(unsigned id, unsigned level)
 }
 
 void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x,
-    const boost::optional<double> &y)
+                                          const boost::optional<double> &y)
 {
   VSDMoveTo *tmpElement = dynamic_cast<VSDMoveTo *>(m_elements[id]);
   if (!tmpElement)
@@ -669,7 +669,7 @@ void libvisio::VSDGeometryList::addLineTo(unsigned id, unsigned level, const boo
 }
 
 void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, const boost::optional<double> &x2,
-    const boost::optional<double> &y2, const boost::optional<double> &bow)
+                                         const boost::optional<double> &y2, const boost::optional<double> &bow)
 {
   VSDArcTo *tmpElement = dynamic_cast<VSDArcTo *>(m_elements[id]);
   if (!tmpElement)
@@ -686,7 +686,7 @@ void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, const boos
 }
 
 void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
-    const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector, const std::vector<double> &weights)
+                                           const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector, const std::vector<double> &weights)
 {
   clearElement(id);
   m_elements[id] = new VSDNURBSTo1(id, level, x2, y2, xType, yType, degree, controlPoints, knotVector, weights);
@@ -699,8 +699,8 @@ void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x
 }
 
 void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2,
-    const boost::optional<double> &knot, const boost::optional<double> &knotPrev, const boost::optional<double> &weight,
-    const boost::optional<double> &weightPrev, const boost::optional<NURBSData> &data)
+                                           const boost::optional<double> &knot, const boost::optional<double> &knotPrev, const boost::optional<double> &weight,
+                                           const boost::optional<double> &weightPrev, const boost::optional<NURBSData> &data)
 {
   VSDNURBSTo3 *tmpElement = dynamic_cast<VSDNURBSTo3 *>(m_elements[id]);
   if (!tmpElement)
@@ -721,7 +721,7 @@ void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const bo
 }
 
 void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
-    const std::vector<std::pair<double, double> > &points)
+                                              const std::vector<std::pair<double, double> > &points)
 {
   clearElement(id);
   m_elements[id] = new VSDPolylineTo1(id, level, x, y, xType, yType, points);
@@ -750,8 +750,8 @@ void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, boos
 }
 
 void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, const boost::optional<double> &cx,
-    const boost::optional<double> &cy,const boost::optional<double> &xleft, const boost::optional<double> &yleft,
-    const boost::optional<double> &xtop, const boost::optional<double> &ytop)
+                                           const boost::optional<double> &cy,const boost::optional<double> &xleft, const boost::optional<double> &yleft,
+                                           const boost::optional<double> &xtop, const boost::optional<double> &ytop)
 {
   VSDEllipse *tmpElement = dynamic_cast<VSDEllipse *>(m_elements[id]);
   if (!tmpElement)
@@ -771,8 +771,8 @@ void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, const bo
 }
 
 void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3,
-    const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
-    const boost::optional<double> &angle, const boost::optional<double> &ecc)
+                                                   const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
+                                                   const boost::optional<double> &angle, const boost::optional<double> &ecc)
 {
   VSDEllipticalArcTo *tmpElement = dynamic_cast<VSDEllipticalArcTo *>(m_elements[id]);
   if (!tmpElement)
@@ -792,8 +792,8 @@ void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, 
 }
 
 void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, const boost::optional<double> &x,
-    const boost::optional<double> &y, const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
-    const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree)
+                                               const boost::optional<double> &y, const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
+                                               const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree)
 {
   VSDSplineStart *tmpElement = dynamic_cast<VSDSplineStart *>(m_elements[id]);
   if (!tmpElement)
@@ -813,7 +813,7 @@ void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, cons
 }
 
 void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x,
-    const boost::optional<double> &y, const boost::optional<double> &knot)
+                                              const boost::optional<double> &y, const boost::optional<double> &knot)
 {
   VSDSplineKnot *tmpElement = dynamic_cast<VSDSplineKnot *>(m_elements[id]);
   if (!tmpElement)
@@ -830,7 +830,7 @@ void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, const
 }
 
 void libvisio::VSDGeometryList::addInfiniteLine(unsigned id, unsigned level, const boost::optional<double> &x1,
-    const boost::optional<double> &y1, const boost::optional<double> &x2, const boost::optional<double> &y2)
+                                                const boost::optional<double> &y1, const boost::optional<double> &x2, const boost::optional<double> &y2)
 {
   VSDInfiniteLine *tmpElement = dynamic_cast<VSDInfiniteLine *>(m_elements[id]);
   if (!tmpElement)
@@ -848,8 +848,8 @@ void libvisio::VSDGeometryList::addInfiniteLine(unsigned id, unsigned level, con
 }
 
 void libvisio::VSDGeometryList::addRelCubBezTo(unsigned id, unsigned level, const boost::optional<double> &x,
-    const boost::optional<double> &y, const boost::optional<double> &a, const boost::optional<double> &b,
-    const boost::optional<double> &c, const boost::optional<double> &d)
+                                               const boost::optional<double> &y, const boost::optional<double> &a, const boost::optional<double> &b,
+                                               const boost::optional<double> &c, const boost::optional<double> &d)
 {
   VSDRelCubBezTo *tmpElement = dynamic_cast<VSDRelCubBezTo *>(m_elements[id]);
   if (!tmpElement)
@@ -869,8 +869,8 @@ void libvisio::VSDGeometryList::addRelCubBezTo(unsigned id, unsigned level, cons
 }
 
 void libvisio::VSDGeometryList::addRelEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3,
-    const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
-    const boost::optional<double> &angle, const boost::optional<double> &ecc)
+                                                      const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
+                                                      const boost::optional<double> &angle, const boost::optional<double> &ecc)
 {
   VSDRelEllipticalArcTo *tmpElement = dynamic_cast<VSDRelEllipticalArcTo *>(m_elements[id]);
   if (!tmpElement)

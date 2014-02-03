@@ -131,7 +131,7 @@ WPXString getPropString(const WPXPropertyList &propList)
     propString.append(i.key());
     propString.append(": ");
     propString.append(i()->getStr().cstr());
-    for (; i.next(); )
+    for (; i.next();)
     {
       propString.append(", ");
       propString.append(i.key());

@@ -1110,7 +1110,7 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
   if (id)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
-    unsigned backgroundPageID =  (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
+    unsigned backgroundPageID = (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
     bool isBackgroundPage = background ? xmlStringToBool(background) : false;
     m_isPageStarted = true;
     m_collector->startPage(nId);
@@ -1382,8 +1382,8 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   {
     if (!ix || m_shape.m_charList.empty()) // character style 0 is the default character style
       m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold,
-                                   italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                   allcaps, initcaps, smallcaps, superscript, subscript));
+                                                        italic, underline, doubleunderline, strikeout, doublestrikeout,
+                                                        allcaps, initcaps, smallcaps, superscript, subscript));
 
     m_shape.m_charList.addCharIX(ix, level, charCount, font, fontColour, fontSize, bold, italic,
                                  underline, doubleunderline, strikeout, doublestrikeout, allcaps,
@@ -1470,7 +1470,7 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
   {
     if (!ix || m_shape.m_paraList.empty()) // paragraph style 0 is the default paragraph style
       m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
-                                   spLine, spBefore, spAfter, align, flags));
+                                                        spLine, spBefore, spAfter, align, flags));
 
     m_shape.m_paraList.addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, flags);
@@ -1486,7 +1486,7 @@ void libvisio::VSDXMLParserBase::readStyleSheet(xmlTextReaderPtr reader)
   if (id)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
-    unsigned nLineStyle =  (unsigned)(lineStyle ? xmlStringToLong(lineStyle) : -1);
+    unsigned nLineStyle = (unsigned)(lineStyle ? xmlStringToLong(lineStyle) : -1);
     unsigned nFillStyle = (unsigned)(fillStyle ? xmlStringToLong(fillStyle) : -1);
     unsigned nTextStyle = (unsigned)(textStyle ? xmlStringToLong(textStyle) : -1);
     m_collector->collectStyleSheet(nId, (unsigned)getElementDepth(reader), nLineStyle, nFillStyle, nTextStyle);
@@ -1928,7 +1928,7 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
                          real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]
                         >> (',' | eps_p) >>
                         real_p[push_back_a(tmpData.knots)] >> (',' | eps_p) >>
-                        real_p[push_back_a(tmpData.weights)]), ',' | eps_p ))
+                        real_p[push_back_a(tmpData.weights)]), ',' | eps_p))
                  ) >> ')' >> end_p,
                  //  End grammar
                  space_p).full;
@@ -1936,7 +1936,7 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
     xmlFree(formula);
   }
 
-  if( !bRes )
+  if (!bRes)
     return -1;
   data = tmpData;
   return 1;
@@ -1966,7 +1966,7 @@ int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &
                    (list_p(
                       (
                         (real_p[assign_a(point.first)] >> (',' | eps_p) >>
-                         real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]), ',' | eps_p ))
+                         real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]), ',' | eps_p))
                  ) >> ')' >> end_p,
                  //  End grammar
                  space_p).full;
@@ -1974,7 +1974,7 @@ int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &
     xmlFree(formula);
   }
 
-  if( !bRes )
+  if (!bRes)
     return -1;
   data = tmpData;
   return 1;

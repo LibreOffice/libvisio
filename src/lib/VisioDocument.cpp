@@ -168,7 +168,7 @@ static bool parseBinaryVisioDocument(WPXInputStream *input, libwpg::WPGPaintInte
   try
   {
     unsigned char version = libvisio::readU8(docStream);
-    switch(version)
+    switch (version)
     {
     case 1:
     case 2:

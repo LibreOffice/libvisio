@@ -116,9 +116,9 @@ libvisio::VSDParagraphList::~VSDParagraphList()
 }
 
 void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
-    const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
-    const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
-    const boost::optional<unsigned> &flags)
+                                           const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
+                                           const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
+                                           const boost::optional<unsigned> &flags)
 {
   VSDParaIX *tmpElement = dynamic_cast<VSDParaIX *>(m_elements[id]);
   if (!tmpElement)

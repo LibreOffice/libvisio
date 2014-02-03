@@ -217,7 +217,7 @@ private:
   void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters, TextFormat format);
   void appendCharacters(WPXString &text, const std::vector<unsigned char> &characters);
   void _convertDataToString(WPXString &result, const WPXBinaryData &data, TextFormat format);
-  bool parseFormatId( const char *formatString, unsigned short &result );
+  bool parseFormatId(const char *formatString, unsigned short &result);
   void _appendField(WPXString &text);
 
   // NURBS processing functions
