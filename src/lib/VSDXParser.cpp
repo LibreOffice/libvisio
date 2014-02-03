@@ -852,6 +852,37 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readCharacter(reader);
       break;
+    case XML_QUICKSTYLELINECOLOR:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long tmpValue;
+        ret = readLongData(tmpValue, reader);
+        if (!strokeColour)
+          strokeColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
+      }
+      break;
+    case XML_QUICKSTYLEFILLCOLOR:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long tmpValue;
+        ret = readLongData(tmpValue, reader);
+        if (!fillColourFG)
+          fillColourFG = m_currentTheme.getThemeColour((unsigned)tmpValue);
+        if (!fillColourBG)
+          fillColourBG = m_currentTheme.getThemeColour((unsigned)tmpValue);
+      }
+      break;
+    case XML_QUICKSTYLESHADOWCOLOR:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long tmpValue;
+        ret = readLongData(tmpValue, reader);
+        if (!shadowColourFG)
+          shadowColourFG = m_currentTheme.getThemeColour((unsigned)tmpValue);
+        if (!shadowColourBG)
+          shadowColourBG = m_currentTheme.getThemeColour((unsigned)tmpValue);
+      }
+      break;
     default:
       break;
     }
@@ -1169,6 +1200,35 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
     case XML_HIDETEXT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readBoolData(m_shape.m_misc.m_hideText, reader);
+      break;
+    case XML_QUICKSTYLELINECOLOR:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long tmpValue;
+        ret = readLongData(tmpValue, reader);
+        if (!m_shape.m_lineStyle.colour)
+          m_shape.m_lineStyle.colour = m_currentTheme.getThemeColour((unsigned)tmpValue);
+      }
+      break;
+    case XML_QUICKSTYLEFILLCOLOR:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long tmpValue;
+        ret = readLongData(tmpValue, reader);
+        if (!m_shape.m_fillStyle.fgColour)
+          m_shape.m_fillStyle.fgColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
+        if (!m_shape.m_fillStyle.bgColour)
+          m_shape.m_fillStyle.bgColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
+      }
+      break;
+    case XML_QUICKSTYLESHADOWCOLOR:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        long tmpValue;
+        ret = readLongData(tmpValue, reader);
+        if (!m_shape.m_fillStyle.shadowFgColour)
+          m_shape.m_fillStyle.shadowFgColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
+      }
       break;
     default:
       if (XML_SECTION == tokenClass && XML_READER_TYPE_ELEMENT == tokenType)
