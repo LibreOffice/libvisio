@@ -132,6 +132,16 @@ PinY
 PolylineTo
 Pos
 pp
+QuickStyleEffectsMatrix
+QuickStyleFillColor
+QuickStyleFillMatrix
+QuickStyleFontMatrix
+QuickStyleLineColor
+QuickStyleLineMatrix
+QuickStyleShadowColor
+QuickStyleType
+QuickStyleVariation
+QuickStyleShadowColor
 Rel
 RelCubBezTo
 RelEllipticalArcTo

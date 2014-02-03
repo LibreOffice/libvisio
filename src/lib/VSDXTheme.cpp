@@ -150,7 +150,7 @@ void libvisio::VSDXTheme::readClrScheme(xmlTextReaderPtr reader)
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
     {
-    case XML_A_SRGBCLR:
+    case XML_A_DK1:
       readThemeColour(reader, tokenId, m_clrScheme.m_dk1);
       break;
     case XML_A_DK2:
@@ -248,7 +248,7 @@ void libvisio::VSDXTheme::readVariationClrSchemeLst(xmlTextReaderPtr reader)
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
     {
-    case XML_VT_VARIATIONSTYLESCHEME:
+    case XML_VT_VARIATIONCLRSCHEME:
     {
       VSDXVariationClrScheme varClrSch;
       readVariationClrScheme(reader, varClrSch);
@@ -259,7 +259,7 @@ void libvisio::VSDXTheme::readVariationClrSchemeLst(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_VT_VARIATIONSTYLESCHEMELST != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_VT_VARIATIONCLRSCHEMELST != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VSDXTheme::readVariationClrScheme(xmlTextReaderPtr reader, VSDXVariationClrScheme &varClrSch)
@@ -303,7 +303,7 @@ void libvisio::VSDXTheme::readVariationClrScheme(xmlTextReaderPtr reader, VSDXVa
       break;
     }
   }
-  while ((XML_VT_VARIATIONSTYLESCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_VT_VARIATIONCLRSCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 boost::optional<libvisio::Colour> libvisio::VSDXTheme::getThemeColour(unsigned value, unsigned variationIndex) const
