@@ -55,6 +55,7 @@ libvisio::VSDXClrScheme::VSDXClrScheme()
   , m_accent6()
   , m_hlink()
   , m_folHlink()
+  , m_bkgnd()
   , m_variationClrSchemeLst()
 {
 }
@@ -205,6 +206,9 @@ void libvisio::VSDXTheme::readClrScheme(xmlTextReaderPtr reader)
     case XML_A_FOLHLINK:
       readThemeColour(reader, tokenId, m_clrScheme.m_folHlink);
       break;
+    case XML_VT_BKGND:
+      readThemeColour(reader, tokenId, m_clrScheme.m_bkgnd);
+      break;
     case XML_VT_VARIATIONCLRSCHEMELST:
       readVariationClrSchemeLst(reader);
       break;
@@ -320,6 +324,61 @@ void libvisio::VSDXTheme::readVariationClrScheme(xmlTextReaderPtr reader, VSDXVa
     }
   }
   while ((XML_VT_VARIATIONSTYLESCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+boost::optional<libvisio::Colour> libvisio::VSDXTheme::getThemeColour(unsigned value, unsigned variationIndex) const
+{
+  if (value < 100)
+  {
+    switch (value)
+    {
+    case 0:
+      return m_clrScheme.m_dk1;
+    case 1:
+      return m_clrScheme.m_lt1;
+    case 2:
+      return m_clrScheme.m_accent1;
+    case 3:
+      return m_clrScheme.m_accent2;
+    case 4:
+      return m_clrScheme.m_accent3;
+    case 5:
+      return m_clrScheme.m_accent4;
+    case 6:
+      return m_clrScheme.m_accent5;
+    case 7:
+      return m_clrScheme.m_accent6;
+    case 8:
+      return m_clrScheme.m_bkgnd;
+    default:
+      break;
+    }
+  }
+  else if (!m_clrScheme.m_variationClrSchemeLst.empty())
+  {
+    if (variationIndex >= m_clrScheme.m_variationClrSchemeLst.size())
+      variationIndex = 0;
+    switch (value)
+    {
+    case 100:
+      return m_clrScheme.m_variationClrSchemeLst[variationIndex].m_varColor1;
+    case 101:
+      return m_clrScheme.m_variationClrSchemeLst[variationIndex].m_varColor2;
+    case 102:
+      return m_clrScheme.m_variationClrSchemeLst[variationIndex].m_varColor3;
+    case 103:
+      return m_clrScheme.m_variationClrSchemeLst[variationIndex].m_varColor4;
+    case 104:
+      return m_clrScheme.m_variationClrSchemeLst[variationIndex].m_varColor5;
+    case 105:
+      return m_clrScheme.m_variationClrSchemeLst[variationIndex].m_varColor6;
+    case 106:
+      return m_clrScheme.m_variationClrSchemeLst[variationIndex].m_varColor7;
+    default:
+      break;
+    }
+  }
+  return boost::optional<libvisio::Colour>();
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

@@ -67,6 +67,7 @@ struct VSDXClrScheme
   Colour m_accent6;
   Colour m_hlink;
   Colour m_folHlink;
+  Colour m_bkgnd;
   std::vector<VSDXVariationClrScheme> m_variationClrSchemeLst;
 
   VSDXClrScheme();
@@ -78,6 +79,7 @@ public:
   VSDXTheme();
   ~VSDXTheme();
   bool parse(WPXInputStream *input);
+  boost::optional<Colour> getThemeColour(unsigned value, unsigned variationIndex = 0) const;
 
 private:
   VSDXTheme(const VSDXTheme &);
