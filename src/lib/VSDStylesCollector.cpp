@@ -75,6 +75,12 @@ void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned level, const bo
   _handleLevelChange(level);
 }
 
+void libvisio::VSDStylesCollector::collectThemeReference(unsigned level, const boost::optional<long> & /* lineColour */, const boost::optional<long> & /* fillColour */,
+                                                         const boost::optional<long> & /* shadowColour */, const boost::optional<long> & /* fontColour */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDStylesCollector::collectGeometry(unsigned /* id */, unsigned level, bool /* noFill */, bool /* noLine */, bool /* noShow */)
 {
   _handleLevelChange(level);
@@ -343,17 +349,26 @@ void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /* id */, unsigne
 }
 
 void libvisio::VSDStylesCollector::collectParaIXStyle(unsigned /* id */, unsigned level, unsigned /* charCount */, const boost::optional<double> & /* indFirst */,
-                                                      const boost::optional<double> & /* indLeft */, const boost::optional<double> & /* indRight */, const boost::optional<double> & /* spLine */, const boost::optional<double> & /* spBefore */,
-                                                      const boost::optional<double> & /* spAfter */, const boost::optional<unsigned char> & /* align */, const boost::optional<unsigned> & /* flags */)
+                                                      const boost::optional<double> & /* indLeft */, const boost::optional<double> & /* indRight */,
+                                                      const boost::optional<double> & /* spLine */, const boost::optional<double> & /* spBefore */,
+                                                      const boost::optional<double> & /* spAfter */, const boost::optional<unsigned char> & /* align */,
+                                                      const boost::optional<unsigned> & /* flags */)
 {
   _handleLevelChange(level);
 }
 
 
 void libvisio::VSDStylesCollector::collectTextBlockStyle(unsigned level, const boost::optional<double> & /* leftMargin */, const boost::optional<double> & /* rightMargin */,
-                                                         const boost::optional<double> & /* topMargin */, const boost::optional<double> & /* bottomMargin */, const boost::optional<unsigned char> & /* verticalAlign */,
-                                                         const boost::optional<bool> & /* isBgFilled */, const boost::optional<Colour> & /* bgColour */, const boost::optional<double> & /* defaultTabStop */,
+                                                         const boost::optional<double> & /* topMargin */, const boost::optional<double> & /* bottomMargin */,
+                                                         const boost::optional<unsigned char> & /* verticalAlign */, const boost::optional<bool> & /* isBgFilled */,
+                                                         const boost::optional<Colour> & /* bgColour */, const boost::optional<double> & /* defaultTabStop */,
                                                          const boost::optional<unsigned char> & /* textDirection */)
+{
+  _handleLevelChange(level);
+}
+
+void libvisio::VSDStylesCollector::collectStyleThemeReference(unsigned level, const boost::optional<long> & /* lineColour */, const boost::optional<long> & /* fillColour */,
+                                                              const boost::optional<long> & /* shadowColour */, const boost::optional<long> & /* fontColour */)
 {
   _handleLevelChange(level);
 }

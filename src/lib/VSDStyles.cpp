@@ -70,6 +70,11 @@ void libvisio::VSDStyles::addParaStyle(unsigned textStyleIndex, const VSDOptiona
   m_paraStyles[textStyleIndex] = paraStyle;
 }
 
+void libvisio::VSDStyles::addStyleThemeReference(unsigned styleIndex, const VSDOptionalThemeReference &themeRef)
+{
+  m_themeRefs[styleIndex] = themeRef;
+}
+
 void libvisio::VSDStyles::addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster)
 {
   m_lineStyleMasters[lineStyleIndex] = lineStyleMaster;
@@ -215,6 +220,14 @@ libvisio::VSDOptionalParaStyle libvisio::VSDStyles::getOptionalParaStyle(unsigne
     styleIdStack.pop();
   }
   return paraStyle;
+}
+
+libvisio::VSDOptionalThemeReference libvisio::VSDStyles::getOptionalThemeReference(unsigned styleIndex) const
+{
+  VSDOptionalThemeReference themeReference;
+  if (MINUS_ONE == styleIndex)
+    return themeReference;
+  return themeReference;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

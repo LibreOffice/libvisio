@@ -39,6 +39,8 @@ public:
                                     const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                                     const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
                                     const boost::optional<Colour> &shfgc) = 0;
+  virtual void collectThemeReference(unsigned level, const boost::optional<long> &lineColour, const boost::optional<long> &fillColour,
+                                     const boost::optional<long> &shadowColour, const boost::optional<long> &fontColour) = 0;
   virtual void collectGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow) = 0;
   virtual void collectMoveTo(unsigned id, unsigned level, double x, double y) = 0;
   virtual void collectLineTo(unsigned id, unsigned level, double x, double y) = 0;
@@ -129,6 +131,9 @@ public:
                                      const boost::optional<unsigned char> &verticalAlign, const boost::optional<bool> &isBgFilled,
                                      const boost::optional<Colour> &bgColour, const boost::optional<double> &defaultTabStop,
                                      const boost::optional<unsigned char> &textDirection) = 0;
+  virtual void collectStyleThemeReference(unsigned level, const boost::optional<long> &lineColour, const boost::optional<long> &fillColour,
+                                          const boost::optional<long> &shadowColour, const boost::optional<long> &fontColour) = 0;
+
   // Field list
   virtual void collectFieldList(unsigned id, unsigned level) = 0;
   virtual void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId) = 0;
