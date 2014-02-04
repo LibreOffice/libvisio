@@ -96,8 +96,8 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(m_documentPageShapeOrders.begin()), m_isFirstGeometry(true), m_NURBSData(), m_polylineData(),
   m_textStream(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
-  m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(),
-  m_textBlockStyle(), m_defaultCharStyle(), m_defaultParaStyle(), m_currentStyleSheet(0), m_styles(styles),
+  m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(), m_textBlockStyle(),
+  m_themeReference(), m_defaultCharStyle(), m_defaultParaStyle(), m_currentStyleSheet(0), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
   m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
@@ -1069,10 +1069,18 @@ void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const b
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
-                                                         const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency, const boost::optional<double> &fillBGTransparency,
+                                                         const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
+                                                         const boost::optional<double> &fillBGTransparency,
                                                          const boost::optional<unsigned char> &shadowPattern, const boost::optional<Colour> &shfgc)
 {
   collectFillAndShadow(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
+}
+
+void libvisio::VSDContentCollector::collectThemeReference(unsigned level, const boost::optional<long> &lineColour, const boost::optional<long> &fillColour,
+                                                          const boost::optional<long> &shadowColour, const boost::optional<long> &fontColour)
+{
+  _handleLevelChange(level);
+  m_themeReference.override(VSDOptionalThemeReference(lineColour, fillColour, shadowColour, fontColour));
 }
 
 void libvisio::VSDContentCollector::collectForeignData(unsigned level, const WPXBinaryData &binaryData)
@@ -2626,6 +2634,15 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
     styleProps.insert("draw:shadow-opacity",(double)(1 - style.shadowFgColour.a/255.), WPX_PERCENT);
   }
 }
+
+void libvisio::VSDContentCollector::collectStyleThemeReference(unsigned /* level */, const boost::optional<long> &lineColour,
+                                                               const boost::optional<long> &fillColour, const boost::optional<long> &shadowColour,
+                                                               const boost::optional<long> &fontColour)
+{
+  VSDOptionalThemeReference themeReference(lineColour, fillColour, shadowColour, fontColour);
+  m_styles.addStyleThemeReference(m_currentStyleSheet, themeReference);
+}
+
 
 void libvisio::VSDContentCollector::collectFieldList(unsigned /* id */, unsigned level)
 {
