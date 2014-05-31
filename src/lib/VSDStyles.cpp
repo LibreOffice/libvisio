@@ -13,14 +13,15 @@
 
 libvisio::VSDStyles::VSDStyles() :
   m_lineStyles(), m_fillStyles(), m_textBlockStyles(), m_charStyles(), m_paraStyles(),
-  m_lineStyleMasters(), m_fillStyleMasters(), m_textStyleMasters()
+  m_themeRefs(), m_lineStyleMasters(), m_fillStyleMasters(), m_textStyleMasters()
 {
 }
 
 libvisio::VSDStyles::VSDStyles(const libvisio::VSDStyles &styles) :
   m_lineStyles(styles.m_lineStyles), m_fillStyles(styles.m_fillStyles), m_textBlockStyles(styles.m_textBlockStyles),
-  m_charStyles(styles.m_charStyles), m_paraStyles(styles.m_paraStyles), m_lineStyleMasters(styles.m_lineStyleMasters),
-  m_fillStyleMasters(styles.m_fillStyleMasters), m_textStyleMasters(styles.m_textStyleMasters)
+  m_charStyles(styles.m_charStyles), m_paraStyles(styles.m_paraStyles), m_themeRefs(styles.m_themeRefs),
+  m_lineStyleMasters(styles.m_lineStyleMasters), m_fillStyleMasters(styles.m_fillStyleMasters),
+  m_textStyleMasters(styles.m_textStyleMasters)
 {
 }
 
@@ -37,6 +38,7 @@ libvisio::VSDStyles &libvisio::VSDStyles::operator=(const libvisio::VSDStyles &s
     m_textBlockStyles = styles.m_textBlockStyles;
     m_charStyles = styles.m_charStyles;
     m_paraStyles = styles.m_paraStyles;
+    m_themeRefs = styles.m_themeRefs;
 
     m_lineStyleMasters = styles.m_lineStyleMasters;
     m_fillStyleMasters = styles.m_fillStyleMasters;
