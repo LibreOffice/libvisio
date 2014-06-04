@@ -139,21 +139,17 @@ long libvisio::xmlStringToLong(const xmlChar *s)
   return 0;
 }
 
-double libvisio::xmlStringToDouble(const xmlChar *s)
+double libvisio::xmlStringToDouble(const xmlChar *s) try
 {
   if (xmlStrEqual(s, BAD_CAST("Themed")))
     return 0.0;
 
-  try
-  {
-    return boost::lexical_cast<double, const char *>((const char *)s);
-  }
-  catch (const boost::bad_lexical_cast &)
-  {
-    VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
-    throw XmlParserException();
-  }
-  return 0.0;
+  return boost::lexical_cast<double, const char *>((const char *)s);
+}
+catch (const boost::bad_lexical_cast &)
+{
+  VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
+  throw XmlParserException();
 }
 
 bool libvisio::xmlStringToBool(const xmlChar *s)
