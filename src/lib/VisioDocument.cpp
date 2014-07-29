@@ -322,6 +322,9 @@ stream is a Visio Document that libvisio able to parse
 */
 VSDAPI bool libvisio::VisioDocument::isSupported(librevenge::RVNGInputStream *input)
 {
+  if (!input)
+    return false;
+
   if (isBinaryVisioDocument(input))
     return true;
   if (isOpcVisioDocument(input))
@@ -341,6 +344,9 @@ librevenge::RVNGDrawingInterface class implementation when needed. This is often
 */
 VSDAPI bool libvisio::VisioDocument::parse(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
 {
+  if (!input || !painter)
+    return false;
+
   if (isBinaryVisioDocument(input))
   {
     if (parseBinaryVisioDocument(input, painter, false))
@@ -372,6 +378,9 @@ when needed.
 */
 VSDAPI bool libvisio::VisioDocument::parseStencils(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
 {
+  if (!input || !painter)
+    return false;
+
   if (isBinaryVisioDocument(input))
   {
     if (parseBinaryVisioDocument(input, painter, true))
