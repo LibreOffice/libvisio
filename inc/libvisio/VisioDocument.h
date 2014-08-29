@@ -18,8 +18,12 @@
 #else
 #define VSDAPI __declspec(dllimport)
 #endif
+#else // !DLL_EXPORT
+#ifdef LIBVISIO_VISIBILITY
+#define VSDAPI __attribute__((visibility("default")))
 #else
 #define VSDAPI
+#endif
 #endif
 
 namespace libvisio

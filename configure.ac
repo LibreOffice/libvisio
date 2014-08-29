@@ -193,6 +193,25 @@ AS_CASE([$host],
 AC_MSG_RESULT([$platform_win32])
 AM_CONDITIONAL([PLATFORM_WIN32], [test "x$platform_win32" = "xyes"])
 
+AS_IF([test $platform_win32 == yes],
+    [],
+    [
+        AC_MSG_CHECKING([for -fvisibility=hidden compiler flag])
+        saved_CXXFLAGS="$CXXFLAGS"
+        CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
+        AC_TRY_COMPILE([], [],
+            [
+                AC_MSG_RESULT([yes])
+                CXXFLAGS="$CXXFLAGS -DLIBVISIO_VISIBILITY"
+            ],
+            [
+                AC_MSG_RESULT([no])
+                CXXFLAGS="$saved_CXXFLAGS"
+            ]
+        )
+    ]
+)
+
 # ================
 # Check for cflags
 # ================
