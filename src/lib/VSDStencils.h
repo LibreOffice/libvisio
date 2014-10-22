@@ -53,6 +53,7 @@ public:
   std::map<unsigned, PolylineData> m_polylineData;
   XForm m_xform;
   XForm *m_txtxform;
+  XForm1D *m_xform1d;
   VSDMisc m_misc;
 };
 

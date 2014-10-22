@@ -52,6 +52,8 @@ a:themeElements
 a:tint
 B
 BeginArrow
+BeginX
+BeginY
 BottomMargin
 C
 Case
@@ -71,6 +73,8 @@ E
 Ellipse
 EllipticalArcTo
 EndArrow
+EndX
+EndY
 FaceName
 FaceNames
 Fill
@@ -220,4 +224,5 @@ vt:varStyle
 Width
 X
 XForm
+XForm1D
 Y

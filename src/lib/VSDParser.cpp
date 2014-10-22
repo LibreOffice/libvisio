@@ -415,6 +415,9 @@ void libvisio::VSDParser::handleChunk(librevenge::RVNGInputStream *input)
   case VSD_XFORM_DATA:
     readXFormData(input);
     break;
+  case VSD_XFORM_1D:
+    readXForm1D(input);
+    break;
   case VSD_TEXT_XFORM:
     readTxtXForm(input);
     break;
@@ -965,10 +968,25 @@ void libvisio::VSDParser::readXFormData(librevenge::RVNGInputStream *input)
   m_shape.m_xform.flipY = !!readU8(input);
 }
 
+void libvisio::VSDParser::readXForm1D(librevenge::RVNGInputStream *input)
+{
+  if (m_shape.m_xform1d)
+    delete m_shape.m_xform1d;
+  m_shape.m_xform1d = new XForm1D();
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_xform1d->beginX = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_xform1d->beginY = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_xform1d->endX = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_xform1d->endY = readDouble(input);
+}
+
 void libvisio::VSDParser::readTxtXForm(librevenge::RVNGInputStream *input)
 {
   if (m_shape.m_txtxform)
-    delete(m_shape.m_txtxform);
+    delete m_shape.m_txtxform;
   m_shape.m_txtxform = new XForm();
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shape.m_txtxform->pinX = readDouble(input);

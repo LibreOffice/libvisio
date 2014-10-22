@@ -41,6 +41,21 @@ struct XForm
 
 };
 
+struct XForm1D
+{
+  double beginX;
+  double beginY;
+  unsigned beginId;
+  double endX;
+  double endY;
+  unsigned endId;
+  XForm1D() : beginX(0.0), beginY(0.0), beginId(MINUS_ONE),
+    endX(0.0), endY(0.0), endId(MINUS_ONE) {}
+  XForm1D(const XForm1D &xform1d) : beginX(xform1d.beginX),
+    beginY(xform1d.beginY), beginId(xform1d.beginId),
+    endX(xform1d.endX), endY(xform1d.endY), endId(xform1d.endId) {}
+};
+
 // Utilities
 struct ChunkHeader
 {

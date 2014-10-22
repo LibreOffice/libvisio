@@ -258,6 +258,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readTxtXForm(reader);
     break;
+  case XML_XFORM1D:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readXForm1D(reader);
+    break;
   default:
     break;
   }
@@ -538,7 +542,7 @@ void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr reader)
     tokenId = getElementToken(reader);
     if (XML_TOKEN_INVALID == tokenId)
     {
-      VSD_DEBUG_MSG(("VDXParser::readXFormData: unknown token %s\n", xmlTextReaderConstName(reader)));
+      VSD_DEBUG_MSG(("VDXParser::readTxtXForm: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
@@ -604,6 +608,61 @@ void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr reader)
     }
   }
   while ((XML_TEXTXFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VDXParser::readXForm1D(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readXForm1D: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_BEGINX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_xform1d)
+          m_shape.m_xform1d = new XForm1D();
+        ret = readDoubleData(m_shape.m_xform1d->beginX, reader);
+      }
+      break;
+    case XML_BEGINY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_xform1d)
+          m_shape.m_xform1d = new XForm1D();
+        ret = readDoubleData(m_shape.m_xform1d->beginY, reader);
+      }
+      break;
+    case XML_ENDX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_xform1d)
+          m_shape.m_xform1d = new XForm1D();
+        ret = readDoubleData(m_shape.m_xform1d->endX, reader);
+      }
+      break;
+    case XML_ENDY:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_xform1d)
+          m_shape.m_xform1d = new XForm1D();
+        ret = readDoubleData(m_shape.m_xform1d->endY, reader);
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  while ((XML_XFORM1D != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)

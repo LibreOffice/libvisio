@@ -55,6 +55,7 @@ private:
   void readXFormData(xmlTextReaderPtr reader);
   void readMisc(xmlTextReaderPtr reader);
   void readTxtXForm(xmlTextReaderPtr reader);
+  void readXForm1D(xmlTextReaderPtr reader);
   void readPageProps(xmlTextReaderPtr reader);
   void readFonts(xmlTextReaderPtr reader);
   void readTextBlock(xmlTextReaderPtr reader);

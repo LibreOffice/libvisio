@@ -67,6 +67,7 @@ protected:
   void readInfiniteLine(librevenge::RVNGInputStream *input);
   void readShapeData(librevenge::RVNGInputStream *input);
   void readXFormData(librevenge::RVNGInputStream *input);
+  void readXForm1D(librevenge::RVNGInputStream *input);
   void readTxtXForm(librevenge::RVNGInputStream *input);
   void readShapeId(librevenge::RVNGInputStream *input);
   virtual void readShapeList(librevenge::RVNGInputStream *input);
