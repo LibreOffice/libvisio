@@ -2277,13 +2277,15 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, l
   {
     styleProps.insert("draw:marker-start-viewbox", _linePropertiesMarkerViewbox(style.startMarker));
     styleProps.insert("draw:marker-start-path", _linePropertiesMarkerPath(style.startMarker));
-    styleProps.insert("draw:marker-start-width", m_scale*_linePropertiesMarkerScale(style.startMarker)*(0.1/(style.width*style.width+1)+2.54*style.width));
+    double w =  m_scale*_linePropertiesMarkerScale(style.startMarker)*(0.1/(style.width*style.width+1)+2.54*style.width);
+    styleProps.insert("draw:marker-start-width", std::max(w, 0.05));
   }
   if (style.endMarker > 0)
   {
     styleProps.insert("draw:marker-end-viewbox", _linePropertiesMarkerViewbox(style.endMarker));
     styleProps.insert("draw:marker-end-path", _linePropertiesMarkerPath(style.endMarker));
-    styleProps.insert("draw:marker-end-width", m_scale*_linePropertiesMarkerScale(style.endMarker)*(0.1/(style.width*style.width+1)+2.54*style.width));
+    double w =  m_scale*_linePropertiesMarkerScale(style.endMarker)*(0.1/(style.width*style.width+1)+2.54*style.width);
+    styleProps.insert("draw:marker-end-width", std::max(w, 0.05));
   }
 
   int dots1 = 0;
