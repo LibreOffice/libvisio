@@ -75,6 +75,8 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXParser.h \
 	VSDXTheme.cpp \
 	VSDXTheme.h \
+	VSDXMetaData.cpp \
+	VSDXMetaData.h \
 	$(generated_files)
 	
 
@@ -83,6 +85,7 @@ VSDXMLParserBase.lo : $(generated_files)
 VSDXMLTokenMap.lo : $(generated_files)
 VSDXParser.lo : $(generated_files)
 VSDXTheme.lo : $(generated_files)
+VSDXMetaData.lo : $(generated_files)
 
 $(top_builddir)/src/lib/tokens.h : $(top_builddir)/src/lib/tokens.gperf
 

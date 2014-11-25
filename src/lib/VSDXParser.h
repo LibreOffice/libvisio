@@ -54,6 +54,7 @@ private:
   bool parsePages(librevenge::RVNGInputStream *input, const char *name);
   bool parsePage(librevenge::RVNGInputStream *input, const char *name);
   bool parseTheme(librevenge::RVNGInputStream *input, const char *name);
+  bool parseMetaData(librevenge::RVNGInputStream *input, const char *name);
   void processXmlDocument(librevenge::RVNGInputStream *input, VSDXRelationships &rels);
   void processXmlNode(xmlTextReaderPtr reader);
 

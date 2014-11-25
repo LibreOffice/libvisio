@@ -2732,6 +2732,11 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
   m_currentLevel = level;
 }
 
+void libvisio::VSDContentCollector::collectMetaData(const librevenge::RVNGPropertyList &metaData)
+{
+  m_pages.setMetaData(metaData);
+}
+
 void libvisio::VSDContentCollector::startPage(unsigned pageId)
 {
   if (m_isShapeStarted)

@@ -68,6 +68,11 @@ void libvisio::VSDPages::addBackgroundPage(const libvisio::VSDPage &page)
   m_backgroundPages[page.m_currentPageID] = page;
 }
 
+void libvisio::VSDPages::setMetaData(const librevenge::RVNGPropertyList &metaData)
+{
+  m_metaData = metaData;
+}
+
 void libvisio::VSDPages::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (!painter)
@@ -76,6 +81,7 @@ void libvisio::VSDPages::draw(librevenge::RVNGDrawingInterface *painter)
     return;
 
   painter->startDocument(librevenge::RVNGPropertyList());
+  painter->setDocumentMetaData(m_metaData);
 
   for (unsigned i = 0; i < m_pages.size(); ++i)
   {

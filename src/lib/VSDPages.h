@@ -39,10 +39,12 @@ public:
   void addPage(const VSDPage &page);
   void addBackgroundPage(const VSDPage &page);
   void draw(librevenge::RVNGDrawingInterface *painter);
+  void setMetaData(const librevenge::RVNGPropertyList &metaData);
 private:
   void _drawWithBackground(librevenge::RVNGDrawingInterface *painter, const VSDPage &page);
   std::vector<VSDPage> m_pages;
   std::map<unsigned, VSDPage> m_backgroundPages;
+  librevenge::RVNGPropertyList m_metaData;
 };
 
 

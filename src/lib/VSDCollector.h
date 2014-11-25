@@ -139,6 +139,9 @@ public:
   virtual void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId) = 0;
   virtual void collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId) = 0;
 
+  // Metadata
+  virtual void collectMetaData(const librevenge::RVNGPropertyList &metaData) = 0;
+
   // Temporary hack
   virtual void startPage(unsigned pageId) = 0;
   virtual void endPage() = 0;

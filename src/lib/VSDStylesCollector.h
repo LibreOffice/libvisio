@@ -152,6 +152,8 @@ public:
   void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId);
   void collectNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId);
 
+  virtual void collectMetaData(const librevenge::RVNGPropertyList &) { }
+
   // Temporary hack
   void startPage(unsigned pageID);
   void endPage();
