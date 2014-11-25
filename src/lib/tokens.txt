@@ -228,3 +228,5 @@ XForm1D
 Y
 cp:coreProperties
 dc:title
+dcterms:created
+dcterms:modified

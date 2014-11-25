@@ -31,6 +31,8 @@ private:
   int getElementToken(xmlTextReaderPtr reader);
   void readCoreProperties(xmlTextReaderPtr reader);
   void readTitle(xmlTextReaderPtr reader);
+  void readCreated(xmlTextReaderPtr reader);
+  void readModified(xmlTextReaderPtr reader);
 
   librevenge::RVNGPropertyList m_metaData;
 };
