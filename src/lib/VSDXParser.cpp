@@ -18,6 +18,7 @@
 #include "VSDStylesCollector.h"
 #include "VSDXMLHelper.h"
 #include "VSDXMLTokenMap.h"
+#include "VSDXMetaData.h"
 
 namespace
 {
@@ -92,6 +93,10 @@ bool libvisio::VSDXParser::parseMain()
 
     VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
     m_collector = &contentCollector;
+    const libvisio::VSDXRelationship *metaDataRel = rootRels.getRelationshipByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
+    if (metaDataRel)
+      parseMetaData(m_input, metaDataRel->getTarget().c_str());
+
     if (!parseDocument(m_input, rel->getTarget().c_str()))
       return false;
 
@@ -270,6 +275,25 @@ bool libvisio::VSDXParser::parseTheme(librevenge::RVNGInputStream *input, const 
     return false;
 
   m_currentTheme.parse(stream);
+
+  delete stream;
+  return true;
+}
+
+bool libvisio::VSDXParser::parseMetaData(librevenge::RVNGInputStream *input, const char *name)
+{
+  if (!input)
+    return false;
+  input->seek(0, librevenge::RVNG_SEEK_SET);
+  if (!input->isStructured())
+    return false;
+  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  if (!stream)
+    return false;
+
+  VSDXMetaData metaData;
+  metaData.parse(stream);
+  m_collector->collectMetaData(metaData.getMetaData());
 
   delete stream;
   return true;

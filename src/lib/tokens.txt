@@ -226,3 +226,5 @@ X
 XForm
 XForm1D
 Y
+cp:coreProperties
+dc:title

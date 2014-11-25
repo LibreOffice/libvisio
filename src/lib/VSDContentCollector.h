@@ -155,6 +155,8 @@ public:
   void collectStyleThemeReference(unsigned level, const boost::optional<long> &lineColour, const boost::optional<long> &fillColour,
                                   const boost::optional<long> &shadowColour, const boost::optional<long> &fontColour);
 
+  virtual void collectMetaData(const librevenge::RVNGPropertyList &metaData);
+
 
   // Field list
   void collectFieldList(unsigned id, unsigned level);
