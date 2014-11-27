@@ -26,7 +26,7 @@ libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::R
     m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
     m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts(), m_names(), m_namesMapMap(),
-    m_currentPageName()
+    m_currentPageName(), m_handledStreams()
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -112,6 +112,7 @@ bool libvisio::VSDParser::parseMain()
 
   Pointer trailerPointer;
   readPointer(m_input, trailerPointer);
+  m_handledStreams.insert(trailerPointer.Offset);
   bool compressed = ((trailerPointer.Format & 2) == 2);
   unsigned shift = 0;
   if (compressed)
@@ -131,6 +132,8 @@ bool libvisio::VSDParser::parseMain()
     return false;
 
   _handleLevelChange(0);
+  m_handledStreams.clear();
+  m_handledStreams.insert(trailerPointer.Offset);
 
   VSDStyles styles = stylesCollector.getStyleSheets();
 
@@ -203,6 +206,15 @@ void libvisio::VSDParser::handleStreams(librevenge::RVNGInputStream *input, unsi
       readPointer(input, ptr);
       if (ptr.Type == 0)
         continue;
+
+      std::set<unsigned>::iterator it = m_handledStreams.find(ptr.Offset);
+      if (it != m_handledStreams.end())
+      {
+        VSD_DEBUG_MSG(("Stream at offset %d has already been handled. Skipping...\n", ptr.Offset));
+        continue;
+      }
+
+      m_handledStreams.insert(it, ptr.Offset);
 
       if (ptr.Type == VSD_FONTFACES)
         FontFaces[i] = ptr;
