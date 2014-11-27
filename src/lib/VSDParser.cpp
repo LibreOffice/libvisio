@@ -201,13 +201,16 @@ void libvisio::VSDParser::handleStreams(librevenge::RVNGInputStream *input, unsi
     {
       Pointer ptr;
       readPointer(input, ptr);
+      if (ptr.Type == 0)
+        continue;
+
       if (ptr.Type == VSD_FONTFACES)
         FontFaces[i] = ptr;
       else if (ptr.Type == VSD_NAME_LIST2)
         NameList[i] = ptr;
       else if (ptr.Type == VSD_NAMEIDX || ptr.Type == VSD_NAMEIDX123)
         NameIDX[i] = ptr;
-      else if (ptr.Type != 0)
+      else if (ptr.Type)
         PtrList[i] = ptr;
     }
     if (listSize <= 1)
