@@ -11,7 +11,6 @@
 #include <stack>
 #include <boost/spirit/include/classic.hpp>
 #include <unicode/ucnv.h>
-#include <unicode/utypes.h>
 #include <unicode/utf8.h>
 
 #include "VSDContentCollector.h"
@@ -32,27 +31,6 @@ static unsigned bitmapId = 0;
 #endif
 
 #define SURROGATE_VALUE(h,l) (((h) - 0xd800) * 0x400 + (l) - 0xdc00 + 0x10000)
-
-namespace
-{
-
-static void _appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character)
-{
-  // Convert carriage returns to new line characters
-  // Writerperfect/LibreOffice will replace them by <text:line-break>
-  if (ucs4Character == (UChar32) 0x0d || ucs4Character == (UChar32) 0x0e)
-    ucs4Character = (UChar32) '\n';
-
-  unsigned char outbuf[U8_MAX_LENGTH+1];
-  int i = 0;
-  U8_APPEND_UNSAFE(&outbuf[0], i, ucs4Character);
-  outbuf[i] = 0;
-
-  text.append((char *)outbuf);
-}
-
-} // anonymous namespace
-
 
 libvisio::VSDContentCollector::VSDContentCollector(
   librevenge::RVNGDrawingInterface *painter,
@@ -2876,7 +2854,7 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
         ucs4Character = 0x20;
       else
         ucs4Character = symbolmap[*iter - 0x20];
-      _appendUCS4(text, ucs4Character);
+      appendUCS4(text, ucs4Character);
     }
   }
   else
@@ -2940,7 +2918,7 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
           if (0x1e == ucs4Character)
             _appendField(text);
           else
-            _appendUCS4(text, ucs4Character);
+            appendUCS4(text, ucs4Character);
         }
       }
     }
@@ -2966,7 +2944,7 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
         if (0xfffc == ucs4Character)
           _appendField(text);
         else
-          _appendUCS4(text, ucs4Character);
+          appendUCS4(text, ucs4Character);
       }
     }
   }

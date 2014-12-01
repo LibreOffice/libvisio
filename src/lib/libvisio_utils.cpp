@@ -107,6 +107,20 @@ const librevenge::RVNGString libvisio::getColourString(const Colour &c)
   return sColour;
 }
 
+void libvisio::appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character)
+{
+  // Convert carriage returns to new line characters
+  // Writerperfect/LibreOffice will replace them by <text:line-break>
+  if (ucs4Character == (UChar32) 0x0d || ucs4Character == (UChar32) 0x0e)
+    ucs4Character = (UChar32) '\n';
+
+  unsigned char outbuf[U8_MAX_LENGTH+1];
+  int i = 0;
+  U8_APPEND_UNSAFE(&outbuf[0], i, ucs4Character);
+  outbuf[i] = 0;
+
+  text.append((char *)outbuf);
+}
 
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

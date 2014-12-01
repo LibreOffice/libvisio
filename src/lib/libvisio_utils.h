@@ -47,6 +47,7 @@ typedef unsigned __int64 uint64_t;
 
 #include <librevenge/librevenge.h>
 #include <librevenge-stream/librevenge-stream.h>
+#include <unicode/utypes.h>
 
 // debug message includes source file and line number
 //#define VERBOSE_DEBUG 1
@@ -78,6 +79,8 @@ uint64_t readU64(librevenge::RVNGInputStream *input);
 double readDouble(librevenge::RVNGInputStream *input);
 
 const librevenge::RVNGString getColourString(const Colour &c);
+
+void appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character);
 
 class EndOfStreamException
 {
