@@ -158,7 +158,7 @@ static bool parseBinaryVisioDocument(librevenge::RVNGInputStream *input, libreve
       parser = new libvisio::VSD6Parser(docStream, painter);
       break;
     case 11:
-      parser = new libvisio::VSDParser(docStream, painter);
+      parser = new libvisio::VSDParser(docStream, painter, input);
       break;
     default:
       break;

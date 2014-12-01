@@ -19,9 +19,10 @@
 #include "VSDDocumentStructure.h"
 #include "VSDContentCollector.h"
 #include "VSDStylesCollector.h"
+#include "VSDMetaData.h"
 
-libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter)
-  : m_input(input), m_painter(painter), m_header(), m_collector(0), m_shapeList(), m_currentLevel(0),
+libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container)
+  : m_input(input), m_painter(painter), m_container(container), m_header(), m_collector(0), m_shapeList(), m_currentLevel(0),
     m_stencils(), m_currentStencil(0), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
     m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
@@ -139,10 +140,32 @@ bool libvisio::VSDParser::parseMain()
 
   VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
   m_collector = &contentCollector;
+  if (m_container)
+    parseMetaData();
+
   VSD_DEBUG_MSG(("VSDParser::parseMain 2nd pass\n"));
   if (!parseDocument(&trailerStream, shift))
     return false;
 
+  return true;
+}
+
+bool libvisio::VSDParser::parseMetaData()
+{
+  if (!m_container)
+    return false;
+  m_container->seek(0, librevenge::RVNG_SEEK_SET);
+  if (!m_container->isStructured())
+    return false;
+  librevenge::RVNGInputStream *stream = m_container->getSubStreamByName("\x05SummaryInformation");
+  if (!stream)
+    return false;
+
+  VSDMetaData metaData;
+  metaData.parse(stream);
+  m_collector->collectMetaData(metaData.getMetaData());
+
+  delete stream;
   return true;
 }
 

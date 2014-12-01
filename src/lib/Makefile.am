@@ -39,6 +39,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDPages.cpp \
 	VSDParagraphList.cpp \
 	VSDParser.cpp \
+	VSDMetaData.cpp \
 	VSDShapeList.cpp \
 	VSDStencils.cpp \
 	VSDStyles.cpp \
@@ -58,6 +59,7 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDPages.h \
 	VSDParagraphList.h \
 	VSDParser.h \
+	VSDMetaData.h \
 	VSDShapeList.h \
 	VSDStencils.h \
 	VSDStyles.h \

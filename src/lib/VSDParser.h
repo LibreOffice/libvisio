@@ -46,7 +46,7 @@ struct Pointer
 class VSDParser
 {
 public:
-  explicit VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
+  explicit VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container = 0);
   virtual ~VSDParser();
   bool parseMain();
   bool extractStencils();
@@ -115,6 +115,8 @@ protected:
   // parser of one pass
   bool parseDocument(librevenge::RVNGInputStream *input, unsigned shift);
 
+  bool parseMetaData();
+
   // Stream handlers
   void handleStreams(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned level);
   void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
@@ -135,6 +137,7 @@ protected:
 
   librevenge::RVNGInputStream *m_input;
   librevenge::RVNGDrawingInterface *m_painter;
+  librevenge::RVNGInputStream *m_container;
   ChunkHeader m_header;
   VSDCollector *m_collector;
   VSDShapeList m_shapeList;
