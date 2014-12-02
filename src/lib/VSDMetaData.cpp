@@ -10,6 +10,7 @@
 #include "VSDMetaData.h"
 #include <cmath>
 #include <unicode/ucnv.h>
+#include <ctime>
 
 libvisio::VSDMetaData::VSDMetaData()
 {
