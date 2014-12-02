@@ -8,6 +8,7 @@
  */
 
 #include "VSDMetaData.h"
+#include <cmath>
 #include <unicode/ucnv.h>
 
 libvisio::VSDMetaData::VSDMetaData()
@@ -170,6 +171,58 @@ librevenge::RVNGString libvisio::VSDMetaData::readCodePageString(librevenge::RVN
   }
 
   return string;
+}
+
+bool libvisio::VSDMetaData::parseTimes(librevenge::RVNGInputStream *input)
+{
+  // Parse the header
+  // HeaderSignature: 8 bytes
+  // HeaderCLSID: 16 bytes
+  // MinorVersion: 2 bytes
+  // MajorVersion: 2 bytes
+  // ByteOrder: 2 bytes
+  input->seek(30, librevenge::RVNG_SEEK_CUR);
+  uint16_t sectorShift = readU16(input);
+  // MiniSectorShift: 2 bytes
+  // Reserved: 6 bytes
+  // NumDirectorySectors: 4 bytes
+  // NumFATSectors: 4 bytes
+  input->seek(16, librevenge::RVNG_SEEK_CUR);
+  uint32_t firstDirSectorLocation = readU32(input);
+
+  // Seek to the Root Directory Entry
+  size_t sectorSize = pow(2, sectorShift);
+  input->seek((firstDirSectorLocation + 1) * sectorSize, librevenge::RVNG_SEEK_SET);
+  // DirectoryEntryName: 64 bytes
+  // DirectoryEntryNameLength: 2 bytes
+  // ObjectType: 1 byte
+  // ColorFlag: 1 byte
+  // LeftSiblingID: 4 bytes
+  // RightSiblingID: 4 bytes
+  // ChildID: 4 bytes
+  // CLSID: 16 bytes
+  // StateBits: 4 bytes
+  // CreationTime: 8 bytes
+  input->seek(108, librevenge::RVNG_SEEK_CUR);
+  uint64_t modifiedTime = readU64(input);
+
+  // modifiedTime is number of 100ns since Jan 1 1601
+  static const uint64_t epoch = 11644473600;
+  time_t sec = (modifiedTime / 10000000) - epoch;
+  const struct tm *time = localtime(&sec);
+  if (time)
+  {
+    static const int MAX_BUFFER = 1024;
+    char buffer[MAX_BUFFER];
+    strftime(&buffer[0], MAX_BUFFER-1, "%Y-%m-%dT%H:%M:%SZ", time);
+    librevenge::RVNGString result;
+    result.append(buffer);
+    // Visio UI uses modifiedTime for both purposes.
+    m_metaData.insert("meta:creation-date", result);
+    m_metaData.insert("dc:date", result);
+    return true;
+  }
+  return false;
 }
 
 const librevenge::RVNGPropertyList &libvisio::VSDMetaData::getMetaData()

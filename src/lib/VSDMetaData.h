@@ -26,6 +26,7 @@ public:
   VSDMetaData();
   ~VSDMetaData();
   bool parse(librevenge::RVNGInputStream *input);
+  bool parseTimes(librevenge::RVNGInputStream *input);
   const librevenge::RVNGPropertyList &getMetaData();
 
 private:

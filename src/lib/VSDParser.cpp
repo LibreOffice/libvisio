@@ -163,6 +163,8 @@ bool libvisio::VSDParser::parseMetaData()
 
   VSDMetaData metaData;
   metaData.parse(stream);
+  m_container->seek(0, librevenge::RVNG_SEEK_SET);
+  metaData.parseTimes(m_container);
   m_collector->collectMetaData(metaData.getMetaData());
 
   delete stream;
