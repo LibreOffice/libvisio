@@ -21,6 +21,7 @@ m4
 missing
 mkinstalldirs
 stamp-h1
+tags
 *.pc
 *.rc
 *~
