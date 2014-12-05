@@ -12,7 +12,6 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <set>
 #include <vector>
 #include <stack>
 #include <map>
@@ -167,9 +166,6 @@ protected:
   std::map<unsigned, VSDName> m_names;
   std::map<unsigned, std::map<unsigned, VSDName> > m_namesMapMap;
   VSDName m_currentPageName;
-
-  // Sanity check, to avoid problems with broken files.
-  std::set<unsigned> m_handledStreams;
 
 private:
   VSDParser();
