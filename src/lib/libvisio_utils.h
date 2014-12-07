@@ -55,10 +55,10 @@ typedef unsigned __int64 uint64_t;
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
 #ifdef VERBOSE_DEBUG
-#define VSD_DEBUG_MSG(M) printf("%15s:%5d: ", __FILE__, __LINE__); printf M
+#define VSD_DEBUG_MSG(M) libvisio::debugPrint("%15s:%5d: ", __FILE__, __LINE__); libvisio::debugPrint M
 #define VSD_DEBUG(M) M
 #else
-#define VSD_DEBUG_MSG(M) printf M
+#define VSD_DEBUG_MSG(M) libvisio::debugPrint M
 #define VSD_DEBUG(M) M
 #endif
 #else
@@ -81,6 +81,8 @@ double readDouble(librevenge::RVNGInputStream *input);
 const librevenge::RVNGString getColourString(const Colour &c);
 
 void appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character);
+
+void debugPrint(const char *format, ...);
 
 class EndOfStreamException
 {

@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <algorithm> // std::count
+#include <cstdarg>
 #include "VSDInternalStream.h"
 #include "libvisio_utils.h"
 
@@ -122,5 +123,12 @@ void libvisio::appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character)
   text.append((char *)outbuf);
 }
 
+void libvisio::debugPrint(const char *format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  std::vfprintf(stderr, format, args);
+  va_end(args);
+}
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
