@@ -54,7 +54,7 @@ void libvisio::VSDPage::draw(librevenge::RVNGDrawingInterface *painter) const
 }
 
 libvisio::VSDPages::VSDPages()
-  : m_pages(), m_backgroundPages()
+  : m_pages(), m_backgroundPages(), m_metaData()
 {
 }
 

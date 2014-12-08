@@ -12,6 +12,7 @@
 #include "libvisio_utils.h"
 
 libvisio::VSDXMetaData::VSDXMetaData()
+  : m_metaData()
 {
 }
 

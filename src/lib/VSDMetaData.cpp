@@ -13,6 +13,7 @@
 #include <ctime>
 
 libvisio::VSDMetaData::VSDMetaData()
+  : m_idsAndOffsets(), m_typedPropertyValues(), m_metaData()
 {
 }
 
