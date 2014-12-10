@@ -1,0 +1,143 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/*
+ * This file is part of the libvisio project.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#include <libvisio/libvisio.h>
+#include <libxml/xpath.h>
+#include <iostream>
+#include <cppunit/extensions/HelperMacros.h>
+#include "xmldrawinggenerator.h"
+
+namespace
+{
+
+/// Allows using CPPUNIT_ASSERT_EQUAL() on librevenge::RVNGString instances.
+std::ostream& operator <<(std::ostream& s, const librevenge::RVNGString &string)
+{
+    return s << string.cstr();
+}
+
+/// Caller must call xmlXPathFreeObject.
+xmlXPathObjectPtr getXPathNode(xmlDocPtr doc, const librevenge::RVNGString &xpath)
+{
+  xmlXPathContextPtr xpathContext = xmlXPathNewContext(doc);
+  xmlXPathObjectPtr xpathObject = xmlXPathEvalExpression(BAD_CAST(xpath.cstr()), xpathContext);
+  xmlXPathFreeContext(xpathContext);
+  return xpathObject;
+}
+
+/// Same as the assertXPath(), but don't assert: return the string instead.
+librevenge::RVNGString getXPath(xmlDocPtr doc, const librevenge::RVNGString &xpath, const librevenge::RVNGString &attribute)
+{
+  xmlXPathObjectPtr xpathobject = getXPathNode(doc, xpath);
+  xmlNodeSetPtr nodeset = xpathobject->nodesetval;
+
+  librevenge::RVNGString message("XPath '");
+  message.append(xpath);
+  message.append("': number of nodes is incorrect.");
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(message.cstr(), 1, xmlXPathNodeSetGetLength(nodeset));
+  if (attribute.empty())
+    return librevenge::RVNGString();
+  xmlNodePtr node = nodeset->nodeTab[0];
+  xmlChar *prop = xmlGetProp(node, BAD_CAST(attribute.cstr()));
+  librevenge::RVNGString s((const char *)prop);
+  xmlFree(prop);
+  xmlXPathFreeObject(xpathobject);
+  return s;
+}
+
+/**
+ * Assert that xpath exists, and xpath returns exactly one node.
+ * xpath's attribute's value must equal to the expectedValue value.
+ */
+void assertXPath(xmlDocPtr doc, const librevenge::RVNGString &xpath, const librevenge::RVNGString &attribute, const librevenge::RVNGString &expectedValue)
+{
+  librevenge::RVNGString actualValue = getXPath(doc, xpath, attribute);
+  librevenge::RVNGString message("Attribute '");
+  message.append(attribute);
+  message.append("' of '");
+  message.append(xpath);
+  message.append("': incorrect value.");
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(message.cstr(), expectedValue, actualValue);
+}
+
+/// Paints an XML representation of filename into buffer, then returns the parsed buffer content.
+xmlDocPtr parse(const char *filename, xmlBufferPtr buffer)
+{
+  librevenge::RVNGString path(TDOC "/");
+  path.append(filename);
+  librevenge::RVNGFileStream input(path.cstr());
+  CPPUNIT_ASSERT(libvisio::VisioDocument::isSupported(&input));
+
+  xmlTextWriterPtr writer = xmlNewTextWriterMemory(buffer, 0);
+  CPPUNIT_ASSERT(writer);
+  xmlTextWriterStartDocument(writer, 0, 0, 0);
+  libvisio::XmlDrawingGenerator painter(writer);
+
+  CPPUNIT_ASSERT(libvisio::VisioDocument::parse(&input, &painter));
+
+  xmlTextWriterEndDocument(writer);
+  xmlFreeTextWriter(writer);
+
+  //std::cerr << "XML is '" << (const char *)xmlBufferContent(buffer) << "'" << std::endl;
+  return xmlParseMemory((const char *)xmlBufferContent(buffer), xmlBufferLength(buffer));
+}
+
+}
+
+class ImportTest : public CPPUNIT_NS::TestFixture
+{
+  CPPUNIT_TEST_SUITE(ImportTest);
+  CPPUNIT_TEST(testVsdxMetadataTitle);
+  CPPUNIT_TEST_SUITE_END();
+
+  void testVsdxMetadataTitle();
+
+  xmlBufferPtr m_buffer;
+  xmlDocPtr m_doc;
+
+public:
+  ImportTest();
+  virtual void setUp();
+  virtual void tearDown();
+};
+
+ImportTest::ImportTest()
+  : m_buffer(0),
+    m_doc(0)
+{
+}
+
+void ImportTest::setUp()
+{
+  CPPUNIT_ASSERT(!m_buffer);
+  m_buffer = xmlBufferCreate();
+  CPPUNIT_ASSERT(m_buffer);
+
+  CPPUNIT_ASSERT(!m_doc);
+}
+
+void ImportTest::tearDown()
+{
+  xmlFreeDoc(m_doc);
+  m_doc = 0;
+
+  xmlBufferFree(m_buffer);
+  m_buffer = 0;
+}
+
+void ImportTest::testVsdxMetadataTitle()
+{
+  m_doc = parse("fdo86664.vsdx", m_buffer);
+  // The setDocumentMetaData() call was missing, so the node did not exist.
+  assertXPath(m_doc, "/document/setDocumentMetaData", "title", "mytitle");
+}
+
+CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
+
+/* vim:set shiftwidth=2 softtabstop=2 expandtab: */
