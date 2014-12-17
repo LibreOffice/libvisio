@@ -17,9 +17,9 @@ namespace
 {
 
 /// Allows using CPPUNIT_ASSERT_EQUAL() on librevenge::RVNGString instances.
-std::ostream& operator <<(std::ostream& s, const librevenge::RVNGString &string)
+std::ostream &operator <<(std::ostream &s, const librevenge::RVNGString &string)
 {
-    return s << string.cstr();
+  return s << string.cstr();
 }
 
 /// Caller must call xmlXPathFreeObject.
