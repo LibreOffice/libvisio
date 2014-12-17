@@ -94,9 +94,13 @@ class ImportTest : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE(ImportTest);
   CPPUNIT_TEST(testVsdxMetadataTitle);
+  CPPUNIT_TEST(testVsdMetadataTitleMs1252);
+  CPPUNIT_TEST(testVsdMetadataTitleUtf8);
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();
+  void testVsdMetadataTitleMs1252();
+  void testVsdMetadataTitleUtf8();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -139,6 +143,20 @@ void ImportTest::testVsdxMetadataTitle()
   // Test <dcterms:created> and <dcterms:modified>.
   assertXPath(m_doc, "/document/setDocumentMetaData", "creation-date", "2014-11-24T10:35:17Z");
   assertXPath(m_doc, "/document/setDocumentMetaData", "date", "2014-11-24T10:41:22Z");
+}
+
+void ImportTest::testVsdMetadataTitleMs1252()
+{
+  m_doc = parse("fdo86729-ms1252.vsd", m_buffer);
+  // Test windows-1252 -> UTF-8 conversion, provided by ICU.
+  assertXPath(m_doc, "/document/setDocumentMetaData", "title", "mytitle\xC3\xA9\xC3\xA1");
+}
+
+void ImportTest::testVsdMetadataTitleUtf8()
+{
+  m_doc = parse("fdo86729-utf8.vsd", m_buffer);
+  // Test the case when the string is UTF-8 encoded already in the file.
+  assertXPath(m_doc, "/document/setDocumentMetaData", "title", "mytitle\xC3\xA9\xC3\xA1\xC5\x91\xC5\xB1");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
