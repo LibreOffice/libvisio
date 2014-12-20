@@ -157,6 +157,9 @@ void ImportTest::testVsdMetadataTitleUtf8()
   m_doc = parse("fdo86729-utf8.vsd", m_buffer);
   // Test the case when the string is UTF-8 encoded already in the file.
   assertXPath(m_doc, "/document/setDocumentMetaData", "title", "mytitle\xC3\xA9\xC3\xA1\xC5\x91\xC5\xB1");
+  // Test <dcterms:created> and <dcterms:modified>.
+  assertXPath(m_doc, "/document/setDocumentMetaData", "creation-date", "2014-11-26T09:24:56Z");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "date", "2014-11-26T09:24:56Z");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
