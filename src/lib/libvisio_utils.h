@@ -10,7 +10,6 @@
 #ifndef __LIBVISIO_UTILS_H__
 #define __LIBVISIO_UTILS_H__
 
-#include <stdio.h>
 #include "VSDTypes.h"
 
 #ifdef _MSC_VER

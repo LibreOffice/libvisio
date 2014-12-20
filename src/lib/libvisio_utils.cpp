@@ -11,6 +11,7 @@
 #include <string>
 #include <algorithm> // std::count
 #include <cstdarg>
+#include <cstdio>
 #include "VSDInternalStream.h"
 #include "libvisio_utils.h"
 
