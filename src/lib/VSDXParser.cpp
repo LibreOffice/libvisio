@@ -503,7 +503,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     {
       const xmlChar *name1 = xmlTextReaderConstName(reader);
       const xmlChar *value1 = xmlTextReaderConstValue(reader);
-      printf(" %s=\"%s\"", name1, value1);
+      fprintf(stderr, " %s=\"%s\"", name1, value1);
     }
   }
 
