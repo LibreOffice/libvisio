@@ -38,6 +38,24 @@ void libvisio::VSDXMetaData::readTitle(xmlTextReaderPtr reader)
   m_metaData.insert("dc:title", title);
 }
 
+void libvisio::VSDXMetaData::readSubject(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  librevenge::RVNGString subject;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    tokenType = xmlTextReaderNodeType(reader);
+    if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_TEXT)
+      subject.append((const char *)xmlTextReaderConstValue(reader));
+  }
+  while ((XML_DC_SUBJECT != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  m_metaData.insert("dc:subject", subject);
+}
+
 void libvisio::VSDXMetaData::readCreated(xmlTextReaderPtr reader)
 {
   int ret = 1;
@@ -93,6 +111,10 @@ void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
     case XML_DC_TITLE:
       if (tokenType == XML_READER_TYPE_ELEMENT)
         readTitle(reader);
+      break;
+    case XML_DC_SUBJECT:
+      if (tokenType == XML_READER_TYPE_ELEMENT)
+        readSubject(reader);
       break;
     case XML_DCTERMS_CREATED:
       if (tokenType == XML_READER_TYPE_ELEMENT)

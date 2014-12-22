@@ -140,6 +140,7 @@ void ImportTest::testVsdxMetadataTitle()
   m_doc = parse("fdo86664.vsdx", m_buffer);
   // The setDocumentMetaData() call was missing, so the node did not exist.
   assertXPath(m_doc, "/document/setDocumentMetaData", "title", "mytitle");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "subject", "mysubject");
   // Test <dcterms:created> and <dcterms:modified>.
   assertXPath(m_doc, "/document/setDocumentMetaData", "creation-date", "2014-11-24T10:35:17Z");
   assertXPath(m_doc, "/document/setDocumentMetaData", "date", "2014-11-24T10:41:22Z");
