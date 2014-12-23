@@ -151,6 +151,8 @@ void ImportTest::testVsdMetadataTitleMs1252()
   m_doc = parse("fdo86729-ms1252.vsd", m_buffer);
   // Test windows-1252 -> UTF-8 conversion, provided by ICU.
   assertXPath(m_doc, "/document/setDocumentMetaData", "title", "mytitle\xC3\xA9\xC3\xA1");
+
+  assertXPath(m_doc, "/document/setDocumentMetaData", "subject", "mysubject");
 }
 
 void ImportTest::testVsdMetadataTitleUtf8()

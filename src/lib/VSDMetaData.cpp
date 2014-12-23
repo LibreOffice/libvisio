@@ -94,6 +94,7 @@ void libvisio::VSDMetaData::readPropertyIdentifierAndOffset(librevenge::RVNGInpu
 #define VT_LPSTR 0x001E
 
 #define PIDSI_TITLE 0x00000002
+#define PIDSI_SUBJECT 0x00000003
 
 void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *input, uint32_t index, uint32_t offset)
 {
@@ -119,6 +120,9 @@ void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *
       {
       case PIDSI_TITLE:
         m_metaData.insert("dc:title", string);
+        break;
+      case PIDSI_SUBJECT:
+        m_metaData.insert("dc:subject", string);
         break;
       }
     }
