@@ -227,6 +227,7 @@ XForm
 XForm1D
 Y
 cp:coreProperties
+dc:creator
 dc:subject
 dc:title
 dcterms:created

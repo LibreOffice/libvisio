@@ -32,6 +32,7 @@ private:
   void readCoreProperties(xmlTextReaderPtr reader);
   void readTitle(xmlTextReaderPtr reader);
   void readSubject(xmlTextReaderPtr reader);
+  void readCreator(xmlTextReaderPtr reader);
   void readCreated(xmlTextReaderPtr reader);
   void readModified(xmlTextReaderPtr reader);
 
