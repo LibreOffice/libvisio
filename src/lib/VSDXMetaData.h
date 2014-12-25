@@ -16,6 +16,7 @@
 namespace libvisio
 {
 
+/// Parses docProps/core.xml stream of a VSDX file.
 class VSDXMetaData
 {
 public:
@@ -30,11 +31,7 @@ private:
 
   int getElementToken(xmlTextReaderPtr reader);
   void readCoreProperties(xmlTextReaderPtr reader);
-  void readTitle(xmlTextReaderPtr reader);
-  void readSubject(xmlTextReaderPtr reader);
-  void readCreator(xmlTextReaderPtr reader);
-  void readCreated(xmlTextReaderPtr reader);
-  void readModified(xmlTextReaderPtr reader);
+  librevenge::RVNGString readString(xmlTextReaderPtr reader, int stringTokenId);
 
   librevenge::RVNGPropertyList m_metaData;
 };

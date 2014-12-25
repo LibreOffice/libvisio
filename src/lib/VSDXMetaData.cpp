@@ -20,94 +20,22 @@ libvisio::VSDXMetaData::~VSDXMetaData()
 {
 }
 
-void libvisio::VSDXMetaData::readTitle(xmlTextReaderPtr reader)
+librevenge::RVNGString libvisio::VSDXMetaData::readString(xmlTextReaderPtr reader, int stringTokenId)
 {
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
-  librevenge::RVNGString title;
+  librevenge::RVNGString string;
   do
   {
     ret = xmlTextReaderRead(reader);
     tokenId = getElementToken(reader);
     tokenType = xmlTextReaderNodeType(reader);
     if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_TEXT)
-      title.append((const char *)xmlTextReaderConstValue(reader));
+      string.append((const char *)xmlTextReaderConstValue(reader));
   }
-  while ((XML_DC_TITLE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
-  m_metaData.insert("dc:title", title);
-}
-
-void libvisio::VSDXMetaData::readSubject(xmlTextReaderPtr reader)
-{
-  int ret = 1;
-  int tokenId = XML_TOKEN_INVALID;
-  int tokenType = -1;
-  librevenge::RVNGString subject;
-  do
-  {
-    ret = xmlTextReaderRead(reader);
-    tokenId = getElementToken(reader);
-    tokenType = xmlTextReaderNodeType(reader);
-    if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_TEXT)
-      subject.append((const char *)xmlTextReaderConstValue(reader));
-  }
-  while ((XML_DC_SUBJECT != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
-  m_metaData.insert("dc:subject", subject);
-}
-
-void libvisio::VSDXMetaData::readCreator(xmlTextReaderPtr reader)
-{
-  int ret = 1;
-  int tokenId = XML_TOKEN_INVALID;
-  int tokenType = -1;
-  librevenge::RVNGString creator;
-  do
-  {
-    ret = xmlTextReaderRead(reader);
-    tokenId = getElementToken(reader);
-    tokenType = xmlTextReaderNodeType(reader);
-    if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_TEXT)
-      creator.append((const char *)xmlTextReaderConstValue(reader));
-  }
-  while ((XML_DC_CREATOR != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
-  m_metaData.insert("meta:initial-creator", creator);
-}
-
-void libvisio::VSDXMetaData::readCreated(xmlTextReaderPtr reader)
-{
-  int ret = 1;
-  int tokenId = XML_TOKEN_INVALID;
-  int tokenType = -1;
-  librevenge::RVNGString created;
-  do
-  {
-    ret = xmlTextReaderRead(reader);
-    tokenId = getElementToken(reader);
-    tokenType = xmlTextReaderNodeType(reader);
-    if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_TEXT)
-      created.append((const char *)xmlTextReaderConstValue(reader));
-  }
-  while ((XML_DCTERMS_CREATED != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
-  m_metaData.insert("meta:creation-date", created);
-}
-
-void libvisio::VSDXMetaData::readModified(xmlTextReaderPtr reader)
-{
-  int ret = 1;
-  int tokenId = XML_TOKEN_INVALID;
-  int tokenType = -1;
-  librevenge::RVNGString modified;
-  do
-  {
-    ret = xmlTextReaderRead(reader);
-    tokenId = getElementToken(reader);
-    tokenType = xmlTextReaderNodeType(reader);
-    if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_TEXT)
-      modified.append((const char *)xmlTextReaderConstValue(reader));
-  }
-  while ((XML_DCTERMS_MODIFIED != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
-  m_metaData.insert("dc:date", modified);
+  while ((stringTokenId != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  return string;
 }
 
 void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
@@ -128,23 +56,23 @@ void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
     {
     case XML_DC_TITLE:
       if (tokenType == XML_READER_TYPE_ELEMENT)
-        readTitle(reader);
+        m_metaData.insert("dc:title", readString(reader, XML_DC_TITLE));
       break;
     case XML_DC_SUBJECT:
       if (tokenType == XML_READER_TYPE_ELEMENT)
-        readSubject(reader);
+        m_metaData.insert("dc:subject", readString(reader, XML_DC_SUBJECT));
       break;
     case XML_DC_CREATOR:
       if (tokenType == XML_READER_TYPE_ELEMENT)
-        readCreator(reader);
+        m_metaData.insert("meta:initial-creator", readString(reader, XML_DC_CREATOR));
       break;
     case XML_DCTERMS_CREATED:
       if (tokenType == XML_READER_TYPE_ELEMENT)
-        readCreated(reader);
+        m_metaData.insert("meta:creation-date", readString(reader, XML_DCTERMS_CREATED));
       break;
     case XML_DCTERMS_MODIFIED:
       if (tokenType == XML_READER_TYPE_ELEMENT)
-        readModified(reader);
+        m_metaData.insert("dc:date", readString(reader, XML_DCTERMS_MODIFIED));
       break;
     default:
       break;
