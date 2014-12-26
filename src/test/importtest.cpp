@@ -154,6 +154,7 @@ void ImportTest::testVsdMetadataTitleMs1252()
   assertXPath(m_doc, "/document/setDocumentMetaData", "title", "mytitle\xC3\xA9\xC3\xA1");
 
   assertXPath(m_doc, "/document/setDocumentMetaData", "subject", "mysubject");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "initial-creator", "vmiklos creator");
 }
 
 void ImportTest::testVsdMetadataTitleUtf8()
