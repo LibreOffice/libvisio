@@ -74,6 +74,9 @@ void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
       if (tokenType == XML_READER_TYPE_ELEMENT)
         m_metaData.insert("dc:date", readString(reader, XML_DCTERMS_MODIFIED));
       break;
+    case XML_CP_KEYWORDS:
+      if (tokenType == XML_READER_TYPE_ELEMENT)
+        m_metaData.insert("meta:keyword", readString(reader, XML_CP_KEYWORDS));
     default:
       break;
     }

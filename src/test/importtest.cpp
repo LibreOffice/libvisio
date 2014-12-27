@@ -145,6 +145,7 @@ void ImportTest::testVsdxMetadataTitle()
   // Test <dcterms:created> and <dcterms:modified>.
   assertXPath(m_doc, "/document/setDocumentMetaData", "creation-date", "2014-11-24T10:35:17Z");
   assertXPath(m_doc, "/document/setDocumentMetaData", "date", "2014-11-24T10:41:22Z");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "keyword", "mytag");
 }
 
 void ImportTest::testVsdMetadataTitleMs1252()
