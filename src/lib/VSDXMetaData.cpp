@@ -52,31 +52,29 @@ void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
       VSD_DEBUG_MSG(("VSDXMetaData::readCoreProperties: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
     tokenType = xmlTextReaderNodeType(reader);
+
+    if (tokenType != XML_READER_TYPE_ELEMENT)
+      continue;
+
     switch (tokenId)
     {
     case XML_DC_TITLE:
-      if (tokenType == XML_READER_TYPE_ELEMENT)
-        m_metaData.insert("dc:title", readString(reader, XML_DC_TITLE));
+      m_metaData.insert("dc:title", readString(reader, XML_DC_TITLE));
       break;
     case XML_DC_SUBJECT:
-      if (tokenType == XML_READER_TYPE_ELEMENT)
-        m_metaData.insert("dc:subject", readString(reader, XML_DC_SUBJECT));
+      m_metaData.insert("dc:subject", readString(reader, XML_DC_SUBJECT));
       break;
     case XML_DC_CREATOR:
-      if (tokenType == XML_READER_TYPE_ELEMENT)
-        m_metaData.insert("meta:initial-creator", readString(reader, XML_DC_CREATOR));
+      m_metaData.insert("meta:initial-creator", readString(reader, XML_DC_CREATOR));
       break;
     case XML_DCTERMS_CREATED:
-      if (tokenType == XML_READER_TYPE_ELEMENT)
-        m_metaData.insert("meta:creation-date", readString(reader, XML_DCTERMS_CREATED));
+      m_metaData.insert("meta:creation-date", readString(reader, XML_DCTERMS_CREATED));
       break;
     case XML_DCTERMS_MODIFIED:
-      if (tokenType == XML_READER_TYPE_ELEMENT)
-        m_metaData.insert("dc:date", readString(reader, XML_DCTERMS_MODIFIED));
+      m_metaData.insert("dc:date", readString(reader, XML_DCTERMS_MODIFIED));
       break;
     case XML_CP_KEYWORDS:
-      if (tokenType == XML_READER_TYPE_ELEMENT)
-        m_metaData.insert("meta:keyword", readString(reader, XML_CP_KEYWORDS));
+      m_metaData.insert("meta:keyword", readString(reader, XML_CP_KEYWORDS));
     default:
       break;
     }
