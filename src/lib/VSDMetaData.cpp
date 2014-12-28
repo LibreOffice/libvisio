@@ -96,6 +96,7 @@ void libvisio::VSDMetaData::readPropertyIdentifierAndOffset(librevenge::RVNGInpu
 #define PIDSI_TITLE 0x00000002
 #define PIDSI_SUBJECT 0x00000003
 #define PIDSI_AUTHOR 0x00000004
+#define PIDSI_KEYWORDS 0x00000005
 
 void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *input, uint32_t index, uint32_t offset)
 {
@@ -127,6 +128,9 @@ void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *
         break;
       case PIDSI_AUTHOR:
         m_metaData.insert("meta:initial-creator", string);
+        break;
+      case PIDSI_KEYWORDS:
+        m_metaData.insert("meta:keyword", string);
         break;
       }
     }
