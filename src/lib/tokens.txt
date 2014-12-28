@@ -233,3 +233,4 @@ dc:subject
 dc:title
 dcterms:created
 dcterms:modified
+dc:description

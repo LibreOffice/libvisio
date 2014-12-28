@@ -146,6 +146,7 @@ void ImportTest::testVsdxMetadataTitle()
   assertXPath(m_doc, "/document/setDocumentMetaData", "creation-date", "2014-11-24T10:35:17Z");
   assertXPath(m_doc, "/document/setDocumentMetaData", "date", "2014-11-24T10:41:22Z");
   assertXPath(m_doc, "/document/setDocumentMetaData", "keyword", "mytag");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "description", "mycomment");
 }
 
 void ImportTest::testVsdMetadataTitleMs1252()
