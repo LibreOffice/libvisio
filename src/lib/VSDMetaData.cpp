@@ -97,6 +97,7 @@ void libvisio::VSDMetaData::readPropertyIdentifierAndOffset(librevenge::RVNGInpu
 #define PIDSI_SUBJECT 0x00000003
 #define PIDSI_AUTHOR 0x00000004
 #define PIDSI_KEYWORDS 0x00000005
+#define PIDSI_COMMENTS 0x00000006
 
 void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *input, uint32_t index, uint32_t offset)
 {
@@ -131,6 +132,9 @@ void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *
         break;
       case PIDSI_KEYWORDS:
         m_metaData.insert("meta:keyword", string);
+        break;
+      case PIDSI_COMMENTS:
+        m_metaData.insert("dc:description", string);
         break;
       }
     }
