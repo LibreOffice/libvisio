@@ -77,6 +77,8 @@ void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
       m_metaData.insert("meta:keyword", readString(reader, XML_CP_KEYWORDS));
     case XML_DC_DESCRIPTION:
       m_metaData.insert("dc:description", readString(reader, XML_DC_DESCRIPTION));
+    case XML_CP_LASTMODIFIEDBY:
+      m_metaData.insert("dc:creator", readString(reader, XML_CP_LASTMODIFIEDBY));
     default:
       break;
     }
