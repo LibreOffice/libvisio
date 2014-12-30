@@ -158,6 +158,8 @@ void ImportTest::testVsdMetadataTitleMs1252()
 
   assertXPath(m_doc, "/document/setDocumentMetaData", "subject", "mysubject");
   assertXPath(m_doc, "/document/setDocumentMetaData", "initial-creator", "vmiklos creator");
+  // There is only one author/last-modifier field in the file, so make sure creator is the same as initial-creator.
+  assertXPath(m_doc, "/document/setDocumentMetaData", "creator", "vmiklos creator");
   assertXPath(m_doc, "/document/setDocumentMetaData", "keyword", "mytag");
   assertXPath(m_doc, "/document/setDocumentMetaData", "description", "mycomment");
 }

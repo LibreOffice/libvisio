@@ -129,6 +129,7 @@ void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *
         break;
       case PIDSI_AUTHOR:
         m_metaData.insert("meta:initial-creator", string);
+        m_metaData.insert("dc:creator", string);
         break;
       case PIDSI_KEYWORDS:
         m_metaData.insert("meta:keyword", string);
