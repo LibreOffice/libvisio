@@ -66,6 +66,32 @@ void assertXPath(xmlDocPtr doc, const librevenge::RVNGString &xpath, const libre
   CPPUNIT_ASSERT_EQUAL_MESSAGE(message.cstr(), expectedValue, actualValue);
 }
 
+/// Same as the assertXPathContent(), but don't assert: return the string instead.
+librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath)
+{
+  xmlXPathObjectPtr xpathObject = getXPathNode(doc, xpath);
+  xmlNodeSetPtr nodeset = xpathObject->nodesetval;
+
+  librevenge::RVNGString message("XPath '");
+  message.append(xpath);
+  message.append("': not found.");
+  CPPUNIT_ASSERT_MESSAGE(message.cstr(), xmlXPathNodeSetGetLength(nodeset) > 0);
+
+  xmlNodePtr node = nodeset->nodeTab[0];
+  librevenge::RVNGString s(reinterpret_cast<char *>((node->children[0]).content));
+  xmlXPathFreeObject(xpathObject);
+  return s;
+}
+
+/// Assert that xpath exists, and its content equals to content.
+void assertXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath, const librevenge::RVNGString &content)
+{
+  librevenge::RVNGString message("XPath '");
+  message.append(xpath);
+  message.append("': contents of child does not match.");
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(message.cstr(), content, getXPathContent(doc, xpath));
+}
+
 /// Paints an XML representation of filename into buffer, then returns the parsed buffer content.
 xmlDocPtr parse(const char *filename, xmlBufferPtr buffer)
 {

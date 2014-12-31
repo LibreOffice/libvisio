@@ -9,6 +9,11 @@
 
 #include "xmldrawinggenerator.h"
 
+#include <cstring>
+#include <string>
+#include <utility>
+#include <vector>
+
 namespace libvisio
 {
 
@@ -45,8 +50,25 @@ void XmlDrawingGenerator::setDocumentMetaData(const librevenge::RVNGPropertyList
 {
   xmlTextWriterStartElement(m_writer, BAD_CAST("setDocumentMetaData"));
   librevenge::RVNGPropertyList::Iter i(propList);
+  std::vector< std::pair<std::string, std::string> > userDefined;
   for (i.rewind(); i.next();)
-    xmlTextWriterWriteFormatAttribute(m_writer, BAD_CAST(i.key()), "%s", i()->getStr().cstr());
+  {
+    if (strncmp(i.key(), "meta:user-defined:", 18))
+      xmlTextWriterWriteFormatAttribute(m_writer, BAD_CAST(i.key()), "%s", i()->getStr().cstr());
+    else
+      userDefined.push_back(std::make_pair(i.key() + 18, i()->getStr().cstr()));
+  }
+
+  if (!userDefined.empty())
+  {
+    for (size_t idx = 0; idx < userDefined.size(); ++idx)
+    {
+      xmlTextWriterStartElement(m_writer, BAD_CAST("user-defined"));
+      xmlTextWriterWriteAttribute(m_writer, BAD_CAST("name"), BAD_CAST(userDefined[idx].first.c_str()));
+      xmlTextWriterWriteString(m_writer, BAD_CAST(userDefined[idx].second.c_str()));
+      xmlTextWriterEndElement(m_writer);
+    }
+  }
   xmlTextWriterEndElement(m_writer);
 }
 
