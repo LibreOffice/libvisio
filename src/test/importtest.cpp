@@ -174,7 +174,6 @@ void ImportTest::testVsdxMetadataTitle()
   assertXPath(m_doc, "/document/setDocumentMetaData", "keyword", "mytag");
   assertXPath(m_doc, "/document/setDocumentMetaData", "description", "mycomment");
   assertXPath(m_doc, "/document/setDocumentMetaData", "creator", "vmiklos modifier");
-  assertXPathContent(m_doc, "/document/setDocumentMetaData/user-defined[@name='category']", "mycategory");
 }
 
 void ImportTest::testVsdMetadataTitleMs1252()

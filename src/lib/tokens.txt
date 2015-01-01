@@ -235,4 +235,3 @@ dcterms:created
 dcterms:modified
 dc:description
 cp:lastModifiedBy
-cp:category
