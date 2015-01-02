@@ -33,6 +33,9 @@ void XmlDrawingGenerator::startDocument(const librevenge::RVNGPropertyList &prop
 
   xmlTextWriterWriteAttribute(m_writer, BAD_CAST("xmlns:dc"), BAD_CAST("urn:oasis:names:tc:opendocument:xmlns:meta:1.0"));
   xmlTextWriterWriteAttribute(m_writer, BAD_CAST("xmlns:draw"), BAD_CAST("urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"));
+  xmlTextWriterWriteAttribute(m_writer, BAD_CAST("xmlns:fo"), BAD_CAST("urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"));
+  xmlTextWriterWriteAttribute(m_writer, BAD_CAST("xmlns:librevenge"), BAD_CAST("urn:x-documentliberation:xmlns:librevenge:0.0"));
+  xmlTextWriterWriteAttribute(m_writer, BAD_CAST("xmlns:style"), BAD_CAST("urn:oasis:names:tc:opendocument:xmlns:style:1.0"));
   xmlTextWriterWriteAttribute(m_writer, BAD_CAST("xmlns:svg"), BAD_CAST("urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"));
   xmlTextWriterWriteAttribute(m_writer, BAD_CAST("xmlns:meta"), BAD_CAST("urn:oasis:names:tc:opendocument:xmlns:meta:1.0"));
 
