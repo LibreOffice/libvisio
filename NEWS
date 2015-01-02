@@ -1,3 +1,15 @@
+libvisio 0.1.1
+
+- Fix a minor issue reported by Coverity.
+- Check arguments of public functions. Passing NULL no longer causes
+  a crash.
+- Set a minimal thickness for arrow markers to ensure they are visible.
+- Fix a crash when reading a broken file, found with the help of
+  american-fuzzy-lop.
+- Use symbol visibility on Linux. The library only exports the two public
+  functions now.
+- Import document metadata (fdo#86664).
+
 libvisio 0.1.0
 
 - switch to librevenge
