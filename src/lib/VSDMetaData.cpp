@@ -226,7 +226,7 @@ bool libvisio::VSDMetaData::parseTimes(librevenge::RVNGInputStream *input)
   uint64_t modifiedTime = readU64(input);
 
   // modifiedTime is number of 100ns since Jan 1 1601
-  static const uint64_t epoch = 11644473600;
+  static const uint64_t epoch = uint64_t(116444736UL) * 100;
   time_t sec = (modifiedTime / 10000000) - epoch;
   const struct tm *time = localtime(&sec);
   if (time)
