@@ -82,6 +82,9 @@ void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
     case XML_CP_LASTMODIFIEDBY:
       m_metaData.insert("dc:creator", readString(reader, XML_CP_LASTMODIFIEDBY));
       break;
+    case XML_CP_CATEGORY:
+      m_metaData.insert("librevenge:category", readString(reader, XML_CP_CATEGORY));
+      break;
     default:
       break;
     }
