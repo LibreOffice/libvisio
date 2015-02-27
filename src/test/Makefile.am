@@ -23,6 +23,8 @@ EXTRA_DIST = \
 	     data/fdo86664.vsdx \
 	     data/fdo86729-ms1252.vsd \
 	     data/fdo86729-utf8.vsd \
+	     data/dwg.vsd \
+	     data/dwg.vsdx \
 	     $(test_SOURCES)
 
 TESTS = test

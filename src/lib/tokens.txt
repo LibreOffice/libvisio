@@ -234,5 +234,10 @@ dc:title
 dcterms:created
 dcterms:modified
 dc:description
+dc:template
 cp:lastModifiedBy
 cp:category
+Company
+Properties
+Template
+dc:language

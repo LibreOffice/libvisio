@@ -154,18 +154,30 @@ bool libvisio::VSDParser::parseMetaData()
   m_container->seek(0, librevenge::RVNG_SEEK_SET);
   if (!m_container->isStructured())
     return false;
-  librevenge::RVNGInputStream *stream = m_container->getSubStreamByName("\x05SummaryInformation");
-  if (!stream)
-    return false;
-
+  bool result = false;
   VSDMetaData metaData;
-  metaData.parse(stream);
+
+  librevenge::RVNGInputStream *sumaryInfo = m_container->getSubStreamByName("\x05SummaryInformation");
+  if (sumaryInfo)
+  {
+    result = true;
+    metaData.parse(sumaryInfo);
+    delete sumaryInfo;
+  }
+
+  librevenge::RVNGInputStream *docSumaryInfo = m_container->getSubStreamByName("\005DocumentSummaryInformation");
+  if (docSumaryInfo)
+  {
+    result = true;
+    metaData.parse(docSumaryInfo);
+    delete docSumaryInfo;
+  }
+
   m_container->seek(0, librevenge::RVNG_SEEK_SET);
   metaData.parseTimes(m_container);
   m_collector->collectMetaData(metaData.getMetaData());
 
-  delete stream;
-  return true;
+  return result;
 }
 
 bool libvisio::VSDParser::parseDocument(librevenge::RVNGInputStream *input, unsigned shift)

@@ -124,11 +124,15 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxMetadataTitle);
   CPPUNIT_TEST(testVsdMetadataTitleMs1252);
   CPPUNIT_TEST(testVsdMetadataTitleUtf8);
+  CPPUNIT_TEST(testVsdUserDefinedMetadata);
+  CPPUNIT_TEST(testVsdxUserDefinedMetadata);
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();
   void testVsdMetadataTitleMs1252();
   void testVsdMetadataTitleUtf8();
+  void testVsdUserDefinedMetadata();
+  void testVsdxUserDefinedMetadata();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -201,6 +205,23 @@ void ImportTest::testVsdMetadataTitleUtf8()
   // Test <dcterms:created> and <dcterms:modified>.
   assertXPath(m_doc, "/document/setDocumentMetaData", "creation-date", "2014-11-26T09:24:56Z");
   assertXPath(m_doc, "/document/setDocumentMetaData", "date", "2014-11-26T09:24:56Z");
+}
+
+void ImportTest::testVsdUserDefinedMetadata()
+{
+  m_doc = parse("dwg.vsd", m_buffer);
+  assertXPath(m_doc, "/document/setDocumentMetaData", "category", "Category test");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "company", "Company test");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "template", "BASICD_M.VSTX");
+}
+
+void ImportTest::testVsdxUserDefinedMetadata()
+{
+  m_doc = parse("dwg.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/setDocumentMetaData", "category", "Category test");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "company", "Company test");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "language", "en-US");
+  assertXPath(m_doc, "/document/setDocumentMetaData", "template", "BASICD_M.VSTX");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);

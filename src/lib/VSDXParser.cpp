@@ -93,9 +93,7 @@ bool libvisio::VSDXParser::parseMain()
 
     VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
     m_collector = &contentCollector;
-    const libvisio::VSDXRelationship *metaDataRel = rootRels.getRelationshipByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
-    if (metaDataRel)
-      parseMetaData(m_input, metaDataRel->getTarget().c_str());
+    parseMetaData(m_input, rootRels);
 
     if (!parseDocument(m_input, rel->getTarget().c_str()))
       return false;
@@ -280,23 +278,43 @@ bool libvisio::VSDXParser::parseTheme(librevenge::RVNGInputStream *input, const 
   return true;
 }
 
-bool libvisio::VSDXParser::parseMetaData(librevenge::RVNGInputStream *input, const char *name)
+bool libvisio::VSDXParser::parseMetaData(librevenge::RVNGInputStream *input, libvisio::VSDXRelationships &rels)
 {
   if (!input)
     return false;
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
-  if (!stream)
-    return false;
+
+  bool result = false;
 
   VSDXMetaData metaData;
-  metaData.parse(stream);
+  const libvisio::VSDXRelationship *coreProp = rels.getRelationshipByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
+  if (coreProp)
+  {
+    librevenge::RVNGInputStream *stream = input->getSubStreamByName(coreProp->getTarget().c_str());
+    if (stream)
+    {
+      result = true;
+      metaData.parse(stream);
+      delete stream;
+    }
+  }
+
+  const libvisio::VSDXRelationship *extendedProp = rels.getRelationshipByType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties");
+  if (extendedProp)
+  {
+    librevenge::RVNGInputStream *stream = input->getSubStreamByName(extendedProp->getTarget().c_str());
+    if (stream)
+    {
+      result = true;
+      metaData.parse(stream);
+      delete stream;
+    }
+  }
   m_collector->collectMetaData(metaData.getMetaData());
 
-  delete stream;
-  return true;
+  return result;
 }
 
 void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input, VSDXRelationships &rels)
