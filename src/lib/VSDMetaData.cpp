@@ -9,6 +9,8 @@
 
 #include "VSDMetaData.h"
 #include <cmath>
+#include <cstring>
+#include <string>
 #include <unicode/ucnv.h>
 #include <ctime>
 
@@ -20,6 +22,60 @@ libvisio::VSDMetaData::VSDMetaData()
 libvisio::VSDMetaData::~VSDMetaData()
 {
 }
+
+enum PIDDSI
+{
+    PIDDSI_CODEPAGE          = 0x00000001,
+    PIDDSI_CATEGORY          = 0x00000002,
+    PIDDSI_PRESFORMAT        = 0x00000003,
+    PIDDSI_BYTECOUNT         = 0x00000004,
+    PIDDSI_LINECOUNT         = 0x00000005,
+    PIDDSI_PARACOUNT         = 0x00000006,
+    PIDDSI_SLIDECOUNT        = 0x00000007,
+    PIDDSI_NOTECOUNT         = 0x00000008,
+    PIDDSI_HIDDENCOUNT       = 0x00000009,
+    PIDDSI_MMCLIPCOUNT       = 0x0000000A,
+    PIDDSI_SCALE             = 0x0000000B,
+    PIDDSI_HEADINGPAIR       = 0x0000000C,
+    PIDDSI_DOCPARTS          = 0x0000000D,
+    PIDDSI_MANAGER           = 0x0000000E,
+    PIDDSI_COMPANY           = 0x0000000F,
+    PIDDSI_LINKSDIRTY        = 0x00000010,
+    PIDDSI_CCHWITHSPACES     = 0x00000011,
+    PIDDSI_SHAREDDOC         = 0x00000013,
+    PIDDSI_LINKBASE          = 0x00000014,
+    PIDDSI_HLINKS            = 0x00000015,
+    PIDDSI_HYPERLINKSCHANGED = 0x00000016,
+    PIDDSI_VERSION           = 0x00000017,
+    PIDDSI_DIGSIG            = 0x00000018,
+    PIDDSI_CONTENTTYPE       = 0x0000001A,
+    PIDDSI_CONTENTSTATUS     = 0x0000001B,
+    PIDDSI_LANGUAGE          = 0x0000001C,
+    PIDDSI_DOCVERSION        = 0x0000001D
+};
+
+enum PIDSI
+{
+  CODEPAGE_PROPERTY_IDENTIFIER = 0x00000001,
+  PIDSI_TITLE                  = 0x00000002,
+  PIDSI_SUBJECT                = 0x00000003,
+  PIDSI_AUTHOR                 = 0x00000004,
+  PIDSI_KEYWORDS               = 0x00000005,
+  PIDSI_COMMENTS               = 0x00000006,
+  PIDSI_TEMPLATE               = 0x00000007,
+  PIDSI_LASTAUTHOR             = 0x00000008,
+  PIDSI_REVNUMBER              = 0x00000009,
+  PIDSI_EDITTIME               = 0x0000000A,
+  PIDSI_LASTPRINTED            = 0x0000000B,
+  PIDSI_CREATE_DTM             = 0x0000000C,
+  PIDSI_LASTSAVE_DTM           = 0x0000000D,
+  PIDSI_PAGECOUNT              = 0x0000000E,
+  PIDSI_WORDCOUNT              = 0x0000000F,
+  PIDSI_CHARCOUNT              = 0x00000010,
+  PIDSI_THUMBNAIL              = 0x00000011,
+  PIDSI_APPNAME                = 0x00000012,
+  PIDSI_DOC_SECURITY           = 0x00000013
+};
 
 bool libvisio::VSDMetaData::parse(librevenge::RVNGInputStream *input)
 {
@@ -44,12 +100,24 @@ void libvisio::VSDMetaData::readPropertySetStream(librevenge::RVNGInputStream *i
   // NumPropertySets
   input->seek(4, librevenge::RVNG_SEEK_CUR);
   // FMTID0
-  input->seek(16, librevenge::RVNG_SEEK_CUR);
+  //input->seek(16, librevenge::RVNG_SEEK_CUR);
+  uint32_t data1 = readU32(input);
+  uint16_t data2 = readU16(input);
+  uint16_t data3 = readU16(input);
+  uint8_t data4[8];
+  for (int i = 0; i < 8; i++)
+  {
+    data4[i] = readU8(input);
+  }
+  char FMTID0[36];
+  sprintf(FMTID0, "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", data1, data2, data3,
+          data4[0], data4[1], data4[2], data4[3], data4[4], data4[5], data4[6], data4[7]);
+
   uint32_t offset0 = readU32(input);
-  readPropertySet(input, offset0);
+  readPropertySet(input, offset0, FMTID0);
 }
 
-void libvisio::VSDMetaData::readPropertySet(librevenge::RVNGInputStream *input, uint32_t offset)
+void libvisio::VSDMetaData::readPropertySet(librevenge::RVNGInputStream *input, uint32_t offset, char *FMTID)
 {
   input->seek(offset, librevenge::RVNG_SEEK_SET);
 
@@ -62,17 +130,15 @@ void libvisio::VSDMetaData::readPropertySet(librevenge::RVNGInputStream *input, 
   {
     if (i >= m_idsAndOffsets.size())
       break;
-    readTypedPropertyValue(input, i, offset + m_idsAndOffsets[i].second);
+    readTypedPropertyValue(input, i, offset + m_idsAndOffsets[i].second, FMTID);
   }
 }
-
-#define CODEPAGE_PROPERTY_IDENTIFIER 0x00000001
 
 uint32_t libvisio::VSDMetaData::getCodePage()
 {
   for (size_t i = 0; i < m_idsAndOffsets.size(); ++i)
   {
-    if (m_idsAndOffsets[i].first == CODEPAGE_PROPERTY_IDENTIFIER)
+    if (m_idsAndOffsets[i].first == PIDSI::CODEPAGE_PROPERTY_IDENTIFIER)
     {
       if (i >= m_typedPropertyValues.size())
         break;
@@ -93,13 +159,10 @@ void libvisio::VSDMetaData::readPropertyIdentifierAndOffset(librevenge::RVNGInpu
 #define VT_I2 0x0002
 #define VT_LPSTR 0x001E
 
-#define PIDSI_TITLE 0x00000002
-#define PIDSI_SUBJECT 0x00000003
-#define PIDSI_AUTHOR 0x00000004
-#define PIDSI_KEYWORDS 0x00000005
-#define PIDSI_COMMENTS 0x00000006
-
-void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *input, uint32_t index, uint32_t offset)
+void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *input,
+                                                   uint32_t index,
+                                                   uint32_t offset,
+                                                   char *FMTID)
 {
   input->seek(offset, librevenge::RVNG_SEEK_SET);
   uint16_t type = readU16(input);
@@ -119,24 +182,51 @@ void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *
       if (index >= m_idsAndOffsets.size())
         return;
 
-      switch (m_idsAndOffsets[index].first)
+      if (!strcmp(FMTID, "f29f85e0-4ff9-1068-ab91-08002b27b3d9"))
       {
-      case PIDSI_TITLE:
-        m_metaData.insert("dc:title", string);
-        break;
-      case PIDSI_SUBJECT:
-        m_metaData.insert("dc:subject", string);
-        break;
-      case PIDSI_AUTHOR:
-        m_metaData.insert("meta:initial-creator", string);
-        m_metaData.insert("dc:creator", string);
-        break;
-      case PIDSI_KEYWORDS:
-        m_metaData.insert("meta:keyword", string);
-        break;
-      case PIDSI_COMMENTS:
-        m_metaData.insert("dc:description", string);
-        break;
+        switch (m_idsAndOffsets[index].first)
+        {
+        case PIDSI::PIDSI_TITLE:
+          m_metaData.insert("dc:title", string);
+          break;
+        case PIDSI::PIDSI_SUBJECT:
+          m_metaData.insert("dc:subject", string);
+          break;
+        case PIDSI::PIDSI_AUTHOR:
+          m_metaData.insert("meta:initial-creator", string);
+          m_metaData.insert("dc:creator", string);
+          break;
+        case PIDSI::PIDSI_KEYWORDS:
+          m_metaData.insert("meta:keyword", string);
+          break;
+        case PIDSI::PIDSI_COMMENTS:
+          m_metaData.insert("dc:description", string);
+          break;
+        case PIDSI::PIDSI_TEMPLATE:
+          std::string templateHref(string.cstr());
+          unsigned found = templateHref.find_last_of("/\\");
+          if (found != std::string::npos)
+            string = librevenge::RVNGString(templateHref.substr(found+1).c_str());
+          m_metaData.insert("librevenge:template", string);
+          break;
+        }
+      }
+      else if (!strcmp(FMTID,"d5cdd502-2e9c-101b-9397-08002b2cf9ae"))
+        {
+        switch (m_idsAndOffsets[index].first)
+        {
+        case PIDDSI::PIDDSI_CATEGORY:
+          m_metaData.insert("librevenge:category", string);
+          break;
+        case PIDDSI::PIDDSI_LINECOUNT:
+          // this should actually be PIDDSI::PIDDSI_COMPANY but this
+          // is what company is mapped to
+          m_metaData.insert("librevenge:company", string);
+          break;
+        case PIDDSI::PIDDSI_LANGUAGE:
+          m_metaData.insert("dc:language", string);
+          break;
+        }
       }
     }
   }

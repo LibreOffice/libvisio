@@ -10,6 +10,7 @@
 #include "VSDXMetaData.h"
 #include "VSDXMLTokenMap.h"
 #include "libvisio_utils.h"
+#include <string>
 
 libvisio::VSDXMetaData::VSDXMetaData()
   : m_metaData()
@@ -82,14 +83,31 @@ void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
     case XML_CP_LASTMODIFIEDBY:
       m_metaData.insert("dc:creator", readString(reader, XML_CP_LASTMODIFIEDBY));
       break;
+    case XML_DC_LANGUAGE:
+      m_metaData.insert("dc:language", readString(reader, XML_DC_LANGUAGE));
+      break;
     case XML_CP_CATEGORY:
       m_metaData.insert("librevenge:category", readString(reader, XML_CP_CATEGORY));
       break;
+    case XML_COMPANY:
+      m_metaData.insert("librevenge:company", readString(reader, XML_COMPANY));
+      break;
+    case XML_TEMPLATE:
+      {
+        librevenge::RVNGString templateHrefRVNG = readString(reader, XML_TEMPLATE);
+        std::string templateHref(templateHrefRVNG.cstr());
+        unsigned found = templateHref.find_last_of("/\\");
+        if (found != std::string::npos)
+          templateHrefRVNG = librevenge::RVNGString(templateHref.substr(found+1).c_str());
+        m_metaData.insert("librevenge:template", templateHrefRVNG);
+        break;
+      }
     default:
       break;
     }
   }
-  while ((XML_CP_COREPROPERTIES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_CP_COREPROPERTIES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType ||
+          XML_PROPERTIES != tokenId) && 1 == ret);
 }
 
 bool libvisio::VSDXMetaData::parse(librevenge::RVNGInputStream *input)
@@ -110,6 +128,7 @@ bool libvisio::VSDXMetaData::parse(librevenge::RVNGInputStream *input)
       switch (tokenId)
       {
       case XML_CP_COREPROPERTIES:
+      case XML_PROPERTIES:
         readCoreProperties(reader);
         break;
       default:

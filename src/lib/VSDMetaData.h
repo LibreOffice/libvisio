@@ -34,9 +34,9 @@ private:
   VSDMetaData &operator=(const VSDMetaData &);
 
   void readPropertySetStream(librevenge::RVNGInputStream *input);
-  void readPropertySet(librevenge::RVNGInputStream *input, uint32_t offset);
+  void readPropertySet(librevenge::RVNGInputStream *input, uint32_t offset, char *FMTID);
   void readPropertyIdentifierAndOffset(librevenge::RVNGInputStream *input);
-  void readTypedPropertyValue(librevenge::RVNGInputStream *input, uint32_t index, uint32_t offset);
+  void readTypedPropertyValue(librevenge::RVNGInputStream *input, uint32_t index, uint32_t offset, char *FMTID);
   librevenge::RVNGString readCodePageString(librevenge::RVNGInputStream *input);
 
   uint32_t getCodePage();
