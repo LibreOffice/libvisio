@@ -23,3 +23,5 @@ dist-hook:
 tags:
 	ctags --c++-kinds=+p --fields=+iaS --extra=+q -R --totals=yes *
 
+astyle:
+	astyle --options=astyle.options \*.cpp \*.h
