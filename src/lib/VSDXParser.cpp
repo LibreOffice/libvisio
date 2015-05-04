@@ -1047,6 +1047,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
           m_shape.m_txtxform = new XForm();
         ret = readDoubleData(m_shape.m_txtxform->angle, reader);
       }
+      break;
     case XML_BEGINX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
@@ -1054,6 +1055,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
           m_shape.m_xform1d = new XForm1D();
         ret = readDoubleData(m_shape.m_xform1d->beginX, reader);
       }
+      break;
     case XML_BEGINY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
@@ -1061,6 +1063,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
           m_shape.m_xform1d = new XForm1D();
         ret = readDoubleData(m_shape.m_xform1d->beginY, reader);
       }
+      break;
     case XML_ENDX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
@@ -1068,6 +1071,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
           m_shape.m_xform1d = new XForm1D();
         ret = readDoubleData(m_shape.m_xform1d->endX, reader);
       }
+      break;
     case XML_ENDY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
