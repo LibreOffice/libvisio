@@ -126,6 +126,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdMetadataTitleUtf8);
   CPPUNIT_TEST(testVsdUserDefinedMetadata);
   CPPUNIT_TEST(testVsdxUserDefinedMetadata);
+  CPPUNIT_TEST(testVsdxImportBgColorFromTheme);
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();
@@ -133,6 +134,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdMetadataTitleUtf8();
   void testVsdUserDefinedMetadata();
   void testVsdxUserDefinedMetadata();
+  void testVsdxImportBgColorFromTheme();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -222,6 +224,18 @@ void ImportTest::testVsdxUserDefinedMetadata()
   assertXPath(m_doc, "/document/setDocumentMetaData", "company", "Company test");
   assertXPath(m_doc, "/document/setDocumentMetaData", "language", "en-US");
   assertXPath(m_doc, "/document/setDocumentMetaData", "template", "BASICD_M.VSTX");
+}
+
+void ImportTest::testVsdxImportBgColorFromTheme()
+{
+  m_doc = parse("color-boxes.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#759fcc");
+  assertXPath(m_doc, "/document/page/layer[2]//setStyle[2]", "fill-color", "#70ad47");
+  assertXPath(m_doc, "/document/page/layer[3]//setStyle[2]", "fill-color", "#fec000");
+  assertXPath(m_doc, "/document/page/layer[4]//setStyle[2]", "fill-color", "#41719c");
+  assertXPath(m_doc, "/document/page/layer[5]//setStyle[2]", "fill-color", "#ed7d31");
+  assertXPath(m_doc, "/document/page/layer[6]//setStyle[2]", "fill-color", "#bdd0e9");
+  assertXPath(m_doc, "/document/page/layer[7]//setStyle[2]", "fill-color", "#5b9bd5");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
