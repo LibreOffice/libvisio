@@ -66,6 +66,30 @@ void assertXPath(xmlDocPtr doc, const librevenge::RVNGString &xpath, const libre
   CPPUNIT_ASSERT_EQUAL_MESSAGE(message.cstr(), expectedValue, actualValue);
 }
 
+/// Assert that xpath exists, and does not contain the given attribute
+void assertXPathNoAttribute(xmlDocPtr doc, const librevenge::RVNGString &xpath, const librevenge::RVNGString &attribute)
+{
+  xmlXPathObjectPtr xpathobject = getXPathNode(doc, xpath);
+  xmlNodeSetPtr nodeset = xpathobject->nodesetval;
+  librevenge::RVNGString message1("In <");
+  message1.append(doc->name);
+  message1.append(">, XPath '");
+  message1.append(xpath);
+  message1.append("' number of nodes is incorrect");
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(message1.cstr(), 1, xmlXPathNodeSetGetLength(nodeset));
+  xmlNodePtr node = nodeset->nodeTab[0];
+  librevenge::RVNGString message2("In <");
+  message2.append(doc->name);
+  message2.append(">, XPath '");
+  message2.append(xpath);
+  message2.append("' unexpected '");
+  message2.append(attribute);
+  message2.append("' attribute");
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(message2.cstr(), static_cast<xmlChar*>(0), xmlGetProp(node, BAD_CAST(attribute.cstr())));
+  xmlXPathFreeObject(xpathobject);
+}
+
+
 #if 0 // keep for future use
 /// Same as the assertXPathContent(), but don't assert: return the string instead.
 librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath)
@@ -127,6 +151,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdUserDefinedMetadata);
   CPPUNIT_TEST(testVsdxUserDefinedMetadata);
   CPPUNIT_TEST(testVsdxImportBgColorFromTheme);
+  CPPUNIT_TEST(testVsdxCharBgColor);
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();
@@ -135,6 +160,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdUserDefinedMetadata();
   void testVsdxUserDefinedMetadata();
   void testVsdxImportBgColorFromTheme();
+  void testVsdxCharBgColor();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -236,6 +262,14 @@ void ImportTest::testVsdxImportBgColorFromTheme()
   assertXPath(m_doc, "/document/page/layer[5]//setStyle[2]", "fill-color", "#ed7d31");
   assertXPath(m_doc, "/document/page/layer[6]//setStyle[2]", "fill-color", "#bdd0e9");
   assertXPath(m_doc, "/document/page/layer[7]//setStyle[2]", "fill-color", "#5b9bd5");
+}
+
+void ImportTest::testVsdxCharBgColor()
+{
+  m_doc = parse("bgcolor.vsdx", m_buffer);
+  assertXPathNoAttribute(m_doc, "/document/page/layer/textObject/paragraph/span", "background-color");
+  assertXPath(m_doc, "/document/page/layer/layer[2]/textObject/paragraph/span", "background-color", "#9dbb61");
+  assertXPath(m_doc, "/document/page/layer/layer[2]/layer[2]/textObject/paragraph/span", "background-color", "#9dbb61");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
