@@ -426,7 +426,7 @@ struct VSDTextBlockStyle
 {
   VSDTextBlockStyle() :
     leftMargin(0.0), rightMargin(0.0), topMargin(0.0), bottomMargin(0.0), verticalAlign(1),
-    isTextBkgndFilled(true), textBkgndColour(0xff,0xff,0xff,0), defaultTabStop(0.5), textDirection(0) {}
+    isTextBkgndFilled(false), textBkgndColour(0xff,0xff,0xff,0), defaultTabStop(0.5), textDirection(0) {}
   VSDTextBlockStyle(double lm, double rm, double tm, double bm, unsigned char va,
                     bool isBgFilled, Colour bgClr, double defTab, unsigned char td) :
     leftMargin(lm), rightMargin(rm), topMargin(tm), bottomMargin(bm), verticalAlign(va),

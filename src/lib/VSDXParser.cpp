@@ -939,7 +939,7 @@ int libvisio::VSDXParser::getElementDepth(xmlTextReaderPtr reader)
 void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
 {
   // Text block properties
-  long bgClrId = 0;
+  long bgClrId = -1;
 
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
@@ -1213,6 +1213,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
             textBkgndColour = Colour(0xff, 0xff, 0xff, 0);
         }
         m_shape.m_textBlockStyle.textBkgndColour = textBkgndColour;
+        m_shape.m_textBlockStyle.isTextBkgndFilled = true;
       }
       break;
     case XML_DEFAULTTABSTOP:
