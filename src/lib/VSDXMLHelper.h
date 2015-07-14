@@ -12,6 +12,7 @@
 
 #include <map>
 #include <string>
+#include <boost/shared_ptr.hpp>
 #include <librevenge-stream/librevenge-stream.h>
 #include <libxml/xmlreader.h>
 #include "VSDTypes.h"
@@ -28,12 +29,16 @@ xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input,
                                     int options);
 
 Colour xmlStringToColour(const xmlChar *s);
+Colour xmlStringToColour(const boost::shared_ptr<xmlChar> &s);
 
 long xmlStringToLong(const xmlChar *s);
+long xmlStringToLong(const boost::shared_ptr<xmlChar> &s);
 
 double xmlStringToDouble(const xmlChar *s);
+double xmlStringToDouble(const boost::shared_ptr<xmlChar> &s);
 
 bool xmlStringToBool(const xmlChar *s);
+bool xmlStringToBool(const boost::shared_ptr<xmlChar> &s);
 
 
 class VSDCollector;

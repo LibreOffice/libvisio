@@ -120,6 +120,11 @@ libvisio::Colour libvisio::xmlStringToColour(const xmlChar *s)
   return Colour((val & 0xff0000) >> 16, (val & 0xff00) >> 8, val & 0xff, 0);
 }
 
+libvisio::Colour libvisio::xmlStringToColour(const boost::shared_ptr<xmlChar> &s)
+{
+  return xmlStringToColour(s.get());
+}
+
 long libvisio::xmlStringToLong(const xmlChar *s)
 {
   using boost::lexical_cast;
@@ -139,6 +144,11 @@ long libvisio::xmlStringToLong(const xmlChar *s)
   return 0;
 }
 
+long libvisio::xmlStringToLong(const boost::shared_ptr<xmlChar> &s)
+{
+  return xmlStringToLong(s.get());
+}
+
 double libvisio::xmlStringToDouble(const xmlChar *s) try
 {
   if (xmlStrEqual(s, BAD_CAST("Themed")))
@@ -150,6 +160,11 @@ catch (const boost::bad_lexical_cast &)
 {
   VSD_DEBUG_MSG(("Throwing XmlParserException\n"));
   throw XmlParserException();
+}
+
+double libvisio::xmlStringToDouble(const boost::shared_ptr<xmlChar> &s)
+{
+  return xmlStringToDouble(s.get());
 }
 
 bool libvisio::xmlStringToBool(const xmlChar *s)
@@ -169,6 +184,11 @@ bool libvisio::xmlStringToBool(const xmlChar *s)
   }
   return value;
 
+}
+
+bool libvisio::xmlStringToBool(const boost::shared_ptr<xmlChar> &s)
+{
+  return xmlStringToBool(s.get());
 }
 
 // VSDXRelationship
