@@ -10,6 +10,8 @@
 #ifndef __LIBVISIO_UTILS_H__
 #define __LIBVISIO_UTILS_H__
 
+#include <boost/shared_ptr.hpp>
+
 #include "VSDTypes.h"
 
 #ifdef _MSC_VER
@@ -67,6 +69,8 @@ typedef unsigned __int64 uint64_t;
 
 namespace libvisio
 {
+
+typedef boost::shared_ptr<librevenge::RVNGInputStream> RVNGInputStreamPtr_t;
 
 uint8_t readU8(librevenge::RVNGInputStream *input);
 uint16_t readU16(librevenge::RVNGInputStream *input);

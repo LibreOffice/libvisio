@@ -60,53 +60,46 @@ libvisio::VSDXParser::~VSDXParser()
 {
 }
 
-bool libvisio::VSDXParser::parseMain()
+bool libvisio::VSDXParser::parseMain() try
 {
   if (!m_input || !m_input->isStructured())
     return false;
 
-  librevenge::RVNGInputStream *tmpInput = 0;
-  try
-  {
-    tmpInput = m_input->getSubStreamByName("_rels/.rels");
-    if (!tmpInput)
-      return false;
-
-    libvisio::VSDXRelationships rootRels(tmpInput);
-    delete tmpInput;
-    tmpInput = 0;
-
-    // Check whether the relationship points to a Visio document stream
-    const libvisio::VSDXRelationship *rel = rootRels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/document");
-    if (!rel)
-      return false;
-
-    std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
-    std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
-    std::vector<std::list<unsigned> > documentPageShapeOrders;
-
-    VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
-    m_collector = &stylesCollector;
-    if (!parseDocument(m_input, rel->getTarget().c_str()))
-      return false;
-
-    VSDStyles styles = stylesCollector.getStyleSheets();
-
-    VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
-    m_collector = &contentCollector;
-    parseMetaData(m_input, rootRels);
-
-    if (!parseDocument(m_input, rel->getTarget().c_str()))
-      return false;
-
-    return true;
-  }
-  catch (...)
-  {
-    if (tmpInput)
-      delete tmpInput;
+  RVNGInputStreamPtr_t tmpInput;
+  tmpInput.reset(m_input->getSubStreamByName("_rels/.rels"));
+  if (!tmpInput)
     return false;
-  }
+
+  libvisio::VSDXRelationships rootRels(tmpInput.get());
+
+  // Check whether the relationship points to a Visio document stream
+  const libvisio::VSDXRelationship *rel = rootRels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/document");
+  if (!rel)
+    return false;
+
+  std::vector<std::map<unsigned, XForm> > groupXFormsSequence;
+  std::vector<std::map<unsigned, unsigned> > groupMembershipsSequence;
+  std::vector<std::list<unsigned> > documentPageShapeOrders;
+
+  VSDStylesCollector stylesCollector(groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders);
+  m_collector = &stylesCollector;
+  if (!parseDocument(m_input, rel->getTarget().c_str()))
+    return false;
+
+  VSDStyles styles = stylesCollector.getStyleSheets();
+
+  VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
+  m_collector = &contentCollector;
+  parseMetaData(m_input, rootRels);
+
+  if (!parseDocument(m_input, rel->getTarget().c_str()))
+    return false;
+
+  return true;
+}
+catch (...)
+{
+  return false;
 }
 
 bool libvisio::VSDXParser::extractStencils()
