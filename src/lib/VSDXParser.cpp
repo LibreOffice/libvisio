@@ -115,15 +115,13 @@ bool libvisio::VSDXParser::parseDocument(librevenge::RVNGInputStream *input, con
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  const RVNGInputStreamPtr_t stream(input->getSubStreamByName(name));
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!stream)
     return false;
-  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  const RVNGInputStreamPtr_t relStream(input->getSubStreamByName(getRelationshipsForTarget(name).c_str()));
   input->seek(0, librevenge::RVNG_SEEK_SET);
-  VSDXRelationships rels(relStream);
-  if (relStream)
-    delete relStream;
+  VSDXRelationships rels(relStream.get());
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
   const VSDXRelationship *rel = rels.getRelationshipByType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme");
@@ -136,7 +134,7 @@ bool libvisio::VSDXParser::parseDocument(librevenge::RVNGInputStream *input, con
     input->seek(0, librevenge::RVNG_SEEK_SET);
   }
 
-  processXmlDocument(stream, rels);
+  processXmlDocument(stream.get(), rels);
 
   rel = rels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/masters");
   if (rel)
@@ -158,8 +156,6 @@ bool libvisio::VSDXParser::parseDocument(librevenge::RVNGInputStream *input, con
     input->seek(0, librevenge::RVNG_SEEK_SET);
   }
 
-  if (stream)
-    delete stream;
   return true;
 }
 
@@ -170,19 +166,16 @@ bool libvisio::VSDXParser::parseMasters(librevenge::RVNGInputStream *input, cons
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  const RVNGInputStreamPtr_t stream(input->getSubStreamByName(name));
   if (!stream)
     return false;
-  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  const RVNGInputStreamPtr_t relStream(input->getSubStreamByName(getRelationshipsForTarget(name).c_str()));
   input->seek(0, librevenge::RVNG_SEEK_SET);
-  VSDXRelationships rels(relStream);
-  if (relStream)
-    delete relStream;
+  VSDXRelationships rels(relStream.get());
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  processXmlDocument(stream, rels);
+  processXmlDocument(stream.get(), rels);
 
-  delete stream;
   return true;
 }
 
@@ -193,19 +186,16 @@ bool libvisio::VSDXParser::parseMaster(librevenge::RVNGInputStream *input, const
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  const RVNGInputStreamPtr_t stream(input->getSubStreamByName(name));
   if (!stream)
     return false;
-  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  const RVNGInputStreamPtr_t relStream(input->getSubStreamByName(getRelationshipsForTarget(name).c_str()));
   input->seek(0, librevenge::RVNG_SEEK_SET);
-  VSDXRelationships rels(relStream);
-  if (relStream)
-    delete relStream;
+  VSDXRelationships rels(relStream.get());
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  processXmlDocument(stream, rels);
+  processXmlDocument(stream.get(), rels);
 
-  delete stream;
   return true;
 }
 
@@ -216,19 +206,16 @@ bool libvisio::VSDXParser::parsePages(librevenge::RVNGInputStream *input, const 
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  const RVNGInputStreamPtr_t stream(input->getSubStreamByName(name));
   if (!stream)
     return false;
-  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  const RVNGInputStreamPtr_t relStream(input->getSubStreamByName(getRelationshipsForTarget(name).c_str()));
   input->seek(0, librevenge::RVNG_SEEK_SET);
-  VSDXRelationships rels(relStream);
-  if (relStream)
-    delete relStream;
+  VSDXRelationships rels(relStream.get());
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  processXmlDocument(stream, rels);
+  processXmlDocument(stream.get(), rels);
 
-  delete stream;
   return true;
 }
 
@@ -239,19 +226,16 @@ bool libvisio::VSDXParser::parsePage(librevenge::RVNGInputStream *input, const c
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  const RVNGInputStreamPtr_t stream(input->getSubStreamByName(name));
   if (!stream)
     return false;
-  librevenge::RVNGInputStream *relStream = input->getSubStreamByName(getRelationshipsForTarget(name).c_str());
+  const RVNGInputStreamPtr_t relStream(input->getSubStreamByName(getRelationshipsForTarget(name).c_str()));
   input->seek(0, librevenge::RVNG_SEEK_SET);
-  VSDXRelationships rels(relStream);
-  if (relStream)
-    delete relStream;
+  VSDXRelationships rels(relStream.get());
   rels.rebaseTargets(getTargetBaseDirectory(name).c_str());
 
-  processXmlDocument(stream, rels);
+  processXmlDocument(stream.get(), rels);
 
-  delete stream;
   return true;
 }
 
@@ -262,13 +246,12 @@ bool libvisio::VSDXParser::parseTheme(librevenge::RVNGInputStream *input, const 
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
     return false;
-  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  const RVNGInputStreamPtr_t stream(input->getSubStreamByName(name));
   if (!stream)
     return false;
 
-  m_currentTheme.parse(stream);
+  m_currentTheme.parse(stream.get());
 
-  delete stream;
   return true;
 }
 
@@ -286,24 +269,22 @@ bool libvisio::VSDXParser::parseMetaData(librevenge::RVNGInputStream *input, lib
   const libvisio::VSDXRelationship *coreProp = rels.getRelationshipByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
   if (coreProp)
   {
-    librevenge::RVNGInputStream *stream = input->getSubStreamByName(coreProp->getTarget().c_str());
+    const RVNGInputStreamPtr_t stream(input->getSubStreamByName(coreProp->getTarget().c_str()));
     if (stream)
     {
       result = true;
-      metaData.parse(stream);
-      delete stream;
+      metaData.parse(stream.get());
     }
   }
 
   const libvisio::VSDXRelationship *extendedProp = rels.getRelationshipByType("http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties");
   if (extendedProp)
   {
-    librevenge::RVNGInputStream *stream = input->getSubStreamByName(extendedProp->getTarget().c_str());
+    const RVNGInputStreamPtr_t stream(input->getSubStreamByName(extendedProp->getTarget().c_str()));
     if (stream)
     {
       result = true;
-      metaData.parse(stream);
-      delete stream;
+      metaData.parse(stream.get());
     }
   }
   m_collector->collectMetaData(metaData.getMetaData());
@@ -536,7 +517,7 @@ void libvisio::VSDXParser::extractBinaryData(librevenge::RVNGInputStream *input,
   if (!input || !input->isStructured())
     return;
   input->seek(0, librevenge::RVNG_SEEK_SET);
-  librevenge::RVNGInputStream *stream = input->getSubStreamByName(name);
+  const RVNGInputStreamPtr_t stream(input->getSubStreamByName(name));
   if (!stream)
     return;
   while (true)
@@ -548,7 +529,6 @@ void libvisio::VSDXParser::extractBinaryData(librevenge::RVNGInputStream *input,
     if (stream->isEnd())
       break;
   }
-  delete stream;
   VSD_DEBUG_MSG(("%s\n", m_currentBinaryData.getBase64Data().cstr()));
 }
 
