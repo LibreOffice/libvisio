@@ -12,6 +12,7 @@
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/spirit/include/classic.hpp>
 #include "VSDXMLParserBase.h"
 #include "libvisio_utils.h"
@@ -2118,12 +2119,9 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextRea
 unsigned libvisio::VSDXMLParserBase::getIX(xmlTextReaderPtr reader)
 {
   unsigned ix = MINUS_ONE;
-  xmlChar *ixString = xmlTextReaderGetAttribute(reader, BAD_CAST("IX"));
+  const boost::shared_ptr<xmlChar> ixString(xmlTextReaderGetAttribute(reader, BAD_CAST("IX")), xmlFree);
   if (ixString)
-  {
-    ix = (unsigned)xmlStringToLong(ixString);
-    xmlFree(ixString);
-  }
+    ix = (unsigned)xmlStringToLong(ixString.get());
   return ix;
 }
 
