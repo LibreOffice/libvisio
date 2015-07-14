@@ -8,8 +8,13 @@
  */
 
 #include "VSDXTheme.h"
+
+#include <boost/shared_ptr.hpp>
+
 #include "VSDXMLTokenMap.h"
 #include "libvisio_utils.h"
+
+using boost::shared_ptr;
 
 libvisio::VSDXVariationClrScheme::VSDXVariationClrScheme()
   : m_varColor1()
@@ -96,7 +101,7 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSrgbClr(xmlTextReader
   boost::optional<libvisio::Colour> retVal;
   if (XML_A_SRGBCLR == getElementToken(reader))
   {
-    xmlChar *val = xmlTextReaderGetAttribute(reader, BAD_CAST("val"));
+    const shared_ptr<xmlChar> val(xmlTextReaderGetAttribute(reader, BAD_CAST("val")), xmlFree);
     if (val)
     {
       try
@@ -106,7 +111,6 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSrgbClr(xmlTextReader
       catch (const XmlParserException &)
       {
       }
-      xmlFree(val);
     }
   }
   return retVal;
@@ -117,7 +121,7 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSysClr(xmlTextReaderP
   boost::optional<libvisio::Colour> retVal;
   if (XML_A_SYSCLR == getElementToken(reader))
   {
-    xmlChar *lastClr = xmlTextReaderGetAttribute(reader, BAD_CAST("lastClr"));
+    const shared_ptr<xmlChar> lastClr(xmlTextReaderGetAttribute(reader, BAD_CAST("lastClr")), xmlFree);
     if (lastClr)
     {
       try
@@ -127,7 +131,6 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSysClr(xmlTextReaderP
       catch (const XmlParserException &)
       {
       }
-      xmlFree(lastClr);
     }
   }
   return retVal;
