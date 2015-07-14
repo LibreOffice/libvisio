@@ -114,7 +114,7 @@ protected:
   // parser of one pass
   bool parseDocument(librevenge::RVNGInputStream *input, unsigned shift);
 
-  bool parseMetaData();
+  void parseMetaData();
 
   // Stream handlers
   void handleStreams(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned level);
