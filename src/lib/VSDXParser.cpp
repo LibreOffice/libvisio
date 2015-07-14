@@ -256,15 +256,13 @@ bool libvisio::VSDXParser::parseTheme(librevenge::RVNGInputStream *input, const 
   return true;
 }
 
-bool libvisio::VSDXParser::parseMetaData(librevenge::RVNGInputStream *input, libvisio::VSDXRelationships &rels)
+void libvisio::VSDXParser::parseMetaData(librevenge::RVNGInputStream *input, libvisio::VSDXRelationships &rels) try
 {
   if (!input)
-    return false;
+    return;
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
-    return false;
-
-  bool result = false;
+    return;
 
   VSDXMetaData metaData;
   const libvisio::VSDXRelationship *coreProp = rels.getRelationshipByType("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
@@ -273,7 +271,6 @@ bool libvisio::VSDXParser::parseMetaData(librevenge::RVNGInputStream *input, lib
     const RVNGInputStreamPtr_t stream(input->getSubStreamByName(coreProp->getTarget().c_str()));
     if (stream)
     {
-      result = true;
       metaData.parse(stream.get());
     }
   }
@@ -284,13 +281,14 @@ bool libvisio::VSDXParser::parseMetaData(librevenge::RVNGInputStream *input, lib
     const RVNGInputStreamPtr_t stream(input->getSubStreamByName(extendedProp->getTarget().c_str()));
     if (stream)
     {
-      result = true;
       metaData.parse(stream.get());
     }
   }
   m_collector->collectMetaData(metaData.getMetaData());
-
-  return result;
+}
+catch (...)
+{
+  // Ignore any exceptions in metadata. They are not important enough to stop parsing.
 }
 
 void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input, VSDXRelationships &rels)
