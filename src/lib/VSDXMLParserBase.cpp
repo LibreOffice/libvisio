@@ -1197,8 +1197,8 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
     case XML_FONT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
-        xmlChar *stringValue = readStringData(reader);
-        if (stringValue && !xmlStrEqual(stringValue, BAD_CAST("Themed")))
+        const shared_ptr<xmlChar> stringValue(readStringData(reader), xmlFree);
+        if (stringValue && !xmlStrEqual(stringValue.get(), BAD_CAST("Themed")))
         {
           try
           {
@@ -1207,11 +1207,11 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
             if (iter != m_fonts.end())
               font = iter->second;
             else
-              font = VSDName(librevenge::RVNGBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
+              font = VSDName(librevenge::RVNGBinaryData(stringValue.get(), xmlStrlen(stringValue.get())), VSD_TEXT_UTF8);
           }
           catch (const XmlParserException &)
           {
-            font = VSDName(librevenge::RVNGBinaryData(stringValue, xmlStrlen(stringValue)), VSD_TEXT_UTF8);
+            font = VSDName(librevenge::RVNGBinaryData(stringValue.get(), xmlStrlen(stringValue.get())), VSD_TEXT_UTF8);
           }
         }
       }
