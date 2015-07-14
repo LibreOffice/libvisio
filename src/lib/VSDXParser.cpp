@@ -299,21 +299,21 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
 
   m_rels = &rels;
 
-  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET);
+  boost::shared_ptr<xmlTextReader> reader(xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET), xmlFreeTextReader);
   if (!reader)
     return;
-  int ret = xmlTextReaderRead(reader);
+  int ret = xmlTextReaderRead(reader.get());
   while (1 == ret)
   {
-    int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader));
-    int tokenType = xmlTextReaderNodeType(reader);
+    int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader.get()));
+    int tokenType = xmlTextReaderNodeType(reader.get());
 
     switch (tokenId)
     {
     case XML_REL:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
-        xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("r:id"));
+        xmlChar *id = xmlTextReaderGetAttribute(reader.get(), BAD_CAST("r:id"));
         if (id)
         {
           const VSDXRelationship *rel = rels.getRelationshipById((char *)id);
@@ -322,34 +322,33 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
             std::string type = rel->getType();
             if (type == "http://schemas.microsoft.com/visio/2010/relationships/master")
             {
-              m_currentDepth += xmlTextReaderDepth(reader);
+              m_currentDepth += xmlTextReaderDepth(reader.get());
               parseMaster(m_input, rel->getTarget().c_str());
-              m_currentDepth -= xmlTextReaderDepth(reader);
+              m_currentDepth -= xmlTextReaderDepth(reader.get());
             }
             else if (type == "http://schemas.microsoft.com/visio/2010/relationships/page")
             {
-              m_currentDepth += xmlTextReaderDepth(reader);
+              m_currentDepth += xmlTextReaderDepth(reader.get());
               parsePage(m_input, rel->getTarget().c_str());
-              m_currentDepth -= xmlTextReaderDepth(reader);
+              m_currentDepth -= xmlTextReaderDepth(reader.get());
             }
             else if (type == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
             {
               extractBinaryData(m_input, rel->getTarget().c_str());
             }
             else
-              processXmlNode(reader);
+              processXmlNode(reader.get());
           }
           xmlFree(id);
         }
       }
       break;
     default:
-      processXmlNode(reader);
+      processXmlNode(reader.get());
       break;
     }
-    ret = xmlTextReaderRead(reader);
+    ret = xmlTextReaderRead(reader.get());
   }
-  xmlFreeTextReader(reader);
 }
 
 void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
