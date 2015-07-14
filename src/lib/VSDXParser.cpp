@@ -12,6 +12,7 @@
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/shared_ptr.hpp>
 #include "VSDXParser.h"
 #include "libvisio_utils.h"
 #include "VSDContentCollector.h"
@@ -313,10 +314,10 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
     case XML_REL:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
-        xmlChar *id = xmlTextReaderGetAttribute(reader.get(), BAD_CAST("r:id"));
+        boost::shared_ptr<xmlChar> id(xmlTextReaderGetAttribute(reader.get(), BAD_CAST("r:id")), xmlFree);
         if (id)
         {
-          const VSDXRelationship *rel = rels.getRelationshipById((char *)id);
+          const VSDXRelationship *rel = rels.getRelationshipById((char *)id.get());
           if (rel)
           {
             std::string type = rel->getType();
@@ -339,7 +340,6 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
             else
               processXmlNode(reader.get());
           }
-          xmlFree(id);
         }
       }
       break;
