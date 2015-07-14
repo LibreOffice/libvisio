@@ -74,6 +74,7 @@ bool libvisio::VSDXParser::parseMain()
 
     libvisio::VSDXRelationships rootRels(tmpInput);
     delete tmpInput;
+    tmpInput = 0;
 
     // Check whether the relationship points to a Visio document stream
     const libvisio::VSDXRelationship *rel = rootRels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/document");
