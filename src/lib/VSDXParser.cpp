@@ -421,7 +421,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
         readShapeProperties(reader);
       else
       {
-        if (m_isStencilStarted)
+        if (m_isStencilStarted && m_currentStencil)
           m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
         else
           _flushShape();
@@ -432,7 +432,7 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
-      if (m_isStencilStarted)
+      if (m_isStencilStarted && m_currentStencil)
         m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
       else
       {
@@ -636,7 +636,7 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
   }
   while ((XML_PAGESHEET != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
-  if (m_isStencilStarted)
+  if (m_isStencilStarted && m_currentStencil)
   {
     m_currentStencil->m_shadowOffsetX = shadowOffsetX;
     m_currentStencil->m_shadowOffsetY = shadowOffsetY;
