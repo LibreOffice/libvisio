@@ -264,24 +264,24 @@ libvisio::VSDXRelationships::VSDXRelationships(librevenge::RVNGInputStream *inpu
 {
   if (input)
   {
-    xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER);
+    shared_ptr<xmlTextReader> reader(xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER), xmlFreeTextReader);
     if (reader)
     {
       bool inRelationships = false;
-      int ret = xmlTextReaderRead(reader);
+      int ret = xmlTextReaderRead(reader.get());
       while (ret == 1)
       {
-        const xmlChar *name = xmlTextReaderConstName(reader);
+        const xmlChar *name = xmlTextReaderConstName(reader.get());
         if (name)
         {
           if (xmlStrEqual(name, BAD_CAST("Relationships")))
           {
-            if (xmlTextReaderNodeType(reader) == 1)
+            if (xmlTextReaderNodeType(reader.get()) == 1)
             {
               // VSD_DEBUG_MSG(("Relationships ON\n"));
               inRelationships = true;
             }
-            else if (xmlTextReaderNodeType(reader) == 15)
+            else if (xmlTextReaderNodeType(reader.get()) == 15)
             {
               // VSD_DEBUG_MSG(("Relationships OFF\n"));
               inRelationships = false;
@@ -291,15 +291,14 @@ libvisio::VSDXRelationships::VSDXRelationships(librevenge::RVNGInputStream *inpu
           {
             if (inRelationships)
             {
-              VSDXRelationship relationship(reader);
+              VSDXRelationship relationship(reader.get());
               m_relsByType[relationship.getType()] = relationship;
               m_relsById[relationship.getId()] = relationship;
             }
           }
         }
-        ret = xmlTextReaderRead(reader);
+        ret = xmlTextReaderRead(reader.get());
       }
-      xmlFreeTextReader(reader);
     }
   }
 }
