@@ -8,6 +8,7 @@
  */
 
 #include <string>
+#include <boost/shared_ptr.hpp>
 #include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 #include "libvisio_utils.h"
@@ -245,56 +246,49 @@ static bool parseOpcVisioDocument(librevenge::RVNGInputStream *input, librevenge
 
 static bool isXmlVisioDocument(librevenge::RVNGInputStream *input)
 {
-  xmlTextReaderPtr reader = 0;
   try
   {
     input->seek(0, librevenge::RVNG_SEEK_SET);
-    reader = libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER);
+    const boost::shared_ptr<xmlTextReader> reader(
+      libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
+      xmlFreeTextReader);
     if (!reader)
       return false;
-    int ret = xmlTextReaderRead(reader);
-    while (ret == 1 && 1 != xmlTextReaderNodeType(reader))
-      ret = xmlTextReaderRead(reader);
+    int ret = xmlTextReaderRead(reader.get());
+    while (ret == 1 && 1 != xmlTextReaderNodeType(reader.get()))
+      ret = xmlTextReaderRead(reader.get());
     if (ret != 1)
     {
-      xmlFreeTextReader(reader);
       return false;
     }
-    const xmlChar *name = xmlTextReaderConstName(reader);
+    const xmlChar *name = xmlTextReaderConstName(reader.get());
     if (!name)
     {
-      xmlFreeTextReader(reader);
       return false;
     }
     if (!xmlStrEqual(name, BAD_CAST("VisioDocument")))
     {
-      xmlFreeTextReader(reader);
       return false;
     }
 
     // Checking the two possible namespaces of VDX documents. This may be a bit strict
     // and filter out some of third party VDX documents. If that happens, commenting out
     // this block could be an option.
-    const xmlChar *nsname = xmlTextReaderConstNamespaceUri(reader);
+    const xmlChar *nsname = xmlTextReaderConstNamespaceUri(reader.get());
     if (!nsname)
     {
-      xmlFreeTextReader(reader);
       return false;
     }
     if (!xmlStrEqual(nsname, BAD_CAST("urn:schemas-microsoft-com:office:visio"))
         && !xmlStrEqual(nsname, BAD_CAST("http://schemas.microsoft.com/visio/2003/core")))
     {
-      xmlFreeTextReader(reader);
       return false;
     }
 
-    xmlFreeTextReader(reader);
     return true;
   }
   catch (...)
   {
-    if (reader)
-      xmlFreeTextReader(reader);
     return false;
   }
 }

@@ -11,6 +11,7 @@
 #include "VSDXMLTokenMap.h"
 #include "libvisio_utils.h"
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 libvisio::VSDXMetaData::VSDXMetaData()
   : m_metaData()
@@ -115,35 +116,35 @@ bool libvisio::VSDXMetaData::parse(librevenge::RVNGInputStream *input)
   if (!input)
     return false;
 
-  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET);
+  const boost::shared_ptr<xmlTextReader> reader(
+    xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET),
+    xmlFreeTextReader);
   if (!reader)
     return false;
 
   try
   {
-    int ret = xmlTextReaderRead(reader);
+    int ret = xmlTextReaderRead(reader.get());
     while (1 == ret)
     {
-      int tokenId = getElementToken(reader);
+      int tokenId = getElementToken(reader.get());
       switch (tokenId)
       {
       case XML_CP_COREPROPERTIES:
       case XML_PROPERTIES:
-        readCoreProperties(reader);
+        readCoreProperties(reader.get());
         break;
       default:
         break;
 
       }
-      ret = xmlTextReaderRead(reader);
+      ret = xmlTextReaderRead(reader.get());
     }
   }
   catch (...)
   {
-    xmlFreeTextReader(reader);
     return false;
   }
-  xmlFreeTextReader(reader);
   return true;
 }
 

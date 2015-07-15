@@ -12,6 +12,7 @@
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/shared_ptr.hpp>
 #include "VDXParser.h"
 #include "libvisio_utils.h"
 #include "VSDContentCollector.h"
@@ -73,17 +74,18 @@ bool libvisio::VDXParser::processXmlDocument(librevenge::RVNGInputStream *input)
   if (!input)
     return false;
 
-  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER);
+  const boost::shared_ptr<xmlTextReader> reader(
+    xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
+    xmlFreeTextReader);
   if (!reader)
     return false;
-  int ret = xmlTextReaderRead(reader);
+  int ret = xmlTextReaderRead(reader.get());
   while (1 == ret)
   {
-    processXmlNode(reader);
+    processXmlNode(reader.get());
 
-    ret = xmlTextReaderRead(reader);
+    ret = xmlTextReaderRead(reader.get());
   }
-  xmlFreeTextReader(reader);
 
   return true;
 }

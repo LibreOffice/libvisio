@@ -65,34 +65,34 @@ bool libvisio::VSDXTheme::parse(librevenge::RVNGInputStream *input)
   if (!input)
     return false;
 
-  xmlTextReaderPtr reader = xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET);
+  const shared_ptr<xmlTextReader> reader(
+    xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET),
+    xmlFreeTextReader);
   if (!reader)
     return false;
 
   try
   {
-    int ret = xmlTextReaderRead(reader);
+    int ret = xmlTextReaderRead(reader.get());
     while (1 == ret)
     {
-      int tokenId = getElementToken(reader);
+      int tokenId = getElementToken(reader.get());
 
       switch (tokenId)
       {
       case XML_A_CLRSCHEME:
-        readClrScheme(reader);
+        readClrScheme(reader.get());
         break;
       default:
         break;
       }
-      ret = xmlTextReaderRead(reader);
+      ret = xmlTextReaderRead(reader.get());
     }
   }
   catch (...)
   {
-    xmlFreeTextReader(reader);
     return false;
   }
-  xmlFreeTextReader(reader);
   return true;
 }
 

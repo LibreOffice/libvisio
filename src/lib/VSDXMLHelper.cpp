@@ -16,6 +16,7 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/shared_ptr.hpp>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
@@ -264,7 +265,9 @@ libvisio::VSDXRelationships::VSDXRelationships(librevenge::RVNGInputStream *inpu
 {
   if (input)
   {
-    shared_ptr<xmlTextReader> reader(xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER), xmlFreeTextReader);
+    const boost::shared_ptr<xmlTextReader> reader(
+      xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
+      xmlFreeTextReader);
     if (reader)
     {
       bool inRelationships = false;
