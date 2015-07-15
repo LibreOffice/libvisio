@@ -132,7 +132,7 @@ void libvisio::VSD5Parser::handleChunkRecords(librevenge::RVNGInputStream *input
 void libvisio::VSD5Parser::readGeomList(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readGeomList\n"));
-  if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
+  if (!m_shape.m_geometries.empty() && m_currentGeometryList && m_currentGeometryList->empty())
     m_shape.m_geometries.erase(--m_currentGeomListCount);
   m_currentGeometryList = &m_shape.m_geometries[m_currentGeomListCount++];
 
