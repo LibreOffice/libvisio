@@ -679,7 +679,10 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
   if (level <= m_currentShapeLevel+1)
   {
     if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
+    {
       m_shape.m_geometries.erase(--m_currentGeomListCount);
+      m_currentGeometryList = 0;
+    }
     m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
     m_shapeList.clear();
 
