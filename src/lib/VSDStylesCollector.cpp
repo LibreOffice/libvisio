@@ -402,8 +402,10 @@ void libvisio::VSDStylesCollector::endPage()
   m_groupXFormsSequence.push_back(m_groupXForms);
   m_groupMembershipsSequence.push_back(m_groupMemberships);
 
-  while (!m_groupShapeOrder.empty())
+  bool changed = true;
+  while (!m_groupShapeOrder.empty() && changed)
   {
+    changed = false;
     for (std::list<unsigned>::iterator j = m_pageShapeOrder.begin(); j != m_pageShapeOrder.end();)
     {
       std::map<unsigned, std::list<unsigned> >::iterator iter = m_groupShapeOrder.find(*j++);
@@ -411,6 +413,7 @@ void libvisio::VSDStylesCollector::endPage()
       {
         m_pageShapeOrder.splice(j, iter->second, iter->second.begin(), iter->second.end());
         m_groupShapeOrder.erase(iter);
+        changed = true;
       }
     }
   }
