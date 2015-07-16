@@ -8,6 +8,7 @@
  */
 
 #include <string.h> // for memcpy
+#include <set>
 #include <stack>
 #include <boost/spirit/include/classic.hpp>
 #include <unicode/ucnv.h>
@@ -1771,6 +1772,9 @@ void libvisio::VSDContentCollector::transformPoint(double &x, double &y, XForm *
 
   unsigned shapeId = m_currentShapeId;
 
+  std::set<unsigned> visitedShapes; // avoid mutually nested shapes in broken files
+  visitedShapes.insert(shapeId);
+
   if (txtxform)
     applyXForm(x, y, *txtxform);
 
@@ -1791,7 +1795,7 @@ void libvisio::VSDContentCollector::transformPoint(double &x, double &y, XForm *
       if (iter != m_groupMemberships->end() && shapeId != iter->second)
       {
         shapeId = iter->second;
-        shapeFound = true;
+        shapeFound = visitedShapes.insert(shapeId).second;
       }
     }
     if (!shapeFound)
@@ -1828,6 +1832,9 @@ void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
 
   unsigned shapeId = m_currentShapeId;
 
+  std::set<unsigned> visitedShapes; // avoid mutually nested shapes in broken files
+  visitedShapes.insert(shapeId);
+
   while (true && m_groupXForms)
   {
     std::map<unsigned, XForm>::iterator iterX = m_groupXForms->find(shapeId);
@@ -1848,7 +1855,7 @@ void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
       if (iter != m_groupMemberships->end() && shapeId != iter->second)
       {
         shapeId = iter->second;
-        shapeFound = true;
+        shapeFound = visitedShapes.insert(shapeId).second;
       }
     }
     if (!shapeFound)
