@@ -7,6 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <set>
 #include <stack>
 #include "VSDStyles.h"
 #include "VSDTypes.h"
@@ -24,12 +25,18 @@ T getOptionalStyle(const std::map<unsigned, unsigned> &styleMasters, const std::
   if (MINUS_ONE == styleIndex)
     return style;
   std::stack<unsigned> styleIdStack;
+  std::set<unsigned> foundStyles;
   styleIdStack.push(styleIndex);
   while (true)
   {
     std::map<unsigned, unsigned>::const_iterator iter = styleMasters.find(styleIdStack.top());
     if (iter != styleMasters.end() && iter->second != MINUS_ONE)
-      styleIdStack.push(iter->second);
+    {
+      if (foundStyles.insert(iter->second).second)
+        styleIdStack.push(iter->second);
+      else // we already have this style -> stop incoming endless loop
+        break;
+    }
     else
       break;
   }
