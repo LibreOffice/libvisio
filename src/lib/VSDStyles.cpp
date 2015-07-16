@@ -11,6 +11,42 @@
 #include "VSDStyles.h"
 #include "VSDTypes.h"
 
+namespace libvisio
+{
+
+namespace
+{
+
+template<typename T>
+T getOptionalStyle(const std::map<unsigned, unsigned> &styleMasters, const std::map<unsigned, T> &styles, const unsigned styleIndex)
+{
+  T style;
+  if (MINUS_ONE == styleIndex)
+    return style;
+  std::stack<unsigned> styleIdStack;
+  styleIdStack.push(styleIndex);
+  while (true)
+  {
+    std::map<unsigned, unsigned>::const_iterator iter = styleMasters.find(styleIdStack.top());
+    if (iter != styleMasters.end() && iter->second != MINUS_ONE)
+      styleIdStack.push(iter->second);
+    else
+      break;
+  }
+  while (!styleIdStack.empty())
+  {
+    typename std::map<unsigned, T>::const_iterator iter = styles.find(styleIdStack.top());
+    if (iter != styles.end())
+      style.override(iter->second);
+    styleIdStack.pop();
+  }
+  return style;
+}
+
+}
+
+}
+
 libvisio::VSDStyles::VSDStyles() :
   m_lineStyles(), m_fillStyles(), m_textBlockStyles(), m_charStyles(), m_paraStyles(),
   m_themeRefs(), m_lineStyleMasters(), m_fillStyleMasters(), m_textStyleMasters()
@@ -94,52 +130,12 @@ void libvisio::VSDStyles::addTextStyleMaster(unsigned textStyleIndex, unsigned t
 
 libvisio::VSDOptionalLineStyle libvisio::VSDStyles::getOptionalLineStyle(unsigned lineStyleIndex) const
 {
-  VSDOptionalLineStyle lineStyle;
-  if (MINUS_ONE == lineStyleIndex)
-    return lineStyle;
-  std::stack<unsigned> styleIdStack;
-  styleIdStack.push(lineStyleIndex);
-  while (true)
-  {
-    std::map<unsigned, unsigned>::const_iterator iter = m_lineStyleMasters.find(styleIdStack.top());
-    if (iter != m_lineStyleMasters.end() && iter->second != MINUS_ONE)
-      styleIdStack.push(iter->second);
-    else
-      break;
-  }
-  while (!styleIdStack.empty())
-  {
-    std::map<unsigned, VSDOptionalLineStyle>::const_iterator iter = m_lineStyles.find(styleIdStack.top());
-    if (iter != m_lineStyles.end())
-      lineStyle.override(iter->second);
-    styleIdStack.pop();
-  }
-  return lineStyle;
+  return getOptionalStyle(m_lineStyleMasters, m_lineStyles, lineStyleIndex);
 }
 
 libvisio::VSDOptionalFillStyle libvisio::VSDStyles::getOptionalFillStyle(unsigned fillStyleIndex) const
 {
-  VSDOptionalFillStyle fillStyle;
-  if (MINUS_ONE == fillStyleIndex)
-    return fillStyle;
-  std::stack<unsigned> styleIdStack;
-  styleIdStack.push(fillStyleIndex);
-  while (true)
-  {
-    std::map<unsigned, unsigned>::const_iterator iter = m_fillStyleMasters.find(styleIdStack.top());
-    if (iter != m_fillStyleMasters.end() && iter->second != MINUS_ONE)
-      styleIdStack.push(iter->second);
-    else
-      break;
-  }
-  while (!styleIdStack.empty())
-  {
-    std::map<unsigned, VSDOptionalFillStyle>::const_iterator iter = m_fillStyles.find(styleIdStack.top());
-    if (iter != m_fillStyles.end())
-      fillStyle.override(iter->second);
-    styleIdStack.pop();
-  }
-  return fillStyle;
+  return getOptionalStyle(m_fillStyleMasters, m_fillStyles, fillStyleIndex);
 }
 
 libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
@@ -151,77 +147,17 @@ libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex
 
 libvisio::VSDOptionalTextBlockStyle libvisio::VSDStyles::getOptionalTextBlockStyle(unsigned textStyleIndex) const
 {
-  VSDOptionalTextBlockStyle textBlockStyle;
-  if (MINUS_ONE == textStyleIndex)
-    return textBlockStyle;
-  std::stack<unsigned> styleIdStack;
-  styleIdStack.push(textStyleIndex);
-  while (true)
-  {
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
-    if (iter != m_textStyleMasters.end() && iter->second != MINUS_ONE)
-      styleIdStack.push(iter->second);
-    else
-      break;
-  }
-  while (!styleIdStack.empty())
-  {
-    std::map<unsigned, VSDOptionalTextBlockStyle>::const_iterator iter = m_textBlockStyles.find(styleIdStack.top());
-    if (iter != m_textBlockStyles.end())
-      textBlockStyle.override(iter->second);
-    styleIdStack.pop();
-  }
-  return textBlockStyle;
+  return getOptionalStyle(m_textStyleMasters, m_textBlockStyles, textStyleIndex);
 }
 
 libvisio::VSDOptionalCharStyle libvisio::VSDStyles::getOptionalCharStyle(unsigned textStyleIndex) const
 {
-  VSDOptionalCharStyle charStyle;
-  if (MINUS_ONE == textStyleIndex)
-    return charStyle;
-  std::stack<unsigned> styleIdStack;
-  styleIdStack.push(textStyleIndex);
-  while (true)
-  {
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
-    if (iter != m_textStyleMasters.end() && iter->second != MINUS_ONE)
-      styleIdStack.push(iter->second);
-    else
-      break;
-  }
-  while (!styleIdStack.empty())
-  {
-    std::map<unsigned, VSDOptionalCharStyle>::const_iterator iter = m_charStyles.find(styleIdStack.top());
-    if (iter != m_charStyles.end())
-      charStyle.override(iter->second);
-    styleIdStack.pop();
-  }
-  return charStyle;
+  return getOptionalStyle(m_textStyleMasters, m_charStyles, textStyleIndex);
 }
 
 libvisio::VSDOptionalParaStyle libvisio::VSDStyles::getOptionalParaStyle(unsigned textStyleIndex) const
 {
-  VSDOptionalParaStyle paraStyle;
-  if (MINUS_ONE == textStyleIndex)
-    return paraStyle;
-  std::stack<unsigned> styleIdStack;
-  styleIdStack.push(textStyleIndex);
-  while (true)
-  {
-    std::map<unsigned, unsigned>::const_iterator iter = m_textStyleMasters.find(styleIdStack.top());
-    if (iter != m_textStyleMasters.end() && iter->second != MINUS_ONE)
-      styleIdStack.push(iter->second);
-    else
-      break;
-  }
-  while (!styleIdStack.empty())
-  {
-    std::map<unsigned, VSDOptionalParaStyle>::const_iterator iter = m_paraStyles.find(styleIdStack.top());
-    if (iter != m_paraStyles.end())
-      paraStyle.override(iter->second);
-    styleIdStack.pop();
-  }
-  return paraStyle;
+  return getOptionalStyle(m_textStyleMasters, m_paraStyles, textStyleIndex);
 }
 
 libvisio::VSDOptionalThemeReference libvisio::VSDStyles::getOptionalThemeReference(unsigned styleIndex) const
