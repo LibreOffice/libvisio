@@ -310,6 +310,7 @@ void libvisio::VSD5Parser::readStyleSheet(librevenge::RVNGInputStream *input)
 void libvisio::VSD5Parser::readShape(librevenge::RVNGInputStream *input)
 {
   m_currentGeomListCount = 0;
+  m_currentGeometryList = 0;
   m_isShapeStarted = true;
   m_shapeList.clear();
   if (m_header.id != MINUS_ONE)
