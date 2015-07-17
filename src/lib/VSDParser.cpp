@@ -866,7 +866,7 @@ void libvisio::VSDParser::readTextBlock(librevenge::RVNGInputStream *input)
 
 void libvisio::VSDParser::readGeomList(librevenge::RVNGInputStream *input)
 {
-  if (!m_shape.m_geometries.empty() && m_currentGeometryList->empty())
+  if (!m_shape.m_geometries.empty() && m_currentGeometryList && m_currentGeometryList->empty())
     m_shape.m_geometries.erase(--m_currentGeomListCount);
   // Since this is a map, this will default construct an element and then
   // the m_currentGeometryList pointer takes its address and we will work
