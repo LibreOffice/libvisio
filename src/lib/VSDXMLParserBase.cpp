@@ -63,6 +63,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
       {
         m_currentGeometryList->clear();
         m_shape.m_geometries.erase(ix);
+        m_currentGeometryList = 0;
       }
     }
     return;
