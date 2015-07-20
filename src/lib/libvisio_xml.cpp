@@ -47,11 +47,12 @@ extern "C"
   }
 
 #ifdef DEBUG
-  static void vsdxReaderErrorFunc(void *, const char *message, xmlParserSeverities severity, xmlTextReaderLocatorPtr)
+  static void vsdxReaderErrorFunc(void *arg, const char *message, xmlParserSeverities severity, xmlTextReaderLocatorPtr)
 #else
-  static void vsdxReaderErrorFunc(void *, const char *, xmlParserSeverities severity, xmlTextReaderLocatorPtr)
+  static void vsdxReaderErrorFunc(void *arg, const char *, xmlParserSeverities severity, xmlTextReaderLocatorPtr)
 #endif
   {
+    XMLErrorWatcher *const watcher = reinterpret_cast<XMLErrorWatcher *>(arg);
     switch (severity)
     {
     case XML_PARSER_SEVERITY_VALIDITY_WARNING:
@@ -65,6 +66,8 @@ extern "C"
       break;
     case XML_PARSER_SEVERITY_ERROR:
       VSD_DEBUG_MSG(("Found xml parser severity error %s\n", message));
+      if (watcher)
+        watcher->setError();
       break;
     default:
       break;
@@ -75,10 +78,25 @@ extern "C"
 
 } // anonymous namespace
 
-xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input, const char *URL, const char *encoding, int options)
+XMLErrorWatcher::XMLErrorWatcher()
+  : m_error(false)
+{
+}
+
+bool XMLErrorWatcher::isError() const
+{
+  return m_error;
+}
+
+void XMLErrorWatcher::setError()
+{
+  m_error = true;
+}
+
+xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input, const char *URL, const char *encoding, int options, XMLErrorWatcher *const watcher)
 {
   xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, URL, encoding, options);
-  xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, 0);
+  xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, watcher);
   return reader;
 }
 

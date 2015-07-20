@@ -117,8 +117,10 @@ bool libvisio::VSDXMetaData::parse(librevenge::RVNGInputStream *input)
   if (!input)
     return false;
 
+  XMLErrorWatcher watcher;
+
   const boost::shared_ptr<xmlTextReader> reader(
-    xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET),
+    xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
     xmlFreeTextReader);
   if (!reader)
     return false;
@@ -126,7 +128,7 @@ bool libvisio::VSDXMetaData::parse(librevenge::RVNGInputStream *input)
   try
   {
     int ret = xmlTextReaderRead(reader.get());
-    while (1 == ret)
+    while (1 == ret && !watcher.isError())
     {
       int tokenId = getElementToken(reader.get());
       switch (tokenId)
@@ -146,7 +148,8 @@ bool libvisio::VSDXMetaData::parse(librevenge::RVNGInputStream *input)
   {
     return false;
   }
-  return true;
+
+  return !watcher.isError();
 }
 
 int libvisio::VSDXMetaData::getElementToken(xmlTextReaderPtr reader)

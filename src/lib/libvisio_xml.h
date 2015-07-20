@@ -21,13 +21,30 @@ namespace libvisio
 
 struct Colour;
 
+class XMLErrorWatcher
+{
+  // disable copying
+  XMLErrorWatcher(const XMLErrorWatcher &);
+  XMLErrorWatcher &operator=(const XMLErrorWatcher &);
+
+public:
+  XMLErrorWatcher();
+
+  bool isError() const;
+  void setError();
+
+private:
+  bool m_error;
+};
+
 // create an xmlTextReader pointer from a librevenge::RVNGInputStream pointer
 // needs to be freed using xmlTextReaderFree function.
 
 xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input,
                                     const char *URL,
                                     const char *encoding,
-                                    int options);
+                                    int options,
+                                    XMLErrorWatcher *watcher = 0);
 
 Colour xmlStringToColour(const xmlChar *s);
 Colour xmlStringToColour(const boost::shared_ptr<xmlChar> &s);
