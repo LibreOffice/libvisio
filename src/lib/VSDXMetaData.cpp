@@ -10,6 +10,7 @@
 #include "VSDXMetaData.h"
 #include "VSDXMLTokenMap.h"
 #include "libvisio_utils.h"
+#include "libvisio_xml.h"
 #include <string>
 #include <boost/shared_ptr.hpp>
 

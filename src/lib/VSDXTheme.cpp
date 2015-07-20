@@ -13,6 +13,7 @@
 
 #include "VSDXMLTokenMap.h"
 #include "libvisio_utils.h"
+#include "libvisio_xml.h"
 
 using boost::shared_ptr;
 

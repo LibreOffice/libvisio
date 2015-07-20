@@ -15,6 +15,7 @@
 #include <boost/shared_ptr.hpp>
 #include "VSDXParser.h"
 #include "libvisio_utils.h"
+#include "libvisio_xml.h"
 #include "VSDContentCollector.h"
 #include "VSDStylesCollector.h"
 #include "VSDXMLHelper.h"

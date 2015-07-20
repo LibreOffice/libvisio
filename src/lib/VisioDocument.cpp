@@ -12,6 +12,7 @@
 #include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 #include "libvisio_utils.h"
+#include "libvisio_xml.h"
 #include "VDXParser.h"
 #include "VSDParser.h"
 #include "VSDXParser.h"

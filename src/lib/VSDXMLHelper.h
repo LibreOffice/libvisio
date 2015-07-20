@@ -20,27 +20,6 @@
 namespace libvisio
 {
 
-// create an xmlTextReader pointer from a librevenge::RVNGInputStream pointer
-// needs to be freed using xmlTextReaderFree function.
-
-xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input,
-                                    const char *URL,
-                                    const char *encoding,
-                                    int options);
-
-Colour xmlStringToColour(const xmlChar *s);
-Colour xmlStringToColour(const boost::shared_ptr<xmlChar> &s);
-
-long xmlStringToLong(const xmlChar *s);
-long xmlStringToLong(const boost::shared_ptr<xmlChar> &s);
-
-double xmlStringToDouble(const xmlChar *s);
-double xmlStringToDouble(const boost::shared_ptr<xmlChar> &s);
-
-bool xmlStringToBool(const xmlChar *s);
-bool xmlStringToBool(const boost::shared_ptr<xmlChar> &s);
-
-
 class VSDCollector;
 
 // Helper classes to properly handle OPC relationships
