@@ -299,11 +299,15 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
 
   m_rels = &rels;
 
-  boost::shared_ptr<xmlTextReader> reader(xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET), xmlFreeTextReader);
+  XMLErrorWatcher watcher;
+
+  boost::shared_ptr<xmlTextReader> reader(
+      xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
+      xmlFreeTextReader);
   if (!reader)
     return;
   int ret = xmlTextReaderRead(reader.get());
-  while (1 == ret)
+  while (1 == ret && !watcher.isError())
   {
     int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader.get()));
     int tokenType = xmlTextReaderNodeType(reader.get());
