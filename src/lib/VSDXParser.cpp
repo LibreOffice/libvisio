@@ -301,7 +301,7 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
 
   XMLErrorWatcher watcher;
 
-  boost::shared_ptr<xmlTextReader> reader(
+  const boost::shared_ptr<xmlTextReader> reader(
       xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
       xmlFreeTextReader);
   if (!reader)
