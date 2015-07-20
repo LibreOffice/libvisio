@@ -18,6 +18,7 @@ namespace libvisio
 {
 
 class VSDCollector;
+class XMLErrorWatcher;
 
 class VSDXParser : public VSDXMLParserBase
 {
@@ -81,6 +82,7 @@ private:
   int m_currentDepth;
   VSDXRelationships *m_rels;
   VSDXTheme m_currentTheme;
+  XMLErrorWatcher *m_watcher;
 };
 
 } // namespace libvisio

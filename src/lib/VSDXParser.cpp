@@ -302,55 +302,69 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
   XMLErrorWatcher watcher;
 
   const boost::shared_ptr<xmlTextReader> reader(
-      xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
-      xmlFreeTextReader);
+    xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
+    xmlFreeTextReader);
   if (!reader)
     return;
-  int ret = xmlTextReaderRead(reader.get());
-  while (1 == ret && !watcher.isError())
-  {
-    int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader.get()));
-    int tokenType = xmlTextReaderNodeType(reader.get());
 
-    switch (tokenId)
+  XMLErrorWatcher *oldWatcher = m_watcher;
+  try
+  {
+    m_watcher = &watcher;
+
+    int ret = xmlTextReaderRead(reader.get());
+    while (1 == ret && !watcher.isError())
     {
-    case XML_REL:
-      if (XML_READER_TYPE_ELEMENT == tokenType)
+      int tokenId = VSDXMLTokenMap::getTokenId(xmlTextReaderConstName(reader.get()));
+      int tokenType = xmlTextReaderNodeType(reader.get());
+
+      switch (tokenId)
       {
-        boost::shared_ptr<xmlChar> id(xmlTextReaderGetAttribute(reader.get(), BAD_CAST("r:id")), xmlFree);
-        if (id)
+      case XML_REL:
+        if (XML_READER_TYPE_ELEMENT == tokenType)
         {
-          const VSDXRelationship *rel = rels.getRelationshipById((char *)id.get());
-          if (rel)
+          boost::shared_ptr<xmlChar> id(xmlTextReaderGetAttribute(reader.get(), BAD_CAST("r:id")), xmlFree);
+          if (id)
           {
-            std::string type = rel->getType();
-            if (type == "http://schemas.microsoft.com/visio/2010/relationships/master")
+            const VSDXRelationship *rel = rels.getRelationshipById((char *)id.get());
+            if (rel)
             {
-              m_currentDepth += xmlTextReaderDepth(reader.get());
-              parseMaster(m_input, rel->getTarget().c_str());
-              m_currentDepth -= xmlTextReaderDepth(reader.get());
+              std::string type = rel->getType();
+              if (type == "http://schemas.microsoft.com/visio/2010/relationships/master")
+              {
+                m_currentDepth += xmlTextReaderDepth(reader.get());
+                parseMaster(m_input, rel->getTarget().c_str());
+                m_currentDepth -= xmlTextReaderDepth(reader.get());
+              }
+              else if (type == "http://schemas.microsoft.com/visio/2010/relationships/page")
+              {
+                m_currentDepth += xmlTextReaderDepth(reader.get());
+                parsePage(m_input, rel->getTarget().c_str());
+                m_currentDepth -= xmlTextReaderDepth(reader.get());
+              }
+              else if (type == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
+              {
+                extractBinaryData(m_input, rel->getTarget().c_str());
+              }
+              else
+                processXmlNode(reader.get());
             }
-            else if (type == "http://schemas.microsoft.com/visio/2010/relationships/page")
-            {
-              m_currentDepth += xmlTextReaderDepth(reader.get());
-              parsePage(m_input, rel->getTarget().c_str());
-              m_currentDepth -= xmlTextReaderDepth(reader.get());
-            }
-            else if (type == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
-            {
-              extractBinaryData(m_input, rel->getTarget().c_str());
-            }
-            else
-              processXmlNode(reader.get());
           }
         }
+        break;
+      default:
+        processXmlNode(reader.get());
+        break;
       }
-      break;
-    default:
-      processXmlNode(reader.get());
-      break;
+      ret = xmlTextReaderRead(reader.get());
     }
-    ret = xmlTextReaderRead(reader.get());
+
+    m_watcher = oldWatcher;
+  }
+  catch (...)
+  {
+    m_watcher = oldWatcher;
+    throw;
   }
 }
 
@@ -639,7 +653,7 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_PAGESHEET != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_PAGESHEET != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 
   if (m_isStencilStarted && m_currentStencil)
   {
@@ -682,7 +696,7 @@ void libvisio::VSDXParser::readFonts(xmlTextReaderPtr reader)
       ++idx;
     }
   }
-  while ((XML_FACENAMES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_FACENAMES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 }
 
 void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
@@ -874,7 +888,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_STYLESHEET != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_STYLESHEET != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 
 #if 0
   if (bgClrId < 0)
@@ -1255,7 +1269,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_SHAPES != tokenId) && (XML_SHAPE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_SHAPES != tokenId) && (XML_SHAPE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 
   if (1 == ret)
     processXmlNode(reader);
@@ -1279,7 +1293,7 @@ void libvisio::VSDXParser::readParagraph(xmlTextReaderPtr reader)
     if (XML_ROW == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
       readParaIX(reader);
   }
-  while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 }
 
 void libvisio::VSDXParser::readCharacter(xmlTextReaderPtr reader)
@@ -1300,7 +1314,7 @@ void libvisio::VSDXParser::readCharacter(xmlTextReaderPtr reader)
     if (XML_ROW == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
       readCharIX(reader);
   }
-  while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 }
 
 void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
