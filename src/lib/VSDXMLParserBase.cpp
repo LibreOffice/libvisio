@@ -162,7 +162,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_GEOM != tokenId && XML_SECTION != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_GEOM != tokenId && XML_SECTION != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addGeometry(0, level+1, noFill, noLine, noShow);
 }
@@ -212,7 +212,7 @@ void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_MOVETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_MOVETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addMoveTo(ix, level, x, y);
 }
@@ -262,7 +262,7 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_LINETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_LINETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addLineTo(ix, level, x, y);
 }
@@ -316,7 +316,7 @@ void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_ARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_ARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addArcTo(ix, level, x, y, a);
 }
@@ -382,7 +382,7 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_ELLIPTICALARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_ELLIPTICALARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addEllipticalArcTo(ix, level, x, y, a, b, c, d);
 }
@@ -448,7 +448,7 @@ void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_ELLIPSE != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_ELLIPSE != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addEllipse(ix, level, x, y, a, b, c, d);
 }
@@ -518,7 +518,7 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_NURBSTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_NURBSTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 
   if (ret == 1)
     m_currentGeometryList->addNURBSTo(ix, level, x, y, knot, knotPrev, weight, weightPrev, nurbsData);
@@ -573,7 +573,7 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_POLYLINETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_POLYLINETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addPolylineTo(ix, level, x, y, polyLineData);
 }
@@ -631,7 +631,7 @@ void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_INFINITELINE != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_INFINITELINE != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addInfiniteLine(ix, level, x, y, a, b);
 }
@@ -697,7 +697,7 @@ void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_RELELLIPTICALARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_RELELLIPTICALARCTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addRelEllipticalArcTo(ix, level, x, y, a, b, c, d);
 }
@@ -763,7 +763,7 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_RELCUBBEZTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_RELCUBBEZTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addRelCubBezTo(ix, level, x, y, a, b, c, d);
 }
@@ -813,7 +813,7 @@ void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_RELLINETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_RELLINETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addRelLineTo(ix, level, x, y);
 }
@@ -863,7 +863,7 @@ void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_RELMOVETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_RELMOVETO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addRelMoveTo(ix, level, x, y);
 }
@@ -921,7 +921,7 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_RELQUADBEZTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_RELQUADBEZTO != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addRelQuadBezTo(ix, level, x, y, a, b);
 }
@@ -1051,7 +1051,7 @@ void libvisio::VSDXMLParserBase::readColours(xmlTextReaderPtr reader)
       }
     }
   }
-  while ((XML_COLORS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_COLORS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 }
 
 void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
@@ -1153,7 +1153,7 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_TEXT != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_TEXT != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 }
 
 void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
@@ -1316,7 +1316,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
     }
 
   }
-  while (((XML_CHAR != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_CHAR != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 
   if (m_isInStyles)
     m_collector->collectCharIXStyle(ix, level, charCount, font, fontColour, fontSize, bold, italic,
@@ -1405,7 +1405,7 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_PARA != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_PARA != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
 
   if (m_isInStyles)
     m_collector->collectParaIXStyle(ix, level, charCount, indFirst, indLeft, indRight,
@@ -1504,7 +1504,7 @@ void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_SPLINESTART != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_SPLINESTART != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addSplineStart(ix, level, x, y, a, b, c, d);
 }
@@ -1558,7 +1558,7 @@ void libvisio::VSDXMLParserBase::readSplineKnot(xmlTextReaderPtr reader)
       break;
     }
   }
-  while (((XML_SPLINEKNOT != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while (((XML_SPLINEKNOT != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && !m_watcher->isError());
   if (ret == 1)
     m_currentGeometryList->addSplineKnot(ix, level, x, y, a);
 }

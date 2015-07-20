@@ -24,6 +24,7 @@ namespace libvisio
 {
 
 class VSDCollector;
+class XMLErrorWatcher;
 
 class VSDXMLParserBase
 {
@@ -58,6 +59,8 @@ protected:
   unsigned m_currentGeometryListIndex;
 
   std::map<unsigned, VSDName> m_fonts;
+
+  XMLErrorWatcher *m_watcher;
 
   // Helper functions
 
