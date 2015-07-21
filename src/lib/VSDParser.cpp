@@ -163,7 +163,7 @@ void libvisio::VSDParser::parseMetaData() try
     delete sumaryInfo;
   }
 
-  RVNGInputStreamPtr_t docSumaryInfo(m_container->getSubStreamByName("\005DocumentSummaryInformation"));
+  const RVNGInputStreamPtr_t docSumaryInfo(m_container->getSubStreamByName("\005DocumentSummaryInformation"));
   if (bool(docSumaryInfo))
     metaData.parse(docSumaryInfo.get());
 
