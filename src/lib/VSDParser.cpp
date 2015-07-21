@@ -156,12 +156,9 @@ void libvisio::VSDParser::parseMetaData() try
     return;
   VSDMetaData metaData;
 
-  librevenge::RVNGInputStream *sumaryInfo = m_container->getSubStreamByName("\x05SummaryInformation");
-  if (sumaryInfo)
-  {
-    metaData.parse(sumaryInfo);
-    delete sumaryInfo;
-  }
+  const RVNGInputStreamPtr_t sumaryInfo(m_container->getSubStreamByName("\x05SummaryInformation"));
+  if (bool(sumaryInfo))
+    metaData.parse(sumaryInfo.get());
 
   const RVNGInputStreamPtr_t docSumaryInfo(m_container->getSubStreamByName("\005DocumentSummaryInformation"));
   if (bool(docSumaryInfo))
