@@ -26,61 +26,60 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = $(LIBVISIO_LIBS) @
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
-	libvisio_utils.cpp \
-	libvisio_xml.cpp \
-	VisioDocument.cpp \
-	VSD5Parser.cpp \
-	VSD6Parser.cpp \
-	VSDInternalStream.cpp \
-	VSDCharacterList.cpp \
-	VSDContentCollector.cpp \
-	VSDFieldList.cpp \
-	VSDGeometryList.cpp \
-	VSDOutputElementList.cpp \
-	VSDPages.cpp \
-	VSDParagraphList.cpp \
-	VSDParser.cpp \
-	VSDMetaData.cpp \
-	VSDShapeList.cpp \
-	VSDStencils.cpp \
-	VSDStyles.cpp \
-	VSDStylesCollector.cpp \
-	VSDXMLHelper.cpp \
-	libvisio_utils.h \
-	libvisio_xml.h \
-	VSD5Parser.h \
-	VSD6Parser.h \
-	VSDInternalStream.h \
-	VSDCharacterList.h \
-	VSDCollector.h \
-	VSDContentCollector.h \
-	VSDDocumentStructure.h \
-	VSDFieldList.h \
-	VSDGeometryList.h \
-	VSDOutputElementList.h \
-	VSDPages.h \
-	VSDParagraphList.h \
-	VSDParser.h \
-	VSDMetaData.h \
-	VSDShapeList.h \
-	VSDStencils.h \
-	VSDStyles.h \
-	VSDStylesCollector.h \
-	VSDTypes.h \
-	VSDXMLHelper.h \
-	 \
 	VDXParser.cpp \
 	VDXParser.h \
+	VSD5Parser.cpp \
+	VSD5Parser.h \
+	VSD6Parser.cpp \
+	VSD6Parser.h \
+	VSDCharacterList.cpp \
+	VSDCharacterList.h \
+	VSDCollector.h \
+	VSDContentCollector.cpp \
+	VSDContentCollector.h \
+	VSDDocumentStructure.h \
+	VSDFieldList.cpp \
+	VSDFieldList.h \
+	VSDGeometryList.cpp \
+	VSDGeometryList.h \
+	VSDInternalStream.cpp \
+	VSDInternalStream.h \
+	VSDMetaData.cpp \
+	VSDMetaData.h \
+	VSDOutputElementList.cpp \
+	VSDOutputElementList.h \
+	VSDPages.cpp \
+	VSDPages.h \
+	VSDParagraphList.cpp \
+	VSDParagraphList.h \
+	VSDParser.cpp \
+	VSDParser.h \
+	VSDShapeList.cpp \
+	VSDShapeList.h \
+	VSDStencils.cpp \
+	VSDStencils.h \
+	VSDStyles.cpp \
+	VSDStyles.h \
+	VSDStylesCollector.cpp \
+	VSDStylesCollector.h \
+	VSDTypes.h \
+	VSDXMLHelper.cpp \
+	VSDXMLHelper.h \
 	VSDXMLParserBase.cpp \
 	VSDXMLParserBase.h \
 	VSDXMLTokenMap.cpp \
 	VSDXMLTokenMap.h \
+	VSDXMetaData.cpp \
+	VSDXMetaData.h \
 	VSDXParser.cpp \
 	VSDXParser.h \
 	VSDXTheme.cpp \
 	VSDXTheme.h \
-	VSDXMetaData.cpp \
-	VSDXMetaData.h \
+	VisioDocument.cpp \
+	libvisio_utils.cpp \
+	libvisio_utils.h \
+	libvisio_xml.cpp \
+	libvisio_xml.h \
 	$(generated_files)
 	
 
