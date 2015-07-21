@@ -102,7 +102,12 @@ void libvisio::VSD5Parser::handleChunkRecords(librevenge::RVNGInputStream *input
   long endPosition = input->tell() + m_header.dataLength;
   input->seek(endPosition - 4, librevenge::RVNG_SEEK_SET);
   unsigned numRecords = readU16(input);
+  const long headerPosition = endPosition - 4 * (numRecords + 1);
+  if (headerPosition <= startPosition) // no records to read
+    return;
   unsigned endOffset = readU16(input);
+  if (long(endOffset) > (headerPosition - startPosition))
+    endOffset = unsigned(headerPosition - startPosition); // try to read something anyway
   std::map<unsigned, ChunkHeader> records;
   input->seek(endPosition-4*(numRecords+1), librevenge::RVNG_SEEK_SET);
   unsigned i = 0;
@@ -114,10 +119,13 @@ void libvisio::VSD5Parser::handleChunkRecords(librevenge::RVNGInputStream *input
     unsigned tmpStart = offset;
     while (tmpStart % 4)
       tmpStart++;
-    header.dataLength = endOffset - tmpStart;
-    header.level = m_header.level + 1;
-    records[tmpStart] = header;
-    endOffset = offset;
+    if (tmpStart < endOffset)
+    {
+      header.dataLength = endOffset - tmpStart;
+      header.level = m_header.level + 1;
+      records[tmpStart] = header;
+      endOffset = offset;
+    }
   }
   i = 0;
   for (std::map<unsigned, ChunkHeader>::iterator iter = records.begin(); iter != records.end(); ++iter)
