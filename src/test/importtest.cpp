@@ -85,7 +85,7 @@ void assertXPathNoAttribute(xmlDocPtr doc, const librevenge::RVNGString &xpath, 
   message2.append("' unexpected '");
   message2.append(attribute);
   message2.append("' attribute");
-  CPPUNIT_ASSERT_EQUAL_MESSAGE(message2.cstr(), static_cast<xmlChar*>(0), xmlGetProp(node, BAD_CAST(attribute.cstr())));
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(message2.cstr(), static_cast<xmlChar *>(0), xmlGetProp(node, BAD_CAST(attribute.cstr())));
   xmlXPathFreeObject(xpathobject);
 }
 
