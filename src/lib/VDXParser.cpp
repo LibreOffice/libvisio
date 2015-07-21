@@ -205,7 +205,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
         tokenId = getElementToken(reader);
         tokenType = xmlTextReaderNodeType(reader);
       }
-      while ((XML_SOLUTIONXML != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+      while ((XML_SOLUTIONXML != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
     }
     break;
   case XML_STYLESHEET:
@@ -352,7 +352,7 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_LINE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_LINE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 
   if (m_isInStyles)
     m_collector->collectLineStyle(level, strokeWidth, colour, linePattern, startMarker, endMarker, lineCap);
@@ -432,7 +432,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_FILL != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_FILL != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 
   if (m_isInStyles)
     m_collector->collectFillStyle(level, fillColourFG, fillColourBG, fillPattern, fillFGTransparency,
@@ -472,7 +472,7 @@ void libvisio::VDXParser::readMisc(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_MISC != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_MISC != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
 void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
@@ -531,7 +531,7 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_XFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_XFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
 void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr reader)
@@ -610,7 +610,7 @@ void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_TEXTXFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_TEXTXFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
 void libvisio::VDXParser::readXForm1D(xmlTextReaderPtr reader)
@@ -665,7 +665,7 @@ void libvisio::VDXParser::readXForm1D(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_XFORM1D != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_XFORM1D != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
 void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
@@ -720,7 +720,7 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_PAGEPROPS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_PAGEPROPS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 
   if (m_isStencilStarted)
   {
@@ -763,7 +763,7 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
       xmlFree(id);
     }
   }
-  while ((XML_FACENAMES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_FACENAMES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
 void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
@@ -838,7 +838,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_TEXTBLOCK != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_TEXTBLOCK != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 
   if (m_isInStyles)
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
@@ -942,7 +942,7 @@ void libvisio::VDXParser::readForeignInfo(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_FOREIGN != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  while ((XML_FOREIGN != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
 
