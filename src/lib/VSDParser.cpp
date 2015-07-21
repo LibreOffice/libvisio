@@ -163,12 +163,9 @@ void libvisio::VSDParser::parseMetaData() try
     delete sumaryInfo;
   }
 
-  librevenge::RVNGInputStream *docSumaryInfo = m_container->getSubStreamByName("\005DocumentSummaryInformation");
-  if (docSumaryInfo)
-  {
-    metaData.parse(docSumaryInfo);
-    delete docSumaryInfo;
-  }
+  RVNGInputStreamPtr_t docSumaryInfo(m_container->getSubStreamByName("\005DocumentSummaryInformation"));
+  if (bool(docSumaryInfo))
+    metaData.parse(docSumaryInfo.get());
 
   m_container->seek(0, librevenge::RVNG_SEEK_SET);
   metaData.parseTimes(m_container);
