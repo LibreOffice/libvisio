@@ -13,14 +13,19 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "xmldrawinggenerator.h"
 
-namespace
+namespace librevenge
 {
 
 /// Allows using CPPUNIT_ASSERT_EQUAL() on librevenge::RVNGString instances.
-std::ostream &operator <<(std::ostream &s, const librevenge::RVNGString &string)
+std::ostream &operator <<(std::ostream &s, const RVNGString &string)
 {
   return s << string.cstr();
 }
+
+}
+
+namespace
+{
 
 /// Caller must call xmlXPathFreeObject.
 xmlXPathObjectPtr getXPathNode(xmlDocPtr doc, const librevenge::RVNGString &xpath)
