@@ -140,7 +140,7 @@ uint32_t libvisio::VSDMetaData::getCodePage()
 {
   for (size_t i = 0; i < m_idsAndOffsets.size(); ++i)
   {
-    if (m_idsAndOffsets[i].first == PIDSI::CODEPAGE_PROPERTY_IDENTIFIER)
+    if (m_idsAndOffsets[i].first == CODEPAGE_PROPERTY_IDENTIFIER)
     {
       if (i >= m_typedPropertyValues.size())
         break;
@@ -188,23 +188,23 @@ void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *
       {
         switch (m_idsAndOffsets[index].first)
         {
-        case PIDSI::PIDSI_TITLE:
+        case PIDSI_TITLE:
           m_metaData.insert("dc:title", string);
           break;
-        case PIDSI::PIDSI_SUBJECT:
+        case PIDSI_SUBJECT:
           m_metaData.insert("dc:subject", string);
           break;
-        case PIDSI::PIDSI_AUTHOR:
+        case PIDSI_AUTHOR:
           m_metaData.insert("meta:initial-creator", string);
           m_metaData.insert("dc:creator", string);
           break;
-        case PIDSI::PIDSI_KEYWORDS:
+        case PIDSI_KEYWORDS:
           m_metaData.insert("meta:keyword", string);
           break;
-        case PIDSI::PIDSI_COMMENTS:
+        case PIDSI_COMMENTS:
           m_metaData.insert("dc:description", string);
           break;
-        case PIDSI::PIDSI_TEMPLATE:
+        case PIDSI_TEMPLATE:
           std::string templateHref(string.cstr());
           size_t found = templateHref.find_last_of("/\\");
           if (found != std::string::npos)
