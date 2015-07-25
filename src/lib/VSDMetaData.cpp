@@ -9,6 +9,7 @@
 
 #include "VSDMetaData.h"
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <string>
 #include <unicode/ucnv.h>
