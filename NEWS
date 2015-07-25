@@ -1,3 +1,15 @@
+libvisio 0.1.2
+
+- Fix several build problems with different compilers.
+- Import more metadata properties.
+- Fix theme color import (tdf#92270).
+- Fix a bunch of crashes and hangs when reading broken documents, found
+  with the help of american-fuzzy-lop.
+- Fix several memory leaks.
+- Ignore errors when parsing metadata. This makes some documents readable
+  again.
+- Fix handling of character background (tdf#92271).
+
 libvisio 0.1.1
 
 - Fix a minor issue reported by Coverity.
