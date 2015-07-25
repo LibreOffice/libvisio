@@ -1,3 +1,8 @@
+libvisio 0.1.3
+
+- Fix a build failure with some compilers.
+- Do not use C++11 syntax.
+
 libvisio 0.1.2
 
 - Fix several build problems with different compilers.
