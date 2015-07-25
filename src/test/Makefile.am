@@ -20,6 +20,8 @@ test_SOURCES = \
 	       test.cpp
 
 EXTRA_DIST = \
+	     data/bgcolor.vsdx \
+	     data/color-boxes.vsdx \
 	     data/fdo86664.vsdx \
 	     data/fdo86729-ms1252.vsd \
 	     data/fdo86729-utf8.vsd \
