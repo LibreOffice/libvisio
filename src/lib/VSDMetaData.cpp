@@ -217,15 +217,15 @@ void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *
       {
         switch (m_idsAndOffsets[index].first)
         {
-        case PIDDSI::PIDDSI_CATEGORY:
+        case PIDDSI_CATEGORY:
           m_metaData.insert("librevenge:category", string);
           break;
-        case PIDDSI::PIDDSI_LINECOUNT:
-          // this should actually be PIDDSI::PIDDSI_COMPANY but this
+        case PIDDSI_LINECOUNT:
+          // this should actually be PIDDSI_COMPANY but this
           // is what company is mapped to
           m_metaData.insert("librevenge:company", string);
           break;
-        case PIDDSI::PIDDSI_LANGUAGE:
+        case PIDDSI_LANGUAGE:
           m_metaData.insert("dc:language", string);
           break;
         }
