@@ -289,7 +289,7 @@ void libvisio::VSD5Parser::readFillAndShadow(librevenge::RVNGInputStream *input)
   {
     double shadowOffsetX = 0.0;
     double shadowOffsetY = 0.0;
-    if (m_isStencilStarted)
+    if (m_isStencilStarted && m_currentStencil)
     {
       VSD_DEBUG_MSG(("Found stencil fill\n"));
       shadowOffsetX = m_currentStencil->m_shadowOffsetX;
