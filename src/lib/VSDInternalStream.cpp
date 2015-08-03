@@ -25,8 +25,7 @@ VSDInternalStream::VSDInternalStream(librevenge::RVNGInputStream *input, unsigne
 
   if (!compressed)
   {
-    for (unsigned long i=0; i<tmpNumBytesRead; i++)
-      m_buffer.push_back(tmpBuffer[i]);
+    m_buffer.assign(tmpBuffer, tmpBuffer + tmpNumBytesRead);
   }
   else
   {
