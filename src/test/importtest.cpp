@@ -156,7 +156,9 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdUserDefinedMetadata);
   CPPUNIT_TEST(testVsdxUserDefinedMetadata);
   CPPUNIT_TEST(testVsdxImportBgColorFromTheme);
+#if LIBXML_VERSION >= 20902
   CPPUNIT_TEST(testVsdxCharBgColor);
+#endif
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();

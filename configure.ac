@@ -128,10 +128,6 @@ AS_IF([test "x$enable_tools" = "xyes"], [
 	PKG_CHECK_MODULES([REVENGE_STREAM],[
 		librevenge-stream-0.0
 	])
-        PKG_CHECK_EXISTS([libxml-2.0 >= 2.9.2],
-                [],
-                [AC_MSG_ERROR([libxml2 >= 2.9.2 is needed to run tests])]
-        )
 ])
 AC_SUBST([REVENGE_GENERATORS_CFLAGS])
 AC_SUBST([REVENGE_GENERATORS_LIBS])
