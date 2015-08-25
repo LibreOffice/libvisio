@@ -8,6 +8,7 @@
  */
 
 #include "VSDMetaData.h"
+#include <cassert>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -238,6 +239,9 @@ librevenge::RVNGString libvisio::VSDMetaData::readCodePageString(librevenge::RVN
 {
   uint32_t size = readU32(input);
 
+  if (size == 0)
+    return librevenge::RVNGString();
+
   std::vector<unsigned char> characters;
   for (uint32_t i = 0; i < size; ++i)
     characters.push_back(readU8(input));
@@ -267,6 +271,7 @@ librevenge::RVNGString libvisio::VSDMetaData::readCodePageString(librevenge::RVN
 
     if (U_SUCCESS(status) && conv)
     {
+      assert(!characters.empty());
       const char *src = (const char *)&characters[0];
       const char *srcLimit = (const char *)src + characters.size();
       while (src < srcLimit)
