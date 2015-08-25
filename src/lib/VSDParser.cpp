@@ -1102,17 +1102,21 @@ void libvisio::VSDParser::readPageProps(librevenge::RVNGInputStream *input)
 {
   // Skip bytes representing unit to *display* (value is always inches)
   input->seek(1, librevenge::RVNG_SEEK_CUR);
-  double pageWidth = readDouble(input);
+  const double pageWidth = std::max<double>(readDouble(input), 0);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
-  double pageHeight = readDouble(input);
+  const double pageHeight = std::max<double>(readDouble(input), 0);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shadowOffsetX = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shadowOffsetY = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
-  double scale = readDouble(input);
+  const double numerator = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
-  scale /= readDouble(input);
+  double denominator = readDouble(input);
+  if (VSD_ALMOST_ZERO(denominator))
+    denominator = 1;
+
+  const double scale = std::abs(numerator / denominator);
 
   if (m_isStencilStarted && m_currentStencil)
   {

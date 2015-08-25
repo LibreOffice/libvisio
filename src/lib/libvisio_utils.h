@@ -14,6 +14,9 @@
 
 #include "VSDTypes.h"
 
+#define VSD_EPSILON 1E-6
+#define VSD_ALMOST_ZERO(m) (fabs(m) <= VSD_EPSILON)
+
 #ifdef _MSC_VER
 
 typedef unsigned char uint8_t;
