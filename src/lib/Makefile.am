@@ -100,7 +100,7 @@ $(top_builddir)/src/lib/tokenhash.h : $(top_builddir)/src/lib/tokens.gperf
 		| $(SED) -e 's/(char\*)0/(char\*)0, 0/g' > $(top_builddir)/src/lib/tokenhash.h
 
 $(top_builddir)/src/lib/tokens.gperf : $(top_srcdir)/src/lib/tokens.txt gentoken.pl
-	perl $(top_srcdir)/src/lib/gentoken.pl $(top_srcdir)/src/lib/tokens.txt \
+	$(PERL) $(top_srcdir)/src/lib/gentoken.pl $(top_srcdir)/src/lib/tokens.txt \
 		$(top_builddir)/src/lib/tokens.h $(top_builddir)/src/lib/tokens.gperf
 
 if OS_WIN32
