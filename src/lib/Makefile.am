@@ -111,8 +111,9 @@ if OS_WIN32
 
 endif
 
-distclean-local :
-	rm -f $(generated_files) $(top_builddir)/src/lib/*.gperf
+MAINTAINERCLEANFILES = \
+	$(generated_files) \
+	$(top_builddir)/src/lib/*.gperf
 
 EXTRA_DIST = \
 	tokens.txt \
