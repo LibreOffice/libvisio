@@ -760,7 +760,6 @@ void libvisio::VSDParser::readNameIDX(librevenge::RVNGInputStream *input)
     if (nameId != readU32(input))
     {
       VSD_DEBUG_MSG(("VSDParser::readNameIDX --> mismatch of first two dwords\n"));
-      return;
     }
     unsigned elementId = readU32(input);
     input->seek(1, librevenge::RVNG_SEEK_CUR);
