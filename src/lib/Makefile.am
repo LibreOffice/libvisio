@@ -15,6 +15,8 @@ AM_CXXFLAGS = \
 	-I$(top_srcdir)/inc \
 	-I$(top_srcdir)/src/lib \
 	-I$(top_builddir)/src/lib \
+	-DBOOST_ERROR_CODE_HEADER_ONLY \
+	-DBOOST_SYSTEM_NO_DEPRECATED \
 	$(LIBVISIO_CXXFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
@@ -22,7 +24,6 @@ generated_files = \
 	$(top_builddir)/src/lib/tokens.h \
 	$(top_builddir)/src/lib/tokenhash.h
 
-libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_CPPFLAGS = -DBOOST_ERROR_CODE_HEADER_ONLY -DBOOST_SYSTEM_NO_DEPRECATED
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = $(LIBVISIO_LIBS) @LIBVISIO_WIN32_RESOURCE@
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
@@ -82,7 +83,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_xml.cpp \
 	libvisio_xml.h \
 	$(generated_files)
-	
 
 VDXParser.lo : $(generated_files)
 VSDXMLParserBase.lo : $(generated_files)
