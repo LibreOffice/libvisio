@@ -1060,7 +1060,7 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
   const shared_ptr<xmlChar> id(xmlTextReaderGetAttribute(reader, BAD_CAST("ID")), xmlFree);
   const shared_ptr<xmlChar> bgndPage(xmlTextReaderGetAttribute(reader, BAD_CAST("BackPage")), xmlFree);
   const shared_ptr<xmlChar> background(xmlTextReaderGetAttribute(reader, BAD_CAST("Background")), xmlFree);
-  const shared_ptr<xmlChar> pageName(xmlTextReaderGetAttribute(reader, BAD_CAST("NameU")), xmlFree);
+  const shared_ptr<xmlChar> pageName(xmlTextReaderGetAttribute(reader, BAD_CAST("Name")), xmlFree);
   if (id)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
