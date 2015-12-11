@@ -27,7 +27,7 @@ libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::R
     m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_currentLayerListLevel(0), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
     m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts(), m_names(), m_namesMapMap(),
-    m_currentPageName(), m_currentLayerList()
+    m_currentPageName()
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -676,10 +676,6 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
 {
   if (level == m_currentLevel)
     return;
-  if (level <= m_currentLayerListLevel)
-  {
-    m_collector->collectLayerList(level, m_currentLayerList);
-  }
   if (level <= m_currentShapeLevel+1)
   {
     if (!m_shape.m_geometries.empty() && m_currentGeometryList && m_currentGeometryList->empty())
@@ -913,7 +909,6 @@ void libvisio::VSDParser::readCharList(librevenge::RVNGInputStream *input)
 
     m_shape.m_charList.setElementsOrder(characterOrder);
   }
-
 }
 
 void libvisio::VSDParser::readParaList(librevenge::RVNGInputStream *input)
@@ -940,22 +935,44 @@ void libvisio::VSDParser::readPropList(librevenge::RVNGInputStream * /* input */
 {
 }
 
-void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream * /* input */)
+void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream *input)
 {
-  m_currentLayerListLevel = m_header.level;
-  m_currentLayerList.clear();
+  // We want the collectors to still get the level information
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+
+  if (m_header.trailer)
+  {
+    uint32_t subHeaderLength = readU32(input);
+    uint32_t childrenListLength = readU32(input);
+    input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
+    std::vector<unsigned> layerOrder;
+    layerOrder.reserve(childrenListLength / sizeof(uint32_t));
+    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+      layerOrder.push_back(readU32(input));
+  }
 }
 
 void libvisio::VSDParser::readLayer(librevenge::RVNGInputStream *input)
 {
   VSDLayer layer;
   input->seek(8, librevenge::RVNG_SEEK_CUR);
-  layer.m_colourId = readU8(input);
-  layer.m_colour.r = readU8(input);
-  layer.m_colour.g = readU8(input);
-  layer.m_colour.b = readU8(input);
-  layer.m_colour.a = readU8(input);
-  m_currentLayerList.addLayer(m_header.id, layer);
+  unsigned char colourId = readU8(input);
+  if (colourId == 0xff)
+  {
+    layer.m_colourId = MINUS_ONE;
+    input->seek(4, librevenge::RVNG_SEEK_CUR);
+  }
+  else
+  {
+    layer.m_colourId = colourId;
+    layer.m_colour.r = readU8(input);
+    layer.m_colour.g = readU8(input);
+    layer.m_colour.b = readU8(input);
+    layer.m_colour.a = readU8(input);
+  }
+
+  m_collector->collectLayer(m_header.id, m_header.level, layer);
 }
 
 void libvisio::VSDParser::readPage(librevenge::RVNGInputStream *input)

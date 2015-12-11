@@ -60,7 +60,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(), m_layerList(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
-  m_isBackgroundPage(false)
+  m_isBackgroundPage(false), m_currentLayerList()
 {
 }
 
@@ -2158,6 +2158,7 @@ void libvisio::VSDContentCollector::collectPageSheet(unsigned /* id */, unsigned
 {
   _handleLevelChange(level);
   m_currentShapeLevel = level;
+  m_currentLayerList.clear();
 }
 
 void libvisio::VSDContentCollector::collectStyleSheet(unsigned id, unsigned level, unsigned lineStyleParent, unsigned fillStyleParent, unsigned textStyleParent)
@@ -2973,10 +2974,10 @@ void libvisio::VSDContentCollector::collectMisc(unsigned level, const VSDMisc &m
   m_misc = misc;
 }
 
-void libvisio::VSDContentCollector::collectLayerList(unsigned level, const VSDLayerList &layerList)
+void libvisio::VSDContentCollector::collectLayer(unsigned id, unsigned level, const VSDLayer &layer)
 {
   _handleLevelChange(level);
-  m_layerList = layerList;
+  m_currentLayerList.addLayer(id, layer);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

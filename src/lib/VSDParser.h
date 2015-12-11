@@ -172,7 +172,7 @@ protected:
   std::map<unsigned, VSDName> m_names;
   std::map<unsigned, std::map<unsigned, VSDName> > m_namesMapMap;
   VSDName m_currentPageName;
-  VSDLayerList m_currentLayerList;
+
 
 private:
   VSDParser();

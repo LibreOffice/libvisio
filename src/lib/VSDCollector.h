@@ -102,7 +102,7 @@ public:
   virtual void collectName(unsigned id, unsigned level,  const librevenge::RVNGBinaryData &name, TextFormat format) = 0;
   virtual void collectPageSheet(unsigned id, unsigned level) = 0;
   virtual void collectMisc(unsigned level, const VSDMisc &misc) = 0;
-  virtual void collectLayerList(unsigned level, const VSDLayerList &layerList) = 0;
+  virtual void collectLayer(unsigned id, unsigned level, const VSDLayer &layer) = 0;
 
   // Style collectors
   virtual void collectStyleSheet(unsigned id, unsigned level,unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;

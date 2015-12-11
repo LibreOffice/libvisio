@@ -1340,14 +1340,14 @@ void libvisio::VSDXMLParserBase::readLayerIX(xmlTextReaderPtr reader)
   if (xmlTextReaderIsEmptyElement(reader))
     return;
 
-  // unsigned ix = getIX(reader);
+  unsigned ix = getIX(reader);
 
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
-  // int level = getElementDepth(reader);
+  int level = getElementDepth(reader);
 
-  Colour colour;
+  VSDLayer layer;
 
   do
   {
@@ -1363,13 +1363,26 @@ void libvisio::VSDXMLParserBase::readLayerIX(xmlTextReaderPtr reader)
     {
     case XML_COLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readExtendedColourData(colour, reader);
+      {
+        Colour colour;
+        long idx;
+        ret = readExtendedColourData(colour, idx, reader);
+        if (idx < 0 || idx >= 255)
+          layer.m_colourId = MINUS_ONE;
+        else
+        {
+          layer.m_colourId = idx;
+          layer.m_colour = colour;
+        }
+      }
       break;
     default:
       break;
     }
   }
   while (((XML_LAYER != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
+
+  m_collector->collectLayer(ix, level, layer);
 }
 
 void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)

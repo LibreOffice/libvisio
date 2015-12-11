@@ -249,7 +249,7 @@ void libvisio::VSDStylesCollector::collectMisc(unsigned level, const VSDMisc & /
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectLayerList(unsigned level, const VSDLayerList & /* layerList */)
+void libvisio::VSDStylesCollector::collectLayer(unsigned /* id */, unsigned level, const VSDLayer & /* layer */)
 {
   _handleLevelChange(level);
 }
