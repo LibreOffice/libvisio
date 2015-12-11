@@ -11,6 +11,7 @@
 #define __VSDLAYERLIST_H__
 
 #include <map>
+#include <vector>
 #include "VSDTypes.h"
 
 namespace libvisio
@@ -36,14 +37,11 @@ public:
   VSDLayerList &operator=(const VSDLayerList &layerList);
 
   void clear();
-  unsigned long size() const
-  {
-    return (unsigned long)m_elements.size();
-  }
-  bool empty() const
-  {
-    return (m_elements.empty());
-  }
+
+  void addLayer(unsigned id, const VSDLayer &layer);
+
+  unsigned getColourId(const std::vector<unsigned> &ids);
+
 private:
   std::map<unsigned, VSDLayer> m_elements;
 };
