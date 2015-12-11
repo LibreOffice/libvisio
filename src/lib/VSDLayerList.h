@@ -41,6 +41,7 @@ public:
   void addLayer(unsigned id, const VSDLayer &layer);
 
   unsigned getColourId(const std::vector<unsigned> &ids);
+  const Colour *getColour(const std::vector<unsigned> &ids);
 
 private:
   std::map<unsigned, VSDLayer> m_elements;

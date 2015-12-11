@@ -517,7 +517,11 @@ void libvisio::VSDContentCollector::_flushText()
       if (m_charFormats[charIndex].superscript) textProps.insert("style:text-position", "super");
       if (m_charFormats[charIndex].subscript) textProps.insert("style:text-position", "sub");
       textProps.insert("fo:font-size", m_charFormats[charIndex].size*72.0, librevenge::RVNG_POINT);
-      textProps.insert("fo:color", getColourString(m_charFormats[charIndex].colour));
+      Colour colour = m_charFormats[charIndex].colour;
+      const Colour *pColour = m_currentLayerList.getColour(m_currentLayerMem);
+      if (pColour)
+        colour = *pColour;
+      textProps.insert("fo:color", getColourString(colour));
       double opacity = 1.0;
       if (m_charFormats[charIndex].colour.a)
         opacity -= (double)(m_charFormats[charIndex].colour.a)/255.0;
@@ -2237,7 +2241,11 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, l
   }
 
   styleProps.insert("svg:stroke-width", m_scale*style.width);
-  styleProps.insert("svg:stroke-color", getColourString(style.colour));
+  libvisio::Colour colour = style.colour;
+  const Colour *pColour = m_currentLayerList.getColour(m_currentLayerMem);
+  if (pColour)
+    colour = *pColour;
+  styleProps.insert("svg:stroke-color", getColourString(colour));
   if (style.colour.a)
     styleProps.insert("svg:stroke-opacity", (1 - style.colour.a/255.0), librevenge::RVNG_PERCENT);
   else

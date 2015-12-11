@@ -86,4 +86,29 @@ unsigned libvisio::VSDLayerList::getColourId(const std::vector<unsigned> &ids)
   return colourId;
 }
 
+const libvisio::Colour *libvisio::VSDLayerList::getColour(const std::vector<unsigned> &ids)
+{
+  unsigned colourId = MINUS_ONE;
+  std::map<unsigned, libvisio::VSDLayer>::const_iterator iterColour = m_elements.end();
+  for (std::vector<unsigned>::const_iterator iter = ids.begin(); iter != ids.end(); ++iter)
+  {
+    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
+    // It is enough that one layer does not override colour and the original colour is used
+    if (iterMap->second.m_colourId == MINUS_ONE)
+      return 0;
+    // This means we are reading the first layer and it overrides colour
+    else if (iterColour == m_elements.end())
+    {
+      colourId = iterMap->second.m_colourId;
+      iterColour = iterMap;
+    }
+    // If two layers override colour to two different values, the original colour is used
+    else if (colourId != iterMap->second.m_colourId)
+      return 0;
+  }
+  if (iterColour == m_elements.end())
+    return 0;
+  return &(iterColour->second.m_colour);
+}
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
