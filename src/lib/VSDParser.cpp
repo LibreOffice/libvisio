@@ -596,6 +596,9 @@ void libvisio::VSDParser::handleChunk(librevenge::RVNGInputStream *input)
   case VSD_LAYER:
     readLayer(input);
     break;
+  case VSD_LAYER_MEMBERSHIP:
+    readLayerMem(input);
+    break;
   default:
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
@@ -611,6 +614,8 @@ void libvisio::VSDParser::_flushShape()
   m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
 
   m_collector->collectXFormData(m_currentShapeLevel+2, m_shape.m_xform);
+
+  m_collector->collectLayerMem(m_currentShapeLevel+2, m_shape.m_layerMem);
 
   m_collector->collectMisc(m_currentShapeLevel+2, m_shape.m_misc);
 
@@ -973,6 +978,23 @@ void libvisio::VSDParser::readLayer(librevenge::RVNGInputStream *input)
   }
 
   m_collector->collectLayer(m_header.id, m_header.level, layer);
+}
+
+void libvisio::VSDParser::readLayerMem(librevenge::RVNGInputStream *input)
+{
+  input->seek(13, librevenge::RVNG_SEEK_CUR);
+  unsigned textLength = readU8(input);
+
+  librevenge::RVNGBinaryData  textStream;
+  unsigned long numBytesRead = 0;
+  const unsigned char *tmpBuffer = input->read(textLength*2, numBytesRead);
+  if (numBytesRead)
+  {
+    textStream.append(tmpBuffer, numBytesRead);
+    m_shape.m_layerMem.m_data = textStream;
+    m_shape.m_layerMem.m_format = libvisio::VSD_TEXT_UTF16;
+  }
+
 }
 
 void libvisio::VSDParser::readPage(librevenge::RVNGInputStream *input)

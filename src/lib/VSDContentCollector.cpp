@@ -60,7 +60,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(), m_layerList(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
-  m_isBackgroundPage(false), m_currentLayerList()
+  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem()
 {
 }
 
@@ -2972,6 +2972,37 @@ void libvisio::VSDContentCollector::collectMisc(unsigned level, const VSDMisc &m
 {
   _handleLevelChange(level);
   m_misc = misc;
+}
+
+void libvisio::VSDContentCollector::collectLayerMem(unsigned level, const VSDName &layerMem)
+{
+  using namespace ::boost::spirit::classic;
+
+  _handleLevelChange(level);
+  librevenge::RVNGString text;
+  std::vector<unsigned char> tmpData(layerMem.m_data.size());
+  memcpy(&tmpData[0], layerMem.m_data.getDataBuffer(), layerMem.m_data.size());
+  appendCharacters(text, tmpData, layerMem.m_format);
+
+  m_currentLayerMem.clear();
+
+  bool bRes = parse(text.cstr(),
+                    //  Begin grammar
+                    (
+                      // parse comma-delimited list of doubles (have to use the
+                      // 'direct' variant, as otherwise spirit refactors our
+                      // parser to push both real num and comma to push_back_a)
+                      list_p.direct
+                      (
+                        int_p[push_back_a(m_currentLayerMem)],
+                        ';'
+                      )
+                    ) >> end_p,
+                    //  End grammar
+                    space_p).full;
+
+  if (!bRes)
+    m_currentLayerMem.clear();
 }
 
 void libvisio::VSDContentCollector::collectLayer(unsigned id, unsigned level, const VSDLayer &layer)

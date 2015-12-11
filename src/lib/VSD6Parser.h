@@ -34,6 +34,7 @@ private:
   virtual void readName(librevenge::RVNGInputStream *input);
   virtual void readName2(librevenge::RVNGInputStream *input);
   virtual void readTextField(librevenge::RVNGInputStream *input);
+  virtual void readLayerMem(librevenge::RVNGInputStream *input);
 
   VSD6Parser();
   VSD6Parser(const VSDParser &);

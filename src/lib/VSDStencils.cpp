@@ -16,7 +16,7 @@ libvisio::VSDShape::VSDShape()
     m_textStyleId(MINUS_ONE), m_lineStyle(), m_fillStyle(), m_textBlockStyle(), m_charStyle(),
     m_themeRef(), m_charList(), m_paraStyle(), m_paraList(), m_text(), m_names(),
     m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(0),
-    m_xform1d(0), m_misc()
+    m_xform1d(0), m_misc(), m_layerMem()
 {
 }
 
@@ -30,7 +30,8 @@ libvisio::VSDShape::VSDShape(const libvisio::VSDShape &shape)
     m_paraStyle(shape.m_paraStyle), m_paraList(shape.m_paraList), m_text(shape.m_text), m_names(shape.m_names),
     m_textFormat(shape.m_textFormat), m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData),
     m_xform(shape.m_xform), m_txtxform(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : 0),
-    m_xform1d(shape.m_xform1d ? new XForm1D(*(shape.m_xform1d)) : 0), m_misc(shape.m_misc)
+    m_xform1d(shape.m_xform1d ? new XForm1D(*(shape.m_xform1d)) : 0), m_misc(shape.m_misc),
+    m_layerMem(shape.m_layerMem)
 {
 }
 
@@ -77,6 +78,7 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
       delete m_xform1d;
     m_xform1d = shape.m_xform1d ? new XForm1D(*(shape.m_xform1d)) : 0;
     m_misc = shape.m_misc;
+    m_layerMem = shape.m_layerMem;
   }
   return *this;
 }
@@ -118,6 +120,7 @@ void libvisio::VSDShape::clear()
   m_textStyleId = MINUS_ONE;
   m_textFormat = libvisio::VSD_TEXT_UTF16;
   m_misc = VSDMisc();
+  m_layerMem = VSDName();
 }
 
 libvisio::VSDStencil::VSDStencil()

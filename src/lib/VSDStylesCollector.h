@@ -116,6 +116,7 @@ public:
   void collectPageSheet(unsigned id, unsigned level);
   void collectMisc(unsigned level, const VSDMisc &misc);
   void collectLayer(unsigned id, unsigned level, const VSDLayer &layer);
+  void collectLayerMem(unsigned level, const VSDName &layerMem);
 
   // Style collectors
   void collectStyleSheet(unsigned id, unsigned level,unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle);

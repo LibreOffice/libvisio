@@ -82,6 +82,23 @@ void libvisio::VSD6Parser::readText(librevenge::RVNGInputStream *input)
   }
 }
 
+void libvisio::VSD6Parser::readLayerMem(librevenge::RVNGInputStream *input)
+{
+  input->seek(13, librevenge::RVNG_SEEK_CUR);
+  unsigned textLength = readU8(input);
+
+  librevenge::RVNGBinaryData  textStream;
+  unsigned long numBytesRead = 0;
+  const unsigned char *tmpBuffer = input->read(textLength, numBytesRead);
+  if (numBytesRead)
+  {
+    textStream.append(tmpBuffer, numBytesRead);
+    m_shape.m_layerMem.m_data = textStream;
+    m_shape.m_layerMem.m_format = libvisio::VSD_TEXT_ANSI;
+  }
+
+}
+
 void libvisio::VSD6Parser::readCharIX(librevenge::RVNGInputStream *input)
 {
   unsigned charCount = readU32(input);

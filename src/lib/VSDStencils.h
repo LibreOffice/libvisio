@@ -55,6 +55,7 @@ public:
   XForm *m_txtxform;
   XForm1D *m_xform1d;
   VSDMisc m_misc;
+  VSDName m_layerMem;
 };
 
 class VSDStencil

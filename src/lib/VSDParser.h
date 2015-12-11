@@ -114,6 +114,7 @@ protected:
 
   virtual void readLayerList(librevenge::RVNGInputStream *input);
   virtual void readLayer(librevenge::RVNGInputStream *input);
+  virtual void readLayerMem(librevenge::RVNGInputStream *input);
 
   // parser of one pass
   bool parseDocument(librevenge::RVNGInputStream *input, unsigned shift);
