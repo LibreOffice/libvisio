@@ -109,8 +109,5 @@ EXTRA_DIST = \
 	$(BUILT_SOURCES) \
 	tokens.txt \
     gentoken.pl \
+	libvisio.rc \
 	libvisio.rc.in
-
-# These may be in the builddir too
-BUILD_EXTRA_DIST = \
-	libvisio.rc
