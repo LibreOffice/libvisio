@@ -149,6 +149,10 @@ xmlDocPtr parse(const char *filename, xmlBufferPtr buffer)
 
 class ImportTest : public CPPUNIT_NS::TestFixture
 {
+  // disable copying
+  ImportTest(const ImportTest &);
+  ImportTest &operator=(const ImportTest &);
+
   CPPUNIT_TEST_SUITE(ImportTest);
   CPPUNIT_TEST(testVsdxMetadataTitle);
   CPPUNIT_TEST(testVsdMetadataTitleMs1252);
