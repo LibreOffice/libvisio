@@ -108,6 +108,6 @@ MOSTLYCLEANFILES = \
 EXTRA_DIST = \
 	$(BUILT_SOURCES) \
 	tokens.txt \
-    gentoken.pl \
+	gentoken.pl \
 	libvisio.rc \
 	libvisio.rc.in
