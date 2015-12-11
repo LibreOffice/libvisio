@@ -219,7 +219,7 @@ AS_IF([test $platform_win32 = yes],
 AC_ARG_ENABLE([werror],
 	[AS_HELP_STRING([--disable-werror], [Treat all warnings as errors, useful for development])],
 	[enable_werror="$enableval"],
-	[enable_werror=no]
+	[enable_werror=yes]
 )
 AS_IF([test x"$enable_werror" != "xno"], [
 	CFLAGS="$CFLAGS -Werror"
@@ -256,33 +256,31 @@ AS_IF([test "x$native_win32" = "xyes"], [
 			AC_MSG_WARN([produced libraries might be incompatible with MSVC-compiled code])
 		])
 	])
+])
+
+AS_IF([test x"$GCC" = xyes], [
+	# Be tough with warnings and produce less careless code
 	CFLAGS="$CFLAGS -Wall -Wextra -pedantic"
-		CXXFLAGS="$CXXFLAGS -Wall -Wextra -pedantic -Wshadow -Wunused-variable"
-		AS_IF([test x"$enable_weffc" != "xno"], [
-			CXXFLAGS="$CXXFLAGS -Weffc++"
-		])
-		AS_IF([test x"$enable_wparanoic" != "xno"], [
-			CXXFLAGS="$CXXFLAGS -Wcast-align -Wcast-qual -Wchar-subscripts"
-			CXXFLAGS="$CXXFLAGS -Wcomment -Wconversion -Wdisabled-optimization"
-			CXXFLAGS="$CXXFLAGS -Wfloat-equal -Wformat -Wformat=2"
-			CXXFLAGS="$CXXFLAGS -Wformat-nonliteral -Wformat-security"
-			CXXFLAGS="$CXXFLAGS -Wformat-y2k -Wimport -Winit-self -Winvalid-pch"
-			CXXFLAGS="$CXXFLAGS -Wmissing-braces -Wmissing-field-initializers"
-			CXXFLAGS="$CXXFLAGS -Wmissing-format-attribute -Wmissing-include-dirs"
-			CXXFLAGS="$CXXFLAGS -Wmissing-noreturn -Wpacked -Wparentheses"
-			CXXFLAGS="$CXXFLAGS -Wpointer-arith -Wredundant-decls -Wreturn-type"
-			CXXFLAGS="$CXXFLAGS -Wsequence-point -Wsign-compare -Wstrict-aliasing"
-			CXXFLAGS="$CXXFLAGS -Wstrict-aliasing=2 -Wswitch -Wswitch-default"
-			CXXFLAGS="$CXXFLAGS -Wswitch-enum -Wtrigraphs -Wunknown-pragmas -Wunused"
-			CXXFLAGS="$CXXFLAGS -Wunused-function -Wunused-label -Wunused-parameter"
-			CXXFLAGS="$CXXFLAGS -Wunused-value -Wvariadic-macros"
-			CXXFLAGS="$CXXFLAGS -Wvolatile-register-var -Wwrite-strings"
-		])
-], [
-	AS_IF([test x"$GCC" = xyes], [
-		# Be tough with warnings and produce less careless code
-		CFLAGS="$CFLAGS -Wall -Wextra -pedantic"
-		CXXFLAGS="$CXXFLAGS -Wall -Wextra -Wshadow -pedantic"
+	CXXFLAGS="$CXXFLAGS -Wall -Wextra -pedantic -Wshadow -Wunused-variable"
+	AS_IF([test x"$enable_weffc" != "xno"], [
+		CXXFLAGS="$CXXFLAGS -Weffc++"
+	])
+	AS_IF([test x"$enable_wparanoic" != "xno"], [
+		CXXFLAGS="$CXXFLAGS -Wcast-align -Wcast-qual -Wchar-subscripts"
+		CXXFLAGS="$CXXFLAGS -Wcomment -Wconversion -Wdisabled-optimization"
+		CXXFLAGS="$CXXFLAGS -Wfloat-equal -Wformat -Wformat=2"
+		CXXFLAGS="$CXXFLAGS -Wformat-nonliteral -Wformat-security"
+		CXXFLAGS="$CXXFLAGS -Wformat-y2k -Wimport -Winit-self -Winvalid-pch"
+		CXXFLAGS="$CXXFLAGS -Wmissing-braces -Wmissing-field-initializers"
+		CXXFLAGS="$CXXFLAGS -Wmissing-format-attribute -Wmissing-include-dirs"
+		CXXFLAGS="$CXXFLAGS -Wmissing-noreturn -Wpacked -Wparentheses"
+		CXXFLAGS="$CXXFLAGS -Wpointer-arith -Wredundant-decls -Wreturn-type"
+		CXXFLAGS="$CXXFLAGS -Wsequence-point -Wsign-compare -Wstrict-aliasing"
+		CXXFLAGS="$CXXFLAGS -Wstrict-aliasing=2 -Wswitch -Wswitch-default"
+		CXXFLAGS="$CXXFLAGS -Wswitch-enum -Wtrigraphs -Wunknown-pragmas -Wunused"
+		CXXFLAGS="$CXXFLAGS -Wunused-function -Wunused-label -Wunused-parameter"
+		CXXFLAGS="$CXXFLAGS -Wunused-value -Wvariadic-macros"
+		CXXFLAGS="$CXXFLAGS -Wvolatile-register-var -Wwrite-strings"
 	])
 ])
 LIBVISIO_CXXFLAGS="${REVENGE_CFLAGS} ${LIBXML_CFLAGS} ${ZLIB_CFLAGS} ${ICU_CFLAGS}"
@@ -380,5 +378,7 @@ Build configuration:
 	tests:           ${enable_tests}
 	tools:           ${enable_tools}
 	werror:          ${enable_werror}
+	weffc:           ${enable_weffc}
+	wparanoic:       ${enable_wparanoic}
 ==============================================================================
 ])

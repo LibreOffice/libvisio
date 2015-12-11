@@ -22,6 +22,7 @@
 #include "VSDCharacterList.h"
 #include "VSDParagraphList.h"
 #include "VSDShapeList.h"
+#include "VSDLayerList.h"
 #include "VSDStencils.h"
 
 namespace libvisio
@@ -111,6 +112,8 @@ protected:
 
   void readMisc(librevenge::RVNGInputStream *input);
 
+  virtual void readLayerList(librevenge::RVNGInputStream *input);
+
   // parser of one pass
   bool parseDocument(librevenge::RVNGInputStream *input, unsigned shift);
 
@@ -166,6 +169,7 @@ protected:
   std::map<unsigned, VSDName> m_names;
   std::map<unsigned, std::map<unsigned, VSDName> > m_namesMapMap;
   VSDName m_currentPageName;
+  VSDLayerList m_currentLayerList;
 
 private:
   VSDParser();

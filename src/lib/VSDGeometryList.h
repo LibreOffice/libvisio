@@ -107,7 +107,7 @@ public:
   }
   unsigned count() const
   {
-    return m_elements.size();
+    return (unsigned)m_elements.size();
   }
   void resetLevel(unsigned level);
 private:

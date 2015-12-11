@@ -46,6 +46,8 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDGeometryList.h \
 	VSDInternalStream.cpp \
 	VSDInternalStream.h \
+	VSDLayerList.cpp \
+	VSDLayerList.h \
 	VSDMetaData.cpp \
 	VSDMetaData.h \
 	VSDOutputElementList.cpp \

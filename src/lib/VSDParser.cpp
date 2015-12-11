@@ -27,7 +27,7 @@ libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::R
     m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
     m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts(), m_names(), m_namesMapMap(),
-    m_currentPageName()
+    m_currentPageName(), m_currentLayerList()
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -590,6 +590,9 @@ void libvisio::VSDParser::handleChunk(librevenge::RVNGInputStream *input)
   case VSD_MISC:
     readMisc(input);
     break;
+  case VSD_LAYER_LIST:
+    readLayerList(input);
+    break;
   default:
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
@@ -928,6 +931,11 @@ void libvisio::VSDParser::readParaList(librevenge::RVNGInputStream *input)
 
 void libvisio::VSDParser::readPropList(librevenge::RVNGInputStream * /* input */)
 {
+}
+
+void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream * /* input */)
+{
+  m_currentLayerList.clear();
 }
 
 void libvisio::VSDParser::readPage(librevenge::RVNGInputStream *input)
