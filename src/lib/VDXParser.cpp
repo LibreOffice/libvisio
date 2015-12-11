@@ -269,6 +269,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readXForm1D(reader);
     break;
+  case XML_LAYERMEM:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readLayerMem(reader);
+    break;
   default:
     break;
   }
@@ -536,6 +540,33 @@ void libvisio::VDXParser::readXFormData(xmlTextReaderPtr reader)
     }
   }
   while ((XML_XFORM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
+}
+
+void libvisio::VDXParser::readLayerMem(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VDXParser::readLayerMem: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_LAYERMEMBER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readStringData(m_shape.m_layerMem, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while ((XML_LAYERMEM != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
 void libvisio::VDXParser::readTxtXForm(xmlTextReaderPtr reader)

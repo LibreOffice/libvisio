@@ -1268,6 +1268,10 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
           m_shape.m_fillStyle.shadowFgColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
       }
       break;
+    case XML_LAYERMEMBER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readStringData(m_shape.m_layerMem, reader);
+      break;
     default:
       if (XML_SECTION == tokenClass && XML_READER_TYPE_ELEMENT == tokenType)
         ret = skipSection(reader);

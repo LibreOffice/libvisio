@@ -25,6 +25,7 @@ class VSDXParser : public VSDXMLParserBase
   using VSDXMLParserBase::readDoubleData;
   using VSDXMLParserBase::readBoolData;
   using VSDXMLParserBase::readLongData;
+  using VSDXMLParserBase::readStringData;
 
 public:
   explicit VSDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);

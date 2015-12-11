@@ -1060,7 +1060,9 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
   const shared_ptr<xmlChar> id(xmlTextReaderGetAttribute(reader, BAD_CAST("ID")), xmlFree);
   const shared_ptr<xmlChar> bgndPage(xmlTextReaderGetAttribute(reader, BAD_CAST("BackPage")), xmlFree);
   const shared_ptr<xmlChar> background(xmlTextReaderGetAttribute(reader, BAD_CAST("Background")), xmlFree);
-  const shared_ptr<xmlChar> pageName(xmlTextReaderGetAttribute(reader, BAD_CAST("Name")), xmlFree);
+  shared_ptr<xmlChar> pageName(xmlTextReaderGetAttribute(reader, BAD_CAST("Name")), xmlFree);
+  if (!pageName.get())
+    pageName.reset(xmlTextReaderGetAttribute(reader, BAD_CAST("NameU")), xmlFree);
   if (id)
   {
     unsigned nId = (unsigned)xmlStringToLong(id);
@@ -1677,6 +1679,8 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   m_collector->collectXFormData(m_currentShapeLevel+2, m_shape.m_xform);
 
+  m_collector->collectLayerMem(m_currentShapeLevel+2, m_shape.m_layerMem);
+
   m_collector->collectMisc(m_currentShapeLevel+2, m_shape.m_misc);
 
   if (m_shape.m_txtxform)
@@ -1966,6 +1970,22 @@ int libvisio::VSDXMLParserBase::readDoubleData(double &value, xmlTextReaderPtr r
     VSD_DEBUG_MSG(("VSDXMLParserBase::readDoubleData stringValue %s\n", (const char *)stringValue.get()));
     if (!xmlStrEqual(stringValue.get(), BAD_CAST("Themed")))
       value = xmlStringToDouble(stringValue);
+    return 1;
+  }
+  return -1;
+}
+
+int libvisio::VSDXMLParserBase::readStringData(libvisio::VSDName &text, xmlTextReaderPtr reader)
+{
+  const shared_ptr<xmlChar> stringValue(readStringData(reader), xmlFree);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readStringData stringValue %s\n", (const char *)stringValue.get()));
+    if (!xmlStrEqual(stringValue.get(), BAD_CAST("Themed")))
+    {
+      text.m_data = librevenge::RVNGBinaryData(stringValue.get(), xmlStrlen(stringValue.get()));
+      text.m_format = VSD_TEXT_UTF8;
+    }
     return 1;
   }
   return -1;

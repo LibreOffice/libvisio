@@ -24,6 +24,7 @@ class VDXParser : public VSDXMLParserBase
   using VSDXMLParserBase::readDoubleData;
   using VSDXMLParserBase::readBoolData;
   using VSDXMLParserBase::readLongData;
+  using VSDXMLParserBase::readStringData;
 
 public:
   explicit VDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
@@ -60,6 +61,7 @@ private:
   void readFonts(xmlTextReaderPtr reader);
   void readTextBlock(xmlTextReaderPtr reader);
   void readForeignInfo(xmlTextReaderPtr reader);
+  void readLayerMem(xmlTextReaderPtr reader);
 
   void getBinaryData(xmlTextReaderPtr reader);
 

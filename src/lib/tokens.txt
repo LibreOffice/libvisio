@@ -105,6 +105,8 @@ IndLeft
 IndRight
 InfiniteLine
 Layer
+LayerMem
+LayerMember
 LeftMargin
 Line
 LineCap
