@@ -20,9 +20,7 @@ AM_CXXFLAGS = \
 	$(LIBVISIO_CXXFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
-generated_files = \
-	$(top_builddir)/src/lib/tokens.h \
-	$(top_builddir)/src/lib/tokenhash.h
+BUILT_SOURCES = tokens.h tokenhash.h
 
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = $(LIBVISIO_LIBS) @LIBVISIO_WIN32_RESOURCE@
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@
@@ -83,25 +81,17 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	libvisio_utils.cpp \
 	libvisio_utils.h \
 	libvisio_xml.cpp \
-	libvisio_xml.h \
-	$(generated_files)
+	libvisio_xml.h
 
-VDXParser.lo : $(generated_files)
-VSDXMLParserBase.lo : $(generated_files)
-VSDXMLTokenMap.lo : $(generated_files)
-VSDXParser.lo : $(generated_files)
-VSDXTheme.lo : $(generated_files)
-VSDXMetaData.lo : $(generated_files)
+tokens.h : tokens.gperf
 
-$(top_builddir)/src/lib/tokens.h : $(top_builddir)/src/lib/tokens.gperf
+tokenhash.h : tokens.gperf
+	$(GPERF) --compare-strncmp -C -m 20 tokens.gperf \
+		| $(SED) -e 's/(char\*)0/(char\*)0, 0/g' > tokenhash.h
 
-$(top_builddir)/src/lib/tokenhash.h : $(top_builddir)/src/lib/tokens.gperf
-	$(GPERF) --compare-strncmp -C -m 20 $(top_builddir)/src/lib/tokens.gperf \
-		| $(SED) -e 's/(char\*)0/(char\*)0, 0/g' > $(top_builddir)/src/lib/tokenhash.h
-
-$(top_builddir)/src/lib/tokens.gperf : $(top_srcdir)/src/lib/tokens.txt gentoken.pl
+tokens.gperf : $(top_srcdir)/src/lib/tokens.txt $(top_srcdir)/src/lib/gentoken.pl
 	$(PERL) $(top_srcdir)/src/lib/gentoken.pl $(top_srcdir)/src/lib/tokens.txt \
-		$(top_builddir)/src/lib/tokens.h $(top_builddir)/src/lib/tokens.gperf
+		tokens.h tokens.gperf
 
 if OS_WIN32
 
@@ -111,11 +101,12 @@ if OS_WIN32
 
 endif
 
-MAINTAINERCLEANFILES = \
-	$(generated_files) \
-	$(top_builddir)/src/lib/*.gperf
+MOSTLYCLEANFILES = \
+	$(BUILT_SOURCES) \
+	tokens.gperf
 
 EXTRA_DIST = \
+	$(BUILT_SOURCES) \
 	tokens.txt \
     gentoken.pl \
 	libvisio.rc.in

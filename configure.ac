@@ -42,6 +42,7 @@ dnl ===================================================================
 dnl Check for gperf
 dnl ===================================================================
 AM_MISSING_PROG([GPERF], [gperf])
+AM_MISSING_PROG([PERL], [perl])
 
 # ====================
 # Find additional apps
