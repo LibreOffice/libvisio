@@ -24,7 +24,7 @@
 libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container)
   : m_input(input), m_painter(painter), m_container(container), m_header(), m_collector(0), m_shapeList(), m_currentLevel(0),
     m_stencils(), m_currentStencil(0), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
-    m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_extractStencils(false), m_colours(),
+    m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_currentLayerListLevel(0), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
     m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts(), m_names(), m_namesMapMap(),
     m_currentPageName(), m_currentLayerList()
@@ -593,6 +593,9 @@ void libvisio::VSDParser::handleChunk(librevenge::RVNGInputStream *input)
   case VSD_LAYER_LIST:
     readLayerList(input);
     break;
+  case VSD_LAYER:
+    readLayer(input);
+    break;
   default:
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
@@ -673,6 +676,10 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
 {
   if (level == m_currentLevel)
     return;
+  if (level <= m_currentLayerListLevel)
+  {
+    m_collector->collectLayerList(level, m_currentLayerList);
+  }
   if (level <= m_currentShapeLevel+1)
   {
     if (!m_shape.m_geometries.empty() && m_currentGeometryList && m_currentGeometryList->empty())
@@ -935,7 +942,20 @@ void libvisio::VSDParser::readPropList(librevenge::RVNGInputStream * /* input */
 
 void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream * /* input */)
 {
+  m_currentLayerListLevel = m_header.level;
   m_currentLayerList.clear();
+}
+
+void libvisio::VSDParser::readLayer(librevenge::RVNGInputStream *input)
+{
+  VSDLayer layer;
+  input->seek(8, librevenge::RVNG_SEEK_CUR);
+  layer.m_colourId = readU8(input);
+  layer.m_colour.r = readU8(input);
+  layer.m_colour.g = readU8(input);
+  layer.m_colour.b = readU8(input);
+  layer.m_colour.a = readU8(input);
+  m_currentLayerList.addLayer(m_header.id, layer);
 }
 
 void libvisio::VSDParser::readPage(librevenge::RVNGInputStream *input)

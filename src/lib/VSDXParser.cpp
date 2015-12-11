@@ -845,6 +845,10 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readByteData(textDirection, reader);
       break;
+    case XML_LAYER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readLayer(reader);
+      break;
     case XML_PARAGRAPH:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readParagraph(reader);
@@ -1274,6 +1278,27 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
 
   if (1 == ret)
     processXmlNode(reader);
+}
+
+void libvisio::VSDXParser::readLayer(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXParser::readLayer: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    if (XML_ROW == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
+      readLayerIX(reader);
+  }
+  while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
 void libvisio::VSDXParser::readParagraph(xmlTextReaderPtr reader)

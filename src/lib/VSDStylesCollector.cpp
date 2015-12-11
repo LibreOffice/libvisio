@@ -249,6 +249,11 @@ void libvisio::VSDStylesCollector::collectMisc(unsigned level, const VSDMisc & /
   _handleLevelChange(level);
 }
 
+void libvisio::VSDStylesCollector::collectLayerList(unsigned level, const VSDLayerList & /* layerList */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDStylesCollector::collectUnhandledChunk(unsigned /* id */, unsigned level)
 {
   _handleLevelChange(level);

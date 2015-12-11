@@ -1335,6 +1335,43 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   }
 }
 
+void libvisio::VSDXMLParserBase::readLayerIX(xmlTextReaderPtr reader)
+{
+  if (xmlTextReaderIsEmptyElement(reader))
+    return;
+
+  // unsigned ix = getIX(reader);
+
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  // int level = getElementDepth(reader);
+
+  Colour colour;
+
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXMLParserBase::readLayerIX: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+
+    switch (tokenId)
+    {
+    case XML_COLOR:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readExtendedColourData(colour, reader);
+      break;
+    default:
+      break;
+    }
+  }
+  while (((XML_LAYER != tokenId && XML_ROW != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
+}
+
 void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
 {
   if (xmlTextReaderIsEmptyElement(reader))

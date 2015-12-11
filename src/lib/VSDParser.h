@@ -113,6 +113,7 @@ protected:
   void readMisc(librevenge::RVNGInputStream *input);
 
   virtual void readLayerList(librevenge::RVNGInputStream *input);
+  virtual void readLayer(librevenge::RVNGInputStream *input);
 
   // parser of one pass
   bool parseDocument(librevenge::RVNGInputStream *input, unsigned shift);
@@ -152,6 +153,8 @@ protected:
   bool m_isInStyles;
   unsigned m_currentShapeLevel;
   unsigned m_currentShapeID;
+
+  unsigned m_currentLayerListLevel;
 
   bool m_extractStencils;
   std::vector<Colour> m_colours;

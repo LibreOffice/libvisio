@@ -70,6 +70,7 @@ private:
 
   void getBinaryData(xmlTextReaderPtr reader);
 
+  void readLayer(xmlTextReaderPtr reader);
   void readParagraph(xmlTextReaderPtr reader);
   void readCharacter(xmlTextReaderPtr reader);
   void readFonts(xmlTextReaderPtr reader);

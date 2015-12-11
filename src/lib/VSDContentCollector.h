@@ -122,6 +122,7 @@ public:
   void collectName(unsigned id, unsigned level,  const librevenge::RVNGBinaryData &name, TextFormat format);
   void collectPageSheet(unsigned id, unsigned level);
   void collectMisc(unsigned level, const VSDMisc &misc);
+  void collectLayerList(unsigned level, const VSDLayerList &layerList);
 
 
   // Style collectors
@@ -291,6 +292,8 @@ private:
   unsigned m_currentPageID;
   VSDPage m_currentPage;
   VSDPages m_pages;
+
+  VSDLayerList m_layerList;
 
   std::vector<std::pair<double, double> > m_splineControlPoints;
   std::vector<double> m_splineKnotVector;

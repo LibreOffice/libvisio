@@ -111,6 +111,7 @@ protected:
   void readText(xmlTextReaderPtr reader);
   void readCharIX(xmlTextReaderPtr reader);
   void readParaIX(xmlTextReaderPtr reader);
+  void readLayerIX(xmlTextReaderPtr reader);
 
   void readStyleSheet(xmlTextReaderPtr reader);
   void readPageSheet(xmlTextReaderPtr reader);

@@ -57,7 +57,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(), m_textBlockStyle(),
   m_themeReference(), m_defaultCharStyle(), m_defaultParaStyle(), m_currentStyleSheet(0), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
-  m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(),
+  m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(), m_layerList(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
   m_isBackgroundPage(false)
@@ -2971,6 +2971,12 @@ void libvisio::VSDContentCollector::collectMisc(unsigned level, const VSDMisc &m
 {
   _handleLevelChange(level);
   m_misc = misc;
+}
+
+void libvisio::VSDContentCollector::collectLayerList(unsigned level, const VSDLayerList &layerList)
+{
+  _handleLevelChange(level);
+  m_layerList = layerList;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
