@@ -1369,13 +1369,8 @@ void libvisio::VSDXMLParserBase::readLayerIX(xmlTextReaderPtr reader)
         Colour colour;
         long idx;
         ret = readExtendedColourData(colour, idx, reader);
-        if (idx < 0 || idx >= 255)
-          layer.m_colourId = MINUS_ONE;
-        else
-        {
-          layer.m_colourId = idx;
+        if (idx != 255)
           layer.m_colour = colour;
-        }
       }
       break;
     default:

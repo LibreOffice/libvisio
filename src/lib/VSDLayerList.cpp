@@ -9,11 +9,9 @@
 
 #include "VSDLayerList.h"
 
-libvisio::VSDLayer::VSDLayer() :
-  m_colourId(MINUS_ONE), m_colour() {}
+libvisio::VSDLayer::VSDLayer() : m_colour() {}
 
-libvisio::VSDLayer::VSDLayer(const VSDLayer &layer) :
-  m_colourId(layer.m_colourId), m_colour(layer.m_colour) {}
+libvisio::VSDLayer::VSDLayer(const VSDLayer &layer) : m_colour(layer.m_colour) {}
 
 libvisio::VSDLayer::~VSDLayer() {}
 
@@ -21,7 +19,6 @@ libvisio::VSDLayer &libvisio::VSDLayer::operator=(const libvisio::VSDLayer &laye
 {
   if (this != &layer)
   {
-    m_colourId = layer.m_colourId;
     m_colour = layer.m_colour;
   }
   return *this;
@@ -67,48 +64,25 @@ void libvisio::VSDLayerList::addLayer(unsigned id, const libvisio::VSDLayer &lay
   m_elements[id] = layer;
 }
 
-unsigned libvisio::VSDLayerList::getColourId(const std::vector<unsigned> &ids)
-{
-  unsigned colourId = MINUS_ONE;
-  for (std::vector<unsigned>::const_iterator iter = ids.begin(); iter != ids.end(); ++iter)
-  {
-    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
-    // It is enough that one layer does not override colour and the original colour is used
-    if (iterMap->second.m_colourId == MINUS_ONE)
-      return MINUS_ONE;
-    // This means we are reading the first layer and it overrides colour
-    else if (colourId == MINUS_ONE)
-      colourId = iterMap->second.m_colourId;
-    // If two layers override colour to two different values, the original colour is used
-    else if (colourId != iterMap->second.m_colourId)
-      return MINUS_ONE;
-  }
-  return colourId;
-}
-
 const libvisio::Colour *libvisio::VSDLayerList::getColour(const std::vector<unsigned> &ids)
 {
-  unsigned colourId = MINUS_ONE;
   std::map<unsigned, libvisio::VSDLayer>::const_iterator iterColour = m_elements.end();
   for (std::vector<unsigned>::const_iterator iter = ids.begin(); iter != ids.end(); ++iter)
   {
     std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
     // It is enough that one layer does not override colour and the original colour is used
-    if (iterMap->second.m_colourId == MINUS_ONE)
+    if (!iterMap->second.m_colour)
       return 0;
     // This means we are reading the first layer and it overrides colour
     else if (iterColour == m_elements.end())
-    {
-      colourId = iterMap->second.m_colourId;
       iterColour = iterMap;
-    }
     // If two layers override colour to two different values, the original colour is used
-    else if (colourId != iterMap->second.m_colourId)
+    else if (!iterColour->second.m_colour || iterColour->second.m_colour.get() != iterMap->second.m_colour.get())
       return 0;
   }
   if (iterColour == m_elements.end())
     return 0;
-  return &(iterColour->second.m_colour);
+  return iterColour->second.m_colour.get_ptr();
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

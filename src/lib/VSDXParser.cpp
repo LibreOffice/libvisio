@@ -649,6 +649,10 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(drawingScale, reader);
       break;
+    case XML_LAYER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readLayer(reader);
+      break;
     default:
       break;
     }
@@ -844,10 +848,6 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     case XML_TEXTDIRECTION:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readByteData(textDirection, reader);
-      break;
-    case XML_LAYER:
-      if (XML_READER_TYPE_ELEMENT == tokenType)
-        readLayer(reader);
       break;
     case XML_PARAGRAPH:
       if (XML_READER_TYPE_ELEMENT == tokenType)

@@ -12,6 +12,7 @@
 
 #include <map>
 #include <vector>
+#include <boost/optional.hpp>
 #include "VSDTypes.h"
 
 namespace libvisio
@@ -24,8 +25,7 @@ struct VSDLayer
   ~VSDLayer();
   VSDLayer &operator=(const VSDLayer &layer);
 
-  unsigned m_colourId;
-  Colour m_colour;
+  boost::optional<Colour> m_colour;
 };
 
 class VSDLayerList
@@ -40,7 +40,6 @@ public:
 
   void addLayer(unsigned id, const VSDLayer &layer);
 
-  unsigned getColourId(const std::vector<unsigned> &ids);
   const Colour *getColour(const std::vector<unsigned> &ids);
 
 private:

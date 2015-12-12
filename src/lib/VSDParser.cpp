@@ -960,21 +960,19 @@ void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream *input)
 
 void libvisio::VSDParser::readLayer(librevenge::RVNGInputStream *input)
 {
-  VSDLayer layer;
+  libvisio::VSDLayer layer;
   input->seek(8, librevenge::RVNG_SEEK_CUR);
   unsigned char colourId = readU8(input);
   if (colourId == 0xff)
-  {
-    layer.m_colourId = MINUS_ONE;
     input->seek(4, librevenge::RVNG_SEEK_CUR);
-  }
   else
   {
-    layer.m_colourId = colourId;
-    layer.m_colour.r = readU8(input);
-    layer.m_colour.g = readU8(input);
-    layer.m_colour.b = readU8(input);
-    layer.m_colour.a = readU8(input);
+    libvisio::Colour colour;
+    colour.r = readU8(input);
+    colour.g = readU8(input);
+    colour.b = readU8(input);
+    colour.a = readU8(input);
+    layer.m_colour = colour;
   }
 
   m_collector->collectLayer(m_header.id, m_header.level, layer);

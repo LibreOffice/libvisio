@@ -74,15 +74,15 @@ struct Colour
   Colour(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
     : r(red), g(green), b(blue), a(alpha) {}
   Colour() : r(0), g(0), b(0), a(0) {}
-  inline bool operator==(const Colour &col)
+  inline bool operator==(const Colour &col) const
   {
     return ((r == col.r) && (g == col.g) && (b == col.b) && (a == col.a));
   }
-  inline bool operator!=(const Colour &col)
+  inline bool operator!=(const Colour &col) const
   {
     return !operator==(col);
   }
-  inline bool operator!()
+  inline bool operator!() const
   {
     return (!r && !g && !b && !a);
   }
