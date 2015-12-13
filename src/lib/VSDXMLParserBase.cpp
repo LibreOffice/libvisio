@@ -1373,6 +1373,12 @@ void libvisio::VSDXMLParserBase::readLayerIX(xmlTextReaderPtr reader)
           layer.m_colour = colour;
       }
       break;
+    case XML_VISIBLE:
+      ret = readBoolData(layer.m_visible, reader);
+      break;
+    case XML_PRINT:
+      ret = readBoolData(layer.m_printable, reader);
+      break;
     default:
       break;
     }

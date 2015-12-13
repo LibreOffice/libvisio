@@ -272,6 +272,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       m_shapeOutputDrawing->addStyle(fillPathProps);
       librevenge::RVNGPropertyList propList;
       propList.insert("svg:d", path);
+      _appendVisibleAndPrintable(propList);
       m_shapeOutputDrawing->addPath(propList);
     }
   }
@@ -355,6 +356,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       m_shapeOutputDrawing->addStyle(linePathProps);
       librevenge::RVNGPropertyList propList;
       propList.insert("svg:d", path);
+      _appendVisibleAndPrintable(propList);
       m_shapeOutputDrawing->addPath(propList);
     }
   }
@@ -438,6 +440,8 @@ void libvisio::VSDContentCollector::_flushText()
     else
       m_paraFormats[iPara].charCount = numCharsInText;
   }
+
+  _appendVisibleAndPrintable(textBlockProps);
 
   m_shapeOutputText->addStartTextObject(textBlockProps);
 
@@ -669,6 +673,8 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
 
   if (angle != 0.0)
     m_currentForeignProps.insert("librevenge:rotate", angle * 180 / M_PI, librevenge::RVNG_GENERIC);
+
+  _appendVisibleAndPrintable(m_currentForeignProps);
 
   if (m_currentForeignData.size() && m_currentForeignProps["librevenge:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0)
   {
@@ -3017,6 +3023,21 @@ void libvisio::VSDContentCollector::collectLayer(unsigned id, unsigned level, co
 {
   _handleLevelChange(level);
   m_currentLayerList.addLayer(id, layer);
+}
+
+void libvisio::VSDContentCollector::_appendVisibleAndPrintable(librevenge::RVNGPropertyList &propList)
+{
+  bool visible = m_currentLayerList.getVisible(m_currentLayerMem);
+  bool printable = m_currentLayerList.getPrintable(m_currentLayerMem);
+
+  if (visible && printable)
+    return;
+  else if (!visible && !printable)
+    propList.insert("draw:display", "none");
+  else if (!visible && printable)
+    propList.insert("draw:display", "printer");
+  else if (visible && !printable)
+    propList.insert("draw:display", "screen");
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

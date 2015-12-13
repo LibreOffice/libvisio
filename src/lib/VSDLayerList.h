@@ -26,6 +26,8 @@ struct VSDLayer
   VSDLayer &operator=(const VSDLayer &layer);
 
   boost::optional<Colour> m_colour;
+  bool m_visible;
+  bool m_printable;
 };
 
 class VSDLayerList
@@ -41,6 +43,8 @@ public:
   void addLayer(unsigned id, const VSDLayer &layer);
 
   const Colour *getColour(const std::vector<unsigned> &ids);
+  bool getVisible(const std::vector<unsigned> &ids);
+  bool getPrintable(const std::vector<unsigned> &ids);
 
 private:
   std::map<unsigned, VSDLayer> m_elements;

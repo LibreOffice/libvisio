@@ -139,6 +139,7 @@ PinY
 PolylineTo
 Pos
 pp
+Print
 QuickStyleEffectsMatrix
 QuickStyleFillColor
 QuickStyleFillMatrix
@@ -194,6 +195,7 @@ TxtPinX
 TxtPinY
 TxtWidth
 VerticalAlign
+Visible
 vt:bkgnd
 vt:color
 vt:connectorFontStyles

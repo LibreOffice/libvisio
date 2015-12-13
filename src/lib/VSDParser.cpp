@@ -974,6 +974,9 @@ void libvisio::VSDParser::readLayer(librevenge::RVNGInputStream *input)
     colour.a = readU8(input);
     layer.m_colour = colour;
   }
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  layer.m_visible = !!readU8(input);
+  layer.m_printable = !!readU8(input);
 
   m_collector->collectLayer(m_header.id, m_header.level, layer);
 }

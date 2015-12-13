@@ -9,9 +9,10 @@
 
 #include "VSDLayerList.h"
 
-libvisio::VSDLayer::VSDLayer() : m_colour() {}
+libvisio::VSDLayer::VSDLayer() : m_colour(), m_visible(1), m_printable(1) {}
 
-libvisio::VSDLayer::VSDLayer(const VSDLayer &layer) : m_colour(layer.m_colour) {}
+libvisio::VSDLayer::VSDLayer(const VSDLayer &layer) :
+  m_colour(layer.m_colour), m_visible(layer.m_visible), m_printable(layer.m_printable) {}
 
 libvisio::VSDLayer::~VSDLayer() {}
 
@@ -20,6 +21,8 @@ libvisio::VSDLayer &libvisio::VSDLayer::operator=(const libvisio::VSDLayer &laye
   if (this != &layer)
   {
     m_colour = layer.m_colour;
+    m_visible = layer.m_visible;
+    m_printable = layer.m_printable;
   }
   return *this;
 }
@@ -71,7 +74,7 @@ const libvisio::Colour *libvisio::VSDLayerList::getColour(const std::vector<unsi
   {
     std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
     // It is enough that one layer does not override colour and the original colour is used
-    if (!iterMap->second.m_colour)
+    if (iterMap == m_elements.end() || !iterMap->second.m_colour)
       return 0;
     // This means we are reading the first layer and it overrides colour
     else if (iterColour == m_elements.end())
@@ -84,5 +87,38 @@ const libvisio::Colour *libvisio::VSDLayerList::getColour(const std::vector<unsi
     return 0;
   return iterColour->second.m_colour.get_ptr();
 }
+
+bool libvisio::VSDLayerList::getVisible(const std::vector<unsigned> &ids)
+{
+  if (ids.empty())
+    return true;
+
+  for (std::vector<unsigned>::const_iterator iter = ids.begin(); iter != ids.end(); ++iter)
+  {
+    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
+    if (iterMap == m_elements.end())
+      return true;
+    else if (iterMap->second.m_visible)
+      return true;
+  }
+  return false;
+}
+
+bool libvisio::VSDLayerList::getPrintable(const std::vector<unsigned> &ids)
+{
+  if (ids.empty())
+    return true;
+
+  for (std::vector<unsigned>::const_iterator iter = ids.begin(); iter != ids.end(); ++iter)
+  {
+    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
+    if (iterMap == m_elements.end())
+      return true;
+    else if (iterMap->second.m_printable)
+      return true;
+  }
+  return false;
+}
+
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

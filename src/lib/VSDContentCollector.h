@@ -215,6 +215,7 @@ private:
   void _outputCubicBezierSegment(const std::vector<std::pair<double, double> > &points);
   void _outputQuadraticBezierSegment(const std::vector<std::pair<double, double> > &points);
   void _outputLinearBezierSegment(const std::vector<std::pair<double, double> > &points);
+  void _appendVisibleAndPrintable(librevenge::RVNGPropertyList &propList);
 
   bool m_isPageStarted;
   double m_pageWidth;
