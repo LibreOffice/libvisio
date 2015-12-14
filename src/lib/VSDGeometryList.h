@@ -26,8 +26,8 @@ class VSDCollector;
 class VSDGeometryListElement
 {
 public:
-  VSDGeometryListElement(unsigned id, unsigned level)
-    : m_id(id), m_level(level) {}
+  VSDGeometryListElement(unsigned id, unsigned level, double rounding)
+    : m_id(id), m_level(level), m_rounding(rounding) {}
   virtual ~VSDGeometryListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDGeometryListElement *clone() = 0;
@@ -42,6 +42,7 @@ public:
 protected:
   unsigned m_id;
   unsigned m_level;
+  double m_rounding;
 };
 
 class VSDGeometryList
