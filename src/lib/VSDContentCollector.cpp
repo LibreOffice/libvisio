@@ -1977,8 +1977,8 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
       _handleForeignData(m_stencilShape->m_foreign->data);
     }
 
-    m_textStream = m_stencilShape->m_text;
-    m_textFormat = m_stencilShape->m_textFormat;
+    // m_textStream = m_stencilShape->m_text;
+    // m_textFormat = m_stencilShape->m_textFormat;
 
     for (std::map< unsigned, VSDName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
     {

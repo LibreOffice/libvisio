@@ -78,8 +78,10 @@ void libvisio::VSD6Parser::readText(librevenge::RVNGInputStream *input)
     }
     textStream.append(tmpBuffer, numBytesRead);
     m_shape.m_text = textStream;
-    m_shape.m_textFormat = libvisio::VSD_TEXT_ANSI;
   }
+  else
+    m_shape.m_text.clear();
+  m_shape.m_textFormat = libvisio::VSD_TEXT_ANSI;
 }
 
 void libvisio::VSD6Parser::readLayerMem(librevenge::RVNGInputStream *input)
