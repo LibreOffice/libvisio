@@ -2476,6 +2476,145 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
     else
       styleProps.remove("draw:opacity");
   }
+  else if (style.pattern >= 2 && style.pattern <= 24)
+  {
+    styleProps.insert("draw:fill", "hatch");
+    if (style.bgTransparency == 1)
+      styleProps.insert("draw:fill-hatch-solid", "false");
+    else
+    {
+      styleProps.insert("draw:fill-hatch-solid", "true");
+      styleProps.insert("draw:opacity", (1 - (std::max)(style.fgTransparency, style.bgTransparency)), librevenge::RVNG_PERCENT);
+      styleProps.insert("draw:fill-color", getColourString(style.bgColour));
+    }
+
+    styleProps.insert("draw:color", getColourString(style.fgColour));
+    if (style.pattern == 2)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 45);
+      styleProps.insert("draw:distance", 0.1, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 3)
+    {
+      styleProps.insert("draw:style", "double");
+      styleProps.insert("draw:distance", 0.1, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 4)
+    {
+      styleProps.insert("draw:style", "double");
+      styleProps.insert("draw:rotation", 45);
+      styleProps.insert("draw:distance", 0.1, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 5)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 315);
+      styleProps.insert("draw:distance", 0.1, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 6)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:distance", 0.1, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 7)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 90);
+      styleProps.insert("draw:distance", 0.1, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 8)
+    {
+      styleProps.insert("draw:style", "triple");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 9)
+    {
+      styleProps.insert("draw:style", "triple");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 10)
+    {
+      styleProps.insert("draw:style", "triple");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 11)
+    {
+      styleProps.insert("draw:style", "triple");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 12)
+    {
+      styleProps.insert("draw:style", "triple");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 13)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 14)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 90);
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 15)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 315);
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 16)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 45);
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 17)
+    {
+      styleProps.insert("draw:style", "triple");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 18)
+    {
+      styleProps.insert("draw:style", "triple");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 19)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 20)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 90);
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 21)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 315);
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 22)
+    {
+      styleProps.insert("draw:style", "single");
+      styleProps.insert("draw:rotation", 45);
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 23)
+    {
+      styleProps.insert("draw:style", "double");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+    else if (style.pattern == 24)
+    {
+      styleProps.insert("draw:style", "triple");
+      styleProps.insert("draw:distance", 0.05, librevenge::RVNG_INCH);
+    }
+  }
   else if (style.pattern == 26 || style.pattern == 29)
   {
     styleProps.insert("draw:fill", "gradient");
@@ -2605,7 +2744,7 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
     }
   }
   else
-    // fill types we don't handle right, but let us approximate with solid fill
+    // fill types we don't handle right, but let us approximate with solid fill of background colour
   {
     styleProps.insert("draw:fill", "solid");
     styleProps.insert("draw:fill-color", getColourString(style.bgColour));
