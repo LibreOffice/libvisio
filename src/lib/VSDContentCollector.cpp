@@ -2609,6 +2609,10 @@ void libvisio::VSDContentCollector::_fillAndShadowProperties(const VSDFillStyle 
   {
     styleProps.insert("draw:fill", "solid");
     styleProps.insert("draw:fill-color", getColourString(style.bgColour));
+    if (style.bgTransparency > 0)
+      styleProps.insert("draw:opacity", 1 - style.bgTransparency, librevenge::RVNG_PERCENT);
+    else
+      styleProps.remove("draw:opacity");
   }
 
   if (style.shadowPattern)
