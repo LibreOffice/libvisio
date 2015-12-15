@@ -979,13 +979,8 @@ void libvisio::VSDParser::readTabsDataList(librevenge::RVNGInputStream *input)
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
     std::vector<unsigned> tabsOrder;
     tabsOrder.reserve(childrenListLength / sizeof(uint32_t));
-    printf("Fridrich");
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
-    {
       tabsOrder.push_back(readU32(input));
-      printf(" %i", tabsOrder.back());
-    }
-    printf("\n");
   }
 }
 
