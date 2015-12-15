@@ -461,6 +461,8 @@ void libvisio::VSDContentCollector::_flushText()
     paraProps.insert("fo:margin-right", (*paraIt).indRight);
     paraProps.insert("fo:margin-top", (*paraIt).spBefore);
     paraProps.insert("fo:margin-bottom", (*paraIt).spAfter);
+    if (m_textBlockStyle.defaultTabStop > 0.0)
+      paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
     switch ((*paraIt).align)
     {
     case 0: // left
