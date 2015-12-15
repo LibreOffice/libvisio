@@ -445,8 +445,8 @@ void libvisio::VSDContentCollector::_flushText()
 
   m_shapeOutputText->addStartTextObject(textBlockProps);
 
-  unsigned int charIndex = 0;
-  unsigned int paraCharCount = 0;
+  unsigned charIndex = 0;
+  unsigned paraCharCount = 0;
   unsigned long textBufferPosition = 0;
   const unsigned char *pTextBuffer = m_textStream.getDataBuffer();
   const unsigned long nTextBufferLength = m_textStream.size();
@@ -499,6 +499,15 @@ void libvisio::VSDContentCollector::_flushText()
     // Find char format that overlaps
     while (charIndex < m_charFormats.size() && paraCharCount)
     {
+      if (paraCharCount < m_charFormats[charIndex].charCount)
+      {
+        // Insert duplicate
+        std::vector<VSDCharStyle>::iterator charIt = m_charFormats.begin() + charIndex;
+        VSDCharStyle tmpCharFormat = m_charFormats[charIndex];
+        m_charFormats.insert(charIt, tmpCharFormat);
+        m_charFormats[charIndex].charCount = paraCharCount;
+        m_charFormats[charIndex+1].charCount -= paraCharCount;
+      }
       paraCharCount -= m_charFormats[charIndex].charCount;
 
       librevenge::RVNGPropertyList textProps;
@@ -623,15 +632,6 @@ void libvisio::VSDContentCollector::_flushText()
       m_shapeOutputText->addCloseSpan();
 
       charIndex++;
-      if (charIndex < m_charFormats.size() && paraCharCount && m_charFormats[charIndex].charCount > paraCharCount)
-      {
-        // Insert duplicate
-        std::vector<VSDCharStyle>::iterator charIt = m_charFormats.begin() + charIndex;
-        VSDCharStyle tmpCharFormat = m_charFormats[charIndex];
-        m_charFormats.insert(charIt, tmpCharFormat);
-        m_charFormats[charIndex].charCount = paraCharCount;
-        m_charFormats[charIndex+1].charCount -= paraCharCount;
-      }
     }
     m_shapeOutputText->addCloseParagraph();
   }
