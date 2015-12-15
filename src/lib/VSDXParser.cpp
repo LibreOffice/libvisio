@@ -576,9 +576,9 @@ int libvisio::VSDXParser::getElementToken(xmlTextReaderPtr reader)
       tokenId = VSDXMLTokenMap::getTokenId(stringValue);
       if (tokenId == XML_TOKEN_INVALID)
       {
-        if (!strncmp((char *)stringValue, "Position", 8))
+        if (*stringValue == 'P' && !strncmp((char *)stringValue, "Position", 8))
           tokenId = XML_POSITION;
-        else if (!strncmp((char *)stringValue, "Alignment", 9))
+        else if (*stringValue == 'A' && !strncmp((char *)stringValue, "Alignment", 9))
           tokenId = XML_ALIGNMENT;
       }
     }
