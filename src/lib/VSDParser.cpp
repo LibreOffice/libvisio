@@ -599,6 +599,14 @@ void libvisio::VSDParser::handleChunk(librevenge::RVNGInputStream *input)
   case VSD_LAYER_MEMBERSHIP:
     readLayerMem(input);
     break;
+  case VSD_TABS_DATA_LIST:
+    readTabsDataList(input);
+    break;
+  case VSD_TABS_DATA_1:
+  case VSD_TABS_DATA_2:
+  case VSD_TABS_DATA_3:
+    readTabsData(input);
+    break;
   default:
     m_collector->collectUnhandledChunk(m_header.id, m_header.level);
   }
@@ -759,6 +767,22 @@ void libvisio::VSDParser::readOLEData(librevenge::RVNGInputStream *input)
   // Append data instead of setting it - allows multi-stream OLE objects
   m_shape.m_foreign->data.append(oleData);
 
+}
+
+void libvisio::VSDParser::readTabsData(librevenge::RVNGInputStream *input)
+{
+  /* unsigned charCount = */ readU32(input);
+  unsigned char numStops = readU8(input);
+  std::vector<VSDTabStop> tabStops;
+  for (unsigned char i = 0; i < numStops; ++i)
+  {
+    VSDTabStop tabStop;
+    input->seek(1, librevenge::RVNG_SEEK_CUR);
+    tabStop.m_position = readDouble(input);
+    tabStop.m_alignment = readU8(input);
+    tabStop.m_lead = readU8(input);
+    tabStops.push_back(tabStop);
+  }
 }
 
 void libvisio::VSDParser::readNameIDX(librevenge::RVNGInputStream *input)
@@ -940,6 +964,29 @@ void libvisio::VSDParser::readParaList(librevenge::RVNGInputStream *input)
 
 void libvisio::VSDParser::readPropList(librevenge::RVNGInputStream * /* input */)
 {
+}
+
+void libvisio::VSDParser::readTabsDataList(librevenge::RVNGInputStream *input)
+{
+  // We want the collectors to still get the level information
+  if (!m_isStencilStarted)
+    m_collector->collectUnhandledChunk(m_header.id, m_header.level);
+
+  if (m_header.trailer)
+  {
+    uint32_t subHeaderLength = readU32(input);
+    uint32_t childrenListLength = readU32(input);
+    input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
+    std::vector<unsigned> tabsOrder;
+    tabsOrder.reserve(childrenListLength / sizeof(uint32_t));
+    printf("Fridrich");
+    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    {
+      tabsOrder.push_back(readU32(input));
+      printf(" %i", tabsOrder.back());
+    }
+    printf("\n");
+  }
 }
 
 void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream *input)

@@ -209,6 +209,17 @@ struct VSDMisc
   VSDMisc(const VSDMisc &misc) : m_hideText(misc.m_hideText) {}
 };
 
+struct VSDTabStop
+{
+  double m_position;
+  unsigned char m_alignment;
+  unsigned char m_lead;
+  VSDTabStop() : m_position(0.0), m_alignment(0), m_lead(0) {}
+  VSDTabStop(const VSDTabStop &tabStop) :
+    m_position(tabStop.m_position), m_alignment(tabStop.m_alignment),
+    m_lead(tabStop.m_lead) {}
+};
+
 } // namespace libvisio
 
 #endif /* VSDTYPES_H */

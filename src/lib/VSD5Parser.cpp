@@ -109,7 +109,7 @@ void libvisio::VSD5Parser::handleChunkRecords(librevenge::RVNGInputStream *input
   if (long(endOffset) > (headerPosition - startPosition))
     endOffset = unsigned(headerPosition - startPosition); // try to read something anyway
   std::map<unsigned, ChunkHeader> records;
-  input->seek(endPosition-4*(numRecords+1), librevenge::RVNG_SEEK_SET);
+  input->seek(headerPosition, librevenge::RVNG_SEEK_SET);
   unsigned i = 0;
   for (i = 0; i < numRecords; ++i)
   {
@@ -189,6 +189,12 @@ void libvisio::VSD5Parser::readFieldList(librevenge::RVNGInputStream *input)
 void libvisio::VSD5Parser::readNameList2(librevenge::RVNGInputStream *input)
 {
   VSD_DEBUG_MSG(("VSD5Parser::readNameList2\n"));
+  readList(input);
+}
+
+void libvisio::VSD5Parser::readTabsDataList(librevenge::RVNGInputStream *input)
+{
+  VSD_DEBUG_MSG(("VSD5Parser::readTabsDataList\n"));
   readList(input);
 }
 

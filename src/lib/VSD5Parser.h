@@ -37,6 +37,7 @@ protected:
   virtual void readPropList(librevenge::RVNGInputStream *input);
   virtual void readFieldList(librevenge::RVNGInputStream *input);
   virtual void readNameList2(librevenge::RVNGInputStream *input);
+  virtual void readTabsDataList(librevenge::RVNGInputStream *input);
 
   virtual void readLine(librevenge::RVNGInputStream *input);
   virtual void readFillAndShadow(librevenge::RVNGInputStream *input);

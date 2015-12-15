@@ -86,6 +86,8 @@ protected:
   virtual void readCharIX(librevenge::RVNGInputStream *input);
   virtual void readParaIX(librevenge::RVNGInputStream *input);
   virtual void readTextBlock(librevenge::RVNGInputStream *input);
+  virtual void readTabsDataList(librevenge::RVNGInputStream *input);
+  virtual void readTabsData(librevenge::RVNGInputStream *input);
 
   void readNameList(librevenge::RVNGInputStream *input);
   virtual void readName(librevenge::RVNGInputStream *input);
