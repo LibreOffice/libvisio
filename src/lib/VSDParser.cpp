@@ -623,7 +623,7 @@ void libvisio::VSDParser::_flushShape()
     m_collector->collectTxtXForm(m_currentShapeLevel+2, *(m_shape.m_txtxform));
 
   m_collector->collectLine(m_currentShapeLevel+2, m_shape.m_lineStyle.width, m_shape.m_lineStyle.colour, m_shape.m_lineStyle.pattern,
-                           m_shape.m_lineStyle.startMarker, m_shape.m_lineStyle.endMarker, m_shape.m_lineStyle.cap);
+                           m_shape.m_lineStyle.startMarker, m_shape.m_lineStyle.endMarker, m_shape.m_lineStyle.cap, m_shape.m_lineStyle.rounding);
 
   m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle.fgColour, m_shape.m_fillStyle.bgColour, m_shape.m_fillStyle.pattern,
                                     m_shape.m_fillStyle.fgTransparency, m_shape.m_fillStyle.bgTransparency, m_shape.m_fillStyle.shadowPattern,
@@ -827,15 +827,17 @@ void libvisio::VSDParser::readLine(librevenge::RVNGInputStream *input)
   c.b = readU8(input);
   c.a = readU8(input);
   unsigned char linePattern = readU8(input);
-  input->seek(10, librevenge::RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  double rounding = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   unsigned char startMarker = readU8(input);
   unsigned char endMarker = readU8(input);
   unsigned char lineCap = readU8(input);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding);
   else
-    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap));
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding));
 }
 
 void libvisio::VSDParser::readTextBlock(librevenge::RVNGInputStream *input)

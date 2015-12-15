@@ -158,6 +158,7 @@ RelMoveTo
 RelQuadBezTo
 ResizeMode
 RightMargin
+Rounding
 Row
 Section
 Shape

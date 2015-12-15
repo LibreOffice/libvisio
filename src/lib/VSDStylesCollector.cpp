@@ -55,7 +55,7 @@ void libvisio::VSDStylesCollector::collectEllipse(unsigned /* id */, unsigned le
 void libvisio::VSDStylesCollector::collectLine(unsigned level, const boost::optional<double> & /* strokeWidth */,
                                                const boost::optional<Colour> & /* c */, const boost::optional<unsigned char> & /* linePattern */,
                                                const boost::optional<unsigned char> & /* startMarker */, const boost::optional<unsigned char> & /* endMarker */,
-                                               const boost::optional<unsigned char> &/* lineCap */)
+                                               const boost::optional<unsigned char> & /* lineCap */, const boost::optional<double> & /* rounding */)
 {
   _handleLevelChange(level);
 }
@@ -328,32 +328,38 @@ void libvisio::VSDStylesCollector::collectStyleSheet(unsigned /* id */, unsigned
 }
 
 void libvisio::VSDStylesCollector::collectLineStyle(unsigned level, const boost::optional<double> & /* strokeWidth */, const boost::optional<Colour> & /* c */,
-                                                    const boost::optional<unsigned char> & /* linePattern */, const boost::optional<unsigned char> & /* startMarker */, const boost::optional<unsigned char> & /* endMarker */,
-                                                    const boost::optional<unsigned char> & /* lineCap */)
+                                                    const boost::optional<unsigned char> & /* linePattern */, const boost::optional<unsigned char> & /* startMarker */,
+                                                    const boost::optional<unsigned char> & /* endMarker */, const boost::optional<unsigned char> & /* lineCap */,
+                                                    const boost::optional<double> & /* rounding */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const boost::optional<Colour> & /* colourFG */, const boost::optional<Colour> & /* colourBG */,
-                                                    const boost::optional<unsigned char> & /* fillPattern */, const boost::optional<double> & /* fillFGTransparency */, const boost::optional<double> & /* fillBGTransparency */,
-                                                    const boost::optional<unsigned char> & /* shadowPattern */, const boost::optional<Colour> & /* shfgc */, const boost::optional<double> & /* shadowOffsetX */,
+                                                    const boost::optional<unsigned char> & /* fillPattern */, const boost::optional<double> & /* fillFGTransparency */,
+                                                    const boost::optional<double> & /* fillBGTransparency */, const boost::optional<unsigned char> & /* shadowPattern */,
+                                                    const boost::optional<Colour> & /* shfgc */, const boost::optional<double> & /* shadowOffsetX */,
                                                     const boost::optional<double> & /* shadowOffsetY */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const boost::optional<Colour> & /* colourFG */, const boost::optional<Colour> & /* colourBG */,
-                                                    const boost::optional<unsigned char> & /* fillPattern */, const boost::optional<double> & /* fillFGTransparency */, const boost::optional<double> & /* fillBGTransparency */,
-                                                    const boost::optional<unsigned char> & /* shadowPattern */, const boost::optional<Colour> & /* shfgc */)
+                                                    const boost::optional<unsigned char> & /* fillPattern */, const boost::optional<double> & /* fillFGTransparency */,
+                                                    const boost::optional<double> & /* fillBGTransparency */, const boost::optional<unsigned char> & /* shadowPattern */,
+                                                    const boost::optional<Colour> & /* shfgc */)
 {
   _handleLevelChange(level);
 }
 
 void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /* id */, unsigned level, unsigned /* charCount */, const boost::optional<VSDName> & /* font */,
-                                                      const boost::optional<Colour> & /* fontColour */, const boost::optional<double> & /* fontSize */, const boost::optional<bool> & /* bold */, const boost::optional<bool> & /* italic */,
-                                                      const boost::optional<bool> & /* underline */, const boost::optional<bool> & /* doubleunderline */, const boost::optional<bool> & /* strikeout */,
-                                                      const boost::optional<bool> & /* doublestrikeout */, const boost::optional<bool> & /* allcaps */, const boost::optional<bool> & /* initcaps */, const boost::optional<bool> & /* smallcaps */,
-                                                      const boost::optional<bool> & /* superscript */, const boost::optional<bool> & /* subscript */)
+                                                      const boost::optional<Colour> & /* fontColour */, const boost::optional<double> & /* fontSize */,
+                                                      const boost::optional<bool> & /* bold */, const boost::optional<bool> & /* italic */,
+                                                      const boost::optional<bool> & /* underline */, const boost::optional<bool> & /* doubleunderline */,
+                                                      const boost::optional<bool> & /* strikeout */, const boost::optional<bool> & /* doublestrikeout */,
+                                                      const boost::optional<bool> & /* allcaps */, const boost::optional<bool> & /* initcaps */,
+                                                      const boost::optional<bool> & /* smallcaps */, const boost::optional<bool> & /* superscript */,
+                                                      const boost::optional<bool> & /* subscript */)
 {
   _handleLevelChange(level);
 }

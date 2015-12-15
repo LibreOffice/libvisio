@@ -199,15 +199,17 @@ void libvisio::VSD5Parser::readLine(librevenge::RVNGInputStream *input)
   unsigned char colourIndex = readU8(input);
   Colour c = _colourFromIndex(colourIndex);
   unsigned char linePattern = readU8(input);
-  input->seek(10, librevenge::RVNG_SEEK_CUR);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  double rounding = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   unsigned char startMarker = readU8(input);
   unsigned char endMarker = readU8(input);
   unsigned char lineCap = readU8(input);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding);
   else
-    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap));
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding));
 }
 
 void libvisio::VSD5Parser::readCharIX(librevenge::RVNGInputStream *input)

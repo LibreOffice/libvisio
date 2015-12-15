@@ -316,6 +316,7 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   boost::optional<unsigned char> startMarker;
   boost::optional<unsigned char> endMarker;
   boost::optional<unsigned char> lineCap;
+  boost::optional<double> rounding;
 
   unsigned level = (unsigned)getElementDepth(reader);
   int ret = 1;
@@ -344,6 +345,10 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readByteData(linePattern, reader);
       break;
+    case XML_ROUNDING:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(rounding, reader);
+      break;
     case XML_BEGINARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readByteData(startMarker, reader);
@@ -363,9 +368,9 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   while ((XML_LINE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(level, strokeWidth, colour, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectLineStyle(level, strokeWidth, colour, linePattern, startMarker, endMarker, lineCap, rounding);
   else
-    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, colour, linePattern, startMarker, endMarker, lineCap));
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, colour, linePattern, startMarker, endMarker, lineCap, rounding));
 }
 
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)

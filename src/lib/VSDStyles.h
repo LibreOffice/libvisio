@@ -70,14 +70,15 @@ struct VSDThemeReference
 struct VSDOptionalLineStyle
 {
   VSDOptionalLineStyle() :
-    width(), colour(), pattern(), startMarker(), endMarker(), cap() {}
+    width(), colour(), pattern(), startMarker(), endMarker(), cap(), rounding() {}
   VSDOptionalLineStyle(const boost::optional<double> &w, const boost::optional<Colour> &col,
                        const boost::optional<unsigned char> &p, const boost::optional<unsigned char> &sm,
-                       const boost::optional<unsigned char> &em, const boost::optional<unsigned char> &c) :
-    width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
+                       const boost::optional<unsigned char> &em, const boost::optional<unsigned char> &c,
+                       const boost::optional<double> &r) :
+    width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r) {}
   VSDOptionalLineStyle(const VSDOptionalLineStyle &style) :
     width(style.width), colour(style.colour), pattern(style.pattern), startMarker(style.startMarker),
-    endMarker(style.endMarker), cap(style.cap) {}
+    endMarker(style.endMarker), cap(style.cap), rounding(style.rounding) {}
   ~VSDOptionalLineStyle() {}
   void override(const VSDOptionalLineStyle &style)
   {
@@ -87,6 +88,7 @@ struct VSDOptionalLineStyle
     ASSIGN_OPTIONAL(style.startMarker, startMarker);
     ASSIGN_OPTIONAL(style.endMarker, endMarker);
     ASSIGN_OPTIONAL(style.cap, cap);
+    ASSIGN_OPTIONAL(style.rounding, rounding);
   }
 
   boost::optional<double> width;
@@ -95,18 +97,19 @@ struct VSDOptionalLineStyle
   boost::optional<unsigned char> startMarker;
   boost::optional<unsigned char> endMarker;
   boost::optional<unsigned char> cap;
+  boost::optional<double> rounding;
 };
 
 struct VSDLineStyle
 {
   VSDLineStyle() :
-    width(0.01), colour(), pattern(1), startMarker(0), endMarker(0), cap(0) {}
+    width(0.01), colour(), pattern(1), startMarker(0), endMarker(0), cap(0), rounding(0.0) {}
   VSDLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
-               unsigned char em, unsigned char c) :
-    width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c) {}
+               unsigned char em, unsigned char c, double r) :
+    width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r) {}
   VSDLineStyle(const VSDLineStyle &style) :
     width(style.width), colour(style.colour), pattern(style.pattern), startMarker(style.startMarker),
-    endMarker(style.endMarker), cap(style.cap) {}
+    endMarker(style.endMarker), cap(style.cap), rounding(style.rounding) {}
   ~VSDLineStyle() {}
   void override(const VSDOptionalLineStyle &style)
   {
@@ -116,6 +119,7 @@ struct VSDLineStyle
     ASSIGN_OPTIONAL(style.startMarker, startMarker);
     ASSIGN_OPTIONAL(style.endMarker, endMarker);
     ASSIGN_OPTIONAL(style.cap, cap);
+    ASSIGN_OPTIONAL(style.rounding, rounding);
   }
 
   double width;
@@ -124,6 +128,7 @@ struct VSDLineStyle
   unsigned char startMarker;
   unsigned char endMarker;
   unsigned char cap;
+  double rounding;
 };
 
 struct VSDOptionalFillStyle

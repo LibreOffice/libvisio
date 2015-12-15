@@ -709,6 +709,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   boost::optional<double> strokeWidth;
   boost::optional<Colour> strokeColour;
   boost::optional<unsigned char> linePattern;
+  boost::optional<double> rounding;
   boost::optional<unsigned char> startMarker;
   boost::optional<unsigned char> endMarker;
   boost::optional<unsigned char> lineCap;
@@ -762,6 +763,10 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     case XML_LINEPATTERN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readByteData(linePattern, reader);
+      break;
+    case XML_ROUNDING:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(rounding, reader);
       break;
     case XML_BEGINARROW:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -909,7 +914,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
 
   if (m_isInStyles)
   {
-    m_collector->collectLineStyle(level, strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap);
+    m_collector->collectLineStyle(level, strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap, rounding);
     m_collector->collectFillStyle(level, fillColourFG, fillColourBG, fillPattern, fillFGTransparency,
                                   fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
@@ -917,7 +922,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   }
   else
   {
-    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap));
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap, rounding));
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowColourFG,
                                                       shadowPattern, shadowOffsetX, shadowOffsetY));
     m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, !!bgClrId, bgColour,

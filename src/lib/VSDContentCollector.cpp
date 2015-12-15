@@ -1026,10 +1026,11 @@ void libvisio::VSDContentCollector::collectRelQuadBezTo(unsigned /* id */, unsig
 }
 
 void libvisio::VSDContentCollector::collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
-                                                const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker, const boost::optional<unsigned char> &lineCap)
+                                                const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker, const boost::optional<unsigned char> &lineCap,
+                                                const boost::optional<double> &rounding)
 {
   _handleLevelChange(level);
-  m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap));
+  m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding));
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
@@ -2183,16 +2184,18 @@ void libvisio::VSDContentCollector::collectStyleSheet(unsigned id, unsigned leve
 }
 
 void libvisio::VSDContentCollector::collectLineStyle(unsigned /* level */, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c,
-                                                     const boost::optional<unsigned char> &linePattern, const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
-                                                     const boost::optional<unsigned char> &lineCap)
+                                                     const boost::optional<unsigned char> &linePattern, const boost::optional<unsigned char> &startMarker,
+                                                     const boost::optional<unsigned char> &endMarker, const boost::optional<unsigned char> &lineCap,
+                                                     const boost::optional<double> &rounding)
 {
-  VSDOptionalLineStyle lineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap);
+  VSDOptionalLineStyle lineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding);
   m_styles.addLineStyle(m_currentStyleSheet, lineStyle);
 }
 
 void libvisio::VSDContentCollector::collectFillStyle(unsigned /* level */, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
-                                                     const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency, const boost::optional<double> &fillBGTransparency,
-                                                     const boost::optional<unsigned char> &shadowPattern, const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX,
+                                                     const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
+                                                     const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
+                                                     const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX,
                                                      const boost::optional<double> &shadowOffsetY)
 {
   VSDOptionalFillStyle fillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern, shadowOffsetX, shadowOffsetY);
@@ -2201,8 +2204,9 @@ void libvisio::VSDContentCollector::collectFillStyle(unsigned /* level */, const
 }
 
 void libvisio::VSDContentCollector::collectFillStyle(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
-                                                     const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency, const boost::optional<double> &fillBGTransparency,
-                                                     const boost::optional<unsigned char> &shadowPattern, const boost::optional<Colour> &shfgc)
+                                                     const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
+                                                     const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
+                                                     const boost::optional<Colour> &shfgc)
 {
   collectFillStyle(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY);
 }
