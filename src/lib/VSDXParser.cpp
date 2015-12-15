@@ -581,30 +581,25 @@ int libvisio::VSDXParser::getElementToken(xmlTextReaderPtr reader)
         else if (!strncmp((char *)stringValue, "Alignment", 9))
           tokenId = XML_ALIGNMENT;
       }
-      xmlFree(stringValue);
     }
-    return tokenId;
+    break;
   case XML_ROW:
     stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("N"));
     if (!stringValue)
       stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("T"));
     if (stringValue)
-    {
       tokenId = VSDXMLTokenMap::getTokenId(stringValue);
-      xmlFree(stringValue);
-    }
-    return tokenId;
+    break;
   case XML_SECTION:
     stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("N"));
     if (stringValue)
-    {
       tokenId = VSDXMLTokenMap::getTokenId(stringValue);
-      xmlFree(stringValue);
-    }
-    return tokenId;
+    break;
   default:
     break;
   }
+  if (stringValue)
+    xmlFree(stringValue);
   return tokenId;
 }
 
