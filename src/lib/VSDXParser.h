@@ -27,6 +27,7 @@ class VSDXParser : public VSDXMLParserBase
   using VSDXMLParserBase::readLongData;
   using VSDXMLParserBase::readStringData;
 
+
 public:
   explicit VSDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
   virtual ~VSDXParser();
@@ -75,6 +76,8 @@ private:
   void readParagraph(xmlTextReaderPtr reader);
   void readCharacter(xmlTextReaderPtr reader);
   void readFonts(xmlTextReaderPtr reader);
+  void readTabs(xmlTextReaderPtr reader);
+  void readTabRow(xmlTextReaderPtr reader);
 
   // Private data
 

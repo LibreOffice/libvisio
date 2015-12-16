@@ -1279,6 +1279,10 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readStringData(m_shape.m_layerMem, reader);
       break;
+    case XML_TABS:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readTabs(reader);
+      break;
     default:
       if (XML_SECTION == tokenClass && XML_READER_TYPE_ELEMENT == tokenType)
         ret = skipSection(reader);
@@ -1331,6 +1335,91 @@ void libvisio::VSDXParser::readParagraph(xmlTextReaderPtr reader)
       readParaIX(reader);
   }
   while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
+}
+
+void libvisio::VSDXParser::readTabs(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    m_shape.m_tabSets.clear();
+  }
+  else
+  {
+    do
+    {
+      ret = xmlTextReaderRead(reader);
+      tokenId = getElementToken(reader);
+      if (XML_TOKEN_INVALID == tokenId)
+      {
+        VSD_DEBUG_MSG(("VSDXParser::readTabs: unknown token %s\n", xmlTextReaderConstName(reader)));
+      }
+      tokenType = xmlTextReaderNodeType(reader);
+      if (XML_ROW == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
+        readTabRow(reader);
+    }
+    while ((XML_SECTION != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
+  }
+}
+
+void libvisio::VSDXParser::readTabRow(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  unsigned ix = getIX(reader);
+
+  m_currentTabSet = &(m_shape.m_tabSets[ix]);
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    m_currentTabSet->clear();
+  }
+  else
+  {
+    do
+    {
+      ret = xmlTextReaderRead(reader);
+      tokenId = getElementToken(reader);
+      if (XML_TOKEN_INVALID == tokenId)
+      {
+        VSD_DEBUG_MSG(("VSDXParser::readTabs: unknown token %s\n", xmlTextReaderConstName(reader)));
+      }
+      tokenType = xmlTextReaderNodeType(reader);
+      switch (tokenId)
+      {
+      case XML_POSITION:
+        if (XML_READER_TYPE_ELEMENT == tokenType)
+        {
+          const boost::shared_ptr<xmlChar> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("N")), xmlFree);
+          if (stringValue)
+          {
+            unsigned idx = xmlStringToLong(stringValue.get()+8);
+            ret = readDoubleData((*m_currentTabSet)[idx].m_position, reader);
+          }
+        }
+        break;
+      case XML_ALIGNMENT:
+        if (XML_READER_TYPE_ELEMENT == tokenType)
+        {
+          const boost::shared_ptr<xmlChar> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("N")), xmlFree);
+          if (stringValue)
+          {
+            unsigned idx = xmlStringToLong(stringValue.get()+9);
+            ret = readByteData((*m_currentTabSet)[idx].m_alignment, reader);
+          }
+        }
+        break;
+      default:
+        break;
+      }
+    }
+    while ((XML_ROW != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
+  }
+  m_currentTabSet = 0;
 }
 
 void libvisio::VSDXParser::readCharacter(xmlTextReaderPtr reader)
