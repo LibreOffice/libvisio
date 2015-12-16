@@ -11,6 +11,7 @@
 #define VSDTYPES_H
 
 #include <vector>
+#include <map>
 #include <librevenge/librevenge.h>
 
 #define FROM_OPTIONAL(t, u) !!t ? t.get() : u
@@ -218,6 +219,15 @@ struct VSDTabStop
   VSDTabStop(const VSDTabStop &tabStop) :
     m_position(tabStop.m_position), m_alignment(tabStop.m_alignment),
     m_leader(tabStop.m_leader) {}
+};
+
+struct VSDTabSet
+{
+  unsigned m_numChars;
+  std::map<unsigned, VSDTabStop> m_tabStops;
+  VSDTabSet() : m_numChars(0), m_tabStops() {}
+  VSDTabSet(const VSDTabSet &tabSet) :
+    m_numChars(tabSet.m_numChars), m_tabStops(tabSet.m_tabStops) {}
 };
 
 } // namespace libvisio

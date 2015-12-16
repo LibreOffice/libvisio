@@ -995,7 +995,7 @@ void libvisio::VDXParser::readTabs(xmlTextReaderPtr reader)
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
   unsigned ix = getIX(reader);
-  m_currentTabSet = &(m_shape.m_tabSets[ix]);
+  m_currentTabSet = &(m_shape.m_tabSets[ix].m_tabStops);
 
   if (xmlTextReaderIsEmptyElement(reader))
   {

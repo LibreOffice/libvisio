@@ -46,7 +46,7 @@ public:
   VSDCharacterList m_charList;
   VSDOptionalParaStyle m_paraStyle;
   VSDParagraphList m_paraList;
-  std::map<unsigned, std::map<unsigned, VSDTabStop> > m_tabSets;
+  std::map<unsigned, VSDTabSet> m_tabSets;
   librevenge::RVNGBinaryData m_text;
   std::map<unsigned, VSDName> m_names;
   TextFormat m_textFormat;

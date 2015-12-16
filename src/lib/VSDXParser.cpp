@@ -1372,7 +1372,7 @@ void libvisio::VSDXParser::readTabRow(xmlTextReaderPtr reader)
   int tokenType = -1;
   unsigned ix = getIX(reader);
 
-  m_currentTabSet = &(m_shape.m_tabSets[ix]);
+  m_currentTabSet = &(m_shape.m_tabSets[ix].m_tabStops);
 
   if (xmlTextReaderIsEmptyElement(reader))
   {

@@ -771,17 +771,15 @@ void libvisio::VSDParser::readOLEData(librevenge::RVNGInputStream *input)
 
 void libvisio::VSDParser::readTabsData(librevenge::RVNGInputStream *input)
 {
-  /* unsigned charCount = */ readU32(input);
+  m_shape.m_tabSets[m_header.id].m_numChars = readU32(input);
   unsigned char numStops = readU8(input);
-  std::vector<VSDTabStop> tabStops;
+  m_shape.m_tabSets[m_header.id].m_tabStops.clear();
   for (unsigned char i = 0; i < numStops; ++i)
   {
-    VSDTabStop tabStop;
     input->seek(1, librevenge::RVNG_SEEK_CUR);
-    tabStop.m_position = readDouble(input);
-    tabStop.m_alignment = readU8(input);
-    tabStop.m_leader = readU8(input);
-    tabStops.push_back(tabStop);
+    m_shape.m_tabSets[m_header.id].m_tabStops[i].m_position = readDouble(input);
+    m_shape.m_tabSets[m_header.id].m_tabStops[i].m_alignment = readU8(input);
+    m_shape.m_tabSets[m_header.id].m_tabStops[i].m_leader = readU8(input);
   }
 }
 
