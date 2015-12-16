@@ -780,7 +780,7 @@ void libvisio::VSDParser::readTabsData(librevenge::RVNGInputStream *input)
     input->seek(1, librevenge::RVNG_SEEK_CUR);
     tabStop.m_position = readDouble(input);
     tabStop.m_alignment = readU8(input);
-    tabStop.m_lead = readU8(input);
+    tabStop.m_leader = readU8(input);
     tabStops.push_back(tabStop);
   }
 }
