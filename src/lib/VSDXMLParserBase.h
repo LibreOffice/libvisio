@@ -60,6 +60,8 @@ protected:
 
   std::map<unsigned, VSDName> m_fonts;
 
+  std::map<unsigned, VSDTabStop> *m_currentTabSet;
+
   XMLErrorWatcher *m_watcher;
 
   // Helper functions
