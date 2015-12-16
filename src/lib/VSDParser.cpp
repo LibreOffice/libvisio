@@ -27,7 +27,7 @@ libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::R
     m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_currentLayerListLevel(0), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
     m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts(), m_names(), m_namesMapMap(),
-    m_currentPageName()
+    m_currentPageName(), m_currentTabSet()
 {}
 
 libvisio::VSDParser::~VSDParser()
@@ -1278,6 +1278,7 @@ void libvisio::VSDParser::readShape(librevenge::RVNGInputStream *input)
   {
     if (tmpShape->m_foreign)
       m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
+    m_shape.m_tabSets = tmpShape->m_tabSets;
     m_shape.m_text = tmpShape->m_text;
     m_shape.m_textFormat = tmpShape->m_textFormat;
     m_shape.m_misc = tmpShape->m_misc;

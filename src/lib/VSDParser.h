@@ -176,6 +176,7 @@ protected:
   std::map<unsigned, std::map<unsigned, VSDName> > m_namesMapMap;
   VSDName m_currentPageName;
 
+  std::map<unsigned, VSDTabStop> *m_currentTabSet;
 
 private:
   VSDParser();
