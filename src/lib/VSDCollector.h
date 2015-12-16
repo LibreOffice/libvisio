@@ -104,6 +104,7 @@ public:
   virtual void collectMisc(unsigned level, const VSDMisc &misc) = 0;
   virtual void collectLayer(unsigned id, unsigned level, const VSDLayer &layer) = 0;
   virtual void collectLayerMem(unsigned level, const VSDName &layerMem) = 0;
+  virtual void collectTabsDataList(unsigned level, const std::map<unsigned, VSDTabSet> &tabSets) = 0;
 
   // Style collectors
   virtual void collectStyleSheet(unsigned id, unsigned level,unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;

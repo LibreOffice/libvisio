@@ -660,6 +660,8 @@ void libvisio::VSDParser::_flushShape()
   if (m_shape.m_foreign && m_shape.m_foreign->data.size())
     m_collector->collectForeignData(m_currentShapeLevel+1, m_shape.m_foreign->data);
 
+  m_collector->collectTabsDataList(m_currentShapeLevel+1, m_shape.m_tabSets);
+
   if (!m_shape.m_fields.empty())
     m_shape.m_fields.handle(m_collector);
 

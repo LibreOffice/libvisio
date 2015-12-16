@@ -207,6 +207,7 @@ TextBlock
 TextDirection
 TextXForm
 TopMargin
+tp
 TxtAngle
 TxtHeight
 TxtLocPinX

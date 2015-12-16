@@ -294,6 +294,11 @@ void libvisio::VSDStylesCollector::collectCharIX(unsigned /* id */, unsigned lev
   _handleLevelChange(level);
 }
 
+void libvisio::VSDStylesCollector::collectTabsDataList(unsigned level, const std::map<unsigned, VSDTabSet> & /* tabSets */)
+{
+  _handleLevelChange(level);
+}
+
 void libvisio::VSDStylesCollector::collectDefaultCharStyle(unsigned /* charCount */,
                                                            const boost::optional<VSDName> & /* font */, const boost::optional<Colour> & /* fontColour */, const boost::optional<double> & /* fontSize */,
                                                            const boost::optional<bool> & /* bold */, const boost::optional<bool> & /* italic */, const boost::optional<bool> & /* underline */,

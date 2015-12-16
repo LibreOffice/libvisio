@@ -1084,6 +1084,7 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
 
   unsigned cp = 0;
   unsigned pp = 0;
+  unsigned tp = 0;
   m_shape.m_text.clear();
   m_shape.m_charList.resetCharCount();
   m_shape.m_paraList.resetCharCount();
@@ -1108,6 +1109,9 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
       break;
     case XML_PP:
       pp = getIX(reader);
+      break;
+    case XML_TP:
+      tp = getIX(reader);
       break;
     default:
       if (XML_READER_TYPE_TEXT == tokenType || XML_READER_TYPE_SIGNIFICANT_WHITESPACE == tokenType)
@@ -1151,6 +1155,8 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
           charCount += (unsigned)tmpText.size();
           m_shape.m_paraList.setCharCount(pp, charCount);
         }
+
+        m_shape.m_tabSets[tp].m_numChars += (unsigned)tmpText.size();
 
         m_shape.m_text.append(tmpText);
         m_shape.m_textFormat = VSD_TEXT_UTF8;
@@ -1739,6 +1745,8 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   if (m_shape.m_foreign && m_shape.m_foreign->data.size())
     m_collector->collectForeignData(m_currentShapeLevel+1, m_shape.m_foreign->data);
+
+  m_collector->collectTabsDataList(m_currentShapeLevel+1, m_shape.m_tabSets);
 
   if (!m_shape.m_fields.empty())
     m_shape.m_fields.handle(m_collector);

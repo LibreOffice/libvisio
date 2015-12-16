@@ -60,7 +60,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(), m_layerList(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
-  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem()
+  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem(), m_tabSets()
 {
 }
 
@@ -441,11 +441,22 @@ void libvisio::VSDContentCollector::_flushText()
       m_paraFormats[iPara].charCount = numCharsInText;
   }
 
+  numCharsInText = (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
+
+  for (unsigned iTab = 0; iTab < m_tabSets.size(); iTab++)
+  {
+    if (m_tabSets[iTab].m_numChars)
+      numCharsInText -= m_tabSets[iTab].m_numChars;
+    else
+      m_tabSets[iTab].m_numChars = numCharsInText;
+  }
+
   _appendVisibleAndPrintable(textBlockProps);
 
   m_shapeOutputText->addStartTextObject(textBlockProps);
 
   unsigned charIndex = 0;
+  unsigned tabIndex = 0;
   unsigned paraCharCount = 0;
   unsigned long textBufferPosition = 0;
   const unsigned char *pTextBuffer = m_textStream.getDataBuffer();
@@ -492,9 +503,49 @@ void libvisio::VSDContentCollector::_flushText()
     else
       paraProps.insert("fo:line-height", -(*paraIt).spLine, librevenge::RVNG_PERCENT);
 
-    m_shapeOutputText->addOpenParagraph(paraProps);
-
     paraCharCount = (*paraIt).charCount;
+
+    if (!m_tabSets.empty())
+    {
+      if (paraCharCount < m_tabSets[tabIndex].m_numChars)
+      {
+        // Insert duplicate
+        std::vector<VSDTabSet>::iterator tabIt = m_tabSets.begin() + tabIndex;
+        VSDTabSet tmpTabSet = m_tabSets[tabIndex];
+        m_tabSets.insert(tabIt, tmpTabSet);
+        m_tabSets[tabIndex].m_numChars = paraCharCount;
+        m_tabSets[tabIndex+1].m_numChars -= paraCharCount;
+      }
+
+      librevenge::RVNGPropertyListVector tmpTabSet;
+      for (std::map<unsigned, VSDTabStop>::const_iterator iterTS = m_tabSets[tabIndex].m_tabStops.begin();
+           iterTS != m_tabSets[tabIndex].m_tabStops.end(); ++iterTS)
+      {
+        librevenge::RVNGPropertyList tmpTabStop;
+        tmpTabStop.insert("style:position", iterTS->second.m_position);
+        switch (iterTS->second.m_alignment)
+        {
+        case 0:
+          tmpTabStop.insert("style:type", "left");
+          break;
+        case 1:
+          tmpTabStop.insert("style:type", "center");
+          break;
+        case 2:
+          tmpTabStop.insert("style:type", "right");
+          break;
+        default:
+          tmpTabStop.insert("style:type", "char");
+          tmpTabStop.insert("style:char", ".");
+          break;
+        }
+        tmpTabSet.append(tmpTabStop);
+      }
+      if (!tmpTabSet.empty())
+        paraProps.insert("style:tab-stops", tmpTabSet);
+    }
+
+    m_shapeOutputText->addOpenParagraph(paraProps);
 
     // Find char format that overlaps
     while (charIndex < m_charFormats.size() && paraCharCount)
@@ -634,6 +685,7 @@ void libvisio::VSDContentCollector::_flushText()
       charIndex++;
     }
     m_shapeOutputText->addCloseParagraph();
+    tabIndex++;
   }
 
   m_shapeOutputText->addEndTextObject();
@@ -2121,6 +2173,16 @@ void libvisio::VSDContentCollector::collectCharIX(unsigned /* id */ , unsigned l
                                        allcaps, initcaps, smallcaps, superscript, subscript));
   format.charCount = charCount;
   m_charFormats.push_back(format);
+}
+
+void libvisio::VSDContentCollector::collectTabsDataList(unsigned level, const std::map<unsigned, VSDTabSet> &tabSets)
+{
+  _handleLevelChange(level);
+
+  m_tabSets.clear();
+  for (std::map<unsigned, VSDTabSet>::const_iterator iter = tabSets.begin(); iter != tabSets.end(); ++iter)
+    if (tabSets.begin() == iter || iter->second.m_numChars)
+      m_tabSets.push_back(iter->second);
 }
 
 void libvisio::VSDContentCollector::collectDefaultCharStyle(unsigned charCount,
