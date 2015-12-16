@@ -62,6 +62,8 @@ private:
   void readTextBlock(xmlTextReaderPtr reader);
   void readForeignInfo(xmlTextReaderPtr reader);
   void readLayerMem(xmlTextReaderPtr reader);
+  void readTabs(xmlTextReaderPtr reader);
+  void readTab(xmlTextReaderPtr reader);
 
   void getBinaryData(xmlTextReaderPtr reader);
 

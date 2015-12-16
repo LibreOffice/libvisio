@@ -273,6 +273,10 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
       readLayerMem(reader);
     break;
+  case XML_TABS:
+    if (XML_READER_TYPE_ELEMENT == tokenType)
+      readTabs(reader);
+    break;
   default:
     break;
   }
@@ -985,6 +989,86 @@ void libvisio::VDXParser::readForeignInfo(xmlTextReaderPtr reader)
   while ((XML_FOREIGN != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 }
 
+void libvisio::VDXParser::readTabs(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  unsigned ix = getIX(reader);
+  m_currentTabSet = &(m_shape.m_tabSets[ix]);
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    m_currentTabSet->clear();
+  }
+  else
+  {
+    do
+    {
+      ret = xmlTextReaderRead(reader);
+      tokenId = getElementToken(reader);
+      if (XML_TOKEN_INVALID == tokenId)
+      {
+        VSD_DEBUG_MSG(("VDXParser::readTabs: unknown token %s\n", xmlTextReaderConstName(reader)));
+      }
+      tokenType = xmlTextReaderNodeType(reader);
+      if (XML_TAB == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
+        readTab(reader);
+    }
+    while ((XML_TABS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
+  }
+  m_currentTabSet = 0;
+}
+
+void libvisio::VDXParser::readTab(xmlTextReaderPtr reader)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  unsigned ix = getIX(reader);
+
+  if (xmlTextReaderIsEmptyElement(reader))
+  {
+    m_currentTabSet->erase(ix);
+  }
+  else
+  {
+    do
+    {
+      ret = xmlTextReaderRead(reader);
+      tokenId = getElementToken(reader);
+      if (XML_TOKEN_INVALID == tokenId)
+      {
+        VSD_DEBUG_MSG(("VDXParser::readTab: unknown token %s\n", xmlTextReaderConstName(reader)));
+      }
+      tokenType = xmlTextReaderNodeType(reader);
+      switch (tokenId)
+      {
+      case XML_POSITION:
+        if (XML_READER_TYPE_ELEMENT == tokenType)
+        {
+          ret = readDoubleData((*m_currentTabSet)[ix].m_position, reader);
+        }
+        break;
+      case XML_ALIGNMENT:
+        if (XML_READER_TYPE_ELEMENT == tokenType)
+        {
+          ret = readByteData((*m_currentTabSet)[ix].m_alignment, reader);
+        }
+        break;
+      case XML_LEADER:
+        if (XML_READER_TYPE_ELEMENT == tokenType)
+        {
+          ret = readByteData((*m_currentTabSet)[ix].m_leader, reader);
+        }
+        break;
+      default:
+        break;
+      }
+    }
+    while ((XML_TAB != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
+  }
+}
 
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
