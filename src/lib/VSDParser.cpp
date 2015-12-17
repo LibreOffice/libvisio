@@ -773,7 +773,7 @@ void libvisio::VSDParser::readOLEData(librevenge::RVNGInputStream *input)
 
 void libvisio::VSDParser::readTabsData(librevenge::RVNGInputStream *input)
 {
-  m_shape.m_tabSets[m_header.id].m_numChars = readU32(input);
+  m_shape.m_tabSets[m_header.id].m_numChars = getUInt(input);
   unsigned char numStops = readU8(input);
   m_shape.m_tabSets[m_header.id].m_tabStops.clear();
   for (unsigned char i = 0; i < numStops; ++i)
