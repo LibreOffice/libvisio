@@ -277,6 +277,62 @@ public:
   }
 };
 
+class VSDOpenListElementOutputElement : public VSDOutputElement
+{
+public:
+  VSDOpenListElementOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDOpenListElementOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDOpenListElementOutputElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDCloseListElementOutputElement : public VSDOutputElement
+{
+public:
+  VSDCloseListElementOutputElement();
+  virtual ~VSDCloseListElementOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDCloseListElementOutputElement();
+  }
+};
+
+
+class VSDOpenUnorderedListLevelOutputElement : public VSDOutputElement
+{
+public:
+  VSDOpenUnorderedListLevelOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDOpenUnorderedListLevelOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDOpenUnorderedListLevelOutputElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDCloseUnorderedListLevelOutputElement : public VSDOutputElement
+{
+public:
+  VSDCloseUnorderedListLevelOutputElement();
+  virtual ~VSDCloseUnorderedListLevelOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDCloseUnorderedListLevelOutputElement();
+  }
+};
+
+
 } // namespace libvisio
 
 libvisio::VSDStyleOutputElement::VSDStyleOutputElement(const librevenge::RVNGPropertyList &propList) :
@@ -393,6 +449,44 @@ void libvisio::VSDEndTextObjectOutputElement::draw(librevenge::RVNGDrawingInterf
 }
 
 
+libvisio::VSDOpenListElementOutputElement::VSDOpenListElementOutputElement(const librevenge::RVNGPropertyList &propList) :
+  m_propList(propList) {}
+
+void libvisio::VSDOpenListElementOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
+{
+  if (painter)
+    painter->openListElement(m_propList);
+}
+
+
+libvisio::VSDCloseListElementOutputElement::VSDCloseListElementOutputElement() {}
+
+void libvisio::VSDCloseListElementOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
+{
+  if (painter)
+    painter->closeListElement();
+}
+
+
+libvisio::VSDOpenUnorderedListLevelOutputElement::VSDOpenUnorderedListLevelOutputElement(const librevenge::RVNGPropertyList &propList) :
+  m_propList(propList) {}
+
+void libvisio::VSDOpenUnorderedListLevelOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
+{
+  if (painter)
+    painter->openUnorderedListLevel(m_propList);
+}
+
+
+libvisio::VSDCloseUnorderedListLevelOutputElement::VSDCloseUnorderedListLevelOutputElement() {}
+
+void libvisio::VSDCloseUnorderedListLevelOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
+{
+  if (painter)
+    painter->closeUnorderedListLevel();
+}
+
+
 libvisio::VSDOutputElementList::VSDOutputElementList()
   : m_elements()
 {
@@ -496,6 +590,26 @@ void libvisio::VSDOutputElementList::addStartLayer(const librevenge::RVNGPropert
 void libvisio::VSDOutputElementList::addEndLayer()
 {
   m_elements.push_back(new VSDEndLayerOutputElement());
+}
+
+void libvisio::VSDOutputElementList::addOpenListElement(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(new VSDOpenListElementOutputElement(propList));
+}
+
+void libvisio::VSDOutputElementList::addOpenUnorderedListLevel(const librevenge::RVNGPropertyList &propList)
+{
+  m_elements.push_back(new VSDOpenUnorderedListLevelOutputElement(propList));
+}
+
+void libvisio::VSDOutputElementList::addCloseListElement()
+{
+  m_elements.push_back(new VSDCloseListElementOutputElement());
+}
+
+void libvisio::VSDOutputElementList::addCloseUnorderedListLevel()
+{
+  m_elements.push_back(new VSDCloseUnorderedListLevelOutputElement());
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

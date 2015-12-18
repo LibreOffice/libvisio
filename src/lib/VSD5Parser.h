@@ -43,6 +43,7 @@ protected:
   virtual void readFillAndShadow(librevenge::RVNGInputStream *input);
   virtual void readTextBlock(librevenge::RVNGInputStream *input);
   virtual void readCharIX(librevenge::RVNGInputStream *input);
+  virtual void readParaIX(librevenge::RVNGInputStream *input);
   virtual void readTextField(librevenge::RVNGInputStream *input);
 
   virtual void readShape(librevenge::RVNGInputStream *input);

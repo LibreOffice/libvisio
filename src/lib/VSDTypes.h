@@ -230,6 +230,29 @@ struct VSDTabSet
     m_numChars(tabSet.m_numChars), m_tabStops(tabSet.m_tabStops) {}
 };
 
+struct VSDBullet
+{
+  librevenge::RVNGString m_bulletStr;
+  double m_textPosAfterBullet;
+  VSDBullet() : m_bulletStr(), m_textPosAfterBullet(0.0) {}
+  VSDBullet(const VSDBullet &bullet) :
+    m_bulletStr(bullet.m_bulletStr),
+    m_textPosAfterBullet(bullet.m_textPosAfterBullet) {}
+  inline bool operator==(const VSDBullet &bullet) const
+  {
+    return ((m_bulletStr == bullet.m_bulletStr) &&
+            (m_textPosAfterBullet == bullet.m_textPosAfterBullet));
+  }
+  inline bool operator!=(const VSDBullet &bullet) const
+  {
+    return !operator==(bullet);
+  }
+  inline bool operator!() const
+  {
+    return (m_bulletStr.empty() && m_textPosAfterBullet == 0.0);
+  }
+};
+
 } // namespace libvisio
 
 #endif /* VSDTYPES_H */

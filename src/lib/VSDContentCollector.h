@@ -109,10 +109,13 @@ public:
   void collectParaIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
                      const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                      const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
+                     const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr, const boost::optional<double> &textPosAfterBullet,
                      const boost::optional<unsigned> &flags);
   void collectDefaultParaStyle(unsigned charCount, const boost::optional<double> &indFirst, const boost::optional<double> &indLeft,
                                const boost::optional<double> &indRight, const boost::optional<double> &spLine, const boost::optional<double> &spBefore,
-                               const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align, const boost::optional<unsigned> &flags);
+                               const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
+                               const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr,
+                               const boost::optional<double> &textPosAfterBullet, const boost::optional<unsigned> &flags);
   void collectTextBlock(unsigned level, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,
                         const boost::optional<double> &topMargin, const boost::optional<double> &bottomMargin,
                         const boost::optional<unsigned char> &verticalAlign, const boost::optional<bool> &isBgFilled,
@@ -148,7 +151,8 @@ public:
   void collectParaIXStyle(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
                           const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                           const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
-                          const boost::optional<unsigned> &flags);
+                          const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr,
+                          const boost::optional<double> &textPosAfterBullet, const boost::optional<unsigned> &flags);
   void collectTextBlockStyle(unsigned level, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,
                              const boost::optional<double> &topMargin, const boost::optional<double> &bottomMargin,
                              const boost::optional<unsigned char> &verticalAlign, const boost::optional<bool> &isBgFilled,
@@ -217,6 +221,8 @@ private:
   void _outputQuadraticBezierSegment(const std::vector<std::pair<double, double> > &points);
   void _outputLinearBezierSegment(const std::vector<std::pair<double, double> > &points);
   void _appendVisibleAndPrintable(librevenge::RVNGPropertyList &propList);
+  void _bulletFromParaFormat(VSDBullet &bullet, const VSDParaStyle &paraStyle);
+  void _listLevelFromBullet(librevenge::RVNGPropertyList &propList, const VSDBullet &bullet);
 
   bool m_isPageStarted;
   double m_pageWidth;

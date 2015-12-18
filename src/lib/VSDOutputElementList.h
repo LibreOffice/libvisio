@@ -33,12 +33,16 @@ public:
   void addPath(const librevenge::RVNGPropertyList &propList);
   void addGraphicObject(const librevenge::RVNGPropertyList &propList);
   void addStartTextObject(const librevenge::RVNGPropertyList &propList);
-  void addOpenParagraph(const librevenge::RVNGPropertyList &propList);
-  void addOpenSpan(const librevenge::RVNGPropertyList &propList);
-  void addInsertText(const librevenge::RVNGString &text);
-  void addCloseSpan();
-  void addCloseParagraph();
   void addEndTextObject();
+  void addOpenUnorderedListLevel(const librevenge::RVNGPropertyList &propList);
+  void addCloseUnorderedListLevel();
+  void addOpenListElement(const librevenge::RVNGPropertyList &propList);
+  void addCloseListElement();
+  void addOpenParagraph(const librevenge::RVNGPropertyList &propList);
+  void addCloseParagraph();
+  void addOpenSpan(const librevenge::RVNGPropertyList &propList);
+  void addCloseSpan();
+  void addInsertText(const librevenge::RVNGString &text);
   void addStartLayer(const librevenge::RVNGPropertyList &propList);
   void addEndLayer();
   bool empty() const

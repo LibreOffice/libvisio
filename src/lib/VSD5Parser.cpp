@@ -218,6 +218,72 @@ void libvisio::VSD5Parser::readLine(librevenge::RVNGInputStream *input)
     m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding));
 }
 
+void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
+{
+  long startPosition = input->tell();
+  unsigned charCount = readU16(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  double indFirst = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  double indLeft = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  double indRight = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  double spLine = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  double spBefore = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  double spAfter = readDouble(input);
+  unsigned char align = readU8(input);
+  unsigned char bullet = readU8(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+
+  long remainingData = m_header.dataLength - input->tell() + startPosition;
+  unsigned blockLength = 0;
+  VSDName bulletStr;
+
+  while (remainingData >= 2 && (blockLength = readU16(input)))
+  {
+    long blockEnd = blockLength-2 + input->tell();
+    unsigned char blockType = readU8(input);
+    unsigned char blockIdx = readU8(input);
+    if (blockType == 2 && blockIdx == 8)
+    {
+      input->seek(1, librevenge::RVNG_SEEK_CUR);
+      unsigned long numBytes = readU8(input);
+      unsigned long numBytesRead = 0;
+      const unsigned char *tmpBuffer = input->read(numBytes, numBytesRead);
+      if (tmpBuffer && numBytesRead)
+      {
+        librevenge::RVNGBinaryData tmpBulletString(tmpBuffer, numBytesRead);
+        bulletStr = VSDName(tmpBulletString, libvisio::VSD_TEXT_ANSI);
+      }
+    }
+    else if (blockType == 2 && blockIdx == 3)
+    {
+    };
+    input->seek(blockEnd, librevenge::RVNG_SEEK_SET);
+    remainingData -= blockLength;
+  }
+
+  if (m_isInStyles)
+    m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
+                                    spLine, spBefore, spAfter, align, bullet, bulletStr, 0.0, 0);
+  else
+  {
+    if (m_isStencilStarted)
+    {
+      VSD_DEBUG_MSG(("Found stencil paragraph style\n"));
+    }
+
+    m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
+                                                      spLine, spBefore, spAfter, align, bullet,
+                                                      bulletStr, 0.0, 0));
+    m_shape.m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
+                                 spLine, spBefore, spAfter, align, bullet, bulletStr, 0.0, 0);
+  }
+}
+
 void libvisio::VSD5Parser::readCharIX(librevenge::RVNGInputStream *input)
 {
   unsigned charCount = readU16(input);
