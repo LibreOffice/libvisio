@@ -240,6 +240,8 @@ void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
   input->seek(1, librevenge::RVNG_SEEK_CUR);
 
   VSDName bulletStr;
+  double textPosAfterTab(0.0);
+  unsigned flags(0);
   /*
     long remainingData = m_header.dataLength - input->tell() + startPosition;
     unsigned blockLength = 0;
@@ -270,7 +272,7 @@ void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
   */
   if (m_isInStyles)
     m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-                                    spLine, spBefore, spAfter, align, bullet, bulletStr, 0.0, 0);
+                                    spLine, spBefore, spAfter, align, bullet, bulletStr, textPosAfterTab, flags);
   else
   {
     if (m_isStencilStarted)
@@ -280,9 +282,9 @@ void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
 
     m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
                                                       spLine, spBefore, spAfter, align, bullet,
-                                                      bulletStr, 0.0, 0));
+                                                      bulletStr, textPosAfterTab, 0));
     m_shape.m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-                                 spLine, spBefore, spAfter, align, bullet, bulletStr, 0.0, 0);
+                                 spLine, spBefore, spAfter, align, bullet, bulletStr, textPosAfterTab, flags);
   }
 }
 
