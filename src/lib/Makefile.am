@@ -87,7 +87,8 @@ tokens.h : tokens.gperf
 
 tokenhash.h : tokens.gperf
 	$(GPERF) --compare-strncmp -C -m 20 tokens.gperf \
-		| $(SED) -e 's/(char\*)0/(char\*)0, 0/g' > tokenhash.h
+		| $(SED) -e 's/(char\*)0/(char\*)0, 0/g' \
+		| $(SED) -e 's/register //g' > tokenhash.h
 
 tokens.gperf : $(top_srcdir)/src/lib/tokens.txt $(top_srcdir)/src/lib/gentoken.pl
 	$(PERL) $(top_srcdir)/src/lib/gentoken.pl $(top_srcdir)/src/lib/tokens.txt \
