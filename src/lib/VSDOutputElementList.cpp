@@ -15,47 +15,6 @@ namespace libvisio
 namespace
 {
 
-static void separateTabsAndInsertText(librevenge::RVNGDrawingInterface *iface, const librevenge::RVNGString &text)
-{
-  if (!iface || text.empty())
-    return;
-  librevenge::RVNGString tmpText;
-  librevenge::RVNGString::Iter i(text);
-  for (i.rewind(); i.next();)
-  {
-    if (*(i()) == '\t')
-    {
-      if (!tmpText.empty())
-      {
-        if (iface)
-          iface->insertText(tmpText);
-        tmpText.clear();
-      }
-
-      if (iface)
-        iface->insertTab();
-    }
-    else if (*(i()) == '\n')
-    {
-      if (!tmpText.empty())
-      {
-        if (iface)
-          iface->insertText(tmpText);
-        tmpText.clear();
-      }
-
-      if (iface)
-        iface->insertLineBreak();
-    }
-    else
-    {
-      tmpText.append(i());
-    }
-  }
-  if (iface && !tmpText.empty())
-    iface->insertText(tmpText);
-}
-
 static void separateSpacesAndInsertText(librevenge::RVNGDrawingInterface *iface, const librevenge::RVNGString &text)
 {
   if (!iface)
@@ -79,7 +38,7 @@ static void separateSpacesAndInsertText(librevenge::RVNGDrawingInterface *iface,
     {
       if (!tmpText.empty())
       {
-        separateTabsAndInsertText(iface, tmpText);
+        iface->insertText(tmpText);
         tmpText.clear();
       }
 
@@ -91,7 +50,7 @@ static void separateSpacesAndInsertText(librevenge::RVNGDrawingInterface *iface,
       tmpText.append(i());
     }
   }
-  separateTabsAndInsertText(iface, tmpText);
+  iface->insertText(tmpText);
 }
 
 } // anonymous namespace
@@ -236,6 +195,32 @@ public:
   }
 private:
   librevenge::RVNGString m_text;
+};
+
+
+class VSDInsertLineBreakOutputElement : public VSDOutputElement
+{
+public:
+  VSDInsertLineBreakOutputElement();
+  virtual ~VSDInsertLineBreakOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDInsertLineBreakOutputElement();
+  }
+};
+
+
+class VSDInsertTabOutputElement : public VSDOutputElement
+{
+public:
+  VSDInsertTabOutputElement();
+  virtual ~VSDInsertTabOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDInsertTabOutputElement();
+  }
 };
 
 
@@ -422,6 +407,22 @@ void libvisio::VSDInsertTextOutputElement::draw(librevenge::RVNGDrawingInterface
     separateSpacesAndInsertText(painter, m_text);
 }
 
+libvisio::VSDInsertLineBreakOutputElement::VSDInsertLineBreakOutputElement() {}
+
+void libvisio::VSDInsertLineBreakOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
+{
+  if (painter)
+    painter->insertLineBreak();
+}
+
+libvisio::VSDInsertTabOutputElement::VSDInsertTabOutputElement() {}
+
+void libvisio::VSDInsertTabOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
+{
+  if (painter)
+    painter->insertTab();
+}
+
 libvisio::VSDCloseSpanOutputElement::VSDCloseSpanOutputElement() {}
 
 void libvisio::VSDCloseSpanOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
@@ -565,6 +566,16 @@ void libvisio::VSDOutputElementList::addOpenSpan(const librevenge::RVNGPropertyL
 void libvisio::VSDOutputElementList::addInsertText(const librevenge::RVNGString &text)
 {
   m_elements.push_back(new VSDInsertTextOutputElement(text));
+}
+
+void libvisio::VSDOutputElementList::addInsertLineBreak()
+{
+  m_elements.push_back(new VSDInsertLineBreakOutputElement());
+}
+
+void libvisio::VSDOutputElementList::addInsertTab()
+{
+  m_elements.push_back(new VSDInsertTabOutputElement());
 }
 
 void libvisio::VSDOutputElementList::addCloseSpan()

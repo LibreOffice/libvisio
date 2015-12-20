@@ -704,7 +704,41 @@ void libvisio::VSDContentCollector::_flushText()
 
       VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
       m_shapeOutputText->addOpenSpan(textProps);
-      m_shapeOutputText->addInsertText(text);
+
+      librevenge::RVNGString::Iter i(text);
+      i.rewind();
+      librevenge::RVNGString sOutputText;
+      for (i.rewind(); i.next();)
+      {
+        if (*(i()) == '\n')
+        {
+          m_shapeOutputText->addInsertText(sOutputText);
+          m_shapeOutputText->addCloseSpan();
+          if (!currentBullet)
+          {
+            m_shapeOutputText->addCloseParagraph();
+            m_shapeOutputText->addOpenParagraph(paraProps);
+          }
+          else
+          {
+            m_shapeOutputText->addCloseListElement();
+            m_shapeOutputText->addOpenListElement(paraProps);
+          }
+          m_shapeOutputText->addOpenSpan(textProps);
+          sOutputText.clear();
+        }
+        else if (*(i()) == '\t')
+        {
+          if (!sOutputText.empty())
+            m_shapeOutputText->addInsertText(sOutputText);
+          m_shapeOutputText->addInsertTab();
+          sOutputText.clear();
+        }
+        else
+          sOutputText.append(i());
+      }
+
+      m_shapeOutputText->addInsertText(sOutputText);
       m_shapeOutputText->addCloseSpan();
 
       charIndex++;

@@ -43,6 +43,8 @@ public:
   void addOpenSpan(const librevenge::RVNGPropertyList &propList);
   void addCloseSpan();
   void addInsertText(const librevenge::RVNGString &text);
+  void addInsertLineBreak();
+  void addInsertTab();
   void addStartLayer(const librevenge::RVNGPropertyList &propList);
   void addEndLayer();
   bool empty() const
