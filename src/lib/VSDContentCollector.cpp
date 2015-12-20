@@ -3382,7 +3382,10 @@ void libvisio::VSDContentCollector::_listLevelFromBullet(librevenge::RVNGPropert
   propList.insert("librevenge:level", 1);
   propList.insert("text:bullet-char", bullet.m_bulletStr);
   propList.insert("fo:font-size", 1.0, librevenge::RVNG_PERCENT);
-  propList.insert("text:min-label-width", bullet.m_textPosAfterBullet);
+  if (bullet.m_textPosAfterBullet > 0.0)
+    propList.insert("text:min-label-width", bullet.m_textPosAfterBullet);
+  else
+    propList.insert("text:min-label-width", 0.25);
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
