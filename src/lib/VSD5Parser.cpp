@@ -234,10 +234,8 @@ void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   double spAfter = readDouble(input);
   unsigned char align = readU8(input);
-  unsigned char bullet = 0;
-  readU8(input);
-  input->seek(1, librevenge::RVNG_SEEK_CUR);
 
+  unsigned char bullet(0);
   VSDName bulletStr;
   double textPosAfterTab(0.0);
   unsigned flags(0);
