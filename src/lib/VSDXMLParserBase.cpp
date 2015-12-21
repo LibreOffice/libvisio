@@ -1105,13 +1105,16 @@ void libvisio::VSDXMLParserBase::readText(xmlTextReaderPtr reader)
     switch (tokenId)
     {
     case XML_CP:
-      cp = getIX(reader);
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        cp = getIX(reader);
       break;
     case XML_PP:
-      pp = getIX(reader);
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        pp = getIX(reader);
       break;
     case XML_TP:
-      tp = getIX(reader);
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        tp = getIX(reader);
       break;
     default:
       if (XML_READER_TYPE_TEXT == tokenType || XML_READER_TYPE_SIGNIFICANT_WHITESPACE == tokenType)
@@ -1471,12 +1474,16 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
         readByteData(bullet, reader);
       break;
     case XML_BULLETSTR:
-      if (XML_READER_TYPE_ELEMENT == tokenType)
+      if (XML_READER_TYPE_ELEMENT == tokenType && !xmlTextReaderIsEmptyElement(reader))
       {
         const shared_ptr<xmlChar> stringValue(readStringData(reader), xmlFree);
         if (stringValue && !xmlStrEqual(stringValue.get(), BAD_CAST("Themed")))
         {
-          bulletStr = VSDName(librevenge::RVNGBinaryData(stringValue.get(), xmlStrlen(stringValue.get())), VSD_TEXT_UTF8);
+          unsigned length = xmlStrlen(stringValue.get());
+          const xmlChar *strV = stringValue.get();
+          // The character U+E000 is considered as empty string in VDX produced by Visio 2002
+          if (3 != length || 0xee != strV[0] || 0x80 != strV[1] || 0x80 != strV[2])
+            bulletStr = VSDName(librevenge::RVNGBinaryData(stringValue.get(), xmlStrlen(stringValue.get())), VSD_TEXT_UTF8);
         }
       }
       break;
