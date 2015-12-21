@@ -123,7 +123,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       handleMasterEnd(reader);
     break;
   case XML_MASTERS:
-    if (XML_READER_TYPE_ELEMENT == tokenType)
+    if (XML_READER_TYPE_ELEMENT == tokenType && !xmlTextReaderIsEmptyElement(reader))
       handleMastersStart(reader);
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
       handleMastersEnd(reader);
