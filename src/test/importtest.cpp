@@ -278,9 +278,12 @@ void ImportTest::testVsdxImportBgColorFromTheme()
 void ImportTest::testVsdxCharBgColor()
 {
   m_doc = parse("bgcolor.vsdx", m_buffer);
-  assertXPathNoAttribute(m_doc, "/document/page/layer[1]/textObject/paragraph/span", "background-color");
-  assertXPath(m_doc, "/document/page/layer[2]/textObject/paragraph/span", "background-color", "#9dbb61");
-  assertXPath(m_doc, "/document/page/layer[3]/textObject/paragraph/span", "background-color", "#9dbb61");
+  assertXPathNoAttribute(m_doc, "/document/page/layer[1]/textObject/paragraph[1]/span", "background-color");
+  assertXPathNoAttribute(m_doc, "/document/page/layer[1]/textObject/paragraph[2]/span", "background-color");
+  assertXPath(m_doc, "/document/page/layer[2]/textObject/paragraph[1]/span", "background-color", "#9dbb61");
+  assertXPath(m_doc, "/document/page/layer[2]/textObject/paragraph[2]/span", "background-color", "#9dbb61");
+  assertXPath(m_doc, "/document/page/layer[3]/textObject/paragraph[1]/span", "background-color", "#9dbb61");
+  assertXPath(m_doc, "/document/page/layer[3]/textObject/paragraph[2]/span", "background-color", "#9dbb61");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
