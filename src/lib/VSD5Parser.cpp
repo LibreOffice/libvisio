@@ -252,7 +252,7 @@ void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
 
     m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
                                                       spLine, spBefore, spAfter, align, bullet,
-                                                      bulletStr, textPosAfterTab, 0));
+                                                      bulletStr, textPosAfterTab, flags));
     m_shape.m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, bullet, bulletStr, textPosAfterTab, flags);
   }
