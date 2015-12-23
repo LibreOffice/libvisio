@@ -57,6 +57,8 @@ BeginX
 BeginY
 BottomMargin
 Bullet
+BulletFont
+BulletFontSize
 BulletStr
 C
 Case

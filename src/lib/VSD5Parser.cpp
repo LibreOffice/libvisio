@@ -237,12 +237,15 @@ void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
 
   unsigned char bullet(0);
   VSDName bulletStr;
+  VSDName bulletFont;
+  double bulletFontSize(0.0);
   double textPosAfterTab(0.0);
   unsigned flags(0);
 
   if (m_isInStyles)
     m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-                                    spLine, spBefore, spAfter, align, bullet, bulletStr, textPosAfterTab, flags);
+                                    spLine, spBefore, spAfter, align, bullet, bulletStr,
+                                    bulletFont, bulletFontSize, textPosAfterTab, flags);
   else
   {
     if (m_isStencilStarted)
@@ -252,9 +255,11 @@ void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
 
     m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
                                                       spLine, spBefore, spAfter, align, bullet,
-                                                      bulletStr, textPosAfterTab, flags));
+                                                      bulletStr, bulletFont, bulletFontSize,
+                                                      textPosAfterTab, flags));
     m_shape.m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-                                 spLine, spBefore, spAfter, align, bullet, bulletStr, textPosAfterTab, flags);
+                                 spLine, spBefore, spAfter, align, bullet, bulletStr, bulletFont,
+                                 bulletFontSize, textPosAfterTab, flags);
   }
 }
 

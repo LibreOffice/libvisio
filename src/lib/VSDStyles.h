@@ -321,17 +321,19 @@ struct VSDOptionalParaStyle
 {
   VSDOptionalParaStyle() :
     charCount(0), indFirst(), indLeft(), indRight(), spLine(), spBefore(), spAfter(), align(), bullet(),
-    bulletStr(), textPosAfterBullet(0.0), flags() {}
+    bulletStr(), bulletFont(), bulletFontSize(0.0), textPosAfterBullet(0.0), flags() {}
   VSDOptionalParaStyle(unsigned cc, const boost::optional<double> &ifst, const boost::optional<double> &il,
                        const boost::optional<double> &ir, const boost::optional<double> &sl, const boost::optional<double> &sb,
                        const boost::optional<double> &sa, const boost::optional<unsigned char> &a, const boost::optional<unsigned char> &b,
-                       const boost::optional<VSDName> &bs, const boost::optional<double> &tpab, const boost::optional<unsigned> &f) :
+                       const boost::optional<VSDName> &bs, const boost::optional<VSDName> &bf, const boost::optional<double> bfs,
+                       const boost::optional<double> &tpab, const boost::optional<unsigned> &f) :
     charCount(cc), indFirst(ifst), indLeft(il), indRight(ir), spLine(sl), spBefore(sb), spAfter(sa), align(a), bullet(b),
-    bulletStr(bs), textPosAfterBullet(tpab), flags(f) {}
+    bulletStr(bs), bulletFont(bf), bulletFontSize(bfs), textPosAfterBullet(tpab), flags(f) {}
   VSDOptionalParaStyle(const VSDOptionalParaStyle &style) :
     charCount(style.charCount), indFirst(style.indFirst), indLeft(style.indLeft), indRight(style.indRight), spLine(style.spLine),
     spBefore(style.spBefore), spAfter(style.spAfter), align(style.align), bullet(style.bullet), bulletStr(style.bulletStr),
-    textPosAfterBullet(style.textPosAfterBullet), flags(style.flags) {}
+    bulletFont(style.bulletFont), bulletFontSize(style.bulletFontSize), textPosAfterBullet(style.textPosAfterBullet),
+    flags(style.flags) {}
   ~VSDOptionalParaStyle() {}
   void override(const VSDOptionalParaStyle &style)
   {
@@ -344,6 +346,8 @@ struct VSDOptionalParaStyle
     ASSIGN_OPTIONAL(style.align, align);
     ASSIGN_OPTIONAL(style.bullet, bullet);
     ASSIGN_OPTIONAL(style.bulletStr, bulletStr);
+    ASSIGN_OPTIONAL(style.bulletFont, bulletFont);
+    ASSIGN_OPTIONAL(style.bulletFontSize, bulletFontSize);
     ASSIGN_OPTIONAL(style.textPosAfterBullet, textPosAfterBullet);
     ASSIGN_OPTIONAL(style.flags, flags);
   }
@@ -358,6 +362,8 @@ struct VSDOptionalParaStyle
   boost::optional<unsigned char> align;
   boost::optional<unsigned char> bullet;
   boost::optional<VSDName> bulletStr;
+  boost::optional<VSDName> bulletFont;
+  boost::optional<double> bulletFontSize;
   boost::optional<double> textPosAfterBullet;
   boost::optional<unsigned> flags;
 };
@@ -366,15 +372,17 @@ struct VSDParaStyle
 {
   VSDParaStyle() :
     charCount(0), indFirst(0.0), indLeft(0.0), indRight(0.0), spLine(-1.2), spBefore(0.0), spAfter(0.0), align(1),
-    bullet(0), bulletStr(), textPosAfterBullet(0.0), flags(0) {}
+    bullet(0), bulletStr(), bulletFont(), bulletFontSize(0.0), textPosAfterBullet(0.0), flags(0) {}
   VSDParaStyle(unsigned cc, double ifst, double il, double ir, double sl, double sb,
-               double sa, unsigned char a, unsigned b, const VSDName &bs, double tpab, unsigned f) :
+               double sa, unsigned char a, unsigned b, const VSDName &bs,
+               const VSDName &bf, double bfs, double tpab, unsigned f) :
     charCount(cc), indFirst(ifst), indLeft(il), indRight(ir), spLine(sl), spBefore(sb), spAfter(sa), align(a),
-    bullet(b), bulletStr(bs), textPosAfterBullet(tpab), flags(f) {}
+    bullet(b), bulletStr(bs), bulletFont(bf), bulletFontSize(bfs), textPosAfterBullet(tpab), flags(f) {}
   VSDParaStyle(const VSDParaStyle &style) :
     charCount(style.charCount), indFirst(style.indFirst), indLeft(style.indLeft), indRight(style.indRight),
     spLine(style.spLine), spBefore(style.spBefore), spAfter(style.spAfter), align(style.align),
-    bullet(style.bullet), bulletStr(style.bulletStr), textPosAfterBullet(style.textPosAfterBullet), flags(style.flags) {}
+    bullet(style.bullet), bulletStr(style.bulletStr), bulletFont(style.bulletFont),
+    bulletFontSize(style.bulletFontSize), textPosAfterBullet(style.textPosAfterBullet), flags(style.flags) {}
   ~VSDParaStyle() {}
   void override(const VSDOptionalParaStyle &style)
   {
@@ -387,6 +395,8 @@ struct VSDParaStyle
     ASSIGN_OPTIONAL(style.align, align);
     ASSIGN_OPTIONAL(style.bullet, bullet);
     ASSIGN_OPTIONAL(style.bulletStr, bulletStr);
+    ASSIGN_OPTIONAL(style.bulletFont, bulletFont);
+    ASSIGN_OPTIONAL(style.bulletFontSize, bulletFontSize);
     ASSIGN_OPTIONAL(style.textPosAfterBullet, textPosAfterBullet);
     ASSIGN_OPTIONAL(style.flags, flags);
   }
@@ -401,6 +411,8 @@ struct VSDParaStyle
   unsigned char align;
   unsigned char bullet;
   VSDName bulletStr;
+  VSDName bulletFont;
+  double bulletFontSize;
   double textPosAfterBullet;
   unsigned flags;
 };

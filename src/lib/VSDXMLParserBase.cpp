@@ -1422,6 +1422,8 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
   boost::optional<unsigned char> align;
   boost::optional<unsigned char> bullet;
   boost::optional<VSDName> bulletStr;
+  boost::optional<VSDName> bulletFont;
+  boost::optional<double> bulletFontSize;
   boost::optional<double> textPosAfterBullet;
   boost::optional<unsigned> flags;
 
@@ -1487,6 +1489,35 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
         }
       }
       break;
+    case XML_BULLETFONT:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        const shared_ptr<xmlChar> stringValue(readStringData(reader), xmlFree);
+        if (stringValue && !xmlStrEqual(stringValue.get(), BAD_CAST("Themed")))
+        {
+          try
+          {
+            unsigned fontIndex = (unsigned)xmlStringToLong(stringValue);
+            if (fontIndex)
+            {
+              std::map<unsigned, VSDName>::const_iterator iter = m_fonts.find(fontIndex);
+              if (iter != m_fonts.end())
+                bulletFont = iter->second;
+              else
+                bulletFont = VSDName(librevenge::RVNGBinaryData(stringValue.get(), xmlStrlen(stringValue.get())), VSD_TEXT_UTF8);
+            }
+          }
+          catch (const XmlParserException &)
+          {
+            bulletFont = VSDName(librevenge::RVNGBinaryData(stringValue.get(), xmlStrlen(stringValue.get())), VSD_TEXT_UTF8);
+          }
+        }
+      }
+      break;
+    case XML_BULLETFONTSIZE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        readDoubleData(bulletFontSize, reader);
+      break;
     case XML_TEXTPOSAFTERBULLET:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readDoubleData(textPosAfterBullet, reader);
@@ -1500,17 +1531,18 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
   if (m_isInStyles)
     m_collector->collectParaIXStyle(ix, level, charCount, indFirst, indLeft, indRight,
                                     spLine, spBefore, spAfter, align, bullet, bulletStr,
-                                    textPosAfterBullet, flags);
+                                    bulletFont, bulletFontSize, textPosAfterBullet, flags);
   else
   {
     if (!ix || m_shape.m_paraList.empty()) // paragraph style 0 is the default paragraph style
       m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
                                                         spLine, spBefore, spAfter, align, bullet,
-                                                        bulletStr, textPosAfterBullet, flags));
+                                                        bulletStr, bulletFont, bulletFontSize,
+                                                        textPosAfterBullet, flags));
 
     m_shape.m_paraList.addParaIX(ix, level, charCount, indFirst, indLeft, indRight,
                                  spLine, spBefore, spAfter, align, bullet, bulletStr,
-                                 textPosAfterBullet, flags);
+                                 bulletFont, bulletFontSize, textPosAfterBullet, flags);
   }
 }
 
@@ -1796,7 +1828,8 @@ void libvisio::VSDXMLParserBase::_flushShape()
   m_collector->collectDefaultParaStyle(m_shape.m_paraStyle.charCount, m_shape.m_paraStyle.indFirst, m_shape.m_paraStyle.indLeft,
                                        m_shape.m_paraStyle.indRight, m_shape.m_paraStyle.spLine, m_shape.m_paraStyle.spBefore,
                                        m_shape.m_paraStyle.spAfter, m_shape.m_paraStyle.align, m_shape.m_paraStyle.bullet,
-                                       m_shape.m_paraStyle.bulletStr, m_shape.m_paraStyle.textPosAfterBullet, m_shape.m_paraStyle.flags);
+                                       m_shape.m_paraStyle.bulletStr, m_shape.m_paraStyle.bulletFont, m_shape.m_paraStyle.bulletFontSize,
+                                       m_shape.m_paraStyle.textPosAfterBullet, m_shape.m_paraStyle.flags);
 
   m_shape.m_paraList.handle(m_collector);
 

@@ -2212,12 +2212,13 @@ void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */ , unsigned l
                                                   const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                                                   const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                                                   const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr,
+                                                  const boost::optional<VSDName> &bulletFont, const boost::optional<double> &bulletFontSize,
                                                   const boost::optional<double> &textPosAfterBullet,  const boost::optional<unsigned> &flags)
 {
   _handleLevelChange(level);
   VSDParaStyle format(m_defaultParaStyle);
   format.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align,
-                                       bullet, bulletStr, textPosAfterBullet, flags));
+                                       bullet, bulletStr, bulletFont, bulletFontSize, textPosAfterBullet, flags));
   format.charCount = charCount;
   m_paraFormats.push_back(format);
 }
@@ -2227,10 +2228,11 @@ void libvisio::VSDContentCollector::collectDefaultParaStyle(unsigned charCount, 
                                                             const boost::optional<double> &spLine, const boost::optional<double> &spBefore,
                                                             const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                                                             const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr,
+                                                            const boost::optional<VSDName> &bulletFont, const boost::optional<double> &bulletFontSize,
                                                             const boost::optional<double> &textPosAfterBullet, const boost::optional<unsigned> &flags)
 {
   m_defaultParaStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align,
-                                                   bullet, bulletStr, textPosAfterBullet, flags));
+                                                   bullet, bulletStr, bulletFont, bulletFontSize, textPosAfterBullet, flags));
 }
 
 void libvisio::VSDContentCollector::collectCharIX(unsigned /* id */ , unsigned level, unsigned charCount,
@@ -2352,11 +2354,12 @@ void libvisio::VSDContentCollector::collectParaIXStyle(unsigned /* id */, unsign
                                                        const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                                                        const boost::optional<double> &spBefore, const boost::optional<double> &spAfter,
                                                        const boost::optional<unsigned char> &align, const boost::optional<unsigned char> &bullet,
-                                                       const boost::optional<VSDName> &bulletStr, const boost::optional<double> &textPosAfterBullet,
+                                                       const boost::optional<VSDName> &bulletStr, const boost::optional<VSDName> &bulletFont,
+                                                       const boost::optional<double> &bulletFontSize, const boost::optional<double> &textPosAfterBullet,
                                                        const boost::optional<unsigned> &flags)
 {
   VSDOptionalParaStyle paraStyle(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter, align,
-                                 bullet, bulletStr, textPosAfterBullet, flags);
+                                 bullet, bulletStr, bulletFont, bulletFontSize, textPosAfterBullet, flags);
   m_styles.addParaStyle(m_currentStyleSheet, paraStyle);
 }
 
@@ -3330,14 +3333,22 @@ void libvisio::VSDContentCollector::_appendVisibleAndPrintable(librevenge::RVNGP
 void libvisio::VSDContentCollector::_bulletFromParaFormat(libvisio::VSDBullet &bullet, const libvisio::VSDParaStyle &paraStyle)
 {
   bullet.m_textPosAfterBullet = paraStyle.textPosAfterBullet;
+  bullet.m_bulletFontSize = paraStyle.bulletFontSize;
+  VSDName name = paraStyle.bulletFont;
+  if (name.m_data.empty())
+    bullet.m_bulletFont.clear();
+  else
+    _convertDataToString(bullet.m_bulletFont, name.m_data, name.m_format);
   if (!paraStyle.bullet)
   {
     bullet.m_bulletStr.clear();
+    bullet.m_bulletFont.clear();
+    bullet.m_bulletFontSize = 0.0;
     bullet.m_textPosAfterBullet = 0.0;
   }
   else
   {
-    VSDName name = paraStyle.bulletStr;
+    name = paraStyle.bulletStr;
     if (name.m_data.empty())
       bullet.m_bulletStr.clear();
     else
@@ -3381,7 +3392,14 @@ void libvisio::VSDContentCollector::_listLevelFromBullet(librevenge::RVNGPropert
     return;
   propList.insert("librevenge:level", 1);
   propList.insert("text:bullet-char", bullet.m_bulletStr);
-  propList.insert("fo:font-size", 1.0, librevenge::RVNG_PERCENT);
+  if (!(bullet.m_bulletFont.empty()))
+    propList.insert("fo:font-family", bullet.m_bulletFont);
+  if (bullet.m_bulletFontSize > 0.0)
+    propList.insert("fo:font-size", bullet.m_bulletFontSize*72.0, librevenge::RVNG_POINT);
+  else if (bullet.m_bulletFontSize < 0.0)
+    propList.insert("fo:font-size", -bullet.m_bulletFontSize, librevenge::RVNG_PERCENT);
+  else
+    propList.insert("fo:font-size", 1.0, librevenge::RVNG_PERCENT);
   if (bullet.m_textPosAfterBullet > 0.0)
     propList.insert("text:min-label-width", bullet.m_textPosAfterBullet);
   else

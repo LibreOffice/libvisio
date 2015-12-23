@@ -109,12 +109,14 @@ public:
   void collectParaIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
                      const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                      const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
-                     const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr, const boost::optional<double> &textPosAfterBullet,
+                     const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr, const boost::optional<VSDName> &bulletFont,
+                     const boost::optional<double> &bulletFontSize, const boost::optional<double> &textPosAfterBullet,
                      const boost::optional<unsigned> &flags);
   void collectDefaultParaStyle(unsigned charCount, const boost::optional<double> &indFirst, const boost::optional<double> &indLeft,
                                const boost::optional<double> &indRight, const boost::optional<double> &spLine, const boost::optional<double> &spBefore,
                                const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                                const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr,
+                               const boost::optional<VSDName> &bulletFont, const boost::optional<double> &bulletFontSize,
                                const boost::optional<double> &textPosAfterBullet, const boost::optional<unsigned> &flags);
   void collectTextBlock(unsigned level, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,
                         const boost::optional<double> &topMargin, const boost::optional<double> &bottomMargin,
@@ -152,6 +154,7 @@ public:
                           const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                           const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                           const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr,
+                          const boost::optional<VSDName> &bulletFont, const boost::optional<double> &bulletFontSize,
                           const boost::optional<double> &textPosAfterBullet, const boost::optional<unsigned> &flags);
   void collectTextBlockStyle(unsigned level, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,
                              const boost::optional<double> &topMargin, const boost::optional<double> &bottomMargin,

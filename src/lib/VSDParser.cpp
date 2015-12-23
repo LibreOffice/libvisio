@@ -683,7 +683,8 @@ void libvisio::VSDParser::_flushShape()
   m_collector->collectDefaultParaStyle(m_shape.m_paraStyle.charCount, m_shape.m_paraStyle.indFirst, m_shape.m_paraStyle.indLeft,
                                        m_shape.m_paraStyle.indRight, m_shape.m_paraStyle.spLine, m_shape.m_paraStyle.spBefore,
                                        m_shape.m_paraStyle.spAfter, m_shape.m_paraStyle.align, m_shape.m_paraStyle.bullet,
-                                       m_shape.m_paraStyle.bulletStr, m_shape.m_paraStyle.textPosAfterBullet, m_shape.m_paraStyle.flags);
+                                       m_shape.m_paraStyle.bulletStr, m_shape.m_paraStyle.bulletFont, m_shape.m_paraStyle.bulletFontSize,
+                                       m_shape.m_paraStyle.textPosAfterBullet, m_shape.m_paraStyle.flags);
 
   m_shape.m_paraList.handle(m_collector);
 }
@@ -1919,7 +1920,18 @@ void libvisio::VSDParser::readParaIX(librevenge::RVNGInputStream *input)
   double spAfter = readDouble(input);
   unsigned char align = readU8(input);
   unsigned char bullet = readU8(input);
-  input->seek(17, librevenge::RVNG_SEEK_CUR);
+  input->seek(4, librevenge::RVNG_SEEK_CUR);
+  unsigned fontID = readU16(input);
+  VSDName bulletFont;
+  if (fontID)
+  {
+    std::map<unsigned, VSDName>::const_iterator iter = m_fonts.find(fontID);
+    if (iter != m_fonts.end())
+      bulletFont = iter->second;
+  }
+  input->seek(2, librevenge::RVNG_SEEK_CUR);
+  double bulletFontSize = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
   double textPosAfterBullet = readDouble(input);
   unsigned flags = readU32(input);
   input->seek(34, librevenge::RVNG_SEEK_CUR);
@@ -1954,7 +1966,8 @@ void libvisio::VSDParser::readParaIX(librevenge::RVNGInputStream *input)
 
   if (m_isInStyles)
     m_collector->collectParaIXStyle(m_header.id, m_header.level, charCount, indFirst, indLeft, indRight,
-                                    spLine, spBefore, spAfter, align, bullet, bulletStr, textPosAfterBullet, flags);
+                                    spLine, spBefore, spAfter, align, bullet, bulletStr, bulletFont,
+                                    bulletFontSize, textPosAfterBullet, flags);
   else
   {
     if (m_isStencilStarted)
@@ -1964,10 +1977,12 @@ void libvisio::VSDParser::readParaIX(librevenge::RVNGInputStream *input)
 
     m_shape.m_paraStyle.override(VSDOptionalParaStyle(charCount, indFirst, indLeft, indRight,
                                                       spLine, spBefore, spAfter, align, bullet,
-                                                      bulletStr, textPosAfterBullet, flags));
+                                                      bulletStr, bulletFont, bulletFontSize,
+                                                      textPosAfterBullet, flags));
     m_shape.m_paraList.addParaIX(m_header.id, m_header.level, charCount, indFirst,
                                  indLeft, indRight, spLine, spBefore, spAfter, align,
-                                 bullet, bulletStr, textPosAfterBullet, flags);
+                                 bullet, bulletStr, bulletFont, bulletFontSize,
+                                 textPosAfterBullet, flags);
   }
 }
 

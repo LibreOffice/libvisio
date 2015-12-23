@@ -233,14 +233,24 @@ struct VSDTabSet
 struct VSDBullet
 {
   librevenge::RVNGString m_bulletStr;
+  librevenge::RVNGString m_bulletFont;
+  double m_bulletFontSize;
   double m_textPosAfterBullet;
-  VSDBullet() : m_bulletStr(), m_textPosAfterBullet(0.0) {}
+  VSDBullet()
+    : m_bulletStr(),
+      m_bulletFont(),
+      m_bulletFontSize(0.0),
+      m_textPosAfterBullet(0.0) {}
   VSDBullet(const VSDBullet &bullet) :
     m_bulletStr(bullet.m_bulletStr),
+    m_bulletFont(bullet.m_bulletFont),
+    m_bulletFontSize(bullet.m_bulletFontSize),
     m_textPosAfterBullet(bullet.m_textPosAfterBullet) {}
   inline bool operator==(const VSDBullet &bullet) const
   {
     return ((m_bulletStr == bullet.m_bulletStr) &&
+            (m_bulletFont == bullet.m_bulletFont) &&
+            (m_bulletFontSize == bullet.m_bulletFontSize) &&
             (m_textPosAfterBullet == bullet.m_textPosAfterBullet));
   }
   inline bool operator!=(const VSDBullet &bullet) const
@@ -249,7 +259,7 @@ struct VSDBullet
   }
   inline bool operator!() const
   {
-    return (m_bulletStr.empty() && m_textPosAfterBullet == 0.0);
+    return m_bulletStr.empty();
   }
 };
 
