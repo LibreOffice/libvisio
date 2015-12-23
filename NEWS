@@ -1,3 +1,18 @@
+libvisio 0.1.4
+
+- Implement overriding of colour of lines and of text from layer
+  properties (tdf#50309, tdf#68392) and the visibility and/or
+  printability of a layer.
+- Fix incorrect handling of stencil text (tdf#90154).
+- Basic initial implementation of hatch fill (tdf#44552, tdf#76835).
+- Implement support of bullets/lists (tdf#92349)
+- Implement support of default tab-stops and custom tab-sets in
+  paragraph properties.
+- Fix for reading of names of pages if present.
+- Fix build with boost 1.59.
+- Instead of line-break, spit out a new paragraph when a paragraph break
+  is found
+
 libvisio 0.1.3
 
 - Fix a build failure with some compilers.
@@ -7,7 +22,7 @@ libvisio 0.1.2
 
 - Fix several build problems with different compilers.
 - Import more metadata properties.
-- Fix theme color import (tdf#92270).
+- Fix theme colour import (tdf#92270).
 - Fix a bunch of crashes and hangs when reading broken documents, found
   with the help of american-fuzzy-lop.
 - Fix several memory leaks.
