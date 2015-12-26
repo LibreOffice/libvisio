@@ -226,6 +226,9 @@ private:
   void _appendVisibleAndPrintable(librevenge::RVNGPropertyList &propList);
   void _bulletFromParaFormat(VSDBullet &bullet, const VSDParaStyle &paraStyle);
   void _listLevelFromBullet(librevenge::RVNGPropertyList &propList, const VSDBullet &bullet);
+  void _fillParagraphProperties(librevenge::RVNGPropertyList &propList, const VSDParaStyle &style);
+  void _fillTabSet(librevenge::RVNGPropertyList &propList, const VSDTabSet &tabSet);
+  void _fillCharProperties(librevenge::RVNGPropertyList &propList, const VSDCharStyle &style);
 
   bool m_isPageStarted;
   double m_pageWidth;

@@ -468,42 +468,10 @@ void libvisio::VSDContentCollector::_flushText()
        paraIt != m_paraFormats.end() && charIndex < m_charFormats.size(); ++paraIt)
   {
     librevenge::RVNGPropertyList paraProps;
+    _fillParagraphProperties(paraProps, *paraIt);
 
-    paraProps.insert("fo:text-indent", (*paraIt).indFirst);
-    paraProps.insert("fo:margin-left", (*paraIt).indLeft);
-    paraProps.insert("fo:margin-right", (*paraIt).indRight);
-    paraProps.insert("fo:margin-top", (*paraIt).spBefore);
-    paraProps.insert("fo:margin-bottom", (*paraIt).spAfter);
     if (m_textBlockStyle.defaultTabStop > 0.0)
       paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
-    switch ((*paraIt).align)
-    {
-    case 0: // left
-      if (!(*paraIt).flags)
-        paraProps.insert("fo:text-align", "left");
-      else
-        paraProps.insert("fo:text-align", "end");
-      break;
-    case 2: // right
-      if (!(*paraIt).flags)
-        paraProps.insert("fo:text-align", "end");
-      else
-        paraProps.insert("fo:text-align", "left");
-      break;
-    case 3: // justify
-      paraProps.insert("fo:text-align", "justify");
-      break;
-    case 4: // full
-      paraProps.insert("fo:text-align", "full");
-      break;
-    default: // center
-      paraProps.insert("fo:text-align", "center");
-      break;
-    }
-    if ((*paraIt).spLine > 0)
-      paraProps.insert("fo:line-height", (*paraIt).spLine);
-    else
-      paraProps.insert("fo:line-height", -(*paraIt).spLine, librevenge::RVNG_PERCENT);
 
     paraCharCount = (*paraIt).charCount;
 
@@ -519,32 +487,7 @@ void libvisio::VSDContentCollector::_flushText()
         m_tabSets[tabIndex+1].m_numChars -= paraCharCount;
       }
 
-      librevenge::RVNGPropertyListVector tmpTabSet;
-      for (std::map<unsigned, VSDTabStop>::const_iterator iterTS = m_tabSets[tabIndex].m_tabStops.begin();
-           iterTS != m_tabSets[tabIndex].m_tabStops.end(); ++iterTS)
-      {
-        librevenge::RVNGPropertyList tmpTabStop;
-        tmpTabStop.insert("style:position", iterTS->second.m_position);
-        switch (iterTS->second.m_alignment)
-        {
-        case 0:
-          tmpTabStop.insert("style:type", "left");
-          break;
-        case 1:
-          tmpTabStop.insert("style:type", "center");
-          break;
-        case 2:
-          tmpTabStop.insert("style:type", "right");
-          break;
-        default:
-          tmpTabStop.insert("style:type", "char");
-          tmpTabStop.insert("style:char", ".");
-          break;
-        }
-        tmpTabSet.append(tmpTabStop);
-      }
-      if (!tmpTabSet.empty())
-        paraProps.insert("style:tab-stops", tmpTabSet);
+      _fillTabSet(paraProps, m_tabSets[tabIndex]);
     }
 
     VSDBullet bullet;
@@ -564,7 +507,6 @@ void libvisio::VSDContentCollector::_flushText()
         _listLevelFromBullet(bulletList, bullet);
         m_shapeOutputText->addOpenUnorderedListLevel(bulletList);
       }
-
     }
 
     if (!currentBullet)
@@ -587,37 +529,8 @@ void libvisio::VSDContentCollector::_flushText()
       paraCharCount -= m_charFormats[charIndex].charCount;
 
       librevenge::RVNGPropertyList textProps;
+      _fillCharProperties(textProps, m_charFormats[charIndex]);
 
-      librevenge::RVNGString fontName;
-      if (m_charFormats[charIndex].font.m_data.size())
-        _convertDataToString(fontName, m_charFormats[charIndex].font.m_data, m_charFormats[charIndex].font.m_format);
-      else
-        fontName = "Arial";
-
-      textProps.insert("style:font-name", fontName);
-
-      if (m_charFormats[charIndex].bold) textProps.insert("fo:font-weight", "bold");
-      if (m_charFormats[charIndex].italic) textProps.insert("fo:font-style", "italic");
-      if (m_charFormats[charIndex].underline) textProps.insert("style:text-underline-type", "single");
-      if (m_charFormats[charIndex].doubleunderline) textProps.insert("style:text-underline-type", "double");
-      if (m_charFormats[charIndex].strikeout) textProps.insert("style:text-line-through-type", "single");
-      if (m_charFormats[charIndex].doublestrikeout) textProps.insert("style:text-line-through-type", "double");
-      if (m_charFormats[charIndex].allcaps) textProps.insert("fo:text-transform", "uppercase");
-      if (m_charFormats[charIndex].initcaps) textProps.insert("fo:text-transform", "capitalize");
-      if (m_charFormats[charIndex].smallcaps) textProps.insert("fo:font-variant", "small-caps");
-      if (m_charFormats[charIndex].superscript) textProps.insert("style:text-position", "super");
-      if (m_charFormats[charIndex].subscript) textProps.insert("style:text-position", "sub");
-      textProps.insert("fo:font-size", m_charFormats[charIndex].size*72.0, librevenge::RVNG_POINT);
-      Colour colour = m_charFormats[charIndex].colour;
-      const Colour *pColour = m_currentLayerList.getColour(m_currentLayerMem);
-      if (pColour)
-        colour = *pColour;
-      textProps.insert("fo:color", getColourString(colour));
-      double opacity = 1.0;
-      if (m_charFormats[charIndex].colour.a)
-        opacity -= (double)(m_charFormats[charIndex].colour.a)/255.0;
-      textProps.insert("svg:stroke-opacity", opacity, librevenge::RVNG_PERCENT);
-      textProps.insert("svg:fill-opacity", opacity, librevenge::RVNG_PERCENT);
       // TODO: In draw, text span background cannot be specified the same way as in writer span
       if (m_textBlockStyle.isTextBkgndFilled)
       {
@@ -755,6 +668,109 @@ void libvisio::VSDContentCollector::_flushText()
 
   m_shapeOutputText->addEndTextObject();
   m_textStream.clear();
+}
+
+void libvisio::VSDContentCollector::_fillCharProperties(librevenge::RVNGPropertyList &propList, const VSDCharStyle &style)
+{
+  librevenge::RVNGString fontName;
+  if (style.font.m_data.size())
+    _convertDataToString(fontName, style.font.m_data, style.font.m_format);
+  else
+    fontName = "Arial";
+
+  propList.insert("style:font-name", fontName);
+
+  if (style.bold) propList.insert("fo:font-weight", "bold");
+  if (style.italic) propList.insert("fo:font-style", "italic");
+  if (style.underline) propList.insert("style:text-underline-type", "single");
+  if (style.doubleunderline) propList.insert("style:text-underline-type", "double");
+  if (style.strikeout) propList.insert("style:text-line-through-type", "single");
+  if (style.doublestrikeout) propList.insert("style:text-line-through-type", "double");
+  if (style.allcaps) propList.insert("fo:text-transform", "uppercase");
+  if (style.initcaps) propList.insert("fo:text-transform", "capitalize");
+  if (style.smallcaps) propList.insert("fo:font-variant", "small-caps");
+  if (style.superscript) propList.insert("style:text-position", "super");
+  if (style.subscript) propList.insert("style:text-position", "sub");
+  propList.insert("fo:font-size", style.size*72.0, librevenge::RVNG_POINT);
+  Colour colour = style.colour;
+  const Colour *pColour = m_currentLayerList.getColour(m_currentLayerMem);
+  if (pColour)
+    colour = *pColour;
+  propList.insert("fo:color", getColourString(colour));
+  double opacity = 1.0;
+  if (style.colour.a)
+    opacity -= (double)(style.colour.a)/255.0;
+  propList.insert("svg:stroke-opacity", opacity, librevenge::RVNG_PERCENT);
+  propList.insert("svg:fill-opacity", opacity, librevenge::RVNG_PERCENT);
+}
+
+void libvisio::VSDContentCollector::_fillParagraphProperties(librevenge::RVNGPropertyList &propList, const VSDParaStyle &style)
+{
+  propList.insert("fo:text-indent", style.indFirst);
+  propList.insert("fo:margin-left", style.indLeft);
+  propList.insert("fo:margin-right", style.indRight);
+  propList.insert("fo:margin-top", style.spBefore);
+  propList.insert("fo:margin-bottom", style.spAfter);
+
+  switch (style.align)
+  {
+  case 0: // left
+    if (!style.flags)
+      propList.insert("fo:text-align", "left");
+    else
+      propList.insert("fo:text-align", "end");
+    break;
+  case 2: // right
+    if (!style.flags)
+      propList.insert("fo:text-align", "end");
+    else
+      propList.insert("fo:text-align", "left");
+    break;
+  case 3: // justify
+    propList.insert("fo:text-align", "justify");
+    break;
+  case 4: // full
+    propList.insert("fo:text-align", "full");
+    break;
+  default: // center
+    propList.insert("fo:text-align", "center");
+    break;
+  }
+  if (style.spLine > 0)
+    propList.insert("fo:line-height", style.spLine);
+  else
+    propList.insert("fo:line-height", -style.spLine, librevenge::RVNG_PERCENT);
+
+}
+
+void libvisio::VSDContentCollector::_fillTabSet(librevenge::RVNGPropertyList &propList, const VSDTabSet &tabSet)
+{
+  librevenge::RVNGPropertyListVector tmpTabSet;
+  for (std::map<unsigned, VSDTabStop>::const_iterator iterTS = tabSet.m_tabStops.begin();
+       iterTS != tabSet.m_tabStops.end(); ++iterTS)
+  {
+    librevenge::RVNGPropertyList tmpTabStop;
+    tmpTabStop.insert("style:position", iterTS->second.m_position);
+    switch (iterTS->second.m_alignment)
+    {
+    case 0:
+      tmpTabStop.insert("style:type", "left");
+      break;
+    case 1:
+      tmpTabStop.insert("style:type", "center");
+      break;
+    case 2:
+      tmpTabStop.insert("style:type", "right");
+      break;
+    default:
+      tmpTabStop.insert("style:type", "char");
+      tmpTabStop.insert("style:char", ".");
+      break;
+    }
+    tmpTabSet.append(tmpTabStop);
+  }
+  if (!tmpTabSet.empty())
+    propList.insert("style:tab-stops", tmpTabSet);
 }
 
 void libvisio::VSDContentCollector::_flushCurrentForeignData()
