@@ -53,7 +53,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(m_documentPageShapeOrders.begin()), m_isFirstGeometry(true), m_NURBSData(), m_polylineData(),
-  m_textStream(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
+  m_textStream(), m_currentText(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
   m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(), m_textBlockStyle(),
   m_themeReference(), m_defaultCharStyle(), m_defaultParaStyle(), m_currentStyleSheet(0), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
@@ -2097,9 +2097,6 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
       _handleForeignData(m_stencilShape->m_foreign->data);
     }
 
-    // m_textStream = m_stencilShape->m_text;
-    // m_textFormat = m_stencilShape->m_textFormat;
-
     for (std::map< unsigned, VSDName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
     {
       librevenge::RVNGString nameString;
@@ -2206,6 +2203,13 @@ void libvisio::VSDContentCollector::collectText(unsigned level, const librevenge
 
   m_textStream = textStream;
   m_textFormat = format;
+  m_currentText.clear();
+  if (!m_textStream.empty())
+  {
+    std::vector<unsigned char> tmpBuffer(textStream.size());
+    memcpy(&tmpBuffer[0], textStream.getDataBuffer(), textStream.size());
+    appendCharacters(m_currentText, tmpBuffer, format);
+  }
 }
 
 void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */ , unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
