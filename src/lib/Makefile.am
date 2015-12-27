@@ -5,10 +5,6 @@ version_info = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 endif
 
 lib_LTLIBRARIES = libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la
-libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_includedir = $(includedir)/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@/libvisio
-libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_include_HEADERS = \
-	$(top_srcdir)/inc/libvisio/libvisio.h \
-	$(top_srcdir)/inc/libvisio/VisioDocument.h
 
 AM_CXXFLAGS = \
 	-DLIBVISIO_BUILD=1 \
