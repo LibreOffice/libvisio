@@ -53,8 +53,8 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(m_documentPageShapeOrders.begin()), m_isFirstGeometry(true), m_NURBSData(), m_polylineData(),
-  m_textStream(), m_currentText(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
-  m_textFormat(VSD_TEXT_ANSI), m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(), m_textBlockStyle(),
+  m_currentText(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
+  m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(), m_textBlockStyle(),
   m_themeReference(), m_defaultCharStyle(), m_defaultParaStyle(), m_currentStyleSheet(0), m_styles(styles),
   m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
   m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(), m_layerList(),
@@ -179,7 +179,7 @@ void libvisio::VSDContentCollector::_flushShape()
     numPathElements++;
   if (m_currentForeignData.size() && m_currentForeignProps["librevenge:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0)
     numForeignElements++;
-  if (m_textStream.size())
+  if (!m_currentText.empty())
     numTextElements++;
 
   if (numPathElements+numForeignElements+numTextElements > 1)
@@ -365,7 +365,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
 
 void libvisio::VSDContentCollector::_flushText()
 {
-  if (!m_textStream.size() || m_misc.m_hideText)
+  if (m_currentText.empty() || m_misc.m_hideText)
     return;
 
   double xmiddle = m_txtxform ? m_txtxform->width / 2.0 : m_xform.width / 2.0;
@@ -417,11 +417,22 @@ void libvisio::VSDContentCollector::_flushText()
   }
 
   if (m_charFormats.empty())
+  {
     m_charFormats.push_back(m_defaultCharStyle);
+    m_charFormats.back().charCount = 0;
+  }
   if (m_paraFormats.empty())
+  {
     m_paraFormats.push_back(m_defaultParaStyle);
+    m_paraFormats.back().charCount = 0;
+  }
+  if (m_tabSets.empty())
+  {
+    m_tabSets.push_back(VSDTabSet());
+    m_tabSets.back().m_numChars = 0;
+  }
 
-  unsigned numCharsInText = (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
+  unsigned numCharsInText = (unsigned)m_currentText.len();
 
   for (unsigned iChar = 0; iChar < m_charFormats.size(); iChar++)
   {
@@ -431,7 +442,7 @@ void libvisio::VSDContentCollector::_flushText()
       m_charFormats[iChar].charCount = numCharsInText;
   }
 
-  numCharsInText = (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
+  numCharsInText = (unsigned)m_currentText.len();
 
   for (unsigned iPara = 0; iPara < m_paraFormats.size(); iPara++)
   {
@@ -441,7 +452,7 @@ void libvisio::VSDContentCollector::_flushText()
       m_paraFormats[iPara].charCount = numCharsInText;
   }
 
-  numCharsInText = (unsigned)(m_textFormat == VSD_TEXT_UTF16 ? m_textStream.size() / 2 : m_textStream.size());
+  numCharsInText = (unsigned)m_currentText.len();
 
   for (unsigned iTab = 0; iTab < m_tabSets.size(); iTab++)
   {
@@ -455,81 +466,62 @@ void libvisio::VSDContentCollector::_flushText()
 
   m_shapeOutputText->addStartTextObject(textBlockProps);
 
-  unsigned charIndex = 0;
-  unsigned tabIndex = 0;
-  unsigned paraCharCount = 0;
-  unsigned long textBufferPosition = 0;
-  const unsigned char *pTextBuffer = m_textStream.getDataBuffer();
-  const unsigned long nTextBufferLength = m_textStream.size();
+  bool isParagraphOpened(false);
+  bool isSpanOpened(false);
+
+  std::vector<VSDParaStyle>::const_iterator paraIt = m_paraFormats.begin();
+  std::vector<VSDCharStyle>::const_iterator charIt = m_charFormats.begin();
+  std::vector<VSDTabSet>::const_iterator tabIt = m_tabSets.begin();
 
   VSDBullet currentBullet;
 
-  for (std::vector<VSDParaStyle>::iterator paraIt = m_paraFormats.begin();
-       paraIt != m_paraFormats.end() && charIndex < m_charFormats.size(); ++paraIt)
+  unsigned paraNumRemaining(paraIt->charCount);
+  unsigned charNumRemaining(charIt->charCount);
+  unsigned tabNumRemaining(tabIt->m_numChars);
+
+  librevenge::RVNGString::Iter textIt(m_currentText);
+  librevenge::RVNGString sOutputText;
+  // Iterate over the text
+  for (textIt.rewind(); textIt.next();)
   {
-    librevenge::RVNGPropertyList paraProps;
-    _fillParagraphProperties(paraProps, *paraIt);
-
-    if (m_textBlockStyle.defaultTabStop > 0.0)
-      paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
-
-    paraCharCount = (*paraIt).charCount;
-
-    if (!m_tabSets.empty())
+    if (!isParagraphOpened)
     {
-      if (paraCharCount < m_tabSets[tabIndex].m_numChars)
+      librevenge::RVNGPropertyList paraProps;
+      _fillParagraphProperties(paraProps, *paraIt);
+
+      if (m_textBlockStyle.defaultTabStop > 0.0)
+        paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
+
+      _fillTabSet(paraProps, *tabIt);
+
+      VSDBullet bullet;
+      _bulletFromParaFormat(bullet, *paraIt);
+
+      if (bullet != currentBullet)
       {
-        // Insert duplicate
-        std::vector<VSDTabSet>::iterator tabIt = m_tabSets.begin() + tabIndex;
-        VSDTabSet tmpTabSet = m_tabSets[tabIndex];
-        m_tabSets.insert(tabIt, tmpTabSet);
-        m_tabSets[tabIndex].m_numChars = paraCharCount;
-        m_tabSets[tabIndex+1].m_numChars -= paraCharCount;
+        if (!!currentBullet)
+          m_shapeOutputText->addCloseUnorderedListLevel();
+
+        currentBullet = bullet;
+        if (!!currentBullet)
+        {
+          librevenge::RVNGPropertyList bulletList;
+          _listLevelFromBullet(bulletList, currentBullet);
+          m_shapeOutputText->addOpenUnorderedListLevel(bulletList);
+        }
       }
 
-      _fillTabSet(paraProps, m_tabSets[tabIndex]);
+      if (!currentBullet)
+        m_shapeOutputText->addOpenParagraph(paraProps);
+      else
+        m_shapeOutputText->addOpenListElement(paraProps);
+      isParagraphOpened = true;
     }
 
-    VSDBullet bullet;
-    _bulletFromParaFormat(bullet, *paraIt);
-
-    if (bullet != currentBullet)
+    if (!isSpanOpened && (*(textIt()) != '\n')) // Avoid an empty span
     {
-      if (!!currentBullet)
-      {
-        m_shapeOutputText->addCloseUnorderedListLevel();
-      }
-
-      currentBullet = bullet;
-      if (!!bullet)
-      {
-        librevenge::RVNGPropertyList bulletList;
-        _listLevelFromBullet(bulletList, bullet);
-        m_shapeOutputText->addOpenUnorderedListLevel(bulletList);
-      }
-    }
-
-    if (!currentBullet)
-      m_shapeOutputText->addOpenParagraph(paraProps);
-    else
-      m_shapeOutputText->addOpenListElement(paraProps);
-
-    // Find char format that overlaps
-    while (charIndex < m_charFormats.size() && paraCharCount)
-    {
-      if (paraCharCount < m_charFormats[charIndex].charCount)
-      {
-        // Insert duplicate
-        std::vector<VSDCharStyle>::iterator charIt = m_charFormats.begin() + charIndex;
-        VSDCharStyle tmpCharFormat = m_charFormats[charIndex];
-        m_charFormats.insert(charIt, tmpCharFormat);
-        m_charFormats[charIndex].charCount = paraCharCount;
-        m_charFormats[charIndex+1].charCount -= paraCharCount;
-      }
-      paraCharCount -= m_charFormats[charIndex].charCount;
-
       librevenge::RVNGPropertyList textProps;
-      _fillCharProperties(textProps, m_charFormats[charIndex]);
+      _fillCharProperties(textProps, *charIt);
 
       // TODO: In draw, text span background cannot be specified the same way as in writer span
       if (m_textBlockStyle.isTextBkgndFilled)
@@ -540,139 +532,113 @@ void libvisio::VSDContentCollector::_flushText()
           textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, librevenge::RVNG_PERCENT);
 #endif
       }
-
-      librevenge::RVNGString text;
-
-      if (m_textFormat == VSD_TEXT_UTF16)
-      {
-        unsigned long max = m_charFormats[charIndex].charCount <= (m_textStream.size()/2) ? m_charFormats[charIndex].charCount : (m_textStream.size()/2);
-        VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
-        max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size()/2 : max;
-        VSD_DEBUG_MSG(("Charcount: %d, max: %lu, stream size: %lu\n", m_charFormats[charIndex].charCount, max, (unsigned long)m_textStream.size()));
-        std::vector<unsigned char> tmpBuffer;
-        unsigned i = 0;
-        for (; i < max*2 && textBufferPosition+i <nTextBufferLength; ++i)
-          tmpBuffer.push_back(pTextBuffer[textBufferPosition+i]);
-        if (!paraCharCount && tmpBuffer.size() >= 2)
-        {
-          while (tmpBuffer.size() >= 2 && tmpBuffer[tmpBuffer.size() - 2] == 0 && tmpBuffer[tmpBuffer.size() - 1] == 0)
-          {
-            tmpBuffer.pop_back();
-            tmpBuffer.pop_back();
-          }
-          if (tmpBuffer.size() >= 2)
-          {
-            if (tmpBuffer[tmpBuffer.size() - 1] == 0 && (tmpBuffer[tmpBuffer.size() - 2] == 0x0a ||
-                                                         tmpBuffer[tmpBuffer.size() - 2] == '\n' || tmpBuffer[tmpBuffer.size() - 2] == 0x0e))
-            {
-              tmpBuffer.pop_back();
-              tmpBuffer.pop_back();
-            }
-          }
-          else
-            tmpBuffer.clear();
-        }
-
-        if (!tmpBuffer.empty())
-          appendCharacters(text, tmpBuffer);
-        textBufferPosition += i;
-      }
-      else if (m_textFormat == VSD_TEXT_UTF8)
-      {
-        unsigned long max = m_charFormats[charIndex].charCount <= m_textStream.size() ? m_charFormats[charIndex].charCount : m_textStream.size();
-        std::vector<unsigned char> tmpBuffer;
-        unsigned i = 0;
-        for (; i < max && textBufferPosition+i <nTextBufferLength; ++i)
-          tmpBuffer.push_back(pTextBuffer[textBufferPosition+i]);
-        if (!paraCharCount && !tmpBuffer.empty())
-        {
-          while (!tmpBuffer.empty() && tmpBuffer.back() == 0)
-            tmpBuffer.pop_back();
-          if (!tmpBuffer.empty() && (tmpBuffer.back() == 0x0a || tmpBuffer.back() == '\n' || tmpBuffer.back() == 0x0e))
-            tmpBuffer.back() = 0;
-        }
-        if (!tmpBuffer.empty() && tmpBuffer[0])
-          appendCharacters(text, tmpBuffer, VSD_TEXT_UTF8);
-        textBufferPosition += i;
-      }
-      else
-      {
-        unsigned long max = m_charFormats[charIndex].charCount <= m_textStream.size() ? m_charFormats[charIndex].charCount : m_textStream.size();
-        max = (m_charFormats[charIndex].charCount == 0 && m_textStream.size()) ? m_textStream.size() : max;
-        std::vector<unsigned char> tmpBuffer;
-        unsigned i = 0;
-        for (; i < max && textBufferPosition+i <nTextBufferLength; ++i)
-          tmpBuffer.push_back(pTextBuffer[textBufferPosition+i]);
-        if (!paraCharCount && !tmpBuffer.empty())
-        {
-          while (!tmpBuffer.empty() && tmpBuffer.back() == 0)
-            tmpBuffer.pop_back();
-          if (!tmpBuffer.empty() && (tmpBuffer.back() == 0x0a || tmpBuffer.back() == '\n' || tmpBuffer.back() == 0x0e))
-            tmpBuffer.back() = 0;
-        }
-        if (!tmpBuffer.empty())
-          appendCharacters(text, tmpBuffer, m_charFormats[charIndex].font.m_format);
-        textBufferPosition += i;
-      }
-
-      VSD_DEBUG_MSG(("Text: %s\n", text.cstr()));
       m_shapeOutputText->addOpenSpan(textProps);
+      isSpanOpened = true;
+    }
 
-      librevenge::RVNGString::Iter i(text);
-      i.rewind();
-      librevenge::RVNGString sOutputText;
-      for (i.rewind(); i.next();)
+    if (*(textIt()) == '\n')
+    {
+      if (!sOutputText.empty())
+        m_shapeOutputText->addInsertText(sOutputText);
+      sOutputText.clear();
+      if (isSpanOpened)
       {
-        if (*(i()) == '\n')
-        {
-          m_shapeOutputText->addInsertText(sOutputText);
-          m_shapeOutputText->addCloseSpan();
-          if (!currentBullet)
-          {
-            m_shapeOutputText->addCloseParagraph();
-            m_shapeOutputText->addOpenParagraph(paraProps);
-          }
-          else
-          {
-            m_shapeOutputText->addCloseListElement();
-            m_shapeOutputText->addOpenListElement(paraProps);
-          }
-          m_shapeOutputText->addOpenSpan(textProps);
-          sOutputText.clear();
-        }
-        else if (*(i()) == '\t')
+        m_shapeOutputText->addCloseSpan();
+        isSpanOpened = false;
+      }
+
+      if (isParagraphOpened)
+      {
+        if (!currentBullet)
+          m_shapeOutputText->addCloseParagraph();
+        else
+          m_shapeOutputText->addCloseListElement();
+        isParagraphOpened = false;
+      }
+    }
+    else if (*(textIt()) == '\t')
+    {
+      if (!sOutputText.empty())
+        m_shapeOutputText->addInsertText(sOutputText);
+      sOutputText.clear();
+      m_shapeOutputText->addInsertTab();
+    }
+    else if (strlen(textIt()) == 3 &&
+             textIt()[0] == '\xef' &&
+             textIt()[1] == '\xbf' &&
+             textIt()[2] == '\xbc')
+      _appendField(sOutputText);
+    else
+      sOutputText.append(textIt());
+
+    if (paraNumRemaining)
+      paraNumRemaining--;
+    if (!paraNumRemaining)
+    {
+      paraIt++;
+      if (paraIt != m_paraFormats.end())
+        paraNumRemaining = paraIt->charCount;
+      else
+        paraIt--;
+    }
+
+    if (charNumRemaining)
+      charNumRemaining--;
+    if (!charNumRemaining)
+    {
+      charIt++;
+      if (charIt != m_charFormats.end())
+      {
+        charNumRemaining = charIt->charCount;
+        if (isSpanOpened)
         {
           if (!sOutputText.empty())
             m_shapeOutputText->addInsertText(sOutputText);
-          m_shapeOutputText->addInsertTab();
           sOutputText.clear();
+          m_shapeOutputText->addCloseSpan();
+          isSpanOpened = false;
         }
-        else if (strlen(i()) == 3 &&
-                 i()[0] == (char)0xef &&
-                 i()[1] == (char)0xbf &&
-                 i()[2] == (char)0xbc)
-          _appendField(sOutputText);
-        else
-          sOutputText.append(i());
       }
-
-      m_shapeOutputText->addInsertText(sOutputText);
-      m_shapeOutputText->addCloseSpan();
-
-      charIndex++;
+      else
+        charIt--;
     }
+
+    if (tabNumRemaining)
+      tabNumRemaining--;
+    if (!tabNumRemaining)
+    {
+      tabIt++;
+      if (tabIt != m_tabSets.end())
+        tabNumRemaining = tabIt->m_numChars;
+      else
+        --tabIt;
+    }
+  }
+
+  // Clean up the elements that remained opened
+  if (isParagraphOpened)
+  {
+    if (isSpanOpened)
+    {
+      if (!sOutputText.empty())
+        m_shapeOutputText->addInsertText(sOutputText);
+      sOutputText.clear();
+      m_shapeOutputText->addCloseSpan();
+      isSpanOpened = false;
+    }
+
     if (!currentBullet)
       m_shapeOutputText->addCloseParagraph();
     else
       m_shapeOutputText->addCloseListElement();
-    tabIndex++;
+    isParagraphOpened = false;
   }
 
   if (!!currentBullet)
     m_shapeOutputText->addCloseUnorderedListLevel();
 
   m_shapeOutputText->addEndTextObject();
-  m_textStream.clear();
+  m_currentText.clear();
 }
 
 void libvisio::VSDContentCollector::_fillCharProperties(librevenge::RVNGPropertyList &propList, const VSDCharStyle &style)
@@ -2079,7 +2045,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_misc = VSDMisc();
 
   // Save line colour and pattern, fill type and pattern
-  m_textStream.clear();
+  m_currentText.clear();
   m_charFormats.clear();
   m_paraFormats.clear();
 
@@ -2222,10 +2188,8 @@ void libvisio::VSDContentCollector::collectText(unsigned level, const librevenge
 {
   _handleLevelChange(level);
 
-  m_textStream = textStream;
-  m_textFormat = format;
   m_currentText.clear();
-  if (!m_textStream.empty())
+  if (!textStream.empty())
   {
     std::vector<unsigned char> tmpBuffer(textStream.size());
     memcpy(&tmpBuffer[0], textStream.getDataBuffer(), textStream.size());

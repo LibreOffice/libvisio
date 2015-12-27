@@ -275,13 +275,11 @@ private:
 
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
-  librevenge::RVNGBinaryData m_textStream;
   librevenge::RVNGString m_currentText;
   std::map<unsigned, librevenge::RVNGString> m_names, m_stencilNames;
   std::vector<librevenge::RVNGString> m_fields;
   VSDFieldList m_stencilFields;
   unsigned m_fieldIndex;
-  TextFormat m_textFormat;
   std::vector<VSDCharStyle> m_charFormats;
   std::vector<VSDParaStyle> m_paraFormats;
 
