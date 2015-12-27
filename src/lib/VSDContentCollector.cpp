@@ -468,6 +468,7 @@ void libvisio::VSDContentCollector::_flushText()
 
   bool isParagraphOpened(false);
   bool isSpanOpened(false);
+  bool isParagraphWithoutSpan(false);
 
   std::vector<VSDParaStyle>::const_iterator paraIt = m_paraFormats.begin();
   std::vector<VSDCharStyle>::const_iterator charIt = m_charFormats.begin();
@@ -516,9 +517,13 @@ void libvisio::VSDContentCollector::_flushText()
       else
         m_shapeOutputText->addOpenListElement(paraProps);
       isParagraphOpened = true;
+      isParagraphWithoutSpan = true;
     }
 
-    if (!isSpanOpened && (*(textIt()) != '\n')) // Avoid an empty span
+    /* Avoid empty span but also a paragraph without span at all.
+     * This allows editing of the empty paragraph after the import,
+     * using the original span properties. */
+    if (!isSpanOpened && ((*(textIt()) != '\n') || isParagraphWithoutSpan))
     {
       librevenge::RVNGPropertyList textProps;
       _fillCharProperties(textProps, *charIt);
@@ -534,6 +539,7 @@ void libvisio::VSDContentCollector::_flushText()
       }
       m_shapeOutputText->addOpenSpan(textProps);
       isSpanOpened = true;
+      isParagraphWithoutSpan = false;
     }
 
     if (*(textIt()) == '\n')
