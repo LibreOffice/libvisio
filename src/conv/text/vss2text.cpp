@@ -7,6 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 
@@ -15,16 +19,31 @@
 #include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 
+#ifndef VERSION
+#define VERSION "UNKNOWN VERSION"
+#endif
+
 namespace
 {
 
 int printUsage()
 {
-  printf("Usage: vss2text [OPTION] <Visio Stencils File>\n");
+  printf("`vss2text' converts Microsoft Visio stencils to plain text.\n");
+  printf("\n");
+  printf("Usage: vss2text [OPTION] INPUT\n");
   printf("\n");
   printf("Options:\n");
-  printf("--help                Shows this help message\n");
+  printf("\t--help                show this help message\n");
+  printf("\t--version             show version information\n");
+  printf("\n");
+  printf("Report bugs to <https://bugs.documentfoundation.org/>.\n");
   return -1;
+}
+
+int printVersion()
+{
+  printf("vss2text " VERSION "\n");
+  return 0;
 }
 
 } // anonymous namespace
@@ -38,7 +57,9 @@ int main(int argc, char *argv[])
 
   for (int i = 1; i < argc; i++)
   {
-    if (!file && strncmp(argv[i], "--", 2))
+    if (!strcmp(argv[i], "--version"))
+      return printVersion();
+    else if (!file && strncmp(argv[i], "--", 2))
       file = argv[i];
     else
       return printUsage();
