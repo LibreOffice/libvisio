@@ -1,15 +1,18 @@
 CREDITS
 
-Current maintainers and authors of libvisio
----------------------------------------------
+Current maintainers
+-------------------
 Fridrich Strba <fridrich.strba@bluewin.ch>
+David Tardon <dtardon@redhat.com>
+
+Retired maintainers
+-------------------
 Eilidh McAdam <tibbylickle@gmail.com>
 
 Contributors
 ------------
 Valek Filippov <frob@gnome.org>		Excellent reverse engineering and various contributions
 Tomas 'scarabeus' Chvatal <tomas.chvatal@gmail.com>		Build system rewrite
-David Tardon <dtardon@redhat.com>
 
 Thanks
 ------
