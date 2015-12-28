@@ -267,8 +267,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     if (!tmpPath.empty())
     {
       librevenge::RVNGPropertyListVector path;
-      for (unsigned i = 0; i < tmpPath.size(); ++i)
-        path.append(tmpPath[i]);
+      _convertToPath(tmpPath, path, m_lineStyle.rounding);
       m_shapeOutputDrawing->addStyle(fillPathProps);
       librevenge::RVNGPropertyList propList;
       propList.insert("svg:d", path);
@@ -351,8 +350,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     if (!tmpPath.empty())
     {
       librevenge::RVNGPropertyListVector path;
-      for (unsigned i = 0; i < tmpPath.size(); ++i)
-        path.append(tmpPath[i]);
+      _convertToPath(tmpPath, path, m_lineStyle.rounding);
       m_shapeOutputDrawing->addStyle(linePathProps);
       librevenge::RVNGPropertyList propList;
       propList.insert("svg:d", path);
@@ -361,6 +359,13 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     }
   }
   m_currentLineGeometry.clear();
+}
+
+void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge::RVNGPropertyList> &segmentVector,
+                                                   librevenge::RVNGPropertyListVector &path, double /* rounding */)
+{
+  for (unsigned i = 0; i < segmentVector.size(); ++i)
+    path.append(segmentVector[i]);
 }
 
 void libvisio::VSDContentCollector::_flushText()

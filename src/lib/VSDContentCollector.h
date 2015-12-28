@@ -229,6 +229,8 @@ private:
   void _fillParagraphProperties(librevenge::RVNGPropertyList &propList, const VSDParaStyle &style);
   void _fillTabSet(librevenge::RVNGPropertyList &propList, const VSDTabSet &tabSet);
   void _fillCharProperties(librevenge::RVNGPropertyList &propList, const VSDCharStyle &style);
+  void _convertToPath(const std::vector<librevenge::RVNGPropertyList> &segmentVector,
+                      librevenge::RVNGPropertyListVector &path, double rounding);
 
   bool m_isPageStarted;
   double m_pageWidth;
