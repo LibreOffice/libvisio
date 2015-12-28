@@ -432,36 +432,6 @@ void libvisio::VSDContentCollector::_flushText()
     m_tabSets.back().m_numChars = 0;
   }
 
-  unsigned numCharsInText = (unsigned)m_currentText.len();
-
-  for (unsigned iChar = 0; iChar < m_charFormats.size(); iChar++)
-  {
-    if (m_charFormats[iChar].charCount)
-      numCharsInText -= m_charFormats[iChar].charCount;
-    else
-      m_charFormats[iChar].charCount = numCharsInText;
-  }
-
-  numCharsInText = (unsigned)m_currentText.len();
-
-  for (unsigned iPara = 0; iPara < m_paraFormats.size(); iPara++)
-  {
-    if (m_paraFormats[iPara].charCount)
-      numCharsInText -= m_paraFormats[iPara].charCount;
-    else
-      m_paraFormats[iPara].charCount = numCharsInText;
-  }
-
-  numCharsInText = (unsigned)m_currentText.len();
-
-  for (unsigned iTab = 0; iTab < m_tabSets.size(); iTab++)
-  {
-    if (m_tabSets[iTab].m_numChars)
-      numCharsInText -= m_tabSets[iTab].m_numChars;
-    else
-      m_tabSets[iTab].m_numChars = numCharsInText;
-  }
-
   _appendVisibleAndPrintable(textBlockProps);
 
   m_shapeOutputText->addStartTextObject(textBlockProps);
