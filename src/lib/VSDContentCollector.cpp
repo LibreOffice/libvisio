@@ -365,9 +365,11 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
 
 void libvisio::VSDContentCollector::_flushText()
 {
+  /* Do not output empty text objects. */
   if (m_currentText.empty() || m_misc.m_hideText)
     return;
 
+  /* Fill the text object/frame properties */
   double xmiddle = m_txtxform ? m_txtxform->width / 2.0 : m_xform.width / 2.0;
   double ymiddle = m_txtxform ? m_txtxform->height / 2.0 : m_xform.height / 2.0;
 
@@ -416,6 +418,13 @@ void libvisio::VSDContentCollector::_flushText()
     break;
   }
 
+  _appendVisibleAndPrintable(textBlockProps);
+
+  /* Start the text object. */
+  m_shapeOutputText->addStartTextObject(textBlockProps);
+
+  /* Assure that the different styles have at least one element,
+   * corresponding to the default style. */
   if (m_charFormats.empty())
   {
     m_charFormats.push_back(m_defaultCharStyle);
@@ -432,17 +441,14 @@ void libvisio::VSDContentCollector::_flushText()
     m_tabSets.back().m_numChars = 0;
   }
 
-  _appendVisibleAndPrintable(textBlockProps);
-
-  m_shapeOutputText->addStartTextObject(textBlockProps);
+  /* Helper variables used to iterate over the text buffer */
+  std::vector<VSDParaStyle>::const_iterator paraIt = m_paraFormats.begin();
+  std::vector<VSDCharStyle>::const_iterator charIt = m_charFormats.begin();
+  std::vector<VSDTabSet>::const_iterator tabIt = m_tabSets.begin();
 
   bool isParagraphOpened(false);
   bool isSpanOpened(false);
   bool isParagraphWithoutSpan(false);
-
-  std::vector<VSDParaStyle>::const_iterator paraIt = m_paraFormats.begin();
-  std::vector<VSDCharStyle>::const_iterator charIt = m_charFormats.begin();
-  std::vector<VSDTabSet>::const_iterator tabIt = m_tabSets.begin();
 
   VSDBullet currentBullet;
 
@@ -450,11 +456,13 @@ void libvisio::VSDContentCollector::_flushText()
   unsigned charNumRemaining(charIt->charCount);
   unsigned tabNumRemaining(tabIt->m_numChars);
 
-  librevenge::RVNGString::Iter textIt(m_currentText);
   librevenge::RVNGString sOutputText;
-  // Iterate over the text
+
+  /* Iterate over the text character by character */
+  librevenge::RVNGString::Iter textIt(m_currentText);
   for (textIt.rewind(); textIt.next();)
   {
+    /* Any character will cause a paragraph to open if it is not yet opened. */
     if (!isParagraphOpened)
     {
       librevenge::RVNGPropertyList paraProps;
@@ -468,12 +476,15 @@ void libvisio::VSDContentCollector::_flushText()
       VSDBullet bullet;
       _bulletFromParaFormat(bullet, *paraIt);
 
+      /* Bullet definition changed with regard to the last paragraph style. */
       if (bullet != currentBullet)
       {
+        /* If the previous paragraph style had a bullet, close the list level. */
         if (!!currentBullet)
           m_shapeOutputText->addCloseUnorderedListLevel();
 
         currentBullet = bullet;
+        /* If the current paragraph style has a bullet, open a new list level. */
         if (!!currentBullet)
         {
           librevenge::RVNGPropertyList bulletList;
@@ -490,9 +501,9 @@ void libvisio::VSDContentCollector::_flushText()
       isParagraphWithoutSpan = true;
     }
 
-    /* Avoid empty span but also a paragraph without span at all.
-     * This allows editing of the empty paragraph after the import,
-     * using the original span properties. */
+    /* Any character will cause a span to open if it is not yet opened.
+     * The additional conditions aim to avoid superfluous empty span but
+     * also a paragraph without span at all. */
     if (!isSpanOpened && ((*(textIt()) != '\n') || isParagraphWithoutSpan))
     {
       librevenge::RVNGPropertyList textProps;
@@ -512,6 +523,8 @@ void libvisio::VSDContentCollector::_flushText()
       isParagraphWithoutSpan = false;
     }
 
+    /* Current character is a paragraph break,
+     * which will cause the paragraph to close. */
     if (*(textIt()) == '\n')
     {
       if (!sOutputText.empty())
@@ -532,6 +545,8 @@ void libvisio::VSDContentCollector::_flushText()
         isParagraphOpened = false;
       }
     }
+    /* Current character is a tabulator. We have to output
+     * the current text buffer and insert the tab. */
     else if (*(textIt()) == '\t')
     {
       if (!sOutputText.empty())
@@ -539,16 +554,25 @@ void libvisio::VSDContentCollector::_flushText()
       sOutputText.clear();
       m_shapeOutputText->addInsertTab();
     }
+    /* Current character is a field placeholder. We append
+     * to the current text buffer a text representation
+     * of the field. */
     else if (strlen(textIt()) == 3 &&
              textIt()[0] == '\xef' &&
              textIt()[1] == '\xbf' &&
              textIt()[2] == '\xbc')
       _appendField(sOutputText);
+    /* We have a normal UTF8 character and we append it
+     * to the current text buffer. */
     else
       sOutputText.append(textIt());
 
+    /* Decrease the count of remaining characters in the same paragraph,
+     * if it is possible. */
     if (paraNumRemaining)
       paraNumRemaining--;
+    /* Fetch next paragraph style if it exists. If not, just use the
+     * last one. */
     if (!paraNumRemaining)
     {
       paraIt++;
@@ -558,8 +582,14 @@ void libvisio::VSDContentCollector::_flushText()
         paraIt--;
     }
 
+    /* Decrease the count of remaining characters in the same span,
+     * if it is possible. */
     if (charNumRemaining)
       charNumRemaining--;
+    /* Fetch next character style if it exists and close span, since
+     * the next span will have to use the new character style.
+     * If there is no more character style to fetch, just finish using
+     * the last one. */
     if (!charNumRemaining)
     {
       charIt++;
@@ -579,8 +609,12 @@ void libvisio::VSDContentCollector::_flushText()
         charIt--;
     }
 
+    /* Decrease the count of remaining characters using the same
+     * tab-set definition, if it is possible. */
     if (tabNumRemaining)
       tabNumRemaining--;
+    /* Fetch next tab-set definition if it exists. If not, just use the
+     * last one. */
     if (!tabNumRemaining)
     {
       tabIt++;
@@ -610,6 +644,8 @@ void libvisio::VSDContentCollector::_flushText()
     isParagraphOpened = false;
   }
 
+  /* Last paragraph style had a bullet and we have to close
+   * the corresponding list level. */
   if (!!currentBullet)
     m_shapeOutputText->addCloseUnorderedListLevel();
 
