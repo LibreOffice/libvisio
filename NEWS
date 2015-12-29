@@ -1,3 +1,9 @@
+libvisio 0.1.5
+
+- Rewrite text output to avoid empty spans and to make the function
+  a bit more readable for common mortal (wo)man.
+- Initial emulation of line rounding property (tdf#90603).
+
 libvisio 0.1.4
 
 - Implement overriding of colour of lines and of text from layer
