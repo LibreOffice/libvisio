@@ -3,6 +3,7 @@ libvisio 0.1.5
 - Rewrite text output to avoid empty spans and to make the function
   a bit more readable for common mortal (wo)man.
 - Initial emulation of line rounding property (tdf#90603).
+- Make --help output of all command line tools more help2man-friendly.
 
 libvisio 0.1.4
 
