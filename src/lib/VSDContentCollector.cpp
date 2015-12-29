@@ -301,7 +301,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
         {
           if (!wasMove)
           {
-            if ((x == prevX) && (y == prevY))
+            if (VSD_ALMOST_ZERO(x - prevX) && VSD_ALMOST_ZERO(y - prevY))
             {
               if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
               {
@@ -332,7 +332,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
     {
       if (!wasMove)
       {
-        if ((x == prevX) && (y == prevY))
+        if (VSD_ALMOST_ZERO(x - prevX) && VSD_ALMOST_ZERO(y - prevY))
         {
           if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
           {
