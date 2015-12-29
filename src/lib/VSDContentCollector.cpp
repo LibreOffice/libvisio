@@ -481,8 +481,28 @@ void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge:
   }
   else
   {
+    double prevX = DBL_MAX;
+    double prevY = DBL_MAX;
     for (unsigned i = 0; i < segmentVector.size(); ++i)
-      path.append(segmentVector[i]);
+    {
+      if (!segmentVector[i]["librevenge:path-action"])
+        continue;
+      double x = DBL_MAX;
+      double y = DBL_MAX;
+      if (segmentVector[i]["svg:x"] && segmentVector[i]["svg:y"])
+
+      {
+        x = segmentVector[i]["svg:x"]->getDouble();
+        y = segmentVector[i]["svg:y"]->getDouble();
+      }
+      // skip segment that have length 0.0
+      if (!VSD_ALMOST_ZERO(x-prevX) || !VSD_ALMOST_ZERO(y-prevY))
+      {
+        path.append(segmentVector[i]);
+        prevX = x;
+        prevY = y;
+      }
+    }
   }
 }
 
