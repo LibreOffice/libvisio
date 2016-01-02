@@ -34,31 +34,38 @@ static unsigned bitmapId = 0;
 namespace
 {
 
-void computeRounding(double &prevX, double &prevY, double x0, double y0, double x, double y, double rounding,
-                     double &newX0, double &newY0, double &newX, double &newY, double &maxRounding)
+void computeRounding(double &prevX, double &prevY, double x0, double y0, double x, double y, double &rounding,
+                     double &newX0, double &newY0, double &newX, double &newY, bool &sweep)
 {
   double prevHalfLength = sqrt((y0-prevY)*(y0-prevY)+(x0-prevX)*(x0-prevX)) / 2.0;
   double halfLength = sqrt((y-y0)*(y-y0)+(x-x0)*(x-x0)) / 2.0;
-  maxRounding = prevHalfLength;
-  if (maxRounding > halfLength)
-    maxRounding = halfLength;
   double lambda1 = atan2(y0-prevY, x0-prevX);
   double lambda2 = atan2(y-y0, x-x0);
   double angle = M_PI - lambda2 + lambda1;
   if (angle < 0.0)
     angle += 2.0*M_PI;
   if (angle > M_PI)
+  {
     angle -= M_PI;
+    sweep = !sweep;
+  }
   double q = fabs(rounding / tan(angle / 2.0));
-  if (maxRounding > q)
-    maxRounding = q;
-  newX0 = x0-maxRounding*cos(lambda1);
-  newY0 = y0-maxRounding*sin(lambda1);
-  newX = x0+maxRounding*cos(lambda2);
-  newY = y0+maxRounding*sin(lambda2);
+  if (q > prevHalfLength)
+  {
+    q = prevHalfLength;
+    rounding = fabs(q*tan(angle / 2.0));
+  }
+  if (q > halfLength)
+  {
+    q = halfLength;
+    rounding = fabs(q*tan(angle / 2.0));
+  }
+  newX0 = x0-q*cos(lambda1);
+  newY0 = y0-q*sin(lambda1);
+  newX = x0+q*cos(lambda2);
+  newY = y0+q*sin(lambda2);
   prevX = x0;
   prevY = y0;
-  maxRounding = halfLength;
 }
 
 } // anonymous namespace
@@ -401,7 +408,6 @@ void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge:
     double prevX = segmentVector[0]["svg:x"] ? segmentVector[0]["svg:x"]->getDouble() : 0.0;
     double prevY = segmentVector[0]["svg:y"] ? segmentVector[0]["svg:y"]->getDouble() : 0.0;
     unsigned moveIndex = 0;
-    double maxRounding = DBL_MAX;
     std::vector<librevenge::RVNGPropertyList> tmpSegment;
     for (unsigned i = 0; i < segmentVector.size(); ++i)
     {
@@ -416,7 +422,6 @@ void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge:
         prevX = segmentVector[i]["svg:x"] ? segmentVector[i]["svg:x"]->getDouble() : 0.0;
         prevY = segmentVector[i]["svg:y"] ? segmentVector[i]["svg:y"]->getDouble() : 0.0;
         moveIndex = i;
-        maxRounding = DBL_MAX;
       }
       else if (segmentVector[i]["librevenge:path-action"] && segmentVector[i]["librevenge:path-action"]->getStr() == "L")
       {
@@ -427,7 +432,9 @@ void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge:
           double x = segmentVector[i+1]["svg:x"] ? segmentVector[i+1]["svg:x"]->getDouble() : 0.0;
           double y = segmentVector[i+1]["svg:y"] ? segmentVector[i+1]["svg:y"]->getDouble() : 0.0;
           double newX0, newY0, newX, newY;
-          computeRounding(prevX, prevY, x0, y0, x, y, rounding, newX0, newY0, newX, newY, maxRounding);
+          double tmpRounding(rounding);
+          bool sweep(true);
+          computeRounding(prevX, prevY, x0, y0, x, y, tmpRounding, newX0, newY0, newX, newY, sweep);
           tmpSegment.back().insert("svg:x", newX0);
           tmpSegment.back().insert("svg:y", newY0);
           librevenge::RVNGPropertyList q;
@@ -441,15 +448,17 @@ void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge:
         else if (i+1 < segmentVector.size() && segmentVector[i+1]["librevenge:path-action"] && segmentVector[i+1]["librevenge:path-action"]->getStr() == "Z")
         {
           if (tmpSegment.size() >= 2 &&
-              tmpSegment[0]["librevenge:path-action"] &&
-              tmpSegment[0]["librevenge:path-action"]->getStr() == "M" &&
-              tmpSegment[1]["librevenge:path-action"] &&
-              tmpSegment[1]["librevenge:path-action"]->getStr() == "L")
+              segmentVector[moveIndex]["librevenge:path-action"] &&
+              segmentVector[moveIndex]["librevenge:path-action"]->getStr() == "M" &&
+              segmentVector[moveIndex+1]["librevenge:path-action"] &&
+              segmentVector[moveIndex+1]["librevenge:path-action"]->getStr() == "L")
           {
             double x = segmentVector[moveIndex+1]["svg:x"] ? segmentVector[moveIndex+1]["svg:x"]->getDouble() : 0.0;
             double y = segmentVector[moveIndex+1]["svg:y"] ? segmentVector[moveIndex+1]["svg:y"]->getDouble() : 0.0;
             double newX0, newY0, newX, newY;
-            computeRounding(prevX, prevY, x0, y0, x, y, rounding, newX0, newY0, newX, newY, maxRounding);
+            double tmpRounding(rounding);
+            bool sweep(true);
+            computeRounding(prevX, prevY, x0, y0, x, y, tmpRounding, newX0, newY0, newX, newY, sweep);
             tmpSegment.back().insert("svg:x", newX0);
             tmpSegment.back().insert("svg:y", newY0);
             librevenge::RVNGPropertyList q;
@@ -462,23 +471,17 @@ void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge:
             tmpSegment[0].insert("svg:x", newX) ;
             tmpSegment[0].insert("svg:y", newY);
           }
-          else
-            maxRounding = DBL_MAX;
         }
-        else
-          maxRounding = DBL_MAX;
       }
       else if (segmentVector[i]["librevenge:path-action"] && segmentVector[i]["librevenge:path-action"]->getStr() == "Z")
       {
         prevX = segmentVector[moveIndex]["svg:x"] ? segmentVector[moveIndex]["svg:x"]->getDouble() : 0.0;
         prevY = segmentVector[moveIndex]["svg:y"] ? segmentVector[moveIndex]["svg:y"]->getDouble() : 0.0;
-        maxRounding = DBL_MAX;
       }
       else
       {
         prevX = segmentVector[i]["svg:x"] ? segmentVector[i]["svg:x"]->getDouble() : 0.0;
         prevY = segmentVector[i]["svg:y"] ? segmentVector[i]["svg:y"]->getDouble() : 0.0;
-        maxRounding = DBL_MAX;
       }
     }
     _convertToPath(tmpSegment, path, 0.0);
