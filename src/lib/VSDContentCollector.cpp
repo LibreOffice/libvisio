@@ -37,6 +37,9 @@ namespace
 void computeRounding(double &prevX, double &prevY, double x0, double y0, double x, double y, double rounding,
                      double &newX0, double &newY0, double &newX, double &newY, double &maxRounding)
 {
+  double prevHalfLength = sqrt((y0-prevY)*(y0-prevY)+(x0-prevX)*(x0-prevX)) / 2.0;
+  if (maxRounding > prevHalfLength)
+    maxRounding = prevHalfLength;
   double halfLength = sqrt((y-y0)*(y-y0)+(x-x0)*(x-x0)) / 2.0;
   if (maxRounding > halfLength)
     maxRounding = halfLength;
@@ -48,10 +51,9 @@ void computeRounding(double &prevX, double &prevY, double x0, double y0, double 
   double lambda2 = atan2(y-y0, x-x0);
   newX = x0+maxRounding*cos(lambda2);
   newY = y0+maxRounding*sin(lambda2);
-  prevX = newX;
-  prevY = newY;
+  prevX = x0;
+  prevY = y0;
   maxRounding = halfLength;
-
 }
 
 } // anonymous namespace
