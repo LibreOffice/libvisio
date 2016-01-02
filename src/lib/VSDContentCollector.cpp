@@ -38,17 +38,22 @@ void computeRounding(double &prevX, double &prevY, double x0, double y0, double 
                      double &newX0, double &newY0, double &newX, double &newY, double &maxRounding)
 {
   double prevHalfLength = sqrt((y0-prevY)*(y0-prevY)+(x0-prevX)*(x0-prevX)) / 2.0;
-  if (maxRounding > prevHalfLength)
-    maxRounding = prevHalfLength;
   double halfLength = sqrt((y-y0)*(y-y0)+(x-x0)*(x-x0)) / 2.0;
+  maxRounding = prevHalfLength;
   if (maxRounding > halfLength)
     maxRounding = halfLength;
-  if (maxRounding > rounding)
-    maxRounding = rounding;
   double lambda1 = atan2(y0-prevY, x0-prevX);
+  double lambda2 = atan2(y-y0, x-x0);
+  double angle = M_PI - lambda2 + lambda1;
+  if (angle < 0.0)
+    angle += 2.0*M_PI;
+  if (angle > M_PI)
+    angle -= M_PI;
+  double q = fabs(rounding / tan(angle / 2.0));
+  if (maxRounding > q)
+    maxRounding = q;
   newX0 = x0-maxRounding*cos(lambda1);
   newY0 = y0-maxRounding*sin(lambda1);
-  double lambda2 = atan2(y-y0, x-x0);
   newX = x0+maxRounding*cos(lambda2);
   newY = y0+maxRounding*sin(lambda2);
   prevX = x0;
