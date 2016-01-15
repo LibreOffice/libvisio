@@ -2253,6 +2253,13 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
       m_stencilNames[iterData->first] = nameString;
     }
 
+    if (m_stencilShape->m_txtxform)
+    {
+      if (m_txtxform)
+        delete m_txtxform;
+      m_txtxform = new XForm(*(m_stencilShape->m_txtxform));
+    }
+
     m_stencilFields = m_stencilShape->m_fields;
     for (unsigned i = 0; i < m_stencilFields.size(); i++)
     {
