@@ -30,6 +30,6 @@ EXTRA_DIST = \
 	     $(test_SOURCES)
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
-AM_TESTS_ENVIRONMENT = TZ=CET; export TZ;
+AM_TESTS_ENVIRONMENT = TZ=UTC; export TZ;
 
 TESTS = test
