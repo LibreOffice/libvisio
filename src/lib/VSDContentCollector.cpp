@@ -824,6 +824,7 @@ void libvisio::VSDContentCollector::_fillCharProperties(librevenge::RVNGProperty
   if (style.smallcaps) propList.insert("fo:font-variant", "small-caps");
   if (style.superscript) propList.insert("style:text-position", "super");
   if (style.subscript) propList.insert("style:text-position", "sub");
+  if (style.scaleWidth != 1.0) propList.insert("style:text-scale", style.scaleWidth, librevenge::RVNG_PERCENT);
   propList.insert("fo:font-size", style.size*72.0, librevenge::RVNG_POINT);
   Colour colour = style.colour;
   const Colour *pColour = m_currentLayerList.getColour(m_currentLayerMem);
@@ -2397,12 +2398,12 @@ void libvisio::VSDContentCollector::collectCharIX(unsigned /* id */ , unsigned l
                                                   const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                                                   const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout,
                                                   const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
-                                                  const boost::optional<bool> &superscript, const boost::optional<bool> &subscript)
+                                                  const boost::optional<bool> &superscript, const boost::optional<bool> &subscript, const boost::optional<double> &scaleWidth)
 {
   _handleLevelChange(level);
   VSDCharStyle format(m_defaultCharStyle);
   format.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                       allcaps, initcaps, smallcaps, superscript, subscript));
+                                       allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth));
   format.charCount = charCount;
   m_charFormats.push_back(format);
 }
@@ -2418,13 +2419,15 @@ void libvisio::VSDContentCollector::collectTabsDataList(unsigned level, const st
 }
 
 void libvisio::VSDContentCollector::collectDefaultCharStyle(unsigned charCount,
-                                                            const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
-                                                            const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout,
-                                                            const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
-                                                            const boost::optional<bool> &superscript, const boost::optional<bool> &subscript)
+                                                            const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize,
+                                                            const boost::optional<bool> &bold, const boost::optional<bool> &italic, const boost::optional<bool> &underline,
+                                                            const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout,
+                                                            const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps,
+                                                            const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript, const boost::optional<bool> &subscript,
+                                                            const boost::optional<double> &scaleWidth)
 {
   m_defaultCharStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                                   allcaps, initcaps, smallcaps, superscript, subscript));
+                                                   allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth));
 }
 
 void libvisio::VSDContentCollector::collectTextBlock(unsigned level, const boost::optional<double> &leftMargin, const boost::optional<double> &rightMargin,
@@ -2527,10 +2530,10 @@ void libvisio::VSDContentCollector::collectCharIXStyle(unsigned /* id */, unsign
                                                        const boost::optional<bool> &bold, const boost::optional<bool> &italic, const boost::optional<bool> &underline,
                                                        const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout,
                                                        const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
-                                                       const boost::optional<bool> &superscript, const boost::optional<bool> &subscript)
+                                                       const boost::optional<bool> &superscript, const boost::optional<bool> &subscript, const boost::optional<double> &scaleWidth)
 {
   VSDOptionalCharStyle charStyle(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript);
+                                 allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth);
   m_styles.addCharStyle(m_currentStyleSheet, charStyle);
 }
 

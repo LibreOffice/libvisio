@@ -1198,6 +1198,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   boost::optional<bool> superscript;
   boost::optional<bool> subscript;
   boost::optional<double> fontSize;
+  boost::optional<double> scaleWidth;
 
   do
   {
@@ -1304,6 +1305,8 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       }
       break;
     case XML_FONTSCALE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readDoubleData(scaleWidth, reader);
       break;
     case XML_SIZE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1335,17 +1338,17 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   if (m_isInStyles)
     m_collector->collectCharIXStyle(ix, level, charCount, font, fontColour, fontSize, bold, italic,
                                     underline, doubleunderline, strikeout, doublestrikeout, allcaps,
-                                    initcaps, smallcaps, superscript, subscript);
+                                    initcaps, smallcaps, superscript, subscript, scaleWidth);
   else
   {
     if (!ix || m_shape.m_charList.empty()) // character style 0 is the default character style
       m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold,
                                                         italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                                        allcaps, initcaps, smallcaps, superscript, subscript));
+                                                        allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth));
 
     m_shape.m_charList.addCharIX(ix, level, charCount, font, fontColour, fontSize, bold, italic,
                                  underline, doubleunderline, strikeout, doublestrikeout, allcaps,
-                                 initcaps, smallcaps, superscript, subscript);
+                                 initcaps, smallcaps, superscript, subscript, scaleWidth);
   }
 }
 
@@ -1821,7 +1824,7 @@ void libvisio::VSDXMLParserBase::_flushShape()
                                        m_shape.m_charStyle.size, m_shape.m_charStyle.bold, m_shape.m_charStyle.italic, m_shape.m_charStyle.underline,
                                        m_shape.m_charStyle.doubleunderline, m_shape.m_charStyle.strikeout, m_shape.m_charStyle.doublestrikeout,
                                        m_shape.m_charStyle.allcaps, m_shape.m_charStyle.initcaps, m_shape.m_charStyle.smallcaps,
-                                       m_shape.m_charStyle.superscript, m_shape.m_charStyle.subscript);
+                                       m_shape.m_charStyle.superscript, m_shape.m_charStyle.subscript, m_shape.m_charStyle.scaleWidth);
 
   m_shape.m_charList.handle(m_collector);
 

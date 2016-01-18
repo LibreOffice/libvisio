@@ -296,7 +296,8 @@ void libvisio::VSD5Parser::readCharIX(librevenge::RVNGInputStream *input)
   if (fontMod & 1) superscript = true;
   if (fontMod & 2) subscript = true;
 
-  input->seek(4, librevenge::RVNG_SEEK_CUR);
+  double scaleWidth = (double)(readU16(input)) / 10000.0;
+  input->seek(2, librevenge::RVNG_SEEK_CUR);
   double fontSize = readDouble(input);
 
 #if 0
@@ -309,7 +310,7 @@ void libvisio::VSD5Parser::readCharIX(librevenge::RVNGInputStream *input)
   if (m_isInStyles)
     m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
                                     bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                    allcaps, initcaps, smallcaps, superscript, subscript);
+                                    allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth);
   else
   {
     if (m_isStencilStarted)
@@ -319,10 +320,10 @@ void libvisio::VSD5Parser::readCharIX(librevenge::RVNGInputStream *input)
 
     m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize,
                                                       bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                                      allcaps, initcaps, smallcaps, superscript, subscript));
+                                                      allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth));
     m_shape.m_charList.addCharIX(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript);
+                                 allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth);
   }
 }
 

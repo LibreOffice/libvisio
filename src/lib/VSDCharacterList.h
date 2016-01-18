@@ -33,7 +33,7 @@ public:
                  const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
                  const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
                  const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
-                 const boost::optional<bool> &subscript);
+                 const boost::optional<bool> &subscript, const boost::optional<double> &scaleWidth);
   void addCharIX(unsigned id, unsigned level, const VSDOptionalCharStyle &style);
   unsigned getCharCount(unsigned id) const;
   void setCharCount(unsigned id, unsigned charCount);

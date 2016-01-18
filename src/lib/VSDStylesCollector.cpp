@@ -296,7 +296,7 @@ void libvisio::VSDStylesCollector::collectCharIX(unsigned /* id */, unsigned lev
                                                  const boost::optional<bool> & /* bold */, const boost::optional<bool> & /* italic */, const boost::optional<bool> & /* underline */,
                                                  const boost::optional<bool> & /* doubleunderline */, const boost::optional<bool> & /* strikeout */, const boost::optional<bool> & /* doublestrikeout */,
                                                  const boost::optional<bool> & /* allcaps */, const boost::optional<bool> & /* initcaps */, const boost::optional<bool> & /* smallcaps */,
-                                                 const boost::optional<bool> & /* superscript */, const boost::optional<bool> & /* subscript */)
+                                                 const boost::optional<bool> & /* superscript */, const boost::optional<bool> & /* subscript */, const boost::optional<double> & /* scaleWidth */)
 {
   _handleLevelChange(level);
 }
@@ -311,7 +311,7 @@ void libvisio::VSDStylesCollector::collectDefaultCharStyle(unsigned /* charCount
                                                            const boost::optional<bool> & /* bold */, const boost::optional<bool> & /* italic */, const boost::optional<bool> & /* underline */,
                                                            const boost::optional<bool> & /* doubleunderline */, const boost::optional<bool> & /* strikeout */, const boost::optional<bool> & /* doublestrikeout */,
                                                            const boost::optional<bool> & /* allcaps */, const boost::optional<bool> & /* initcaps */, const boost::optional<bool> & /* smallcaps */,
-                                                           const boost::optional<bool> & /* superscript */, const boost::optional<bool> & /* subscript */)
+                                                           const boost::optional<bool> & /* superscript */, const boost::optional<bool> & /* subscript */, const boost::optional<double> & /* scaleWidth */)
 {
 }
 
@@ -371,7 +371,7 @@ void libvisio::VSDStylesCollector::collectCharIXStyle(unsigned /* id */, unsigne
                                                       const boost::optional<bool> & /* strikeout */, const boost::optional<bool> & /* doublestrikeout */,
                                                       const boost::optional<bool> & /* allcaps */, const boost::optional<bool> & /* initcaps */,
                                                       const boost::optional<bool> & /* smallcaps */, const boost::optional<bool> & /* superscript */,
-                                                      const boost::optional<bool> & /* subscript */)
+                                                      const boost::optional<bool> & /* subscript */, const boost::optional<double> & /* scaleWidth */)
 {
   _handleLevelChange(level);
 }

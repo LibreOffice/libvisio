@@ -676,7 +676,7 @@ void libvisio::VSDParser::_flushShape()
                                        m_shape.m_charStyle.size, m_shape.m_charStyle.bold, m_shape.m_charStyle.italic, m_shape.m_charStyle.underline,
                                        m_shape.m_charStyle.doubleunderline, m_shape.m_charStyle.strikeout, m_shape.m_charStyle.doublestrikeout,
                                        m_shape.m_charStyle.allcaps, m_shape.m_charStyle.initcaps, m_shape.m_charStyle.smallcaps,
-                                       m_shape.m_charStyle.superscript, m_shape.m_charStyle.subscript);
+                                       m_shape.m_charStyle.superscript, m_shape.m_charStyle.subscript, m_shape.m_charStyle.scaleWidth);
 
   m_shape.m_charList.handle(m_collector);
 
@@ -1877,7 +1877,8 @@ void libvisio::VSDParser::readCharIX(librevenge::RVNGInputStream *input)
   if (fontMod & 1) superscript = true;
   if (fontMod & 2) subscript = true;
 
-  input->seek(4, librevenge::RVNG_SEEK_CUR);
+  double scaleWidth = (double)(readU16(input)) / 10000.0;
+  input->seek(2, librevenge::RVNG_SEEK_CUR);
   double fontSize = readDouble(input);
 
   fontMod = readU8(input);
@@ -1888,7 +1889,7 @@ void libvisio::VSDParser::readCharIX(librevenge::RVNGInputStream *input)
   if (m_isInStyles)
     m_collector->collectCharIXStyle(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
                                     bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                    allcaps, initcaps, smallcaps, superscript, subscript);
+                                    allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth);
   else
   {
     if (m_isStencilStarted)
@@ -1898,10 +1899,10 @@ void libvisio::VSDParser::readCharIX(librevenge::RVNGInputStream *input)
 
     m_shape.m_charStyle.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize,
                                                       bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                                      allcaps, initcaps, smallcaps, superscript, subscript));
+                                                      allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth));
     m_shape.m_charList.addCharIX(m_header.id, m_header.level, charCount, font, fontColour, fontSize,
                                  bold, italic, underline, doubleunderline, strikeout, doublestrikeout,
-                                 allcaps, initcaps, smallcaps, superscript, subscript);
+                                 allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth);
   }
 }
 
