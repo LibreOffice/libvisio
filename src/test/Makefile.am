@@ -29,4 +29,7 @@ EXTRA_DIST = \
 	     data/dwg.vsdx \
 	     $(test_SOURCES)
 
+# ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
+AM_TESTS_ENVIRONMENT = TZ=CET; export TZ;
+
 TESTS = test
