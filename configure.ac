@@ -111,19 +111,40 @@ AC_ARG_ENABLE([tools],
 	[enable_tools="$enableval"],
 	[enable_tools=yes]
 )
-AS_IF([test "x$enable_tools" = "xyes"], [
-	PKG_CHECK_MODULES([REVENGE_GENERATORS],[
-		librevenge-generators-0.0
-	])
+
+# ==========
+# Unit tests
+# ==========
+AC_ARG_ENABLE([tests],
+    [AS_HELP_STRING([--enable-tests], [Build and run unit tests])],
+    [enable_tests="$enableval"],
+    [enable_tests=yes]
+)
+
+AS_IF([test "x$enable_tools" = "xyes" -o "x$enable_tests" = "xyes"], [
 	PKG_CHECK_MODULES([REVENGE_STREAM],[
 		librevenge-stream-0.0
 	])
 ])
-AC_SUBST([REVENGE_GENERATORS_CFLAGS])
-AC_SUBST([REVENGE_GENERATORS_LIBS])
 AC_SUBST([REVENGE_STREAM_CFLAGS])
 AC_SUBST([REVENGE_STREAM_LIBS])
-AM_CONDITIONAL(BUILD_TOOLS, [test "x$enable_tools" = "xyes"])
+
+AS_IF([test "x$enable_tests" = "xyes"], [
+    PKG_CHECK_MODULES([CPPUNIT], [cppunit])
+], [])
+AC_SUBST([CPPUNIT_CFLAGS])
+AC_SUBST([CPPUNIT_LIBS])
+
+AS_IF([test "x$enable_tools" = "xyes"], [
+	PKG_CHECK_MODULES([REVENGE_GENERATORS],[
+		librevenge-generators-0.0
+	])
+])
+AC_SUBST([REVENGE_GENERATORS_CFLAGS])
+AC_SUBST([REVENGE_GENERATORS_LIBS])
+
+AM_CONDITIONAL([BUILD_TOOLS], [test "x$enable_tools" = "xyes"])
+AM_CONDITIONAL([ENABLE_TESTS], [test "x$enable_tests" = "xyes"])
 
 # =================================
 # Libtool/Version Makefile settings
@@ -294,21 +315,6 @@ AS_IF([test "x$enable_debug" = "xyes"], [
 	DEBUG_CXXFLAGS="-DNDEBUG"
 ])
 AC_SUBST(DEBUG_CXXFLAGS)
-
-# ==========
-# Unit tests
-# ==========
-AC_ARG_ENABLE([tests],
-    [AS_HELP_STRING([--enable-tests], [Build and run unit tests])],
-    [enable_tests="$enableval"],
-    [enable_tests=yes]
-)
-AS_IF([test "x$enable_tests" = "xyes"], [
-    PKG_CHECK_MODULES([CPPUNIT], [cppunit])
-], [])
-AC_SUBST([CPPUNIT_CFLAGS])
-AC_SUBST([CPPUNIT_LIBS])
-AM_CONDITIONAL([ENABLE_TESTS], [test "x$enable_tests" = "xyes"])
 
 # =============
 # Documentation
