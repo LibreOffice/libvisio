@@ -271,21 +271,6 @@ static bool isXmlVisioDocument(librevenge::RVNGInputStream *input)
     {
       return false;
     }
-
-    // Checking the two possible namespaces of VDX documents. This may be a bit strict
-    // and filter out some of third party VDX documents. If that happens, commenting out
-    // this block could be an option.
-    const xmlChar *nsname = xmlTextReaderConstNamespaceUri(reader.get());
-    if (!nsname)
-    {
-      return false;
-    }
-    if (!xmlStrEqual(nsname, BAD_CAST("urn:schemas-microsoft-com:office:visio"))
-        && !xmlStrEqual(nsname, BAD_CAST("http://schemas.microsoft.com/visio/2003/core")))
-    {
-      return false;
-    }
-
     return true;
   }
   catch (...)
