@@ -2215,4 +2215,26 @@ unsigned libvisio::VSDXMLParserBase::getIX(xmlTextReaderPtr reader)
   return ix;
 }
 
+void libvisio::VSDXMLParserBase::readTriggerId(unsigned &id, xmlTextReaderPtr reader)
+{
+  using namespace ::boost::spirit::classic;
+
+  unsigned triggerId = MINUS_ONE;
+  const boost::shared_ptr<xmlChar> triggerString(xmlTextReaderGetAttribute(reader, BAD_CAST("F")), xmlFree);
+  printf("Fridrich A %s\n", (const char *)triggerString.get());
+  if (triggerString)
+  {
+    if (parse((const char *)triggerString.get(),
+              //  Begin grammar
+              (
+                str_p("_XFTRIGGER")
+                >> '(' >> (+(alnum_p|space_p)) >> '.'
+                >> int_p[assign_a(triggerId)] >> '!' >> str_p("EventXFMod")
+              ) >> ')' >> end_p,
+              //  End grammar
+              space_p).full)
+      id = triggerId;
+  }
+}
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

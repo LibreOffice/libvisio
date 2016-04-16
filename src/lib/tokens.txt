@@ -55,6 +55,7 @@ B
 BeginArrow
 BeginX
 BeginY
+BegTrigger
 BottomMargin
 Bullet
 BulletFont
@@ -91,6 +92,7 @@ E
 Ellipse
 EllipticalArcTo
 EndArrow
+EndTrigger
 EndX
 EndY
 FaceName

@@ -55,6 +55,8 @@ protected:
 
   virtual void readNameIDX(librevenge::RVNGInputStream *input);
 
+  virtual void readMisc(librevenge::RVNGInputStream *input);
+
   virtual unsigned getUInt(librevenge::RVNGInputStream *input);
   virtual int getInt(librevenge::RVNGInputStream *input);
 

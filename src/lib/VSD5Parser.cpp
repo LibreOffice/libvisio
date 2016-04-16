@@ -482,6 +482,15 @@ void libvisio::VSD5Parser::readNameIDX(librevenge::RVNGInputStream *input)
   m_namesMapMap[m_header.level] = names;
 }
 
+void libvisio::VSD5Parser::readMisc(librevenge::RVNGInputStream *input)
+{
+  unsigned char flags = readU8(input);
+  if (flags & 0x20)
+    m_shape.m_misc.m_hideText = true;
+  else
+    m_shape.m_misc.m_hideText = false;
+}
+
 
 unsigned libvisio::VSD5Parser::getUInt(librevenge::RVNGInputStream *input)
 {

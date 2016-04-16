@@ -485,6 +485,22 @@ void libvisio::VDXParser::readMisc(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readBoolData(m_shape.m_misc.m_hideText, reader);
       break;
+    case XML_BEGTRIGGER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_xform1d)
+          m_shape.m_xform1d = new XForm1D();
+        readTriggerId(m_shape.m_xform1d->beginId, reader);
+      }
+      break;
+    case XML_ENDTRIGGER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_xform1d)
+          m_shape.m_xform1d = new XForm1D();
+        readTriggerId(m_shape.m_xform1d->endId, reader);
+      }
+      break;
     default:
       break;
     }

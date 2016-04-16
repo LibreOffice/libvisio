@@ -1065,6 +1065,22 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
         ret = readDoubleData(m_shape.m_xform1d->beginY, reader);
       }
       break;
+    case XML_BEGTRIGGER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_xform1d)
+          m_shape.m_xform1d = new XForm1D();
+        readTriggerId(m_shape.m_xform1d->beginId, reader);
+      }
+      break;
+    case XML_ENDTRIGGER:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+      {
+        if (!m_shape.m_xform1d)
+          m_shape.m_xform1d = new XForm1D();
+        readTriggerId(m_shape.m_xform1d->endId, reader);
+      }
+      break;
     case XML_ENDX:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {

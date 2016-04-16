@@ -81,6 +81,7 @@ protected:
   int readNURBSData(boost::optional<NURBSData> &data, xmlTextReaderPtr reader);
   int readPolylineData(boost::optional<PolylineData> &data, xmlTextReaderPtr reader);
   int readStringData(VSDName &text, xmlTextReaderPtr reader);
+  void readTriggerId(unsigned &id, xmlTextReaderPtr reader);
 
   virtual xmlChar *readStringData(xmlTextReaderPtr reader) = 0;
   unsigned getIX(xmlTextReaderPtr reader);

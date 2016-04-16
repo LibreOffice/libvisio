@@ -112,7 +112,7 @@ protected:
   virtual void readNameIDX(librevenge::RVNGInputStream *input);
   virtual void readNameIDX123(librevenge::RVNGInputStream *input);
 
-  void readMisc(librevenge::RVNGInputStream *input);
+  virtual void readMisc(librevenge::RVNGInputStream *input);
 
   virtual void readLayerList(librevenge::RVNGInputStream *input);
   virtual void readLayer(librevenge::RVNGInputStream *input);

@@ -399,4 +399,13 @@ void libvisio::VSD6Parser::readTextField(librevenge::RVNGInputStream *input)
   }
 }
 
+void libvisio::VSD6Parser::readMisc(librevenge::RVNGInputStream *input)
+{
+  unsigned char flags = readU8(input);
+  if (flags & 0x20)
+    m_shape.m_misc.m_hideText = true;
+  else
+    m_shape.m_misc.m_hideText = false;
+}
+
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
