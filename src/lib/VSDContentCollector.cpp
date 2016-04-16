@@ -210,6 +210,7 @@ void libvisio::VSDContentCollector::_flushShape()
   unsigned numPathElements = 0;
   unsigned numForeignElements = 0;
   unsigned numTextElements = 0;
+  unsigned shapeId = m_currentShapeId;
   if (m_fillStyle.pattern && !m_currentFillGeometry.empty())
     numPathElements++;
   if (m_lineStyle.pattern && !m_currentLineGeometry.empty())
@@ -220,11 +221,31 @@ void libvisio::VSDContentCollector::_flushShape()
     numTextElements++;
 
   if (numPathElements+numForeignElements+numTextElements > 1)
-    m_shapeOutputDrawing->addStartLayer(librevenge::RVNGPropertyList());
+  {
+    librevenge::RVNGPropertyList propList;
+    if (shapeId && shapeId != MINUS_ONE)
+    {
+      librevenge::RVNGString stringId;
+      stringId.sprintf("id%u", shapeId);
+      propList.insert("draw:id", stringId);
+      shapeId = MINUS_ONE;
+    }
+    m_shapeOutputDrawing->addStartLayer(propList);
+  }
 
   if (numPathElements > 1 && (numForeignElements || numTextElements))
+  {
+    librevenge::RVNGPropertyList propList;
+    if (shapeId && shapeId != MINUS_ONE)
+    {
+      librevenge::RVNGString stringId;
+      stringId.sprintf("id%u", shapeId);
+      propList.insert("draw:id", stringId);
+      shapeId = MINUS_ONE;
+    }
     m_shapeOutputDrawing->addStartLayer(librevenge::RVNGPropertyList());
-  _flushCurrentPath();
+  }
+  _flushCurrentPath(shapeId);
   if (numPathElements > 1 && (numForeignElements || numTextElements))
     m_shapeOutputDrawing->addEndLayer();
   _flushCurrentForeignData();
@@ -241,7 +262,7 @@ void libvisio::VSDContentCollector::_flushShape()
   m_isShapeStarted = false;
 }
 
-void libvisio::VSDContentCollector::_flushCurrentPath()
+void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
 {
   librevenge::RVNGPropertyList styleProps;
   _lineProperties(m_lineStyle, styleProps);
@@ -308,6 +329,13 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       m_shapeOutputDrawing->addStyle(fillPathProps);
       librevenge::RVNGPropertyList propList;
       propList.insert("svg:d", path);
+      if (shapeId && shapeId != MINUS_ONE)
+      {
+        librevenge::RVNGString stringId;
+        stringId.sprintf("id%u", shapeId);
+        propList.insert("draw:id", stringId);
+        shapeId = MINUS_ONE;
+      }
       _appendVisibleAndPrintable(propList);
       m_shapeOutputDrawing->addPath(propList);
     }
@@ -391,6 +419,13 @@ void libvisio::VSDContentCollector::_flushCurrentPath()
       m_shapeOutputDrawing->addStyle(linePathProps);
       librevenge::RVNGPropertyList propList;
       propList.insert("svg:d", path);
+      if (shapeId && shapeId != MINUS_ONE)
+      {
+        librevenge::RVNGString stringId;
+        stringId.sprintf("id%u", shapeId);
+        propList.insert("draw:id", stringId);
+        shapeId = MINUS_ONE;
+      }
       _appendVisibleAndPrintable(propList);
       m_shapeOutputDrawing->addPath(propList);
     }

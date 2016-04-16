@@ -192,7 +192,7 @@ private:
   double _NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector);
 
   void _flushShape();
-  void _flushCurrentPath();
+  void _flushCurrentPath(unsigned id);
   void _flushText();
   void _flushCurrentForeignData();
   void _flushCurrentPage();
