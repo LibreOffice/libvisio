@@ -401,11 +401,46 @@ void libvisio::VSD6Parser::readTextField(librevenge::RVNGInputStream *input)
 
 void libvisio::VSD6Parser::readMisc(librevenge::RVNGInputStream *input)
 {
+  unsigned long initialPosition = input->tell();
   unsigned char flags = readU8(input);
   if (flags & 0x20)
     m_shape.m_misc.m_hideText = true;
   else
     m_shape.m_misc.m_hideText = false;
+
+  input->seek(initialPosition+23, librevenge::RVNG_SEEK_SET);
+  while (!input->isEnd() && (unsigned long) input->tell() < (unsigned long)(initialPosition+m_header.dataLength+m_header.trailer))
+  {
+    unsigned long inputPos = input->tell();
+    unsigned length = readU32(input);
+    if (!length)
+      break;
+    unsigned blockType = readU8(input);
+    input->seek(1, librevenge::RVNG_SEEK_CUR);
+    if (blockType == 2)
+    {
+      if (0x74 == readU8(input))
+      {
+        if (0x6000004e == readU32(input))
+        {
+          unsigned shapeId = readU32(input);
+          if (0x7a == readU8(input))
+          {
+            if (0x40000073 == readU32(input))
+            {
+              if (!m_shape.m_xform1d)
+                m_shape.m_xform1d = new XForm1D();
+              if (m_shape.m_xform1d->beginId == MINUS_ONE)
+                m_shape.m_xform1d->beginId = shapeId;
+              else if (m_shape.m_xform1d->endId == MINUS_ONE)
+                m_shape.m_xform1d->endId = shapeId;
+            }
+          }
+        }
+      }
+    }
+    input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+  }
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */
