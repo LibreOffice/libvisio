@@ -57,6 +57,8 @@ protected:
 
   virtual void readMisc(librevenge::RVNGInputStream *input);
 
+  virtual void readXForm1D(librevenge::RVNGInputStream *input);
+
   virtual unsigned getUInt(librevenge::RVNGInputStream *input);
   virtual int getInt(librevenge::RVNGInputStream *input);
 

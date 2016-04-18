@@ -492,6 +492,19 @@ void libvisio::VSD5Parser::readMisc(librevenge::RVNGInputStream *input)
     m_shape.m_misc.m_hideText = false;
 }
 
+void libvisio::VSD5Parser::readXForm1D(librevenge::RVNGInputStream *input)
+{
+  if (!m_shape.m_xform1d)
+    m_shape.m_xform1d = new XForm1D();
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_xform1d->beginX = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_xform1d->beginY = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_xform1d->endX = readDouble(input);
+  input->seek(1, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_xform1d->endY = readDouble(input);
+}
 
 unsigned libvisio::VSD5Parser::getUInt(librevenge::RVNGInputStream *input)
 {
