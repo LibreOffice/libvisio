@@ -760,11 +760,11 @@ void libvisio::VSDContentCollector::_flushText()
      * last one. */
     if (!paraNumRemaining)
     {
-      paraIt++;
+      ++paraIt;
       if (paraIt != m_paraFormats.end())
         paraNumRemaining = paraIt->charCount;
       else
-        paraIt--;
+        --paraIt;
     }
 
     /* Decrease the count of remaining characters in the same span,
@@ -777,7 +777,7 @@ void libvisio::VSDContentCollector::_flushText()
      * the last one. */
     if (!charNumRemaining)
     {
-      charIt++;
+      ++charIt;
       if (charIt != m_charFormats.end())
       {
         charNumRemaining = charIt->charCount;
@@ -791,7 +791,7 @@ void libvisio::VSDContentCollector::_flushText()
         }
       }
       else
-        charIt--;
+        --charIt;
     }
 
     /* Decrease the count of remaining characters using the same
@@ -802,7 +802,7 @@ void libvisio::VSDContentCollector::_flushText()
      * last one. */
     if (!tabNumRemaining)
     {
-      tabIt++;
+      ++tabIt;
       if (tabIt != m_tabSets.end())
         tabNumRemaining = tabIt->m_numChars;
       else
