@@ -27,6 +27,7 @@ EXTRA_DIST = \
 	     data/fdo86729-utf8.vsd \
 	     data/dwg.vsd \
 	     data/dwg.vsdx \
+	     data/no-bgcolor.vsd \
 	     $(test_SOURCES)
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string

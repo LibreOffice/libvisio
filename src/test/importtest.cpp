@@ -163,6 +163,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
 #if LIBXML_VERSION >= 20902
   CPPUNIT_TEST(testVsdxCharBgColor);
 #endif
+  CPPUNIT_TEST(testVsdTextBlockWithoutBgColor);
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();
@@ -172,6 +173,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxUserDefinedMetadata();
   void testVsdxImportBgColorFromTheme();
   void testVsdxCharBgColor();
+  void testVsdTextBlockWithoutBgColor();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -284,6 +286,12 @@ void ImportTest::testVsdxCharBgColor()
   assertXPath(m_doc, "/document/page/layer[2]/textObject/paragraph[2]/span", "background-color", "#9dbb61");
   assertXPath(m_doc, "/document/page/layer[3]/textObject/paragraph[1]/span", "background-color", "#9dbb61");
   assertXPath(m_doc, "/document/page/layer[3]/textObject/paragraph[2]/span", "background-color", "#9dbb61");
+}
+
+void ImportTest::testVsdTextBlockWithoutBgColor()
+{
+  m_doc = parse("no-bgcolor.vsd", m_buffer);
+  assertXPathNoAttribute(m_doc, "/document/page/layer[5]/textObject/paragraph[1]/span", "background-color");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
