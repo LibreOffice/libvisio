@@ -877,7 +877,8 @@ void libvisio::VSDParser::readTextBlock(librevenge::RVNGInputStream *input)
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   double bottomMargin = readDouble(input);
   unsigned char verticalAlign = readU8(input);
-  bool isBgFilled = (!!readU8(input));
+  const unsigned char bgColourIdx = readU8(input);
+  const bool isBgFilled = bgColourIdx != 0 && bgColourIdx != 0xff;
   Colour c;
   c.r = readU8(input);
   c.g = readU8(input);
