@@ -94,6 +94,21 @@ void assertXPathNoAttribute(xmlDocPtr doc, const librevenge::RVNGString &xpath, 
   xmlXPathFreeObject(xpathobject);
 }
 
+void assertBmpDataOffset(xmlDocPtr doc, const librevenge::RVNGString &xpath, const unsigned expectedValue)
+{
+  const librevenge::RVNGBinaryData bitmap(getXPath(doc, xpath, "binary-data"));
+  librevenge::RVNGString message("BMP at '");
+  message.append(xpath);
+  message.append("': wrong data offset.");
+  librevenge::RVNGInputStream *const input = bitmap.getDataStream();
+  CPPUNIT_ASSERT(input);
+  CPPUNIT_ASSERT_EQUAL(0, input->seek(10, librevenge::RVNG_SEEK_SET));
+  unsigned long numBytesRead = 0;
+  const unsigned char *const bytes = input->read(4, numBytesRead);
+  CPPUNIT_ASSERT_EQUAL(4ul, numBytesRead);
+  const unsigned actualValue = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(message.cstr(), expectedValue, actualValue);
+}
 
 #if 0 // keep for future use
 /// Same as the assertXPathContent(), but don't assert: return the string instead.
@@ -164,6 +179,8 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxCharBgColor);
 #endif
   CPPUNIT_TEST(testVsdTextBlockWithoutBgColor);
+  CPPUNIT_TEST(testBmpFileHeader);
+  CPPUNIT_TEST(testBmpFileHeader2);
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();
@@ -174,6 +191,8 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxImportBgColorFromTheme();
   void testVsdxCharBgColor();
   void testVsdTextBlockWithoutBgColor();
+  void testBmpFileHeader();
+  void testBmpFileHeader2();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -292,6 +311,38 @@ void ImportTest::testVsdTextBlockWithoutBgColor()
 {
   m_doc = parse("no-bgcolor.vsd", m_buffer);
   assertXPathNoAttribute(m_doc, "/document/page/layer[5]/textObject/paragraph[1]/span", "background-color");
+}
+
+void ImportTest::testBmpFileHeader()
+{
+  m_doc = parse("bitmaps.vsd", m_buffer);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[1]", 62);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[2]", 62);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[3]", 62);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[4]", 118);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[5]", 118);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[6]", 54);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[7]", 1078);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[8]", 1078);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[9]", 1078);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[10]", 54);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[11]", 1078);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[12]", 1078);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[13]", 1078);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[14]", 54);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[15]", 54);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[16]", 54);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[17]", 54);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[18]", 54);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[19]", 54);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[20]", 54);
+}
+
+void ImportTest::testBmpFileHeader2()
+{
+  m_doc = parse("bitmaps2.vsd", m_buffer);
+  assertBmpDataOffset(m_doc, "/document/page/drawGraphicObject[1]", 62);
+  assertBmpDataOffset(m_doc, "/document/page/layer/drawGraphicObject[1]", 330);
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
