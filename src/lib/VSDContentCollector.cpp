@@ -7,6 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <cassert>
 #include <string.h> // for memcpy
 #include <set>
 #include <stack>
@@ -66,6 +67,43 @@ void computeRounding(double &prevX, double &prevY, double x0, double y0, double 
   newY = y0+q*sin(lambda2);
   prevX = x0;
   prevY = y0;
+}
+
+unsigned computeBMPDataOffset(librevenge::RVNGInputStream *const input, const unsigned long maxLength)
+{
+  assert(input);
+
+  using namespace libvisio;
+
+  // determine header size
+  unsigned headerSize = readU32(input);
+  if (headerSize > maxLength)
+    headerSize = 40; // assume v.3 bitmap header size
+  unsigned off = headerSize;
+
+  // determine palette size
+  input->seek(10, librevenge::RVNG_SEEK_CUR);
+  unsigned bpp = readU16(input);
+  // sanitize bpp
+  if (bpp > 32)
+    bpp = 32;
+  const unsigned allowedBpp[] = {1, 4, 8, 16, 24, 32};
+  size_t bppIdx = 0;
+  while (bppIdx < VSD_NUM_ELEMENTS(allowedBpp) && bpp < allowedBpp[bppIdx])
+    ++bppIdx;
+  if (bpp < allowedBpp[bppIdx])
+    bpp = allowedBpp[bppIdx];
+  input->seek(16, librevenge::RVNG_SEEK_CUR);
+  unsigned paletteColors = readU32(input);
+  if (bpp < 16 && paletteColors == 0)
+    paletteColors = 1 << bpp;
+  assert(maxLength >= off);
+  if (paletteColors > 0 && (paletteColors < (maxLength - off) / 4))
+    off += 4 * paletteColors;
+
+  off += 14; // file header size
+
+  return off;
 }
 
 } // anonymous namespace
@@ -1402,10 +1440,11 @@ void libvisio::VSDContentCollector::_handleForeignData(const librevenge::RVNGBin
       m_currentForeignData.append((unsigned char)0x00);
       m_currentForeignData.append((unsigned char)0x00);
 
-      m_currentForeignData.append((unsigned char)0x36);
-      m_currentForeignData.append((unsigned char)0x00);
-      m_currentForeignData.append((unsigned char)0x00);
-      m_currentForeignData.append((unsigned char)0x00);
+      const unsigned dataOff = computeBMPDataOffset(binaryData.getDataStream(), binaryData.size());
+      m_currentForeignData.append((unsigned char)(dataOff & 0xff));
+      m_currentForeignData.append((unsigned char)((dataOff >> 8) & 0xff));
+      m_currentForeignData.append((unsigned char)((dataOff >> 16) & 0xff));
+      m_currentForeignData.append((unsigned char)((dataOff >> 24) & 0xff));
     }
     m_currentForeignData.append(binaryData);
 

@@ -70,6 +70,8 @@ typedef unsigned __int64 uint64_t;
 #define VSD_DEBUG(M)
 #endif
 
+#define VSD_NUM_ELEMENTS(array) (sizeof(array)/sizeof((array)[0]))
+
 namespace libvisio
 {
 
