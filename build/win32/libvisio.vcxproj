@@ -111,6 +111,16 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\..\src\lib\libvisio_xml.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\SvgDC.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\SvgFont.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\SvgParagraph.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\SvgSpan.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\SvgTextObject.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\SvgUtils.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\VsdElementListPreprocessor.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\windows\WindowsSvgDC.cpp" />
+    <ClCompile Include="..\..\src\lib\preprocess\windows\WindowsSvgFont.cpp" />
     <ClCompile Include="..\..\src\lib\VDXParser.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -165,6 +175,8 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\..\src\lib\VSDLayerList.cpp" />
+    <ClCompile Include="..\..\src\lib\VSDMetaData.cpp" />
     <ClCompile Include="..\..\src\lib\VSDOutputElementList.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -249,6 +261,16 @@
     <ClInclude Include="..\..\inc\libvisio\libvisio.h" />
     <ClInclude Include="..\..\inc\libvisio\VisioDocument.h" />
     <ClInclude Include="..\..\src\lib\libvisio_utils.h" />
+    <ClInclude Include="..\..\src\lib\libvisio_xml.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\SvgDC.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\SvgFont.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\SvgParagraph.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\SvgSpan.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\SvgTextObject.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\SvgUtils.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\VsdElementListPreprocessor.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\windows\WindowsSvgDC.h" />
+    <ClInclude Include="..\..\src\lib\preprocess\windows\WindowsSvgFont.h" />
     <ClInclude Include="..\..\src\lib\tokenhash.h" />
     <ClInclude Include="..\..\src\lib\tokens.h" />
     <ClInclude Include="..\..\src\lib\VDXParser.h" />
@@ -261,6 +283,8 @@
     <ClInclude Include="..\..\src\lib\VSDFieldList.h" />
     <ClInclude Include="..\..\src\lib\VSDGeometryList.h" />
     <ClInclude Include="..\..\src\lib\VSDInternalStream.h" />
+    <ClInclude Include="..\..\src\lib\VSDLayerList.h" />
+    <ClInclude Include="..\..\src\lib\VSDMetaData.h" />
     <ClInclude Include="..\..\src\lib\VSDOutputElementList.h" />
     <ClInclude Include="..\..\src\lib\VSDPages.h" />
     <ClInclude Include="..\..\src\lib\VSDParagraphList.h" />

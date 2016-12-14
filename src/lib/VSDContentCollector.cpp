@@ -7,10 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <cassert>
 #include <string.h> // for memcpy
 #include <set>
 #include <stack>
+#include <sstream>
+#include <iomanip>
+
 #include <boost/spirit/include/classic.hpp>
 #include <unicode/ucnv.h>
 #include <unicode/utf8.h>
@@ -18,6 +20,12 @@
 #include "VSDContentCollector.h"
 #include "VSDParser.h"
 #include "VSDInternalStream.h"
+#include "librevenge/SvgConstants.h"
+
+using namespace librevenge;
+using namespace std;
+using namespace svgconstants;
+
 
 #ifndef DUMP_BITMAP
 #define DUMP_BITMAP 0
@@ -25,12 +33,13 @@
 
 #if DUMP_BITMAP
 static unsigned bitmapId = 0;
-#include <sstream>
 #endif
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
+
+#define SURROGATE_VALUE(h,l) (((h) - 0xd800) * 0x400 + (l) - 0xdc00 + 0x10000)
 
 namespace
 {
@@ -139,39 +148,90 @@ libvisio::VSDContentCollector::VSDContentCollector(
 {
 }
 
-const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned marker)
+const char *libvisio::VSDContentCollector::_linePropertiesMarkerPathTransform(unsigned marker, bool reverse)
 {
   switch (marker)
   {
-  case 1:
-  case 2:
-  case 9:
-  case 15:
-    return "0 0 20 10";
-  case 8:
-    return "0 0 20 18";
-  case 3:
-  case 4:
-  case 5:
-  case 6:
-  case 11:
-  case 16:
-  case 17:
-  case 18:
-    return "0 0 20 20";
-  case 12:
-  case 13:
-  case 14:
-    return "0 0 20 30";
-  case 22:
-  case 39:
-    return "0 0 20 40";
-  case 21:
-    return "0 0 30 30";
-  case 10:
-    return "0 0 1131 1131";
-  default:
-    return "0 0 20 30";
+  case 1 :
+    return reverse
+           ? "rotate(270, 0, 0) translate(-10, 4)" : "rotate(90, 0, 0) translate(-10, 4)";
+
+  case 3 :
+    return reverse
+           ? "rotate(270, 0, 0) translate(-10, 8)" : "rotate(90, 0, 0) translate(-10, 8)";
+
+  case 9 :
+    return "translate(0, 10)";
+
+  case 10 :
+  case 20 :
+  case 42 :
+    return "";
+
+  case 11 :
+    return "translate(-5, -5)";
+
+  case 12 :
+    return reverse
+           ? "rotate(270, 0, 0) translate(-10, 12)" : "rotate(90, 0, 0) translate(-10, 12)";
+
+  case 21 :
+    return "translate(-15, -15)";
+
+  default :
+    return reverse
+           ? "rotate(270, 0, 0) translate(-10, 0)" : "rotate(90, 0, 0) translate(-10, 0)";
+  }
+}
+
+const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned marker, bool reverse)
+{
+  switch (marker)
+  {
+  case 1 :
+    return reverse ? "0 -14 28 28" : "-18 -14 28 28";
+
+  case 2 :
+  case 15 :
+    return reverse ? "0 -10 10 20" : "-10 -10 10 20";
+
+  case 3 :
+    return reverse ? "0 -14 31 28" : "-31 -14 31 28";
+
+  case 4 :
+  case 5 :
+  case 16 :
+  case 17 :
+  case 22 :
+  case 39 :
+    return reverse ? "0 -10 20 20" : "-20 -10 20 20";
+
+  case 6 :
+  case 18 :
+    return reverse ? "0 -10 23 20" : "-23 -10 23 20";
+
+  case 8 :
+    return reverse ? "0 -10 18 20" : "-18 -10 18 20";
+
+  case 9 :
+    return "-2 -2 24 24";
+
+  case 11 :
+    return "-5 -5 10 10";
+
+  case 12 :
+    return reverse ? "0 -14 45 28" : "-45 -14 45 28";
+
+  case 10 :
+  case 20 :
+  case 42 :
+    return "-10 -10 20 20";
+
+  case 21 :
+    return "-15 -15 30 30";
+
+  default :
+    return reverse ? "0 -10 30 20" : "-30 -10 30 20";
   }
 }
 
@@ -195,8 +255,10 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned ma
     return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
   case 9:
     return "m-2 -8l4 -4l20 20l-4 4z";
-  case 10: // Copied from what LO exports when using the "circle" marker
-    return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";
+  case 10:
+  case 20:
+  case 42:
+    return "M-10,0A10,10 0 0,0 10,0A10,10 0 0,0 -10,0";
   case 11:
     return "m0 0v10h10v-10z";
   case 12:
@@ -219,6 +281,7 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned ma
     return "m10 0-10 20l10 20l10 -20z m0 8l-6 12l6 12l6 -12z";
   case 39:
     return "m10 0-10 20h20z m0 20-10 20h20z";
+
   default:
     return "m10 0-10 30h20z";
   }
@@ -228,18 +291,24 @@ double libvisio::VSDContentCollector::_linePropertiesMarkerScale(unsigned marker
 {
   switch (marker)
   {
-  case 11:
-  case 10:
-    return 0.7;
-  case 14:
-  case 15:
-  case 16:
-  case 17:
-  case 18:
-  case 22:
+  case 11 :
+  case 14 :
+  case 15 :
+  case 16 :
+  case 17 :
+  case 18 :
+  case 22 :
     return 1.2;
-  default:
-    return 1.0;
+
+  case 10 :
+  case 20 :
+    return 0.6;
+
+  case 42 :
+    return 0.4;
+
+  default :
+    return 0.75;
   }
 }
 
@@ -300,174 +369,209 @@ void libvisio::VSDContentCollector::_flushShape()
   m_isShapeStarted = false;
 }
 
-void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
+struct PathActionS
 {
-  librevenge::RVNGPropertyList styleProps;
-  _lineProperties(m_lineStyle, styleProps);
-  _fillAndShadowProperties(m_fillStyle, styleProps);
-  librevenge::RVNGPropertyList fillPathProps(styleProps);
-  fillPathProps.insert("draw:stroke", "none");
-  librevenge::RVNGPropertyList linePathProps(styleProps);
-  linePathProps.insert("draw:fill", "none");
+  string name;
+  double x;
+  double y;
 
-  std::vector<librevenge::RVNGPropertyList> tmpPath;
-  if (m_fillStyle.pattern && !m_currentFillGeometry.empty())
+  PathActionS(const string &name, double x, double y)
+    : name(name),
+      x(x),
+      y(y)
+  {}
+};
+
+typedef deque<PathActionS> PathActionsTp;
+
+void FlushPath(const PathActionsTp &actionsIn, vector<RVNGPropertyList> &actionsOut)
+{
+  for (unsigned int i = 0, cnt = actionsIn.size(); i < cnt; i++)
   {
-    bool firstPoint = true;
-    bool wasMove = false;
-    for (unsigned i = 0; i < m_currentFillGeometry.size(); i++)
+    RVNGPropertyList action;
+    action.insert(PROP_LIBREV_ACTION, actionsIn[i].name.c_str());
+    action.insert(PROP_SVG_X, actionsIn[i].x, RVNG_INCH);
+    action.insert(PROP_SVG_Y, actionsIn[i].y, RVNG_INCH);
+    actionsOut.push_back(action);
+  }
+}
+
+/**
+ * Fixes a specified path by ordering linear segments so that they connect consecutive vertices.
+ * Addresses a know issue that sometimes segments are not defined in a consecutive order, which
+ * causes the path to get filled incorrectly/incompletely in the generated document.
+ *
+ * @param actionIn
+ *        the original path definition
+ *
+ * @param actionsOut
+ *        the modified path
+ */
+void GetCorrectedPath(
+  const vector<RVNGPropertyList> &actionsIn, vector<RVNGPropertyList> &actionsOut)
+{
+  PathActionsTp actions;
+  double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0; // current line segment
+  string lastActionName;
+
+  for (unsigned int i = 0, cnt = actionsIn.size(); i < cnt; i++)
+  {
+    string actionName = actionsIn[i][PROP_LIBREV_ACTION]->getStr().cstr();
+
+    if (actionName == "M")
     {
-      if (firstPoint)
+      x1 = actionsIn[i][PROP_SVG_X]->getDouble();
+      y1 = actionsIn[i][PROP_SVG_Y]->getDouble();
+    }
+    else if (actionName == "L")
+    {
+      x2 = actionsIn[i][PROP_SVG_X]->getDouble();
+      y2 = actionsIn[i][PROP_SVG_Y]->getDouble();
+
+      bool connected = false;
+
+      if (lastActionName != "M") // follows anything else than M
       {
-        firstPoint = false;
-        wasMove = true;
+        connected = true;
+        actions.push_back(PathActionS("L", x2, y2));
       }
-      else if (m_currentFillGeometry[i]["librevenge:path-action"]->getStr() == "M")
+
+      if (!connected && actions.size() > 1) // connect with the end
       {
-        if (!tmpPath.empty())
+        unsigned int lastIdx = actions.size() - 1;
+
+        if (actions[lastIdx].x == x1 && actions[lastIdx].y == y1)
         {
-          if (!wasMove)
-          {
-            if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
-            {
-              librevenge::RVNGPropertyList closedPath;
-              closedPath.insert("librevenge:path-action", "Z");
-              tmpPath.push_back(closedPath);
-            }
-          }
-          else
-          {
-            tmpPath.pop_back();
-          }
+          connected = true;
+          actions.push_back(PathActionS("L", x2, y2));
         }
-        wasMove = true;
+        else if (actions[lastIdx].x == x2 && actions[lastIdx].y == y2)
+        {
+          connected = true;
+          actions.push_back(PathActionS("L", x1, y1));
+        }
+      }
+
+      if (!connected && actions.size() > 0 && actions[0].name  == "M") // connect with the beginning
+      {
+        if (actions[0].x == x1 && actions[0].y == y1)
+        {
+          connected = true;
+          actions[0].name = "L";
+          actions.push_front(PathActionS("M", x2, y2));
+        }
+        else if (actions[0].x == x2 && actions[0].y == y2)
+        {
+          connected = true;
+          actions[0].name = "L";
+          actions.push_front(PathActionS("M", x1, y1));
+        }
+      }
+
+      if (!connected) // store the first segment
+      {
+        actions.push_back(PathActionS("M", x1, y1));
+        actions.push_back(PathActionS("L", x2, y2));
+      }
+
+      x1 = x2;
+      y1 = y2;
+    }
+    else // not M nor L
+    {
+      if (lastActionName == "M")
+      {
+        actionsOut.push_back(actionsIn[i - 1]);
       }
       else
-        wasMove = false;
-      tmpPath.push_back(m_currentFillGeometry[i]);
-    }
-    if (!tmpPath.empty())
-    {
-      if (!wasMove)
       {
-        if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
-        {
-          librevenge::RVNGPropertyList closedPath;
-          closedPath.insert("librevenge:path-action", "Z");
-          tmpPath.push_back(closedPath);
-        }
+        FlushPath(actions, actionsOut);
       }
-      else
-        tmpPath.pop_back();
+
+      actions.clear();
+      actionsOut.push_back(actionsIn[i]);
     }
-    if (!tmpPath.empty())
+
+    lastActionName = actionName;
+  }
+
+  FlushPath(actions, actionsOut);
+
+  int lastIdx = actionsOut.size() - 1;
+
+  // Close the path if the first and last points are (close to) identical. If the points are really
+  // identical, Z is not necessary and just serves as an indication of the closed path.
+  //
+  if (lastIdx > 0 && actionsOut[0][PROP_SVG_X] && actionsOut[0][PROP_SVG_Y]
+      && actionsOut[lastIdx][PROP_SVG_X] && actionsOut[lastIdx][PROP_SVG_Y])
+  {
+    x1 = actionsOut[0][PROP_SVG_X]->getDouble();
+    y1 = actionsOut[0][PROP_SVG_Y]->getDouble();
+    x2 = actionsOut[lastIdx][PROP_SVG_X]->getDouble();
+    y2 = actionsOut[lastIdx][PROP_SVG_Y]->getDouble();
+
+    if (VSD_ALMOST_ZERO(x1 - x2) && VSD_ALMOST_ZERO(y1 - y2))
     {
-      librevenge::RVNGPropertyListVector path;
-      _convertToPath(tmpPath, path, m_scale*m_lineStyle.rounding);
-      m_shapeOutputDrawing->addStyle(fillPathProps);
-      librevenge::RVNGPropertyList propList;
-      propList.insert("svg:d", path);
-      if (shapeId && shapeId != MINUS_ONE)
-      {
-        librevenge::RVNGString stringId;
-        stringId.sprintf("id%u", shapeId);
-        propList.insert("draw:id", stringId);
-        shapeId = MINUS_ONE;
-      }
-      _appendVisibleAndPrintable(propList);
-      m_shapeOutputDrawing->addPath(propList);
+      RVNGPropertyList action;
+      action.insert(PROP_LIBREV_ACTION, "Z");
+      actionsOut.push_back(action);
     }
   }
+}
+
+void libvisio::VSDContentCollector::AddPath(
+  const vector<RVNGPropertyList> &inPath, const RVNGPropertyList &styleProps, unsigned shapeId)
+{
+  if (!inPath.empty())
+  {
+    RVNGPropertyListVector path;
+    _convertToPath(inPath, path, m_scale * m_lineStyle.rounding);
+    m_shapeOutputDrawing->addStyle(styleProps);
+
+    RVNGPropertyList propList;
+    propList.insert("svg:d", path);
+
+    if (shapeId && shapeId != MINUS_ONE)
+    {
+      RVNGString stringId;
+      stringId.sprintf("id%u", shapeId);
+      propList.insert("draw:id", stringId);
+      shapeId = MINUS_ONE;
+    }
+
+    _appendVisibleAndPrintable(propList);
+    m_shapeOutputDrawing->addPath(propList);
+  }
+}
+
+void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
+{
+  RVNGPropertyList styleProps;
+  _lineProperties(m_lineStyle, styleProps);
+  _fillAndShadowProperties(m_fillStyle, styleProps);
+
+  if (m_fillStyle.pattern && !m_currentFillGeometry.empty())
+  {
+    RVNGPropertyList fillPathProps(styleProps);
+    fillPathProps.insert("draw:stroke", "none");
+    vector<RVNGPropertyList> outPath;
+
+    GetCorrectedPath(m_currentFillGeometry, outPath);
+    AddPath(outPath, fillPathProps, shapeId);
+  }
+
   m_currentFillGeometry.clear();
-  tmpPath.clear();
 
   if (m_lineStyle.pattern && !m_currentLineGeometry.empty())
   {
-    bool firstPoint = true;
-    bool wasMove = false;
-    double x = 0.0;
-    double y = 0.0;
-    double prevX = 0.0;
-    double prevY = 0.0;
-    for (unsigned i = 0; i < m_currentLineGeometry.size(); i++)
-    {
-      if (firstPoint)
-      {
-        firstPoint = false;
-        wasMove = true;
-        x = m_currentLineGeometry[i]["svg:x"]->getDouble();
-        y = m_currentLineGeometry[i]["svg:y"]->getDouble();
-      }
-      else if (m_currentLineGeometry[i]["librevenge:path-action"]->getStr() == "M")
-      {
-        if (!tmpPath.empty())
-        {
-          if (!wasMove)
-          {
-            if (VSD_ALMOST_ZERO(x - prevX) && VSD_ALMOST_ZERO(y - prevY))
-            {
-              if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
-              {
-                librevenge::RVNGPropertyList closedPath;
-                closedPath.insert("librevenge:path-action", "Z");
-                tmpPath.push_back(closedPath);
-              }
-            }
-          }
-          else
-          {
-            tmpPath.pop_back();
-          }
-        }
-        x = m_currentLineGeometry[i]["svg:x"]->getDouble();
-        y = m_currentLineGeometry[i]["svg:y"]->getDouble();
-        wasMove = true;
-      }
-      else
-        wasMove = false;
-      tmpPath.push_back(m_currentLineGeometry[i]);
-      if (m_currentLineGeometry[i]["svg:x"])
-        prevX = m_currentLineGeometry[i]["svg:x"]->getDouble();
-      if (m_currentLineGeometry[i]["svg:y"])
-        prevY = m_currentLineGeometry[i]["svg:y"]->getDouble();
-    }
-    if (!tmpPath.empty())
-    {
-      if (!wasMove)
-      {
-        if (VSD_ALMOST_ZERO(x - prevX) && VSD_ALMOST_ZERO(y - prevY))
-        {
-          if (tmpPath.back()["librevenge:path-action"]->getStr() != "Z")
-          {
-            librevenge::RVNGPropertyList closedPath;
-            closedPath.insert("librevenge:path-action", "Z");
-            tmpPath.push_back(closedPath);
-          }
-        }
-      }
-      else
-      {
-        tmpPath.pop_back();
-      }
-    }
-    if (!tmpPath.empty())
-    {
-      librevenge::RVNGPropertyListVector path;
-      _convertToPath(tmpPath, path, m_scale*m_lineStyle.rounding);
-      m_shapeOutputDrawing->addStyle(linePathProps);
-      librevenge::RVNGPropertyList propList;
-      propList.insert("svg:d", path);
-      if (shapeId && shapeId != MINUS_ONE)
-      {
-        librevenge::RVNGString stringId;
-        stringId.sprintf("id%u", shapeId);
-        propList.insert("draw:id", stringId);
-        shapeId = MINUS_ONE;
-      }
-      _appendVisibleAndPrintable(propList);
-      m_shapeOutputDrawing->addPath(propList);
-    }
+    RVNGPropertyList linePathProps(styleProps);
+    linePathProps.insert("draw:fill", "none");
+    vector<RVNGPropertyList> outPath;
+
+    GetCorrectedPath(m_currentLineGeometry, outPath);
+    AddPath(outPath, linePathProps, shapeId);
   }
+
   m_currentLineGeometry.clear();
 }
 
@@ -627,6 +731,12 @@ void libvisio::VSDContentCollector::_flushText()
   textBlockProps.insert("fo:padding-left", m_textBlockStyle.leftMargin);
   textBlockProps.insert("fo:padding-right", m_textBlockStyle.rightMargin);
   textBlockProps.insert("librevenge:rotate", angle*180/M_PI, librevenge::RVNG_GENERIC);
+
+  if (m_textBlockStyle.isTextBkgndFilled)
+  {
+    textBlockProps.insert(
+      PROP_FO_BACKGROUND_COLOR, getColourString(m_textBlockStyle.textBkgndColour));
+  }
 
   switch (m_textBlockStyle.verticalAlign)
   {
@@ -2657,15 +2767,17 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, l
   // Deal with line markers (arrows, etc.)
   if (style.startMarker > 0)
   {
-    styleProps.insert("draw:marker-start-viewbox", _linePropertiesMarkerViewbox(style.startMarker));
+    styleProps.insert("draw:marker-start-viewbox", _linePropertiesMarkerViewbox(style.startMarker, true));
     styleProps.insert("draw:marker-start-path", _linePropertiesMarkerPath(style.startMarker));
+    styleProps.insert("draw:marker-start-path-transform", _linePropertiesMarkerPathTransform(style.startMarker, true));
     double w =  m_scale*_linePropertiesMarkerScale(style.startMarker)*(0.1/(style.width*style.width+1)+2.54*style.width);
     styleProps.insert("draw:marker-start-width", (std::max)(w, 0.05));
   }
   if (style.endMarker > 0)
   {
-    styleProps.insert("draw:marker-end-viewbox", _linePropertiesMarkerViewbox(style.endMarker));
+    styleProps.insert("draw:marker-end-viewbox", _linePropertiesMarkerViewbox(style.endMarker, false));
     styleProps.insert("draw:marker-end-path", _linePropertiesMarkerPath(style.endMarker));
+    styleProps.insert("draw:marker-end-path-transform", _linePropertiesMarkerPathTransform(style.endMarker, false));
     double w =  m_scale*_linePropertiesMarkerScale(style.endMarker)*(0.1/(style.width*style.width+1)+2.54*style.width);
     styleProps.insert("draw:marker-end-width", (std::max)(w, 0.05));
   }
@@ -3515,6 +3627,12 @@ void libvisio::VSDContentCollector::collectLayerMem(unsigned level, const VSDNam
   memcpy(&tmpData[0], layerMem.m_data.getDataBuffer(), layerMem.m_data.size());
   appendCharacters(text, tmpData, layerMem.m_format);
 
+  if (tmpData.size() > 0)
+  {
+    memcpy(&tmpData[0], layerMem.m_data.getDataBuffer(), layerMem.m_data.size());
+    appendCharacters(text, tmpData, layerMem.m_format);
+  }
+
   m_currentLayerMem.clear();
 
   bool bRes = parse(text.cstr(),
@@ -3620,7 +3738,7 @@ void libvisio::VSDContentCollector::_listLevelFromBullet(librevenge::RVNGPropert
   propList.insert("librevenge:level", 1);
   propList.insert("text:bullet-char", bullet.m_bulletStr);
   if (!(bullet.m_bulletFont.empty()))
-    propList.insert("fo:font-family", bullet.m_bulletFont);
+    propList.insert("fo:font-name", bullet.m_bulletFont);
   if (bullet.m_bulletFontSize > 0.0)
     propList.insert("fo:font-size", bullet.m_bulletFontSize*72.0, librevenge::RVNG_POINT);
   else if (bullet.m_bulletFontSize < 0.0)

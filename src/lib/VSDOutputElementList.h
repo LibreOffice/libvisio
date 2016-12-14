@@ -18,7 +18,322 @@
 namespace libvisio
 {
 
-class VSDOutputElement;
+class VSDOutputElement
+{
+public:
+  VSDOutputElement() {}
+  virtual ~VSDOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter) = 0;
+  virtual VSDOutputElement *clone() = 0;
+};
+
+
+class VSDStyleOutputElement : public VSDOutputElement
+{
+public:
+  VSDStyleOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDStyleOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDStyleOutputElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDPathOutputElement : public VSDOutputElement
+{
+public:
+  VSDPathOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDPathOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDPathOutputElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDGraphicObjectOutputElement : public VSDOutputElement
+{
+public:
+  VSDGraphicObjectOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDGraphicObjectOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDGraphicObjectOutputElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDStartTextObjectOutputElement : public VSDOutputElement
+{
+public:
+  VSDStartTextObjectOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDStartTextObjectOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDStartTextObjectOutputElement(m_propList);
+  }
+
+  librevenge::RVNGPropertyList &GetPropertyList()
+  {
+    return m_propList;
+  }
+
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDOpenParagraphOutputElement : public VSDOutputElement
+{
+public:
+  VSDOpenParagraphOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDOpenParagraphOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDOpenParagraphOutputElement(m_propList);
+  }
+
+  librevenge::RVNGPropertyList &GetPropertyList()
+  {
+    return m_propList;
+  }
+  const librevenge::RVNGPropertyList &GetPropertyList() const
+  {
+    return m_propList;
+  }
+
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDStartLayerOutputElement : public VSDOutputElement
+{
+public:
+  VSDStartLayerOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDStartLayerOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDStartLayerOutputElement(m_propList);
+  }
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDEndLayerOutputElement : public VSDOutputElement
+{
+public:
+  VSDEndLayerOutputElement();
+  virtual ~VSDEndLayerOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDEndLayerOutputElement();
+  }
+};
+
+
+class VSDOpenSpanOutputElement : public VSDOutputElement
+{
+public:
+  VSDOpenSpanOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDOpenSpanOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDOpenSpanOutputElement(m_propList);
+  }
+
+  librevenge::RVNGPropertyList &GetPropertyList()
+  {
+    return m_propList;
+  }
+  const librevenge::RVNGPropertyList &GetPropertyList() const
+  {
+    return m_propList;
+  }
+
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDInsertTextOutputElement : public VSDOutputElement
+{
+public:
+  VSDInsertTextOutputElement(const librevenge::RVNGString &text);
+  virtual ~VSDInsertTextOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDInsertTextOutputElement(m_text);
+  }
+
+  const librevenge::RVNGString &GetText() const
+  {
+    return m_text;
+  }
+
+private:
+  librevenge::RVNGString m_text;
+};
+
+
+class VSDInsertLineBreakOutputElement : public VSDOutputElement
+{
+public:
+  VSDInsertLineBreakOutputElement();
+  virtual ~VSDInsertLineBreakOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDInsertLineBreakOutputElement();
+  }
+};
+
+
+class VSDInsertTabOutputElement : public VSDOutputElement
+{
+public:
+  VSDInsertTabOutputElement();
+  virtual ~VSDInsertTabOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDInsertTabOutputElement();
+  }
+};
+
+
+class VSDCloseSpanOutputElement : public VSDOutputElement
+{
+public:
+  VSDCloseSpanOutputElement();
+  virtual ~VSDCloseSpanOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDCloseSpanOutputElement();
+  }
+};
+
+
+class VSDCloseParagraphOutputElement : public VSDOutputElement
+{
+public:
+  VSDCloseParagraphOutputElement();
+  virtual ~VSDCloseParagraphOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDCloseParagraphOutputElement();
+  }
+};
+
+
+class VSDEndTextObjectOutputElement : public VSDOutputElement
+{
+public:
+  VSDEndTextObjectOutputElement();
+  virtual ~VSDEndTextObjectOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDEndTextObjectOutputElement();
+  }
+};
+
+
+class VSDOpenListElementOutputElement : public VSDOutputElement
+{
+public:
+  VSDOpenListElementOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDOpenListElementOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDOpenListElementOutputElement(m_propList);
+  }
+
+  librevenge::RVNGPropertyList &GetPropertyList()
+  {
+    return m_propList;
+  }
+  const librevenge::RVNGPropertyList &GetPropertyList() const
+  {
+    return m_propList;
+  }
+
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDCloseListElementOutputElement : public VSDOutputElement
+{
+public:
+  VSDCloseListElementOutputElement();
+  virtual ~VSDCloseListElementOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDCloseListElementOutputElement();
+  }
+
+};
+
+
+class VSDOpenUnorderedListLevelOutputElement : public VSDOutputElement
+{
+public:
+  VSDOpenUnorderedListLevelOutputElement(const librevenge::RVNGPropertyList &propList);
+  virtual ~VSDOpenUnorderedListLevelOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDOpenUnorderedListLevelOutputElement(m_propList);
+  }
+
+  librevenge::RVNGPropertyList &GetPropertyList()
+  {
+    return m_propList;
+  }
+  const librevenge::RVNGPropertyList &GetPropertyList() const
+  {
+    return m_propList;
+  }
+
+private:
+  librevenge::RVNGPropertyList m_propList;
+};
+
+
+class VSDCloseUnorderedListLevelOutputElement : public VSDOutputElement
+{
+public:
+  VSDCloseUnorderedListLevelOutputElement();
+  virtual ~VSDCloseUnorderedListLevelOutputElement() {}
+  virtual void draw(librevenge::RVNGDrawingInterface *painter);
+  virtual VSDOutputElement *clone()
+  {
+    return new VSDCloseUnorderedListLevelOutputElement();
+  }
+};
+
 
 class VSDOutputElementList
 {

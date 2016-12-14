@@ -205,7 +205,8 @@ private:
   void _fillAndShadowProperties(const VSDFillStyle &style, librevenge::RVNGPropertyList &styleProps);
 
   void _applyLinePattern();
-  const char *_linePropertiesMarkerViewbox(unsigned marker);
+  const char *_linePropertiesMarkerPathTransform(unsigned marker, bool reverse);
+  const char *_linePropertiesMarkerViewbox(unsigned marker, bool reverse);
   const char *_linePropertiesMarkerPath(unsigned marker);
   double _linePropertiesMarkerScale(unsigned marker);
 
@@ -232,6 +233,10 @@ private:
   void _fillCharProperties(librevenge::RVNGPropertyList &propList, const VSDCharStyle &style);
   void _convertToPath(const std::vector<librevenge::RVNGPropertyList> &segmentVector,
                       librevenge::RVNGPropertyListVector &path, double rounding);
+
+  void AddPath(
+    const std::vector<librevenge::RVNGPropertyList> &path,
+    const librevenge::RVNGPropertyList &styleProps, unsigned int shapeId);
 
   bool m_isPageStarted;
   double m_pageWidth;
