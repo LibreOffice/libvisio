@@ -52,30 +52,30 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\inc;$(LIBWPD_INCLUDE_DIR);$(LIBWPG_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\inc;$(LIBRVNG_DIR)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeaderOutputFile>.\Debug/vsd2raw.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>$(TargetDir)/vsd2raw.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(TargetDir)</AssemblerListingLocation>
+      <ObjectFileName>$(TargetDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(TargetDir)</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libvisio-0.0.lib;librevenge-0.9.lib;librevenge-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Debug\bin\vsd2raw.exe</OutputFile>
+      <AdditionalDependencies>$(BOOST_DIR)\bin.v2\libs\thread\build\msvc-10.0\dbg\lnk-sttc\thrd-mlt\libboost_thread-vc100-mt-gd-1_62.lib;$(BOOST_DIR)\bin.v2\libs\system\build\msvc-10.0\dbg\lnk-sttc\thrd-mlt\libboost_system-vc100-mt-gd-1_62.lib;$(BOOST_DIR)\bin.v2\libs\date_time\build\msvc-10.0\dbg\lnk-sttc\thrd-mlt\libboost_date_time-vc100-mt-gd-1_62.lib;$(BOOST_DIR)\bin.v2\libs\chrono\build\msvc-10.0\dbg\lnk-sttc\thrd-mlt\libboost_chrono-vc100-mt-gd-1_62.lib;$(LIBRVNG_DIR)\build\win32\Debug\librevenge.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>Debug\lib;$(LIBWPD_LIB_DIR);$(LIBXML_LIB_DIR);$(ZLIB_LIB_DIR);$(ICU_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(TargetDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/vsd2raw.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(TargetDir)\vsd2raw.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
@@ -96,14 +96,14 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\inc;$(LIBWPD_INCLUDE_DIR);$(LIBWPG_INCLUDE_DIR);$(ICU_LIB_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\inc;$(LIBRVNG_DIR)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeaderOutputFile>.\Release/vsd2raw.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>$(TargetDir)/vsd2raw.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(TargetDir)</AssemblerListingLocation>
+      <ObjectFileName>$(TargetDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(TargetDir)</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </ClCompile>
@@ -112,11 +112,11 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libvisio-0.0.lib;librevenge-0.9.lib;librevenge-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Release\bin\vsd2raw.exe</OutputFile>
+      <AdditionalDependencies>$(BOOST_DIR)\bin.v2\libs\thread\build\msvc-10.0\rls\lnk-sttc\thrd-mlt\libboost_thread-vc100-mt-1_62.lib;$(BOOST_DIR)\bin.v2\libs\system\build\msvc-10.0\rls\lnk-sttc\thrd-mlt\libboost_system-vc100-mt-1_62.lib;$(BOOST_DIR)\bin.v2\libs\date_time\build\msvc-10.0\rls\lnk-sttc\thrd-mlt\libboost_date_time-vc100-mt-1_62.lib;$(BOOST_DIR)\bin.v2\libs\chrono\build\msvc-10.0\rls\lnk-sttc\thrd-mlt\libboost_chrono-vc100-mt-1_62.lib;$(LIBRVNG_DIR)\build\win32\Release\librevenge.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>Release\lib;$(LIBWPD_LIB_DIR);$(LIBXML_LIB_DIR);$(ZLIB_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>.\Release/vsd2raw.pdb</ProgramDatabaseFile>
+      <AdditionalLibraryDirectories>$(TargetDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(TargetDir)\vsd2raw.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>

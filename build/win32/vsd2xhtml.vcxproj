@@ -41,6 +41,11 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Projects\boost_1_62_0;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Projects\boost_1_62_0;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(LibraryPath)</LibraryPath>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</IgnoreImportLibrary>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -52,36 +57,46 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\inc;$(LIBWPD_INCLUDE_DIR);$(LIBWPG_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\inc;$(LIBRVNG_DIR)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeaderOutputFile>.\Release/vsd2xhtml.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>$(TargetDir)/vsd2xhtml.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(TargetDir)</AssemblerListingLocation>
+      <ObjectFileName>$(TargetDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(TargetDir)</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BrowseInformation>false</BrowseInformation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libvisio-0.0.lib;librevenge-0.9.lib;librevenge-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Release\bin\vsd2xhtml.exe</OutputFile>
+      <AdditionalDependencies>$(BOOST_DIR)\bin.v2\libs\thread\build\msvc-10.0\rls\lnk-sttc\thrd-mlt\libboost_thread-vc100-mt-1_62.lib;$(BOOST_DIR)\bin.v2\libs\system\build\msvc-10.0\rls\lnk-sttc\thrd-mlt\libboost_system-vc100-mt-1_62.lib;$(BOOST_DIR)\bin.v2\libs\date_time\build\msvc-10.0\rls\lnk-sttc\thrd-mlt\libboost_date_time-vc100-mt-1_62.lib;$(BOOST_DIR)\bin.v2\libs\chrono\build\msvc-10.0\rls\lnk-sttc\thrd-mlt\libboost_chrono-vc100-mt-1_62.lib;$(LIBRVNG_DIR)\build\win32\Release\librevenge.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>Release\lib;$(LIBWPD_LIB_DIR);$(LIBXML_LIB_DIR);$(ZLIB_LIB_DIR);$(ICU_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ProgramDatabaseFile>.\Release/vsd2xhtml.pdb</ProgramDatabaseFile>
+      <AdditionalLibraryDirectories>$(TargetDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(TargetDir)\vsd2xhtml.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\Release/vsd2xhtml.bsc</OutputFile>
     </Bscmake>
+    <PostBuildEvent>
+      <Command>xcopy /Y $(ICONV_DIR)\bin\iconv.dll Release
+xcopy /Y $(ICU_DIR)\bin\icudt40.dll Release
+xcopy /Y $(ICU_DIR)\bin\icuuc40.dll Release
+xcopy /Y $(LIBXML_DIR)\bin\libxml2.dll Release
+xcopy /Y $(ZLIB_DIR)\bin\zlib1.dll Release
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -93,30 +108,30 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\inc;$(LIBWPD_INCLUDE_DIR);$(LIBWPG_INCLUDE_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\inc;$(LIBRVNG_DIR)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;DEBUG;WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
-      <PrecompiledHeaderOutputFile>.\Debug/vsd2xhtml.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>$(TargetDir)/vsd2xhtml.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(TargetDir)</AssemblerListingLocation>
+      <ObjectFileName>$(TargetDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(TargetDir)</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>libvisio-0.0.lib;librevenge-0.9.lib;librevenge-stream-0.9.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Debug\bin\vsd2xhtml.exe</OutputFile>
+      <AdditionalDependencies>$(BOOST_DIR)\bin.v2\libs\thread\build\msvc-10.0\dbg\lnk-sttc\thrd-mlt\libboost_thread-vc100-mt-gd-1_62.lib;$(BOOST_DIR)\bin.v2\libs\system\build\msvc-10.0\dbg\lnk-sttc\thrd-mlt\libboost_system-vc100-mt-gd-1_62.lib;$(BOOST_DIR)\bin.v2\libs\date_time\build\msvc-10.0\dbg\lnk-sttc\thrd-mlt\libboost_date_time-vc100-mt-gd-1_62.lib;$(BOOST_DIR)\bin.v2\libs\chrono\build\msvc-10.0\dbg\lnk-sttc\thrd-mlt\libboost_chrono-vc100-mt-gd-1_62.lib;$(LIBRVNG_DIR)\build\win32\Debug\librevenge.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(TargetPath)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>Debug\lib;$(LIBWPD_LIB_DIR);$(LIBXML_LIB_DIR);$(ZLIB_LIB_DIR);$(ICU_LIB_DIR);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(TargetDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/vsd2xhtml.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(TargetDir)\vsd2xhtml.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
@@ -126,6 +141,13 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\Debug/vsd2xhtml.bsc</OutputFile>
     </Bscmake>
+    <PostBuildEvent>
+      <Command>xcopy /Y $(ICONV_DIR)\bin\iconv.dll Debug
+xcopy /Y $(ICU_DIR)\bin\icudt40.dll Debug
+xcopy /Y $(ICU_DIR)\bin\icuuc40.dll Debug
+xcopy /Y $(LIBXML_DIR)\bin\libxml2.dll Debug
+xcopy /Y $(ZLIB_DIR)\bin\zlib1.dll Debug</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\conv\svg\vsd2xhtml.cpp">
@@ -138,7 +160,11 @@
   <ItemGroup>
     <ProjectReference Include="libvisio.vcxproj">
       <Project>{63fa9674-13e4-4a2c-a8e2-8965980eb7f7}</Project>
+      <Private>true</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
