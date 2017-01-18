@@ -100,7 +100,7 @@
 #define VSD_ACT_ID 0xa9
 #define VSD_CONTROL 0xaa
 
-#define VSD_USER_DEFINED_CELLS 0xb5
+#define VSD_USER_DEFINED_CELLS 0xb4
 #define VSD_TABS_DATA_4 0xb5
 #define VSD_CUSTOM_PROPS 0xb6
 #define VSD_RULER_GRID 0xb7
