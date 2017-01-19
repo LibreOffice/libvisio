@@ -1733,15 +1733,56 @@ void libvisio::VSDParser::readFontIX(librevenge::RVNGInputStream *input)
   unsigned char codePage = (unsigned char)(getUInt(input) & 0xff);
   tmpAdjust -= input->tell();
 
-  librevenge::RVNGBinaryData textStream;
+  std::string fontName;
 
   for (long i = 0; i < (long)(m_header.dataLength + tmpAdjust); i++)
   {
-    unsigned char curchar = readU8(input);
+    char curchar = (char)readU8(input);
     if (curchar == 0)
       break;
-    textStream.append(curchar);
+    fontName.append(1, curchar);
   }
+
+  if (!codePage)
+  {
+    // Try to parse the font name for codePage
+    size_t length = fontName.length();
+    size_t found = std::string::npos;
+
+    if (length > 3 && (found=fontName.find(" CE", length - 3)) != std::string::npos)
+      codePage = 0xee;
+    else if (length > 9 && (found=fontName.rfind(" Cyrillic", length - 9)) != std::string::npos)
+      codePage = 0xcc;
+    else if (length > 4 && (found=fontName.rfind(" Cyr", length - 4)) != std::string::npos)
+      codePage = 0xcc;
+    else if (length > 4 && (found=fontName.rfind(" CYR", length - 4)) != std::string::npos)
+      codePage = 0xcc;
+    else if (length > 7 && (found=fontName.rfind(" Baltic", length - 7)) != std::string::npos)
+      codePage = 0xba;
+    else if (length > 6 && (found=fontName.rfind(" Greek", length - 6)) != std::string::npos)
+      codePage = 0xa1;
+    else if (length > 4 && (found=fontName.rfind(" Tur", length - 4)) != std::string::npos)
+      codePage = 0xa2;
+    else if (length > 4 && (found=fontName.rfind(" TUR", length - 4)) != std::string::npos)
+      codePage = 0xa2;
+    else if (length > 7 && (found=fontName.rfind(" Hebrew", length - 7)) != std::string::npos)
+      codePage = 0xb1;
+    else if (length > 7 && (found=fontName.rfind(" Arabic", length - 7)) != std::string::npos)
+      codePage = 0xb2;
+    else if (length > 5 && (found=fontName.rfind(" Thai", length - 5)) != std::string::npos)
+      codePage = 0xde;
+    else if (length >= 4 && (found=fontName.find("GOST", 0, 4)) != std::string::npos)
+    {
+      codePage = 0xcc;
+      found = std::string::npos;
+    }
+
+    if (found != std::string::npos)
+    {
+      fontName.erase(found, std::string::npos);
+    }
+  }
+
   TextFormat format = libvisio::VSD_TEXT_ANSI;
   switch (codePage)
   {
@@ -1793,6 +1834,8 @@ void libvisio::VSDParser::readFontIX(librevenge::RVNGInputStream *input)
   default:
     break;
   }
+
+  librevenge::RVNGBinaryData textStream((const unsigned char *)fontName.c_str(), fontName.length());
   m_fonts[m_header.id] = VSDName(textStream, format);
 }
 
