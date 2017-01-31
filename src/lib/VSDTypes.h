@@ -188,6 +188,11 @@ public:
   {
     return !m_data.size();
   }
+  void clear()
+  {
+    m_data.clear();
+    m_format = VSD_TEXT_ANSI;
+  }
   librevenge::RVNGBinaryData m_data;
   TextFormat m_format;
 };

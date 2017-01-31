@@ -256,7 +256,14 @@ void libvisio::VSDContentCollector::_flushShape()
   if (m_currentForeignData.size() && m_currentForeignProps["librevenge:mime-type"] && m_foreignWidth != 0.0 && m_foreignHeight != 0.0)
     numForeignElements++;
   if (!m_currentText.empty())
-    numTextElements++;
+  {
+    if ((m_currentText.m_format == VSD_TEXT_UTF16
+         && (m_currentText.m_data.size() >= 2 && (m_currentText.m_data.getDataBuffer()[0] || m_currentText.m_data.getDataBuffer()[1])))
+        || m_currentText.m_data.getDataBuffer()[0])
+    {
+      numTextElements++;
+    }
+  }
 
   if (numPathElements+numForeignElements+numTextElements > 1)
   {
@@ -591,6 +598,19 @@ void libvisio::VSDContentCollector::_flushText()
   /* Do not output empty text objects. */
   if (m_currentText.empty() || m_misc.m_hideText)
     return;
+  else
+    // Check whether the buffer contains only the terminating NULL character
+  {
+    if (m_currentText.m_format == VSD_TEXT_UTF16)
+    {
+      if (m_currentText.m_data.size() < 2)
+        return;
+      else if (!(m_currentText.m_data.getDataBuffer()[0]) && !(m_currentText.m_data.getDataBuffer()[1]))
+        return;
+    }
+    else if (!(m_currentText.m_data.getDataBuffer()[0]))
+      return;
+  }
 
   /* Fill the text object/frame properties */
   double xmiddle = m_txtxform ? m_txtxform->width / 2.0 : m_xform.width / 2.0;
@@ -679,172 +699,381 @@ void libvisio::VSDContentCollector::_flushText()
   unsigned charNumRemaining(charIt->charCount);
   unsigned tabNumRemaining(tabIt->m_numChars);
 
+  std::vector<unsigned char> sOutputVector;
   librevenge::RVNGString sOutputText;
 
-  /* Iterate over the text character by character */
-  librevenge::RVNGString::Iter textIt(m_currentText);
-  for (textIt.rewind(); textIt.next();)
+  // Unfortunately, we have to handle the unicode formats differently then the 8-bit formats
+  if (m_currentText.m_format == VSD_TEXT_UTF8 || m_currentText.m_format == VSD_TEXT_UTF16)
   {
-    /* Any character will cause a paragraph to open if it is not yet opened. */
-    if (!isParagraphOpened)
+    std::vector<unsigned char> tmpBuffer(m_currentText.m_data.size());
+    memcpy(&tmpBuffer[0], m_currentText.m_data.getDataBuffer(), m_currentText.m_data.size());
+    librevenge::RVNGString textString;
+    appendCharacters(textString, tmpBuffer, m_currentText.m_format);
+    /* Iterate over the text character by character */
+    librevenge::RVNGString::Iter textIt(textString);
+    for (textIt.rewind(); textIt.next();)
     {
-      librevenge::RVNGPropertyList paraProps;
-      _fillParagraphProperties(paraProps, *paraIt);
-
-      if (m_textBlockStyle.defaultTabStop > 0.0)
-        paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
-
-      _fillTabSet(paraProps, *tabIt);
-
-      VSDBullet bullet;
-      _bulletFromParaFormat(bullet, *paraIt);
-
-      /* Bullet definition changed with regard to the last paragraph style. */
-      if (bullet != currentBullet)
+      /* Any character will cause a paragraph to open if it is not yet opened. */
+      if (!isParagraphOpened)
       {
-        /* If the previous paragraph style had a bullet, close the list level. */
-        if (!!currentBullet)
-          m_shapeOutputText->addCloseUnorderedListLevel();
+        librevenge::RVNGPropertyList paraProps;
+        _fillParagraphProperties(paraProps, *paraIt);
 
-        currentBullet = bullet;
-        /* If the current paragraph style has a bullet, open a new list level. */
-        if (!!currentBullet)
+        if (m_textBlockStyle.defaultTabStop > 0.0)
+          paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
+
+        _fillTabSet(paraProps, *tabIt);
+
+        VSDBullet bullet;
+        _bulletFromParaFormat(bullet, *paraIt);
+
+        /* Bullet definition changed with regard to the last paragraph style. */
+        if (bullet != currentBullet)
         {
-          librevenge::RVNGPropertyList bulletList;
-          _listLevelFromBullet(bulletList, currentBullet);
-          m_shapeOutputText->addOpenUnorderedListLevel(bulletList);
+          /* If the previous paragraph style had a bullet, close the list level. */
+          if (!!currentBullet)
+            m_shapeOutputText->addCloseUnorderedListLevel();
+
+          currentBullet = bullet;
+          /* If the current paragraph style has a bullet, open a new list level. */
+          if (!!currentBullet)
+          {
+            librevenge::RVNGPropertyList bulletList;
+            _listLevelFromBullet(bulletList, currentBullet);
+            m_shapeOutputText->addOpenUnorderedListLevel(bulletList);
+          }
         }
-      }
 
-      if (!currentBullet)
-        m_shapeOutputText->addOpenParagraph(paraProps);
-      else
-        m_shapeOutputText->addOpenListElement(paraProps);
-      isParagraphOpened = true;
-      isParagraphWithoutSpan = true;
-    }
-
-    /* Any character will cause a span to open if it is not yet opened.
-     * The additional conditions aim to avoid superfluous empty span but
-     * also a paragraph without span at all. */
-    if (!isSpanOpened && ((*(textIt()) != '\n') || isParagraphWithoutSpan))
-    {
-      librevenge::RVNGPropertyList textProps;
-      _fillCharProperties(textProps, *charIt);
-
-      // TODO: In draw, text span background cannot be specified the same way as in writer span
-      if (m_textBlockStyle.isTextBkgndFilled)
-      {
-        textProps.insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
-#if 0
-        if (m_textBlockStyle.textBkgndColour.a)
-          textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, librevenge::RVNG_PERCENT);
-#endif
-      }
-      m_shapeOutputText->addOpenSpan(textProps);
-      isSpanOpened = true;
-      isParagraphWithoutSpan = false;
-    }
-
-    /* Current character is a paragraph break,
-     * which will cause the paragraph to close. */
-    if (*(textIt()) == '\n')
-    {
-      if (!sOutputText.empty())
-        m_shapeOutputText->addInsertText(sOutputText);
-      sOutputText.clear();
-      if (isSpanOpened)
-      {
-        m_shapeOutputText->addCloseSpan();
-        isSpanOpened = false;
-      }
-
-      if (isParagraphOpened)
-      {
         if (!currentBullet)
-          m_shapeOutputText->addCloseParagraph();
+          m_shapeOutputText->addOpenParagraph(paraProps);
         else
-          m_shapeOutputText->addCloseListElement();
-        isParagraphOpened = false;
+          m_shapeOutputText->addOpenListElement(paraProps);
+        isParagraphOpened = true;
+        isParagraphWithoutSpan = true;
       }
-    }
-    /* Current character is a tabulator. We have to output
-     * the current text buffer and insert the tab. */
-    else if (*(textIt()) == '\t')
-    {
-      if (!sOutputText.empty())
-        m_shapeOutputText->addInsertText(sOutputText);
-      sOutputText.clear();
-      m_shapeOutputText->addInsertTab();
-    }
-    /* Current character is a field placeholder. We append
-     * to the current text buffer a text representation
-     * of the field. */
-    else if (strlen(textIt()) == 3 &&
-             textIt()[0] == '\xef' &&
-             textIt()[1] == '\xbf' &&
-             textIt()[2] == '\xbc')
-      _appendField(sOutputText);
-    /* We have a normal UTF8 character and we append it
-     * to the current text buffer. */
-    else
-      sOutputText.append(textIt());
 
-    /* Decrease the count of remaining characters in the same paragraph,
-     * if it is possible. */
-    if (paraNumRemaining)
-      paraNumRemaining--;
-    /* Fetch next paragraph style if it exists. If not, just use the
-     * last one. */
-    if (!paraNumRemaining)
-    {
-      ++paraIt;
-      if (paraIt != m_paraFormats.end())
-        paraNumRemaining = paraIt->charCount;
-      else
-        --paraIt;
-    }
-
-    /* Decrease the count of remaining characters in the same span,
-     * if it is possible. */
-    if (charNumRemaining)
-      charNumRemaining--;
-    /* Fetch next character style if it exists and close span, since
-     * the next span will have to use the new character style.
-     * If there is no more character style to fetch, just finish using
-     * the last one. */
-    if (!charNumRemaining)
-    {
-      ++charIt;
-      if (charIt != m_charFormats.end())
+      /* Any character will cause a span to open if it is not yet opened.
+       * The additional conditions aim to avoid superfluous empty span but
+       * also a paragraph without span at all. */
+      if (!isSpanOpened && ((*(textIt()) != '\n') || isParagraphWithoutSpan))
       {
-        charNumRemaining = charIt->charCount;
+        librevenge::RVNGPropertyList textProps;
+        _fillCharProperties(textProps, *charIt);
+
+        // TODO: In draw, text span background cannot be specified the same way as in writer span
+        if (m_textBlockStyle.isTextBkgndFilled)
+        {
+          textProps.insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
+#if 0
+          if (m_textBlockStyle.textBkgndColour.a)
+            textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, librevenge::RVNG_PERCENT);
+#endif
+        }
+        m_shapeOutputText->addOpenSpan(textProps);
+        isSpanOpened = true;
+        isParagraphWithoutSpan = false;
+      }
+
+      /* Current character is a paragraph break,
+       * which will cause the paragraph to close. */
+      if (*(textIt()) == '\n')
+      {
+        if (!sOutputText.empty())
+          m_shapeOutputText->addInsertText(sOutputText);
+        sOutputText.clear();
         if (isSpanOpened)
         {
-          if (!sOutputText.empty())
-            m_shapeOutputText->addInsertText(sOutputText);
-          sOutputText.clear();
           m_shapeOutputText->addCloseSpan();
           isSpanOpened = false;
         }
-      }
-      else
-        --charIt;
-    }
 
-    /* Decrease the count of remaining characters using the same
-     * tab-set definition, if it is possible. */
-    if (tabNumRemaining)
-      tabNumRemaining--;
-    /* Fetch next tab-set definition if it exists. If not, just use the
-     * last one. */
-    if (!tabNumRemaining)
-    {
-      ++tabIt;
-      if (tabIt != m_tabSets.end())
-        tabNumRemaining = tabIt->m_numChars;
+        if (isParagraphOpened)
+        {
+          if (!currentBullet)
+            m_shapeOutputText->addCloseParagraph();
+          else
+            m_shapeOutputText->addCloseListElement();
+          isParagraphOpened = false;
+        }
+      }
+      /* Current character is a tabulator. We have to output
+       * the current text buffer and insert the tab. */
+      else if (*(textIt()) == '\t')
+      {
+        if (!sOutputText.empty())
+          m_shapeOutputText->addInsertText(sOutputText);
+        sOutputText.clear();
+        m_shapeOutputText->addInsertTab();
+      }
+      /* Current character is a field placeholder. We append
+       * to the current text buffer a text representation
+       * of the field. */
+      else if (strlen(textIt()) == 3 &&
+               textIt()[0] == '\xef' &&
+               textIt()[1] == '\xbf' &&
+               textIt()[2] == '\xbc')
+        _appendField(sOutputText);
+      /* We have a normal UTF8 character and we append it
+       * to the current text buffer. */
       else
-        --tabIt;
+        sOutputText.append(textIt());
+
+      /* Decrease the count of remaining characters in the same paragraph,
+       * if it is possible. */
+      if (paraNumRemaining)
+        paraNumRemaining--;
+      /* Fetch next paragraph style if it exists. If not, just use the
+       * last one. */
+      if (!paraNumRemaining)
+      {
+        ++paraIt;
+        if (paraIt != m_paraFormats.end())
+          paraNumRemaining = paraIt->charCount;
+        else
+          --paraIt;
+      }
+
+      /* Decrease the count of remaining characters in the same span,
+       * if it is possible. */
+      if (charNumRemaining)
+        charNumRemaining--;
+      /* Fetch next character style if it exists and close span, since
+       * the next span will have to use the new character style.
+       * If there is no more character style to fetch, just finish using
+       * the last one. */
+      if (!charNumRemaining)
+      {
+        ++charIt;
+        if (charIt != m_charFormats.end())
+        {
+          charNumRemaining = charIt->charCount;
+          if (isSpanOpened)
+          {
+            if (!sOutputText.empty())
+              m_shapeOutputText->addInsertText(sOutputText);
+            sOutputText.clear();
+            m_shapeOutputText->addCloseSpan();
+            isSpanOpened = false;
+          }
+        }
+        else
+          --charIt;
+      }
+
+      /* Decrease the count of remaining characters using the same
+       * tab-set definition, if it is possible. */
+      if (tabNumRemaining)
+        tabNumRemaining--;
+      /* Fetch next tab-set definition if it exists. If not, just use the
+       * last one. */
+      if (!tabNumRemaining)
+      {
+        ++tabIt;
+        if (tabIt != m_tabSets.end())
+          tabNumRemaining = tabIt->m_numChars;
+        else
+          --tabIt;
+      }
+    }
+  }
+  else // 8-bit charsets
+  {
+    /* Iterate over the text character by character */
+    const unsigned char *tmpBuffer = m_currentText.m_data.getDataBuffer();
+    unsigned long tmpBufferLength = m_currentText.m_data.size();
+    // Remove the terminating \0 character from the buffer
+    while (tmpBufferLength > 1 &&!tmpBuffer[tmpBufferLength-1])
+    {
+      --tmpBufferLength;
+    }
+    for (unsigned long i = 0; i < tmpBufferLength; ++i)
+    {
+      /* Any character will cause a paragraph to open if it is not yet opened. */
+      if (!isParagraphOpened)
+      {
+        librevenge::RVNGPropertyList paraProps;
+        _fillParagraphProperties(paraProps, *paraIt);
+
+        if (m_textBlockStyle.defaultTabStop > 0.0)
+          paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
+
+        _fillTabSet(paraProps, *tabIt);
+
+        VSDBullet bullet;
+        _bulletFromParaFormat(bullet, *paraIt);
+
+        /* Bullet definition changed with regard to the last paragraph style. */
+        if (bullet != currentBullet)
+        {
+          /* If the previous paragraph style had a bullet, close the list level. */
+          if (!!currentBullet)
+            m_shapeOutputText->addCloseUnorderedListLevel();
+
+          currentBullet = bullet;
+          /* If the current paragraph style has a bullet, open a new list level. */
+          if (!!currentBullet)
+          {
+            librevenge::RVNGPropertyList bulletList;
+            _listLevelFromBullet(bulletList, currentBullet);
+            m_shapeOutputText->addOpenUnorderedListLevel(bulletList);
+          }
+        }
+
+        if (!currentBullet)
+          m_shapeOutputText->addOpenParagraph(paraProps);
+        else
+          m_shapeOutputText->addOpenListElement(paraProps);
+        isParagraphOpened = true;
+        isParagraphWithoutSpan = true;
+      }
+
+      /* Any character will cause a span to open if it is not yet opened.
+       * The additional conditions aim to avoid superfluous empty span but
+       * also a paragraph without span at all. */
+      if (!isSpanOpened && ((tmpBuffer[i] != (unsigned char)'\n' && tmpBuffer[i] != 0x0d && tmpBuffer[i] != 0x0e) || isParagraphWithoutSpan))
+      {
+        librevenge::RVNGPropertyList textProps;
+        _fillCharProperties(textProps, *charIt);
+
+        // TODO: In draw, text span background cannot be specified the same way as in writer span
+        if (m_textBlockStyle.isTextBkgndFilled)
+        {
+          textProps.insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
+#if 0
+          if (m_textBlockStyle.textBkgndColour.a)
+            textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, librevenge::RVNG_PERCENT);
+#endif
+        }
+        m_shapeOutputText->addOpenSpan(textProps);
+        isSpanOpened = true;
+        isParagraphWithoutSpan = false;
+      }
+
+      /* Current character is a paragraph break,
+       * which will cause the paragraph to close. */
+      if (tmpBuffer[i] == (unsigned char)'\n' || tmpBuffer[i] == 0x0d || tmpBuffer[i] == 0x0e)
+      {
+        if (!sOutputVector.empty())
+        {
+          appendCharacters(sOutputText, sOutputVector, charIt->font.m_format);
+          sOutputVector.clear();
+        }
+        if (!sOutputText.empty())
+        {
+          m_shapeOutputText->addInsertText(sOutputText);
+          sOutputText.clear();
+        }
+        if (isSpanOpened)
+        {
+          m_shapeOutputText->addCloseSpan();
+          isSpanOpened = false;
+        }
+
+        if (isParagraphOpened)
+        {
+          if (!currentBullet)
+            m_shapeOutputText->addCloseParagraph();
+          else
+            m_shapeOutputText->addCloseListElement();
+          isParagraphOpened = false;
+        }
+      }
+      /* Current character is a tabulator. We have to output
+       * the current text buffer and insert the tab. */
+      else if (tmpBuffer[i] == (unsigned char)'\t')
+      {
+        if (!sOutputVector.empty())
+        {
+          appendCharacters(sOutputText, sOutputVector, charIt->font.m_format);
+          sOutputVector.clear();
+        }
+        if (!sOutputText.empty())
+        {
+          m_shapeOutputText->addInsertText(sOutputText);
+          sOutputText.clear();
+        }
+        m_shapeOutputText->addInsertTab();
+      }
+      /* Current character is a field placeholder. We append
+       * to the current text buffer a text representation
+       * of the field. */
+      else if (tmpBuffer[i] == 0x1e)
+      {
+        if (!sOutputVector.empty())
+        {
+          appendCharacters(sOutputText, sOutputVector, charIt->font.m_format);
+          sOutputVector.clear();
+        }
+        _appendField(sOutputText);
+      }
+      /* We have a normal UTF8 character and we append it
+       * to the current text buffer. */
+      else
+        sOutputVector.push_back(tmpBuffer[i]);
+
+      /* Decrease the count of remaining characters in the same paragraph,
+       * if it is possible. */
+      if (paraNumRemaining)
+        paraNumRemaining--;
+      /* Fetch next paragraph style if it exists. If not, just use the
+       * last one. */
+      if (!paraNumRemaining)
+      {
+        ++paraIt;
+        if (paraIt != m_paraFormats.end())
+          paraNumRemaining = paraIt->charCount;
+        else
+          --paraIt;
+      }
+
+      /* Decrease the count of remaining characters in the same span,
+       * if it is possible. */
+      if (charNumRemaining)
+        charNumRemaining--;
+      /* Fetch next character style if it exists and close span, since
+       * the next span will have to use the new character style.
+       * If there is no more character style to fetch, just finish using
+       * the last one. */
+      if (!charNumRemaining)
+      {
+        ++charIt;
+        if (charIt != m_charFormats.end())
+        {
+          charNumRemaining = charIt->charCount;
+          if (isSpanOpened)
+          {
+            if (!sOutputVector.empty())
+            {
+              appendCharacters(sOutputText, sOutputVector, charIt->font.m_format);
+              sOutputVector.clear();
+            }
+            if (!sOutputText.empty())
+            {
+              m_shapeOutputText->addInsertText(sOutputText);
+              sOutputText.clear();
+            }
+            m_shapeOutputText->addCloseSpan();
+            isSpanOpened = false;
+          }
+        }
+        else
+          --charIt;
+      }
+
+      /* Decrease the count of remaining characters using the same
+       * tab-set definition, if it is possible. */
+      if (tabNumRemaining)
+        tabNumRemaining--;
+      /* Fetch next tab-set definition if it exists. If not, just use the
+       * last one. */
+      if (!tabNumRemaining)
+      {
+        ++tabIt;
+        if (tabIt != m_tabSets.end())
+          tabNumRemaining = tabIt->m_numChars;
+        else
+          --tabIt;
+      }
     }
   }
 
@@ -853,9 +1082,16 @@ void libvisio::VSDContentCollector::_flushText()
   {
     if (isSpanOpened)
     {
+      if (!sOutputVector.empty())
+      {
+        appendCharacters(sOutputText, sOutputVector, charIt->font.m_format);
+        sOutputVector.clear();
+      }
       if (!sOutputText.empty())
+      {
         m_shapeOutputText->addInsertText(sOutputText);
-      sOutputText.clear();
+        sOutputText.clear();
+      }
       m_shapeOutputText->addCloseSpan();
       isSpanOpened = false;
     }
@@ -2434,11 +2670,7 @@ void libvisio::VSDContentCollector::collectText(unsigned level, const librevenge
 
   m_currentText.clear();
   if (!textStream.empty())
-  {
-    std::vector<unsigned char> tmpBuffer(textStream.size());
-    memcpy(&tmpBuffer[0], textStream.getDataBuffer(), textStream.size());
-    appendCharacters(m_currentText, tmpBuffer, format);
-  }
+    m_currentText = libvisio::VSDName(textStream, format);
 }
 
 void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */ , unsigned level, unsigned charCount, const boost::optional<double> &indFirst,

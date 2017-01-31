@@ -278,7 +278,7 @@ private:
 
   std::map<unsigned, NURBSData> m_NURBSData;
   std::map<unsigned, PolylineData> m_polylineData;
-  librevenge::RVNGString m_currentText;
+  libvisio::VSDName m_currentText;
   std::map<unsigned, librevenge::RVNGString> m_names, m_stencilNames;
   std::vector<librevenge::RVNGString> m_fields;
   VSDFieldList m_stencilFields;
