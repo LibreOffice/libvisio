@@ -2221,7 +2221,6 @@ void libvisio::VSDXMLParserBase::readTriggerId(unsigned &id, xmlTextReaderPtr re
 
   unsigned triggerId = MINUS_ONE;
   const boost::shared_ptr<xmlChar> triggerString(xmlTextReaderGetAttribute(reader, BAD_CAST("F")), xmlFree);
-  printf("Fridrich A %s\n", (const char *)triggerString.get());
   if (triggerString)
   {
     if (parse((const char *)triggerString.get(),
