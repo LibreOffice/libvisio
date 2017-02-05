@@ -2184,9 +2184,11 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, long &idx,
         if (iter != m_colours.end())
           value = iter->second;
         else
-          idx = -1;
+          return -1000;
       }
     }
+    else
+      return -1000;
     return 1;
   }
   return -1;
@@ -2196,7 +2198,10 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(boost::optional<Colour> &
 {
   Colour tmpValue;
   int ret = readExtendedColourData(tmpValue, reader);
-  value = tmpValue;
+  if (ret != -1000)
+    value = tmpValue;
+  else
+    ret = 1;
   return ret;
 }
 
