@@ -56,15 +56,14 @@ T getOptionalStyle(const std::map<unsigned, unsigned> &styleMasters, const std::
 
 libvisio::VSDStyles::VSDStyles() :
   m_lineStyles(), m_fillStyles(), m_textBlockStyles(), m_charStyles(), m_paraStyles(),
-  m_themeRefs(), m_lineStyleMasters(), m_fillStyleMasters(), m_textStyleMasters()
+  m_lineStyleMasters(), m_fillStyleMasters(), m_textStyleMasters()
 {
 }
 
 libvisio::VSDStyles::VSDStyles(const libvisio::VSDStyles &styles) :
   m_lineStyles(styles.m_lineStyles), m_fillStyles(styles.m_fillStyles), m_textBlockStyles(styles.m_textBlockStyles),
-  m_charStyles(styles.m_charStyles), m_paraStyles(styles.m_paraStyles), m_themeRefs(styles.m_themeRefs),
-  m_lineStyleMasters(styles.m_lineStyleMasters), m_fillStyleMasters(styles.m_fillStyleMasters),
-  m_textStyleMasters(styles.m_textStyleMasters)
+  m_charStyles(styles.m_charStyles), m_paraStyles(styles.m_paraStyles), m_lineStyleMasters(styles.m_lineStyleMasters),
+  m_fillStyleMasters(styles.m_fillStyleMasters), m_textStyleMasters(styles.m_textStyleMasters)
 {
 }
 
@@ -81,7 +80,6 @@ libvisio::VSDStyles &libvisio::VSDStyles::operator=(const libvisio::VSDStyles &s
     m_textBlockStyles = styles.m_textBlockStyles;
     m_charStyles = styles.m_charStyles;
     m_paraStyles = styles.m_paraStyles;
-    m_themeRefs = styles.m_themeRefs;
 
     m_lineStyleMasters = styles.m_lineStyleMasters;
     m_fillStyleMasters = styles.m_fillStyleMasters;
@@ -115,11 +113,6 @@ void libvisio::VSDStyles::addParaStyle(unsigned textStyleIndex, const VSDOptiona
   m_paraStyles[textStyleIndex] = paraStyle;
 }
 
-void libvisio::VSDStyles::addStyleThemeReference(unsigned styleIndex, const VSDOptionalThemeReference &themeRef)
-{
-  m_themeRefs[styleIndex] = themeRef;
-}
-
 void libvisio::VSDStyles::addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster)
 {
   m_lineStyleMasters[lineStyleIndex] = lineStyleMaster;
@@ -145,10 +138,10 @@ libvisio::VSDOptionalFillStyle libvisio::VSDStyles::getOptionalFillStyle(unsigne
   return getOptionalStyle(m_fillStyleMasters, m_fillStyles, fillStyleIndex);
 }
 
-libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex) const
+libvisio::VSDFillStyle libvisio::VSDStyles::getFillStyle(unsigned fillStyleIndex, const libvisio::VSDXTheme *theme) const
 {
   VSDFillStyle fillStyle;
-  fillStyle.override(getOptionalFillStyle(fillStyleIndex));
+  fillStyle.override(getOptionalFillStyle(fillStyleIndex), theme);
   return fillStyle;
 }
 
@@ -165,14 +158,6 @@ libvisio::VSDOptionalCharStyle libvisio::VSDStyles::getOptionalCharStyle(unsigne
 libvisio::VSDOptionalParaStyle libvisio::VSDStyles::getOptionalParaStyle(unsigned textStyleIndex) const
 {
   return getOptionalStyle(m_textStyleMasters, m_paraStyles, textStyleIndex);
-}
-
-libvisio::VSDOptionalThemeReference libvisio::VSDStyles::getOptionalThemeReference(unsigned styleIndex) const
-{
-  VSDOptionalThemeReference themeReference;
-  if (MINUS_ONE == styleIndex)
-    return themeReference;
-  return themeReference;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

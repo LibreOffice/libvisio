@@ -42,7 +42,6 @@ public:
   VSDOptionalFillStyle m_fillStyle;
   VSDOptionalTextBlockStyle m_textBlockStyle;
   VSDOptionalCharStyle m_charStyle;
-  VSDOptionalThemeReference m_themeRef;
   VSDCharacterList m_charList;
   VSDOptionalParaStyle m_paraStyle;
   VSDParagraphList m_paraList;

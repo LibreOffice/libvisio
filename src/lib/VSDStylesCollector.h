@@ -31,6 +31,7 @@ public:
   );
   virtual ~VSDStylesCollector() {}
 
+  void collectDocumentTheme(const VSDXTheme * /* theme */) {}
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
   void collectForeignData(unsigned level, const librevenge::RVNGBinaryData &binaryData);
   void collectOLEList(unsigned id, unsigned level)
@@ -45,13 +46,12 @@ public:
   void collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                             const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                             const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
-                            const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX, const boost::optional<double> &shadowOffsetY);
+                            const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX, const boost::optional<double> &shadowOffsetY,
+                            const boost::optional<long> &qsFc, const boost::optional<long> &qsSc);
   void collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                             const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                             const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
                             const boost::optional<Colour> &shfgc);
-  void collectThemeReference(unsigned level, const boost::optional<long> &lineColour, const boost::optional<long> &fillColour,
-                             const boost::optional<long> &shadowColour, const boost::optional<long> &fontColour);
   void collectGeometry(unsigned id, unsigned level, bool noFill, bool noLine, bool noShow);
   void collectMoveTo(unsigned id, unsigned level, double x, double y);
   void collectLineTo(unsigned id, unsigned level, double x, double y);
@@ -133,7 +133,8 @@ public:
   void collectFillStyle(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                         const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                         const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
-                        const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX, const boost::optional<double> &shadowOffsetY);
+                        const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX, const boost::optional<double> &shadowOffsetY,
+                        const boost::optional<long> &qsFillColour, const boost::optional<long> &qsShadowColour);
   void collectFillStyle(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                         const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                         const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
@@ -155,8 +156,6 @@ public:
                              const boost::optional<unsigned char> &verticalAlign, const boost::optional<bool> &isBgFilled,
                              const boost::optional<Colour> &bgColour, const boost::optional<double> &defaultTabStop,
                              const boost::optional<unsigned char> &textDirection);
-  void collectStyleThemeReference(unsigned level, const boost::optional<long> &lineColour, const boost::optional<long> &fillColour,
-                                  const boost::optional<long> &shadowColour, const boost::optional<long> &fontColour);
 
   // Field list
   void collectFieldList(unsigned id, unsigned level);

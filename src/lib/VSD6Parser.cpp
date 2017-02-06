@@ -304,7 +304,8 @@ void libvisio::VSD6Parser::readFillAndShadow(librevenge::RVNGInputStream *input)
       shadowOffsetY = m_shadowOffsetY;
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
-                                                      fillBGTransparency, shadowFG, shadowPattern, shadowOffsetX, shadowOffsetY));
+                                                      fillBGTransparency, shadowFG, shadowPattern,
+                                                      shadowOffsetX, shadowOffsetY, -1, -1));
   }
 }
 

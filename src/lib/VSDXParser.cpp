@@ -132,7 +132,10 @@ bool libvisio::VSDXParser::parseDocument(librevenge::RVNGInputStream *input, con
     if (!parseTheme(input, rel->getTarget().c_str()))
     {
       VSD_DEBUG_MSG(("Could not parse theme\n"));
+      m_collector->collectDocumentTheme(0);
     }
+    else
+      m_collector->collectDocumentTheme(&m_currentTheme);
     input->seek(0, librevenge::RVNG_SEEK_SET);
   }
 
@@ -727,6 +730,8 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   boost::optional<unsigned char> shadowPattern;
   boost::optional<double> shadowOffsetX;
   boost::optional<double> shadowOffsetY;
+  boost::optional<long> qsFillColour;
+  boost::optional<long> qsShadowColour;
 
   // Text block properties
   boost::optional<double> leftMargin;
@@ -875,25 +880,11 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       break;
     case XML_QUICKSTYLEFILLCOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        long tmpValue;
-        ret = readLongData(tmpValue, reader);
-        if (!fillColourFG)
-          fillColourFG = m_currentTheme.getThemeColour((unsigned)tmpValue);
-        if (!fillColourBG)
-          fillColourBG = m_currentTheme.getThemeColour((unsigned)tmpValue);
-      }
+        ret = readLongData(qsFillColour, reader);
       break;
     case XML_QUICKSTYLESHADOWCOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        long tmpValue;
-        ret = readLongData(tmpValue, reader);
-        if (!shadowColourFG)
-          shadowColourFG = m_currentTheme.getThemeColour((unsigned)tmpValue);
-        if (!shadowColourBG)
-          shadowColourBG = m_currentTheme.getThemeColour((unsigned)tmpValue);
-      }
+        ret = readLongData(qsShadowColour, reader);
       break;
     default:
       break;
@@ -918,7 +909,8 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   {
     m_collector->collectLineStyle(level, strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap, rounding);
     m_collector->collectFillStyle(level, fillColourFG, fillColourBG, fillPattern, fillFGTransparency,
-                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
+                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY,
+                                  qsFillColour, qsShadowColour);
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
   }
@@ -926,7 +918,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   {
     m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap, rounding));
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowColourFG,
-                                                      shadowPattern, shadowOffsetX, shadowOffsetY));
+                                                      shadowPattern, shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour));
     m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, !!bgClrId, bgColour,
                                                                 defaultTabStop, textDirection));
   }
@@ -1273,23 +1265,11 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       break;
     case XML_QUICKSTYLEFILLCOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        long tmpValue;
-        ret = readLongData(tmpValue, reader);
-        if (!m_shape.m_fillStyle.fgColour)
-          m_shape.m_fillStyle.fgColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
-        if (!m_shape.m_fillStyle.bgColour)
-          m_shape.m_fillStyle.bgColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
-      }
+        ret = readLongData(m_shape.m_fillStyle.qsFillColour, reader);
       break;
     case XML_QUICKSTYLESHADOWCOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        long tmpValue;
-        ret = readLongData(tmpValue, reader);
-        if (!m_shape.m_fillStyle.shadowFgColour)
-          m_shape.m_fillStyle.shadowFgColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
-      }
+        ret = readLongData(m_shape.m_fillStyle.qsShadowColour, reader);
       break;
     case XML_LAYERMEMBER:
       if (XML_READER_TYPE_ELEMENT == tokenType)

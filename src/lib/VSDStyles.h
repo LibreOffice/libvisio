@@ -14,58 +14,11 @@
 #include <vector>
 #include <boost/optional.hpp>
 #include "VSDTypes.h"
+#include "VSDXTheme.h"
+#include "libvisio_utils.h"
 
 namespace libvisio
 {
-
-struct VSDOptionalThemeReference
-{
-  VSDOptionalThemeReference() :
-    qsLineColour(), qsFillColour(), qsShadowColour(), qsFontColour() {}
-  VSDOptionalThemeReference(const boost::optional<long> &lineColour, const boost::optional<long> &fillColour,
-                            const boost::optional<long> &shadowColour, const boost::optional<long> &fontColour) :
-    qsLineColour(lineColour), qsFillColour(fillColour), qsShadowColour(shadowColour), qsFontColour(fontColour) {}
-  VSDOptionalThemeReference(const VSDOptionalThemeReference &themeRef) :
-    qsLineColour(themeRef.qsLineColour), qsFillColour(themeRef.qsFillColour),
-    qsShadowColour(themeRef.qsShadowColour), qsFontColour(themeRef.qsFontColour) {}
-  ~VSDOptionalThemeReference() {}
-  void override(const VSDOptionalThemeReference &themeRef)
-  {
-    ASSIGN_OPTIONAL(themeRef.qsLineColour, qsLineColour);
-    ASSIGN_OPTIONAL(themeRef.qsFillColour, qsFillColour);
-    ASSIGN_OPTIONAL(themeRef.qsShadowColour, qsShadowColour);
-    ASSIGN_OPTIONAL(themeRef.qsFontColour, qsFontColour);
-  }
-
-  boost::optional<long> qsLineColour;
-  boost::optional<long> qsFillColour;
-  boost::optional<long> qsShadowColour;
-  boost::optional<long> qsFontColour;
-};
-
-struct VSDThemeReference
-{
-  VSDThemeReference() :
-    qsLineColour(-1), qsFillColour(-1), qsShadowColour(-1), qsFontColour(-1) {}
-  VSDThemeReference(long lineColour, long fillColour, long shadowColour, long fontColour) :
-    qsLineColour(lineColour), qsFillColour(fillColour), qsShadowColour(shadowColour), qsFontColour(fontColour) {}
-  VSDThemeReference(const VSDThemeReference &themeRef) :
-    qsLineColour(themeRef.qsLineColour), qsFillColour(themeRef.qsFillColour),
-    qsShadowColour(themeRef.qsShadowColour), qsFontColour(themeRef.qsFontColour) {}
-  ~VSDThemeReference() {}
-  void override(const VSDOptionalThemeReference &themeRef)
-  {
-    ASSIGN_OPTIONAL(themeRef.qsLineColour, qsLineColour);
-    ASSIGN_OPTIONAL(themeRef.qsFillColour, qsFillColour);
-    ASSIGN_OPTIONAL(themeRef.qsShadowColour, qsShadowColour);
-    ASSIGN_OPTIONAL(themeRef.qsFontColour, qsFontColour);
-  }
-
-  long qsLineColour;
-  long qsFillColour;
-  long qsShadowColour;
-  long qsFontColour;
-};
 
 struct VSDOptionalLineStyle
 {
@@ -111,15 +64,22 @@ struct VSDLineStyle
     width(style.width), colour(style.colour), pattern(style.pattern), startMarker(style.startMarker),
     endMarker(style.endMarker), cap(style.cap), rounding(style.rounding) {}
   ~VSDLineStyle() {}
-  void override(const VSDOptionalLineStyle &style)
+  void override(const VSDOptionalLineStyle &style, const VSDXTheme *theme)
   {
     ASSIGN_OPTIONAL(style.width, width);
-    ASSIGN_OPTIONAL(style.colour, colour);
     ASSIGN_OPTIONAL(style.pattern, pattern);
     ASSIGN_OPTIONAL(style.startMarker, startMarker);
     ASSIGN_OPTIONAL(style.endMarker, endMarker);
     ASSIGN_OPTIONAL(style.cap, cap);
     ASSIGN_OPTIONAL(style.rounding, rounding);
+    if (!theme)
+    {
+      ASSIGN_OPTIONAL(style.colour, colour);
+    }
+    else
+    {
+      ASSIGN_OPTIONAL(style.colour, colour);
+    }
   }
 
   double width;
@@ -135,30 +95,35 @@ struct VSDOptionalFillStyle
 {
   VSDOptionalFillStyle() :
     fgColour(), bgColour(), pattern(), fgTransparency(), bgTransparency(), shadowFgColour(),
-    shadowPattern(), shadowOffsetX(), shadowOffsetY() {}
+    shadowPattern(), shadowOffsetX(), shadowOffsetY(), qsFillColour(), qsShadowColour() {}
   VSDOptionalFillStyle(const boost::optional<Colour> &fgc, const boost::optional<Colour> &bgc,
                        const boost::optional<unsigned char> &p, const boost::optional<double> &fga,
                        const boost::optional<double> &bga, const boost::optional<Colour> &sfgc,
                        const boost::optional<unsigned char> &shp, const boost::optional<double> &shX,
-                       const boost::optional<double> &shY) :
+                       const boost::optional<double> &shY, const boost::optional<long> &qsFc,
+                       const boost::optional<long> &qsSc) :
     fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
-    shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
+    shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
+    qsFillColour(qsFc), qsShadowColour(qsSc) {}
   VSDOptionalFillStyle(const VSDOptionalFillStyle &style) :
     fgColour(style.fgColour), bgColour(style.bgColour), pattern(style.pattern), fgTransparency(style.fgTransparency),
     bgTransparency(style.bgTransparency), shadowFgColour(style.shadowFgColour), shadowPattern(style.shadowPattern),
-    shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY) {}
+    shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY), qsFillColour(style.qsFillColour),
+    qsShadowColour(style.qsShadowColour) {}
   ~VSDOptionalFillStyle() {}
   void override(const VSDOptionalFillStyle &style)
   {
-    ASSIGN_OPTIONAL(style.fgColour, fgColour);
-    ASSIGN_OPTIONAL(style.bgColour, bgColour);
     ASSIGN_OPTIONAL(style.pattern, pattern);
     ASSIGN_OPTIONAL(style.fgTransparency, fgTransparency);
     ASSIGN_OPTIONAL(style.bgTransparency, bgTransparency);
-    ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
     ASSIGN_OPTIONAL(style.shadowPattern, shadowPattern);
     ASSIGN_OPTIONAL(style.shadowOffsetX, shadowOffsetX);
     ASSIGN_OPTIONAL(style.shadowOffsetY, shadowOffsetY);
+    ASSIGN_OPTIONAL(style.qsFillColour, qsFillColour);
+    ASSIGN_OPTIONAL(style.qsShadowColour, qsShadowColour);
+    ASSIGN_OPTIONAL(style.fgColour, fgColour);
+    ASSIGN_OPTIONAL(style.bgColour, bgColour);
+    ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
   }
 
   boost::optional<Colour> fgColour;
@@ -170,33 +135,57 @@ struct VSDOptionalFillStyle
   boost::optional<unsigned char> shadowPattern;
   boost::optional<double> shadowOffsetX;
   boost::optional<double> shadowOffsetY;
+  boost::optional<long> qsFillColour;
+  boost::optional<long> qsShadowColour;
 };
 
 struct VSDFillStyle
 {
   VSDFillStyle()
     : fgColour(), bgColour(0xff, 0xff, 0xff, 0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(),
-      shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0) {}
+      shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0), qsFillColour(-1), qsShadowColour(-1) {}
   VSDFillStyle(const Colour &fgc, const Colour &bgc, unsigned char p, double fga, double bga, const Colour &sfgc,
-               unsigned char shp, double shX, double shY)
+               unsigned char shp, double shX, double shY, long qsFc, long qsSc)
     : fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
-      shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY) {}
+      shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
+      qsFillColour(qsFc), qsShadowColour(qsSc) {}
   VSDFillStyle(const VSDFillStyle &style) :
     fgColour(style.fgColour), bgColour(style.bgColour), pattern(style.pattern), fgTransparency(style.fgTransparency),
     bgTransparency(style.bgTransparency), shadowFgColour(style.shadowFgColour), shadowPattern(style.shadowPattern),
-    shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY) {}
+    shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY), qsFillColour(style.qsFillColour),
+    qsShadowColour(style.qsShadowColour) {}
   ~VSDFillStyle() {}
-  void override(const VSDOptionalFillStyle &style)
+  void override(const VSDOptionalFillStyle &style, const VSDXTheme *theme)
   {
-    ASSIGN_OPTIONAL(style.fgColour, fgColour);
-    ASSIGN_OPTIONAL(style.bgColour, bgColour);
     ASSIGN_OPTIONAL(style.pattern, pattern);
     ASSIGN_OPTIONAL(style.fgTransparency, fgTransparency);
     ASSIGN_OPTIONAL(style.bgTransparency, bgTransparency);
-    ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
     ASSIGN_OPTIONAL(style.shadowPattern, shadowPattern);
     ASSIGN_OPTIONAL(style.shadowOffsetX, shadowOffsetX);
     ASSIGN_OPTIONAL(style.shadowOffsetY, shadowOffsetY);
+    ASSIGN_OPTIONAL(style.shadowOffsetY, shadowOffsetY);
+    ASSIGN_OPTIONAL(style.qsFillColour, qsFillColour);
+    ASSIGN_OPTIONAL(style.qsShadowColour, qsShadowColour);
+    if (theme)
+    {
+      if (!!style.qsFillColour && style.qsFillColour.get() >= 0)
+        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.get()), fgColour);
+      ASSIGN_OPTIONAL(style.fgColour, fgColour);
+
+      if (!!style.qsFillColour && style.qsFillColour.get() >= 0)
+        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.get()), bgColour);
+      ASSIGN_OPTIONAL(style.bgColour, bgColour);
+
+      if (!!style.qsShadowColour && style.qsShadowColour.get() >= 0)
+        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsShadowColour.get()), shadowFgColour);
+      ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
+    }
+    else
+    {
+      ASSIGN_OPTIONAL(style.fgColour, fgColour);
+      ASSIGN_OPTIONAL(style.bgColour, bgColour);
+      ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
+    }
   }
 
   Colour fgColour;
@@ -208,6 +197,8 @@ struct VSDFillStyle
   unsigned char shadowPattern;
   double shadowOffsetX;
   double shadowOffsetY;
+  long qsFillColour;
+  long qsShadowColour;
 };
 
 struct VSDOptionalCharStyle
@@ -284,7 +275,7 @@ struct VSDCharStyle
     doublestrikeout(style.doublestrikeout), allcaps(style.allcaps), initcaps(style.initcaps), smallcaps(style.smallcaps),
     superscript(style.superscript), subscript(style.subscript), scaleWidth(style.scaleWidth) {}
   ~VSDCharStyle() {}
-  void override(const VSDOptionalCharStyle &style)
+  void override(const VSDOptionalCharStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.font, font);
     ASSIGN_OPTIONAL(style.colour, colour);
@@ -388,7 +379,7 @@ struct VSDParaStyle
     bullet(style.bullet), bulletStr(style.bulletStr), bulletFont(style.bulletFont),
     bulletFontSize(style.bulletFontSize), textPosAfterBullet(style.textPosAfterBullet), flags(style.flags) {}
   ~VSDParaStyle() {}
-  void override(const VSDOptionalParaStyle &style)
+  void override(const VSDOptionalParaStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
     ASSIGN_OPTIONAL(style.indLeft, indLeft);
@@ -476,7 +467,7 @@ struct VSDTextBlockStyle
     bottomMargin(style.bottomMargin), verticalAlign(style.verticalAlign), isTextBkgndFilled(style.isTextBkgndFilled),
     textBkgndColour(style.textBkgndColour), defaultTabStop(style.defaultTabStop), textDirection(style.textDirection) {}
   ~VSDTextBlockStyle() {}
-  void override(const VSDOptionalTextBlockStyle &style)
+  void override(const VSDOptionalTextBlockStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.leftMargin, leftMargin);
     ASSIGN_OPTIONAL(style.rightMargin, rightMargin);
@@ -512,19 +503,17 @@ public:
   void addTextBlockStyle(unsigned textStyleIndex, const VSDOptionalTextBlockStyle &textBlockStyle);
   void addCharStyle(unsigned textStyleIndex, const VSDOptionalCharStyle &charStyle);
   void addParaStyle(unsigned textStyleIndex, const VSDOptionalParaStyle &paraStyle);
-  void addStyleThemeReference(unsigned styleIndex, const VSDOptionalThemeReference &themeRef);
 
   void addLineStyleMaster(unsigned lineStyleIndex, unsigned lineStyleMaster);
   void addFillStyleMaster(unsigned fillStyleIndex, unsigned fillStyleMaster);
   void addTextStyleMaster(unsigned textStyleIndex, unsigned textStyleMaster);
 
   VSDOptionalLineStyle getOptionalLineStyle(unsigned lineStyleIndex) const;
-  VSDFillStyle getFillStyle(unsigned fillStyleIndex) const;
+  VSDFillStyle getFillStyle(unsigned fillStyleIndex, const VSDXTheme *theme) const;
   VSDOptionalFillStyle getOptionalFillStyle(unsigned fillStyleIndex) const;
   VSDOptionalTextBlockStyle getOptionalTextBlockStyle(unsigned textStyleIndex) const;
   VSDOptionalCharStyle getOptionalCharStyle(unsigned textStyleIndex) const;
   VSDOptionalParaStyle getOptionalParaStyle(unsigned textStyleIndex) const;
-  VSDOptionalThemeReference getOptionalThemeReference(unsigned styleIndex) const;
 
 private:
   std::map<unsigned, VSDOptionalLineStyle> m_lineStyles;
@@ -532,7 +521,6 @@ private:
   std::map<unsigned, VSDOptionalTextBlockStyle> m_textBlockStyles;
   std::map<unsigned, VSDOptionalCharStyle> m_charStyles;
   std::map<unsigned, VSDOptionalParaStyle> m_paraStyles;
-  std::map<unsigned, VSDOptionalThemeReference> m_themeRefs;
   std::map<unsigned, unsigned> m_lineStyleMasters;
   std::map<unsigned, unsigned> m_fillStyleMasters;
   std::map<unsigned, unsigned> m_textStyleMasters;

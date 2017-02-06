@@ -453,7 +453,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 
   if (m_isInStyles)
     m_collector->collectFillStyle(level, fillColourFG, fillColourBG, fillPattern, fillFGTransparency,
-                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY);
+                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY, -1, -1);
   else
   {
     if (m_isStencilStarted)
@@ -461,7 +461,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       VSD_DEBUG_MSG(("Found stencil fill\n"));
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
-                                                      shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY));
+                                                      shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY, -1, -1));
   }
 }
 
@@ -904,8 +904,8 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        verticalAlign, !!bgClrId, bgColour, defaultTabStop, textDirection);
   else
-    m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin,
-                                                                verticalAlign, !!bgClrId, bgColour, defaultTabStop, textDirection));
+    m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign,
+                                                                !!bgClrId, bgColour, defaultTabStop, textDirection));
 }
 
 xmlChar *libvisio::VDXParser::readStringData(xmlTextReaderPtr reader)
