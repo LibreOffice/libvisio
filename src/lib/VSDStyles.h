@@ -23,15 +23,19 @@ namespace libvisio
 struct VSDOptionalLineStyle
 {
   VSDOptionalLineStyle() :
-    width(), colour(), pattern(), startMarker(), endMarker(), cap(), rounding() {}
+    width(), colour(), pattern(), startMarker(), endMarker(), cap(), rounding(),
+    qsLineColour(), qsLineMatrix() {}
   VSDOptionalLineStyle(const boost::optional<double> &w, const boost::optional<Colour> &col,
                        const boost::optional<unsigned char> &p, const boost::optional<unsigned char> &sm,
                        const boost::optional<unsigned char> &em, const boost::optional<unsigned char> &c,
-                       const boost::optional<double> &r) :
-    width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r) {}
+                       const boost::optional<double> &r, const boost::optional<long> &qlc,
+                       const boost::optional<long> &qlm) :
+    width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r),
+    qsLineColour(qlc), qsLineMatrix(qlm) {}
   VSDOptionalLineStyle(const VSDOptionalLineStyle &style) :
     width(style.width), colour(style.colour), pattern(style.pattern), startMarker(style.startMarker),
-    endMarker(style.endMarker), cap(style.cap), rounding(style.rounding) {}
+    endMarker(style.endMarker), cap(style.cap), rounding(style.rounding), qsLineColour(style.qsLineColour),
+    qsLineMatrix(style.qsLineMatrix) {}
   ~VSDOptionalLineStyle() {}
   void override(const VSDOptionalLineStyle &style)
   {
@@ -42,6 +46,8 @@ struct VSDOptionalLineStyle
     ASSIGN_OPTIONAL(style.endMarker, endMarker);
     ASSIGN_OPTIONAL(style.cap, cap);
     ASSIGN_OPTIONAL(style.rounding, rounding);
+    ASSIGN_OPTIONAL(style.qsLineColour, qsLineColour);
+    ASSIGN_OPTIONAL(style.qsLineMatrix, qsLineMatrix);
   }
 
   boost::optional<double> width;
@@ -51,18 +57,23 @@ struct VSDOptionalLineStyle
   boost::optional<unsigned char> endMarker;
   boost::optional<unsigned char> cap;
   boost::optional<double> rounding;
+  boost::optional<long> qsLineColour;
+  boost::optional<long> qsLineMatrix;
 };
 
 struct VSDLineStyle
 {
   VSDLineStyle() :
-    width(0.01), colour(), pattern(1), startMarker(0), endMarker(0), cap(0), rounding(0.0) {}
+    width(0.01), colour(), pattern(1), startMarker(0), endMarker(0), cap(0), rounding(0.0),
+    qsLineColour(-1), qsLineMatrix(-1) {}
   VSDLineStyle(double w, Colour col, unsigned char p, unsigned char sm,
-               unsigned char em, unsigned char c, double r) :
-    width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r) {}
+               unsigned char em, unsigned char c, double r, long qlc, long qlm) :
+    width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r),
+    qsLineColour(qlc), qsLineMatrix(qlm) {}
   VSDLineStyle(const VSDLineStyle &style) :
     width(style.width), colour(style.colour), pattern(style.pattern), startMarker(style.startMarker),
-    endMarker(style.endMarker), cap(style.cap), rounding(style.rounding) {}
+    endMarker(style.endMarker), cap(style.cap), rounding(style.rounding), qsLineColour(style.qsLineColour),
+    qsLineMatrix(style.qsLineMatrix) {}
   ~VSDLineStyle() {}
   void override(const VSDOptionalLineStyle &style, const VSDXTheme *theme)
   {
@@ -72,14 +83,14 @@ struct VSDLineStyle
     ASSIGN_OPTIONAL(style.endMarker, endMarker);
     ASSIGN_OPTIONAL(style.cap, cap);
     ASSIGN_OPTIONAL(style.rounding, rounding);
-    if (!theme)
+    ASSIGN_OPTIONAL(style.qsLineColour, qsLineColour);
+    ASSIGN_OPTIONAL(style.qsLineMatrix, qsLineMatrix);
+    if (theme)
     {
-      ASSIGN_OPTIONAL(style.colour, colour);
+      if (!!style.qsLineColour && style.qsLineColour.get() >= 0)
+        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsLineColour.get()), colour);
     }
-    else
-    {
-      ASSIGN_OPTIONAL(style.colour, colour);
-    }
+    ASSIGN_OPTIONAL(style.colour, colour);
   }
 
   double width;
@@ -89,27 +100,30 @@ struct VSDLineStyle
   unsigned char endMarker;
   unsigned char cap;
   double rounding;
+  long qsLineColour;
+  long qsLineMatrix;
 };
 
 struct VSDOptionalFillStyle
 {
   VSDOptionalFillStyle() :
     fgColour(), bgColour(), pattern(), fgTransparency(), bgTransparency(), shadowFgColour(),
-    shadowPattern(), shadowOffsetX(), shadowOffsetY(), qsFillColour(), qsShadowColour() {}
+    shadowPattern(), shadowOffsetX(), shadowOffsetY(), qsFillColour(), qsShadowColour(),
+    qsFillMatrix() {}
   VSDOptionalFillStyle(const boost::optional<Colour> &fgc, const boost::optional<Colour> &bgc,
                        const boost::optional<unsigned char> &p, const boost::optional<double> &fga,
                        const boost::optional<double> &bga, const boost::optional<Colour> &sfgc,
                        const boost::optional<unsigned char> &shp, const boost::optional<double> &shX,
                        const boost::optional<double> &shY, const boost::optional<long> &qsFc,
-                       const boost::optional<long> &qsSc) :
+                       const boost::optional<long> &qsSc, const boost::optional<long> &qsFm) :
     fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
     shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
-    qsFillColour(qsFc), qsShadowColour(qsSc) {}
+    qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm) {}
   VSDOptionalFillStyle(const VSDOptionalFillStyle &style) :
     fgColour(style.fgColour), bgColour(style.bgColour), pattern(style.pattern), fgTransparency(style.fgTransparency),
     bgTransparency(style.bgTransparency), shadowFgColour(style.shadowFgColour), shadowPattern(style.shadowPattern),
     shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY), qsFillColour(style.qsFillColour),
-    qsShadowColour(style.qsShadowColour) {}
+    qsShadowColour(style.qsShadowColour), qsFillMatrix(style.qsFillMatrix) {}
   ~VSDOptionalFillStyle() {}
   void override(const VSDOptionalFillStyle &style)
   {
@@ -121,6 +135,7 @@ struct VSDOptionalFillStyle
     ASSIGN_OPTIONAL(style.shadowOffsetY, shadowOffsetY);
     ASSIGN_OPTIONAL(style.qsFillColour, qsFillColour);
     ASSIGN_OPTIONAL(style.qsShadowColour, qsShadowColour);
+    ASSIGN_OPTIONAL(style.qsFillMatrix, qsFillMatrix);
     ASSIGN_OPTIONAL(style.fgColour, fgColour);
     ASSIGN_OPTIONAL(style.bgColour, bgColour);
     ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
@@ -137,23 +152,24 @@ struct VSDOptionalFillStyle
   boost::optional<double> shadowOffsetY;
   boost::optional<long> qsFillColour;
   boost::optional<long> qsShadowColour;
+  boost::optional<long> qsFillMatrix;
 };
 
 struct VSDFillStyle
 {
   VSDFillStyle()
     : fgColour(), bgColour(0xff, 0xff, 0xff, 0), pattern(0), fgTransparency(0), bgTransparency(0), shadowFgColour(),
-      shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0), qsFillColour(-1), qsShadowColour(-1) {}
+      shadowPattern(0), shadowOffsetX(0), shadowOffsetY(0), qsFillColour(-1), qsShadowColour(-1), qsFillMatrix(-1) {}
   VSDFillStyle(const Colour &fgc, const Colour &bgc, unsigned char p, double fga, double bga, const Colour &sfgc,
-               unsigned char shp, double shX, double shY, long qsFc, long qsSc)
+               unsigned char shp, double shX, double shY, long qsFc, long qsSc, long qsFm)
     : fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
       shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
-      qsFillColour(qsFc), qsShadowColour(qsSc) {}
+      qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm) {}
   VSDFillStyle(const VSDFillStyle &style) :
     fgColour(style.fgColour), bgColour(style.bgColour), pattern(style.pattern), fgTransparency(style.fgTransparency),
     bgTransparency(style.bgTransparency), shadowFgColour(style.shadowFgColour), shadowPattern(style.shadowPattern),
     shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY), qsFillColour(style.qsFillColour),
-    qsShadowColour(style.qsShadowColour) {}
+    qsShadowColour(style.qsShadowColour), qsFillMatrix(style.qsFillMatrix) {}
   ~VSDFillStyle() {}
   void override(const VSDOptionalFillStyle &style, const VSDXTheme *theme)
   {
@@ -166,26 +182,21 @@ struct VSDFillStyle
     ASSIGN_OPTIONAL(style.shadowOffsetY, shadowOffsetY);
     ASSIGN_OPTIONAL(style.qsFillColour, qsFillColour);
     ASSIGN_OPTIONAL(style.qsShadowColour, qsShadowColour);
+    ASSIGN_OPTIONAL(style.qsFillMatrix, qsFillMatrix);
     if (theme)
     {
       if (!!style.qsFillColour && style.qsFillColour.get() >= 0)
         ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.get()), fgColour);
-      ASSIGN_OPTIONAL(style.fgColour, fgColour);
 
       if (!!style.qsFillColour && style.qsFillColour.get() >= 0)
         ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.get()), bgColour);
-      ASSIGN_OPTIONAL(style.bgColour, bgColour);
 
       if (!!style.qsShadowColour && style.qsShadowColour.get() >= 0)
         ASSIGN_OPTIONAL(theme->getThemeColour(style.qsShadowColour.get()), shadowFgColour);
-      ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
     }
-    else
-    {
-      ASSIGN_OPTIONAL(style.fgColour, fgColour);
-      ASSIGN_OPTIONAL(style.bgColour, bgColour);
-      ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
-    }
+    ASSIGN_OPTIONAL(style.fgColour, fgColour);
+    ASSIGN_OPTIONAL(style.bgColour, bgColour);
+    ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
   }
 
   Colour fgColour;
@@ -199,6 +210,7 @@ struct VSDFillStyle
   double shadowOffsetY;
   long qsFillColour;
   long qsShadowColour;
+  long qsFillMatrix;
 };
 
 struct VSDOptionalCharStyle

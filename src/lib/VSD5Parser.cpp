@@ -213,9 +213,9 @@ void libvisio::VSD5Parser::readLine(librevenge::RVNGInputStream *input)
   unsigned char lineCap = readU8(input);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding);
+    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding, -1, -1);
   else
-    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding));
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding, -1, -1));
 }
 
 void libvisio::VSD5Parser::readParaIX(librevenge::RVNGInputStream *input)
@@ -356,7 +356,7 @@ void libvisio::VSD5Parser::readFillAndShadow(librevenge::RVNGInputStream *input)
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, 0.0,
                                                       0.0, shfgc, shadowPattern, shadowOffsetX,
-                                                      shadowOffsetY, -1, -1));
+                                                      shadowOffsetY, -1, -1, -1));
   }
 }
 

@@ -631,12 +631,13 @@ void libvisio::VSDParser::_flushShape()
     m_collector->collectTxtXForm(m_currentShapeLevel+2, *(m_shape.m_txtxform));
 
   m_collector->collectLine(m_currentShapeLevel+2, m_shape.m_lineStyle.width, m_shape.m_lineStyle.colour, m_shape.m_lineStyle.pattern,
-                           m_shape.m_lineStyle.startMarker, m_shape.m_lineStyle.endMarker, m_shape.m_lineStyle.cap, m_shape.m_lineStyle.rounding);
+                           m_shape.m_lineStyle.startMarker, m_shape.m_lineStyle.endMarker, m_shape.m_lineStyle.cap, m_shape.m_lineStyle.rounding,
+                           m_shape.m_lineStyle.qsLineColour, m_shape.m_lineStyle.qsLineMatrix);
 
   m_collector->collectFillAndShadow(m_currentShapeLevel+2, m_shape.m_fillStyle.fgColour, m_shape.m_fillStyle.bgColour, m_shape.m_fillStyle.pattern,
                                     m_shape.m_fillStyle.fgTransparency, m_shape.m_fillStyle.bgTransparency, m_shape.m_fillStyle.shadowPattern,
                                     m_shape.m_fillStyle.shadowFgColour, m_shape.m_fillStyle.shadowOffsetX, m_shape.m_fillStyle.shadowOffsetY,
-                                    m_shape.m_fillStyle.qsFillColour, m_shape.m_fillStyle.qsShadowColour);
+                                    m_shape.m_fillStyle.qsFillColour, m_shape.m_fillStyle.qsShadowColour, m_shape.m_fillStyle.qsFillMatrix);
 
   m_collector->collectTextBlock(m_currentShapeLevel+2, m_shape.m_textBlockStyle.leftMargin, m_shape.m_textBlockStyle.rightMargin,
                                 m_shape.m_textBlockStyle.topMargin, m_shape.m_textBlockStyle.bottomMargin, m_shape.m_textBlockStyle.verticalAlign,
@@ -862,9 +863,9 @@ void libvisio::VSDParser::readLine(librevenge::RVNGInputStream *input)
   unsigned char lineCap = readU8(input);
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding);
+    m_collector->collectLineStyle(m_header.level, strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding, -1, -1);
   else
-    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding));
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding, -1, -1));
 }
 
 void libvisio::VSDParser::readTextBlock(librevenge::RVNGInputStream *input)
@@ -2090,7 +2091,7 @@ void libvisio::VSDParser::readFillAndShadow(librevenge::RVNGInputStream *input)
   if (m_isInStyles)
     m_collector->collectFillStyle(m_header.level, colourFG, colourBG, fillPattern,
                                   fillFGTransparency, fillBGTransparency, shadowPattern, shadowFG,
-                                  shadowOffsetX, shadowOffsetY, -1, -1);
+                                  shadowOffsetX, shadowOffsetY, -1, -1, -1);
   else
   {
     if (m_isStencilStarted)
@@ -2099,7 +2100,7 @@ void libvisio::VSDParser::readFillAndShadow(librevenge::RVNGInputStream *input)
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
                                                       fillBGTransparency, shadowFG, shadowPattern,
-                                                      shadowOffsetX, shadowOffsetY, -1, -1));
+                                                      shadowOffsetX, shadowOffsetY, -1, -1, -1));
   }
 }
 

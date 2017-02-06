@@ -718,6 +718,8 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   boost::optional<unsigned char> startMarker;
   boost::optional<unsigned char> endMarker;
   boost::optional<unsigned char> lineCap;
+  boost::optional<long> qsLineColour;
+  boost::optional<long> qsLineMatrix;
 
   // Fill and shadow properties
   boost::optional<Colour> fillColourFG;
@@ -732,6 +734,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   boost::optional<double> shadowOffsetY;
   boost::optional<long> qsFillColour;
   boost::optional<long> qsShadowColour;
+  boost::optional<long> qsFillMatrix;
 
   // Text block properties
   boost::optional<double> leftMargin;
@@ -871,12 +874,11 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
       break;
     case XML_QUICKSTYLELINECOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        long tmpValue;
-        ret = readLongData(tmpValue, reader);
-        if (!strokeColour)
-          strokeColour = m_currentTheme.getThemeColour((unsigned)tmpValue);
-      }
+        ret = readLongData(qsLineColour, reader);
+      break;
+    case XML_QUICKSTYLELINEMATRIX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readLongData(qsLineMatrix, reader);
       break;
     case XML_QUICKSTYLEFILLCOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -885,6 +887,10 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     case XML_QUICKSTYLESHADOWCOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(qsShadowColour, reader);
+      break;
+    case XML_QUICKSTYLEFILLMATRIX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readLongData(qsFillMatrix, reader);
       break;
     default:
       break;
@@ -907,18 +913,21 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
 
   if (m_isInStyles)
   {
-    m_collector->collectLineStyle(level, strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap, rounding);
+    m_collector->collectLineStyle(level, strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap,
+                                  rounding, qsLineColour, qsLineMatrix);
     m_collector->collectFillStyle(level, fillColourFG, fillColourBG, fillPattern, fillFGTransparency,
-                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY,
-                                  qsFillColour, qsShadowColour);
+                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX,
+                                  shadowOffsetY, qsFillColour, qsShadowColour, qsFillMatrix);
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
                                        verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
   }
   else
   {
-    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap, rounding));
-    m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowColourFG,
-                                                      shadowPattern, shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour));
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap, rounding,
+                                                      qsLineColour, qsLineMatrix));
+    m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
+                                                      shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY,
+                                                      qsFillColour, qsShadowColour, qsFillMatrix));
     m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, !!bgClrId, bgColour,
                                                                 defaultTabStop, textDirection));
   }
@@ -1256,12 +1265,11 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       break;
     case XML_QUICKSTYLELINECOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-      {
-        long tmpValue;
-        ret = readLongData(tmpValue, reader);
-        if (!m_shape.m_lineStyle.colour)
-          m_shape.m_lineStyle.colour = m_currentTheme.getThemeColour((unsigned)tmpValue);
-      }
+        ret = readLongData(m_shape.m_lineStyle.qsLineColour, reader);
+      break;
+    case XML_QUICKSTYLELINEMATRIX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readLongData(m_shape.m_lineStyle.qsLineMatrix, reader);
       break;
     case XML_QUICKSTYLEFILLCOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -1270,6 +1278,10 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
     case XML_QUICKSTYLESHADOWCOLOR:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readLongData(m_shape.m_fillStyle.qsShadowColour, reader);
+      break;
+    case XML_QUICKSTYLEFILLMATRIX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readLongData(m_shape.m_fillStyle.qsFillMatrix, reader);
       break;
     case XML_LAYERMEMBER:
       if (XML_READER_TYPE_ELEMENT == tokenType)

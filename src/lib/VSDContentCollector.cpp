@@ -1611,20 +1611,21 @@ void libvisio::VSDContentCollector::collectRelQuadBezTo(unsigned /* id */, unsig
 
 void libvisio::VSDContentCollector::collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
                                                 const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker, const boost::optional<unsigned char> &lineCap,
-                                                const boost::optional<double> &rounding)
+                                                const boost::optional<double> &rounding, const boost::optional<long> &qsLineColour, const boost::optional<long> &qsLineMatrix)
 {
   _handleLevelChange(level);
-  m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding), m_documentTheme);
+  m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding, qsLineColour, qsLineMatrix), m_documentTheme);
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                                                          const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency, const boost::optional<double> &fillBGTransparency,
                                                          const boost::optional<unsigned char> &shadowPattern, const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX,
-                                                         const boost::optional<double> &shadowOffsetY, const boost::optional<long> &qsFillColour, const boost::optional<long> &qsShadowColour)
+                                                         const boost::optional<double> &shadowOffsetY, const boost::optional<long> &qsFillColour, const boost::optional<long> &qsShadowColour,
+                                                         const boost::optional<long> &qsFillMatrix)
 {
   _handleLevelChange(level);
   m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc,
-                                            shadowPattern, shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour), m_documentTheme);
+                                            shadowPattern, shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour, qsFillMatrix), m_documentTheme);
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
@@ -1632,7 +1633,7 @@ void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const b
                                                          const boost::optional<double> &fillBGTransparency,
                                                          const boost::optional<unsigned char> &shadowPattern, const boost::optional<Colour> &shfgc)
 {
-  collectFillAndShadow(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY, -1, -1);
+  collectFillAndShadow(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc, m_shadowOffsetX, m_shadowOffsetY, -1, -1, -1);
 }
 
 void libvisio::VSDContentCollector::collectForeignData(unsigned level, const librevenge::RVNGBinaryData &binaryData)
@@ -2791,9 +2792,10 @@ void libvisio::VSDContentCollector::collectStyleSheet(unsigned id, unsigned leve
 void libvisio::VSDContentCollector::collectLineStyle(unsigned /* level */, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c,
                                                      const boost::optional<unsigned char> &linePattern, const boost::optional<unsigned char> &startMarker,
                                                      const boost::optional<unsigned char> &endMarker, const boost::optional<unsigned char> &lineCap,
-                                                     const boost::optional<double> &rounding)
+                                                     const boost::optional<double> &rounding, const boost::optional<long> &qsLineColour,
+                                                     const boost::optional<long> &qsLineMatrix)
 {
-  VSDOptionalLineStyle lineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding);
+  VSDOptionalLineStyle lineStyle(strokeWidth, c, linePattern, startMarker, endMarker, lineCap, rounding, qsLineColour, qsLineMatrix);
   m_styles.addLineStyle(m_currentStyleSheet, lineStyle);
 }
 
@@ -2802,10 +2804,10 @@ void libvisio::VSDContentCollector::collectFillStyle(unsigned /* level */, const
                                                      const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
                                                      const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX,
                                                      const boost::optional<double> &shadowOffsetY, const boost::optional<long> &qsFillColour,
-                                                     const boost::optional<long> &qsShadowColour)
+                                                     const boost::optional<long> &qsShadowColour, const boost::optional<long> &qsFillMatrix)
 {
   VSDOptionalFillStyle fillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern,
-                                 shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour);
+                                 shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour, qsFillMatrix);
   m_styles.addFillStyle(m_currentStyleSheet, fillStyle);
 
 }
@@ -2816,7 +2818,7 @@ void libvisio::VSDContentCollector::collectFillStyle(unsigned level, const boost
                                                      const boost::optional<Colour> &shfgc)
 {
   collectFillStyle(level, colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shadowPattern, shfgc,
-                   m_shadowOffsetX, m_shadowOffsetY, -1, -1);
+                   m_shadowOffsetX, m_shadowOffsetY, -1, -1, -1);
 }
 
 void libvisio::VSDContentCollector::collectParaIXStyle(unsigned /* id */, unsigned /* level */, unsigned charCount,

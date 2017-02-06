@@ -31,12 +31,13 @@ public:
   virtual void collectEllipse(unsigned id, unsigned level, double cx, double cy, double xleft, double yleft, double xtop, double ytop) = 0;
   virtual void collectLine(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
                            const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
-                           const boost::optional<unsigned char> &lineCap, const boost::optional<double> &rounding) = 0;
+                           const boost::optional<unsigned char> &lineCap, const boost::optional<double> &rounding,
+                           const boost::optional<long> &qsLineColour, const boost::optional<long> &qsLineMatrix) = 0;
   virtual void collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                                     const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                                     const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
                                     const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX, const boost::optional<double> &shadowOffsetY,
-                                    const boost::optional<long> &qsFc, const boost::optional<long> &qsSc) = 0;
+                                    const boost::optional<long> &qsFc, const boost::optional<long> &qsSc, const boost::optional<long> &qsLm) = 0;
   virtual void collectFillAndShadow(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                                     const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                                     const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
@@ -116,12 +117,14 @@ public:
   virtual void collectStyleSheet(unsigned id, unsigned level,unsigned parentLineStyle, unsigned parentFillStyle, unsigned parentTextStyle) = 0;
   virtual void collectLineStyle(unsigned level, const boost::optional<double> &strokeWidth, const boost::optional<Colour> &c, const boost::optional<unsigned char> &linePattern,
                                 const boost::optional<unsigned char> &startMarker, const boost::optional<unsigned char> &endMarker,
-                                const boost::optional<unsigned char> &lineCap, const boost::optional<double> &rounding) = 0;
+                                const boost::optional<unsigned char> &lineCap, const boost::optional<double> &rounding,
+                                const boost::optional<long> &qsLineColour, const boost::optional<long> &qsLineMatrix) = 0;
   virtual void collectFillStyle(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                                 const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                                 const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,
                                 const boost::optional<Colour> &shfgc, const boost::optional<double> &shadowOffsetX, const boost::optional<double> &shadowOffsetY,
-                                const boost::optional<long> &qsFillColour, const boost::optional<long> &qsShadowColour) = 0;
+                                const boost::optional<long> &qsFillColour, const boost::optional<long> &qsShadowColour,
+                                const boost::optional<long> &qsFillMatrix) = 0;
   virtual void collectFillStyle(unsigned level, const boost::optional<Colour> &colourFG, const boost::optional<Colour> &colourBG,
                                 const boost::optional<unsigned char> &fillPattern, const boost::optional<double> &fillFGTransparency,
                                 const boost::optional<double> &fillBGTransparency, const boost::optional<unsigned char> &shadowPattern,

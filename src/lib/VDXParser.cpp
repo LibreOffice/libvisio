@@ -372,9 +372,9 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   while ((XML_LINE != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 
   if (m_isInStyles)
-    m_collector->collectLineStyle(level, strokeWidth, colour, linePattern, startMarker, endMarker, lineCap, rounding);
+    m_collector->collectLineStyle(level, strokeWidth, colour, linePattern, startMarker, endMarker,lineCap, rounding, -1, -1);
   else
-    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, colour, linePattern, startMarker, endMarker, lineCap, rounding));
+    m_shape.m_lineStyle.override(VSDOptionalLineStyle(strokeWidth, colour, linePattern, startMarker, endMarker, lineCap, rounding, -1, -1));
 }
 
 void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
@@ -453,7 +453,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
 
   if (m_isInStyles)
     m_collector->collectFillStyle(level, fillColourFG, fillColourBG, fillPattern, fillFGTransparency,
-                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY, -1, -1);
+                                  fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX, shadowOffsetY, -1, -1, -1);
   else
   {
     if (m_isStencilStarted)
@@ -461,7 +461,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
       VSD_DEBUG_MSG(("Found stencil fill\n"));
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
-                                                      shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY, -1, -1));
+                                                      shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY, -1, -1, 1));
   }
 }
 

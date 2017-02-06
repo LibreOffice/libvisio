@@ -55,7 +55,8 @@ void libvisio::VSDStylesCollector::collectEllipse(unsigned /* id */, unsigned le
 void libvisio::VSDStylesCollector::collectLine(unsigned level, const boost::optional<double> & /* strokeWidth */,
                                                const boost::optional<Colour> & /* c */, const boost::optional<unsigned char> & /* linePattern */,
                                                const boost::optional<unsigned char> & /* startMarker */, const boost::optional<unsigned char> & /* endMarker */,
-                                               const boost::optional<unsigned char> & /* lineCap */, const boost::optional<double> & /* rounding */)
+                                               const boost::optional<unsigned char> & /* lineCap */, const boost::optional<double> & /* rounding */,
+                                               const boost::optional<long> & /* qsLineColour */, const boost::optional<long> & /* qsLineMatrix */)
 {
   _handleLevelChange(level);
 }
@@ -65,7 +66,7 @@ void libvisio::VSDStylesCollector::collectFillAndShadow(unsigned level, const bo
                                                         const boost::optional<double> & /* fillBGTransparency */, const boost::optional<unsigned char> & /* shadowPattern */,
                                                         const boost::optional<Colour> & /* shfgc */, const boost::optional<double> & /* shadowOffsetX */,
                                                         const boost::optional<double> & /* shadowOffsetY */, const boost::optional<long> & /* qsFillColour */,
-                                                        const boost::optional<long> & /* qsShadowColour */)
+                                                        const boost::optional<long> & /* qsShadowColour */, const boost::optional<long> & /* qsFillMatrix */)
 {
   _handleLevelChange(level);
 }
@@ -339,7 +340,8 @@ void libvisio::VSDStylesCollector::collectStyleSheet(unsigned /* id */, unsigned
 void libvisio::VSDStylesCollector::collectLineStyle(unsigned level, const boost::optional<double> & /* strokeWidth */, const boost::optional<Colour> & /* c */,
                                                     const boost::optional<unsigned char> & /* linePattern */, const boost::optional<unsigned char> & /* startMarker */,
                                                     const boost::optional<unsigned char> & /* endMarker */, const boost::optional<unsigned char> & /* lineCap */,
-                                                    const boost::optional<double> & /* rounding */)
+                                                    const boost::optional<double> & /* rounding */, const boost::optional<long> & /* qsLineColour */,
+                                                    const boost::optional<long> & /* qsLineMatrix */)
 {
   _handleLevelChange(level);
 }
@@ -349,7 +351,7 @@ void libvisio::VSDStylesCollector::collectFillStyle(unsigned level, const boost:
                                                     const boost::optional<double> & /* fillBGTransparency */, const boost::optional<unsigned char> & /* shadowPattern */,
                                                     const boost::optional<Colour> & /* shfgc */, const boost::optional<double> & /* shadowOffsetX */,
                                                     const boost::optional<double> & /* shadowOffsetY */, const boost::optional<long> & /* qsFillColour */,
-                                                    const boost::optional<long> & /* qsShadowColour */)
+                                                    const boost::optional<long> & /* qsShadowColour */, const boost::optional<long> & /* qsFillMatrix */)
 {
   _handleLevelChange(level);
 }
