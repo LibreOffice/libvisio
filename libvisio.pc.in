@@ -10,4 +10,4 @@ Requires: librevenge-0.0
 Libs: -L${libdir} -lvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@
 Cflags: -I${includedir}/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@
 
-Requires.private: icu-i18n libxml-2.0 zlib
+Requires.private: icu-i18n libxml-2.0

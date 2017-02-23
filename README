@@ -1,7 +1,7 @@
 libvisio is a library and a set of tools for reading and converting MS
 Visio diagrams.
 
-libvisio requires boost, gperf, icu, librevenge, libxml2, perl and zlib
+libvisio requires boost, gperf, icu, librevenge, libxml2 and perl
 to build. Most up to date code is available from Git repository at
 libreoffice.org (https://gerrit.libreoffice.org/gitweb?p=libvisio.git)
 or the mirror at freedesktop.org

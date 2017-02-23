@@ -76,18 +76,6 @@ PKG_CHECK_MODULES([ICU],[icu-i18n],[
 AC_SUBST(ICU_CFLAGS)
 AC_SUBST(ICU_LIBS)
 
-# =========
-# Find zlib
-# =========
-PKG_CHECK_MODULES([ZLIB],[zlib],[],[
-    AC_CHECK_HEADER(zlib.h, [ZLIB_CFLAGS=],
-        [AC_MSG_ERROR(zlib.h not found. install zlib)], [])
-    AC_CHECK_LIB(z, inflate, [ ZLIB_LIBS=-lz ],
-        [AC_MSG_ERROR(zlib not found or functional)], [])
-])
-AC_SUBST(ZLIB_CFLAGS)
-AC_SUBST(ZLIB_LIBS)
-
 # ===========================
 # Find required boost headers
 # ===========================
