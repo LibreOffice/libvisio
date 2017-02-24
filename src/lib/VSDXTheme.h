@@ -11,6 +11,7 @@
 #define __VSDXTHEME_H__
 
 #include <vector>
+#include <map>
 #include <boost/optional.hpp>
 #include <librevenge-stream/librevenge-stream.h>
 #include "VSDXMLHelper.h"
@@ -53,6 +54,25 @@ struct VSDXClrScheme
   VSDXClrScheme();
 };
 
+struct VSDXFont
+{
+  librevenge::RVNGString m_latinTypeFace;
+  librevenge::RVNGString m_eaTypeFace;
+  librevenge::RVNGString m_csTypeFace;
+  std::map<unsigned, librevenge::RVNGString> m_typeFaces;
+
+  VSDXFont();
+};
+
+struct VSDXFontScheme
+{
+  VSDXFont m_majorFont;
+  VSDXFont m_minorFont;
+  unsigned m_schemeId;
+
+  VSDXFontScheme();
+};
+
 class VSDXTheme
 {
 public:
@@ -72,10 +92,15 @@ private:
   void readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr);
   void readVariationClrSchemeLst(xmlTextReaderPtr reader);
   void readVariationClrScheme(xmlTextReaderPtr reader, VSDXVariationClrScheme &varClrSch);
+  void readFontScheme(xmlTextReaderPtr reader);
+  void readFont(xmlTextReaderPtr reader, int idToken, VSDXFont &font);
+  void readTypeFace(xmlTextReaderPtr reader, librevenge::RVNGString &typeFace);
+  void readTypeFace(xmlTextReaderPtr reader, int &script, librevenge::RVNGString &typeFace);
 
   int getElementToken(xmlTextReaderPtr reader);
 
   VSDXClrScheme m_clrScheme;
+  VSDXFontScheme m_fontScheme;
 };
 
 } // namespace libvisio

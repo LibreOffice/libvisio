@@ -46,8 +46,24 @@ libvisio::VSDXClrScheme::VSDXClrScheme()
 {
 }
 
+libvisio::VSDXFont::VSDXFont()
+  : m_latinTypeFace(),
+    m_eaTypeFace(),
+    m_csTypeFace(),
+    m_typeFaces()
+{
+}
+
+libvisio::VSDXFontScheme::VSDXFontScheme()
+  : m_majorFont(),
+    m_minorFont(),
+    m_schemeId(0)
+{
+}
+
 libvisio::VSDXTheme::VSDXTheme()
-  : m_clrScheme()
+  : m_clrScheme(),
+    m_fontScheme()
 {
 }
 
@@ -63,6 +79,7 @@ int libvisio::VSDXTheme::getElementToken(xmlTextReaderPtr reader)
 
 bool libvisio::VSDXTheme::parse(librevenge::RVNGInputStream *input)
 {
+  VSD_DEBUG_MSG(("VSDXTheme::parse\n"));
   if (!input)
     return false;
 
@@ -83,6 +100,9 @@ bool libvisio::VSDXTheme::parse(librevenge::RVNGInputStream *input)
       {
       case XML_A_CLRSCHEME:
         readClrScheme(reader.get());
+        break;
+      case XML_A_FONTSCHEME:
+        readFontScheme(reader.get());
         break;
       default:
         break;
@@ -137,8 +157,104 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSysClr(xmlTextReaderP
   return retVal;
 }
 
+void libvisio::VSDXTheme::readFontScheme(xmlTextReaderPtr reader)
+{
+  VSD_DEBUG_MSG(("VSDXTheme::readFontScheme\n"));
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::readFontScheme: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_A_MAJORFONT:
+      readFont(reader, tokenId, m_fontScheme.m_majorFont);
+      break;
+    case XML_A_MINORFONT:
+      readFont(reader, tokenId, m_fontScheme.m_minorFont);
+      break;
+    case XML_VT_SCHEMEID:
+      break;
+    default:
+      break;
+    }
+  }
+  while ((XML_A_FONTSCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXTheme::readFont(xmlTextReaderPtr reader, int idToken, VSDXFont &font)
+{
+  VSD_DEBUG_MSG(("VSDXTheme::readFont\n"));
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::readFont: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_A_LATIN:
+      readTypeFace(reader, font.m_latinTypeFace);
+      break;
+    case XML_A_EA:
+      readTypeFace(reader, font.m_eaTypeFace);
+      break;
+    case XML_A_CS:
+      readTypeFace(reader, font.m_csTypeFace);
+      break;
+    case XML_A_FONT:
+    {
+      int script;
+      librevenge::RVNGString typeFace;
+      readTypeFace(reader, script, typeFace);
+      font.m_typeFaces[script] = typeFace;
+      break;
+    }
+    default:
+      break;
+    }
+  }
+  while ((idToken != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXTheme::readTypeFace(xmlTextReaderPtr reader, librevenge::RVNGString &typeFace)
+{
+  const shared_ptr<xmlChar> sTypeFace(xmlTextReaderGetAttribute(reader, BAD_CAST("typeface")), xmlFree);
+  if (sTypeFace)
+  {
+    typeFace.clear();
+    typeFace.sprintf("%s", (const char *)sTypeFace.get());
+  }
+}
+
+void libvisio::VSDXTheme::readTypeFace(xmlTextReaderPtr reader, int &script, librevenge::RVNGString &typeFace)
+{
+  const shared_ptr<xmlChar> sScript(xmlTextReaderGetAttribute(reader, BAD_CAST("script")), xmlFree);
+  if (sScript)
+  {
+    int token = libvisio::VSDXMLTokenMap::getTokenId(sScript.get());
+    if (XML_TOKEN_INVALID != token)
+      script = token;
+  }
+  readTypeFace(reader, typeFace);
+}
+
 void libvisio::VSDXTheme::readClrScheme(xmlTextReaderPtr reader)
 {
+  VSD_DEBUG_MSG(("VSDXTheme::readClrScheme\n"));
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
@@ -238,6 +354,7 @@ void libvisio::VSDXTheme::readThemeColour(xmlTextReaderPtr reader, int idToken, 
 
 void libvisio::VSDXTheme::readVariationClrSchemeLst(xmlTextReaderPtr reader)
 {
+  VSD_DEBUG_MSG(("VSDXTheme::readVariationClrSchemeLst\n"));
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
@@ -268,6 +385,7 @@ void libvisio::VSDXTheme::readVariationClrSchemeLst(xmlTextReaderPtr reader)
 
 void libvisio::VSDXTheme::readVariationClrScheme(xmlTextReaderPtr reader, VSDXVariationClrScheme &varClrSch)
 {
+  VSD_DEBUG_MSG(("VSDXTheme::readVariationClrScheme\n"));
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
