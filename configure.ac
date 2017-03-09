@@ -225,7 +225,7 @@ AS_IF([test x"$enable_werror" != "xno"], [
 	CXXFLAGS="$CXXFLAGS -Werror"
 ])
 AC_ARG_ENABLE([weffc],
-	[AS_HELP_STRING([--disable-weffc], [ Disable -Weffc++ warnings, usefull when using an old version of gcc or of boost])],
+	[AS_HELP_STRING([--disable-weffc], [ Disable -Weffc++ warnings, useful when using an old version of gcc or of boost])],
 	[enable_weffc="$enableval"],
 	[enable_weffc=yes]
 )
