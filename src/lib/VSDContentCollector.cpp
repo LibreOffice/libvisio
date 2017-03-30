@@ -2211,7 +2211,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
     _handleLevelChange(level);
 }
 
-void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */ , unsigned level, double x, double y, unsigned char xType, unsigned char yType, const std::vector<std::pair<double, double> > &points)
+void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */, unsigned level, double x, double y, unsigned char xType, unsigned char yType, const std::vector<std::pair<double, double> > &points)
 {
   _handleLevelChange(level);
 
@@ -2327,7 +2327,7 @@ void libvisio::VSDContentCollector::collectTxtXForm(unsigned level, const XForm 
 {
   _handleLevelChange(level);
   if (m_txtxform)
-    delete(m_txtxform);
+    delete (m_txtxform);
   m_txtxform = new XForm(txtxform);
   m_txtxform->x = m_txtxform->pinX - m_txtxform->pinLocX;
   m_txtxform->y = m_txtxform->pinY - m_txtxform->pinLocY;
@@ -2674,7 +2674,7 @@ void libvisio::VSDContentCollector::collectText(unsigned level, const librevenge
     m_currentText = libvisio::VSDName(textStream, format);
 }
 
-void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */ , unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
+void libvisio::VSDContentCollector::collectParaIX(unsigned /* id */, unsigned level, unsigned charCount, const boost::optional<double> &indFirst,
                                                   const boost::optional<double> &indLeft, const boost::optional<double> &indRight, const boost::optional<double> &spLine,
                                                   const boost::optional<double> &spBefore, const boost::optional<double> &spAfter, const boost::optional<unsigned char> &align,
                                                   const boost::optional<unsigned char> &bullet, const boost::optional<VSDName> &bulletStr,
@@ -2701,7 +2701,7 @@ void libvisio::VSDContentCollector::collectDefaultParaStyle(unsigned charCount, 
                                                    bullet, bulletStr, bulletFont, bulletFontSize, textPosAfterBullet, flags), m_documentTheme);
 }
 
-void libvisio::VSDContentCollector::collectCharIX(unsigned /* id */ , unsigned level, unsigned charCount,
+void libvisio::VSDContentCollector::collectCharIX(unsigned /* id */, unsigned level, unsigned charCount,
                                                   const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
                                                   const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout,
                                                   const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
@@ -3475,7 +3475,7 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
     m_x = 0;
     m_y = 0;
     if (m_txtxform)
-      delete(m_txtxform);
+      delete (m_txtxform);
     m_txtxform = 0;
     m_xform = XForm();
     m_NURBSData.clear();
@@ -3497,7 +3497,7 @@ void libvisio::VSDContentCollector::startPage(unsigned pageId)
   m_originalX = 0.0;
   m_originalY = 0.0;
   if (m_txtxform)
-    delete(m_txtxform);
+    delete (m_txtxform);
   m_txtxform = 0;
   m_xform = XForm();
   m_x = 0;

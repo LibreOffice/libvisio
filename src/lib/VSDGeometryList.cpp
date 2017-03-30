@@ -156,7 +156,7 @@ public:
 class VSDPolylineTo1 : public VSDGeometryListElement
 {
 public:
-  VSDPolylineTo1(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points) :
+  VSDPolylineTo1(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points) :
     VSDGeometryListElement(id, level), m_x(x), m_y(y), m_xType(xType), m_yType(yType), m_points(points) {}
   virtual ~VSDPolylineTo1() {}
   void handle(VSDCollector *collector) const;
@@ -170,7 +170,7 @@ public:
 class VSDPolylineTo2 : public VSDGeometryListElement
 {
 public:
-  VSDPolylineTo2(unsigned id , unsigned level, double x, double y, unsigned dataID) :
+  VSDPolylineTo2(unsigned id, unsigned level, double x, double y, unsigned dataID) :
     VSDGeometryListElement(id, level), m_dataID(dataID), m_x(x), m_y(y) {}
   virtual ~VSDPolylineTo2() {}
   void handle(VSDCollector *collector) const;
@@ -184,7 +184,7 @@ public:
 class VSDPolylineTo3 : public VSDGeometryListElement
 {
 public:
-  VSDPolylineTo3(unsigned id , unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
+  VSDPolylineTo3(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
                  const boost::optional<PolylineData> &data) :
     VSDGeometryListElement(id, level), m_data(FROM_OPTIONAL(data, PolylineData())), m_x(FROM_OPTIONAL(x, 0.0)), m_y(FROM_OPTIONAL(y, 0.0)) {}
   virtual ~VSDPolylineTo3() {}
@@ -699,20 +699,20 @@ void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const bo
   }
 }
 
-void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned char xType, unsigned char yType,
+void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType,
                                               const std::vector<std::pair<double, double> > &points)
 {
   clearElement(id);
   m_elements[id] = new VSDPolylineTo1(id, level, x, y, xType, yType, points);
 }
 
-void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, double x, double y, unsigned dataID)
+void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
   clearElement(id);
   m_elements[id] = new VSDPolylineTo2(id, level, x, y, dataID);
 }
 
-void libvisio::VSDGeometryList::addPolylineTo(unsigned id , unsigned level, boost::optional<double> &x, boost::optional<double> &y, boost::optional<PolylineData> &data)
+void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, boost::optional<double> &x, boost::optional<double> &y, boost::optional<PolylineData> &data)
 {
   VSDPolylineTo3 *tmpElement = dynamic_cast<VSDPolylineTo3 *>(m_elements[id]);
   if (!tmpElement)

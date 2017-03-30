@@ -39,7 +39,7 @@ public:
   );
   virtual ~VSDContentCollector()
   {
-    if (m_txtxform) delete(m_txtxform);
+    if (m_txtxform) delete (m_txtxform);
   };
 
   void collectDocumentTheme(const VSDXTheme *theme);

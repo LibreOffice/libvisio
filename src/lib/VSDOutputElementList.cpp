@@ -504,7 +504,7 @@ libvisio::VSDOutputElementList::VSDOutputElementList(const libvisio::VSDOutputEl
 libvisio::VSDOutputElementList &libvisio::VSDOutputElementList::operator=(const libvisio::VSDOutputElementList &elementList)
 {
   for (std::vector<VSDOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    delete(*iter);
+    delete (*iter);
 
   m_elements.clear();
 
@@ -523,7 +523,7 @@ void libvisio::VSDOutputElementList::append(const libvisio::VSDOutputElementList
 libvisio::VSDOutputElementList::~VSDOutputElementList()
 {
   for (std::vector<VSDOutputElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    delete(*iter);
+    delete (*iter);
   m_elements.clear();
 }
 

@@ -1194,7 +1194,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       break;
     case XML_SHAPESHDWOFFSETY:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readDoubleData(m_shape.m_fillStyle.shadowOffsetY , reader);
+        ret = readDoubleData(m_shape.m_fillStyle.shadowOffsetY, reader);
       break;
     case XML_LEFTMARGIN:
       if (XML_READER_TYPE_ELEMENT == tokenType)
