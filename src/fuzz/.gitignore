@@ -1,0 +1,8 @@
+.deps
+.libs
+*.lo
+*.la
+*.o
+Makefile
+Makefile.in
+*fuzzer

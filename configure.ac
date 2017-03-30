@@ -100,6 +100,16 @@ AC_ARG_ENABLE([tools],
 	[enable_tools=yes]
 )
 
+# =======
+# Fuzzers
+# =======
+AC_ARG_ENABLE([fuzzers],
+	[AS_HELP_STRING([--enable-fuzzers], [Build fuzzer(s)])],
+	[enable_fuzzers="$enableval"],
+	[enable_fuzzers=no]
+)
+AM_CONDITIONAL(BUILD_FUZZERS, [test "x$enable_fuzzers" = "xyes"])
+
 # ==========
 # Unit tests
 # ==========
@@ -109,7 +119,7 @@ AC_ARG_ENABLE([tests],
     [enable_tests=yes]
 )
 
-AS_IF([test "x$enable_tools" = "xyes" -o "x$enable_tests" = "xyes"], [
+AS_IF([test "x$enable_tools" = "xyes" -o "x$enable_tests" = "xyes" -o "x$enable_fuzzers" = "xyes"], [
 	PKG_CHECK_MODULES([REVENGE_STREAM],[
 		librevenge-stream-0.0
 	])
@@ -123,7 +133,7 @@ AS_IF([test "x$enable_tests" = "xyes"], [
 AC_SUBST([CPPUNIT_CFLAGS])
 AC_SUBST([CPPUNIT_LIBS])
 
-AS_IF([test "x$enable_tools" = "xyes"], [
+AS_IF([test "x$enable_tools" = "xyes" -o "x$enable_fuzzers" = "xyes"], [
 	PKG_CHECK_MODULES([REVENGE_GENERATORS],[
 		librevenge-generators-0.0
 	])
@@ -338,6 +348,7 @@ src/conv/svg/vss2xhtml.rc
 src/conv/text/Makefile
 src/conv/text/vsd2text.rc
 src/conv/text/vss2text.rc
+src/fuzz/Makefile
 src/lib/Makefile
 src/lib/libvisio.rc
 src/test/Makefile
@@ -359,6 +370,7 @@ AC_MSG_NOTICE([
 Build configuration:
 	debug:           ${enable_debug}
 	docs:            ${build_docs}
+	fuzzers:         ${enable_fuzzers}
 	tests:           ${enable_tests}
 	tools:           ${enable_tools}
 	werror:          ${enable_werror}
