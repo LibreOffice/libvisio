@@ -99,6 +99,8 @@ AC_ARG_ENABLE([tools],
 	[enable_tools="$enableval"],
 	[enable_tools=yes]
 )
+AM_CONDITIONAL([BUILD_TOOLS], [test "x$enable_tools" = "xyes"])
+AS_IF([test "x$enable_tools" = "xyes"], [need_stream=yes; need_generators=yes])
 
 # =======
 # Fuzzers
@@ -109,6 +111,7 @@ AC_ARG_ENABLE([fuzzers],
 	[enable_fuzzers=no]
 )
 AM_CONDITIONAL(BUILD_FUZZERS, [test "x$enable_fuzzers" = "xyes"])
+AS_IF([test "x$enable_fuzzers" = "xyes"], [need_stream=yes; need_generators=yes])
 
 # ==========
 # Unit tests
@@ -119,7 +122,15 @@ AC_ARG_ENABLE([tests],
     [enable_tests=yes]
 )
 
-AS_IF([test "x$enable_tools" = "xyes" -o "x$enable_tests" = "xyes" -o "x$enable_fuzzers" = "xyes"], [
+AS_IF([test "x$enable_tests" = "xyes"], [
+    PKG_CHECK_MODULES([CPPUNIT], [cppunit])
+], [])
+AC_SUBST([CPPUNIT_CFLAGS])
+AC_SUBST([CPPUNIT_LIBS])
+AM_CONDITIONAL([ENABLE_TESTS], [test "x$enable_tests" = "xyes"])
+AS_IF([test "x$enable_tests" = "xyes"], [need_generators=yes])
+
+AS_IF([test "x$need_stream" = "xyes"], [
 	PKG_CHECK_MODULES([REVENGE_STREAM],[
 		librevenge-stream-0.0
 	])
@@ -127,22 +138,13 @@ AS_IF([test "x$enable_tools" = "xyes" -o "x$enable_tests" = "xyes" -o "x$enable_
 AC_SUBST([REVENGE_STREAM_CFLAGS])
 AC_SUBST([REVENGE_STREAM_LIBS])
 
-AS_IF([test "x$enable_tests" = "xyes"], [
-    PKG_CHECK_MODULES([CPPUNIT], [cppunit])
-], [])
-AC_SUBST([CPPUNIT_CFLAGS])
-AC_SUBST([CPPUNIT_LIBS])
-
-AS_IF([test "x$enable_tools" = "xyes" -o "x$enable_fuzzers" = "xyes"], [
+AS_IF([test "x$need_generators" = "xyes"], [
 	PKG_CHECK_MODULES([REVENGE_GENERATORS],[
 		librevenge-generators-0.0
 	])
 ])
 AC_SUBST([REVENGE_GENERATORS_CFLAGS])
 AC_SUBST([REVENGE_GENERATORS_LIBS])
-
-AM_CONDITIONAL([BUILD_TOOLS], [test "x$enable_tools" = "xyes"])
-AM_CONDITIONAL([ENABLE_TESTS], [test "x$enable_tests" = "xyes"])
 
 # =================================
 # Libtool/Version Makefile settings
