@@ -88,6 +88,8 @@ double readDouble(librevenge::RVNGInputStream *input);
 
 const librevenge::RVNGString getColourString(const Colour &c);
 
+unsigned long getRemainingLength(librevenge::RVNGInputStream *input);
+
 void appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character);
 
 void debugPrint(const char *format, ...);

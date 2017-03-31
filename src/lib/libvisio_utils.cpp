@@ -109,6 +109,33 @@ const librevenge::RVNGString libvisio::getColourString(const Colour &c)
   return sColour;
 }
 
+unsigned long libvisio::getRemainingLength(librevenge::RVNGInputStream *const input)
+{
+  if (!input)
+    throw EndOfStreamException();
+
+  const unsigned long begin = (unsigned long) input->tell();
+  unsigned long end = begin;
+
+  if (0 == input->seek(0, librevenge::RVNG_SEEK_END))
+  {
+    end = (unsigned long) input->tell();
+  }
+  else
+  {
+    // librevenge::RVNG_SEEK_END does not work. Use the harder way.
+    while (!input->isEnd())
+    {
+      readU8(input);
+      ++end;
+    }
+  }
+
+  input->seek(begin, librevenge::RVNG_SEEK_SET);
+
+  return end - begin;
+}
+
 void libvisio::appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character)
 {
   // Convert carriage returns to new line characters

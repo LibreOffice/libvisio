@@ -21,6 +21,18 @@
 #include "VSDStylesCollector.h"
 #include "VSDMetaData.h"
 
+namespace
+{
+
+void sanitizeListLength(uint32_t &length, const std::size_t elem, librevenge::RVNGInputStream *const input)
+{
+  const unsigned long maxLength = libvisio::getRemainingLength(input) / elem;
+  if (length > maxLength)
+    length = maxLength;
+}
+
+}
+
 libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container)
   : m_input(input), m_painter(painter), m_container(container), m_header(), m_collector(0), m_shapeList(), m_currentLevel(0),
     m_stencils(), m_currentStencil(0), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
@@ -914,6 +926,7 @@ void libvisio::VSDParser::readGeomList(librevenge::RVNGInputStream *input)
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
     std::vector<unsigned> geometryOrder;
+    sanitizeListLength(childrenListLength, 4, input);
     geometryOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       geometryOrder.push_back(readU32(input));
@@ -938,6 +951,7 @@ void libvisio::VSDParser::readCharList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
+    sanitizeListLength(childrenListLength, 4, input);
     std::vector<unsigned> characterOrder;
     characterOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
@@ -958,6 +972,7 @@ void libvisio::VSDParser::readParaList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
+    sanitizeListLength(childrenListLength, 4, input);
     std::vector<unsigned> paragraphOrder;
     paragraphOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
@@ -982,6 +997,7 @@ void libvisio::VSDParser::readTabsDataList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
+    sanitizeListLength(childrenListLength, 4, input);
     std::vector<unsigned> tabsOrder;
     tabsOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
@@ -1000,6 +1016,7 @@ void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
+    sanitizeListLength(childrenListLength, 4, input);
     std::vector<unsigned> layerOrder;
     layerOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
