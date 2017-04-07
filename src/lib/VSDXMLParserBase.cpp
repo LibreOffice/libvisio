@@ -12,7 +12,6 @@
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
-#include <boost/algorithm/string.hpp>
 #include <boost/spirit/include/classic.hpp>
 #include "VSDXMLParserBase.h"
 #include "libvisio_utils.h"

@@ -16,7 +16,6 @@
 #include <istream>
 #include <vector>
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 #include <librevenge-stream/librevenge-stream.h>
 #include "VSDXMLHelper.h"
 #include "libvisio_utils.h"
