@@ -216,12 +216,14 @@ void libvisio::VSDFieldList::addFieldList(unsigned id, unsigned level)
 
 void libvisio::VSDFieldList::addTextField(unsigned id, unsigned level, int nameId, int formatStringId)
 {
-  m_elements[id] = new VSDTextField(id, level, nameId, formatStringId);
+  if (m_elements.find(id) == m_elements.end())
+    m_elements[id] = new VSDTextField(id, level, nameId, formatStringId);
 }
 
 void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
 {
-  m_elements[id] = new VSDNumericField(id, level, format, number, formatStringId);
+  if (m_elements.find(id) == m_elements.end())
+    m_elements[id] = new VSDNumericField(id, level, format, number, formatStringId);
 }
 
 void libvisio::VSDFieldList::handle(VSDCollector *collector) const
