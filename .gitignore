@@ -17,7 +17,6 @@ libtool
 libvisio.spec
 libvisio-zip
 ltmain.sh
-m4
 missing
 mkinstalldirs
 stamp-h1
