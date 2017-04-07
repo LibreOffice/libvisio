@@ -7,8 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
+
 #include <librevenge/librevenge.h>
 #include <libvisio/libvisio.h>
 #include "libvisio_utils.h"
@@ -250,7 +251,7 @@ static bool isXmlVisioDocument(librevenge::RVNGInputStream *input)
   try
   {
     input->seek(0, librevenge::RVNG_SEEK_SET);
-    const boost::shared_ptr<xmlTextReader> reader(
+    const std::shared_ptr<xmlTextReader> reader(
       libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
       xmlFreeTextReader);
     if (!reader)

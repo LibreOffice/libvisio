@@ -7,12 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <memory>
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/spirit/include/classic.hpp>
 #include "VSDXMLParserBase.h"
 #include "libvisio_utils.h"
@@ -22,7 +22,7 @@
 #include "VSDXMLHelper.h"
 #include "VSDXMLTokenMap.h"
 
-using boost::shared_ptr;
+using std::shared_ptr;
 
 libvisio::VSDXMLParserBase::VSDXMLParserBase()
   : m_collector(), m_stencils(), m_currentStencil(0), m_shape(),
@@ -2216,7 +2216,7 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextRea
 unsigned libvisio::VSDXMLParserBase::getIX(xmlTextReaderPtr reader)
 {
   unsigned ix = MINUS_ONE;
-  const boost::shared_ptr<xmlChar> ixString(xmlTextReaderGetAttribute(reader, BAD_CAST("IX")), xmlFree);
+  const std::shared_ptr<xmlChar> ixString(xmlTextReaderGetAttribute(reader, BAD_CAST("IX")), xmlFree);
   if (ixString)
     ix = (unsigned)xmlStringToLong(ixString.get());
   return ix;
@@ -2227,7 +2227,7 @@ void libvisio::VSDXMLParserBase::readTriggerId(unsigned &id, xmlTextReaderPtr re
   using namespace ::boost::spirit::classic;
 
   unsigned triggerId = MINUS_ONE;
-  const boost::shared_ptr<xmlChar> triggerString(xmlTextReaderGetAttribute(reader, BAD_CAST("F")), xmlFree);
+  const std::shared_ptr<xmlChar> triggerString(xmlTextReaderGetAttribute(reader, BAD_CAST("F")), xmlFree);
   if (triggerString)
   {
     if (parse((const char *)triggerString.get(),

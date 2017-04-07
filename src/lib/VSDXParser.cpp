@@ -7,12 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <memory>
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/shared_ptr.hpp>
 #include "VSDXParser.h"
 #include "libvisio_utils.h"
 #include "libvisio_xml.h"
@@ -304,7 +304,7 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
 
   XMLErrorWatcher watcher;
 
-  const boost::shared_ptr<xmlTextReader> reader(
+  const std::shared_ptr<xmlTextReader> reader(
     xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
     xmlFreeTextReader);
   if (!reader)
@@ -326,7 +326,7 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
       case XML_REL:
         if (XML_READER_TYPE_ELEMENT == tokenType)
         {
-          boost::shared_ptr<xmlChar> id(xmlTextReaderGetAttribute(reader.get(), BAD_CAST("r:id")), xmlFree);
+          std::shared_ptr<xmlChar> id(xmlTextReaderGetAttribute(reader.get(), BAD_CAST("r:id")), xmlFree);
           if (id)
           {
             const VSDXRelationship *rel = rels.getRelationshipById((char *)id.get());
@@ -1402,7 +1402,7 @@ void libvisio::VSDXParser::readTabRow(xmlTextReaderPtr reader)
       case XML_POSITION:
         if (XML_READER_TYPE_ELEMENT == tokenType)
         {
-          const boost::shared_ptr<xmlChar> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("N")), xmlFree);
+          const std::shared_ptr<xmlChar> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("N")), xmlFree);
           if (stringValue)
           {
             unsigned idx = xmlStringToLong(stringValue.get()+8);
@@ -1413,7 +1413,7 @@ void libvisio::VSDXParser::readTabRow(xmlTextReaderPtr reader)
       case XML_ALIGNMENT:
         if (XML_READER_TYPE_ELEMENT == tokenType)
         {
-          const boost::shared_ptr<xmlChar> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("N")), xmlFree);
+          const std::shared_ptr<xmlChar> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("N")), xmlFree);
           if (stringValue)
           {
             unsigned idx = xmlStringToLong(stringValue.get()+9);

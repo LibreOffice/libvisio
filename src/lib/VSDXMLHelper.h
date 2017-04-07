@@ -11,8 +11,9 @@
 #define __VSDXMLHELPER_H__
 
 #include <map>
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
+
 #include <librevenge-stream/librevenge-stream.h>
 #include <libxml/xmlreader.h>
 #include "VSDTypes.h"

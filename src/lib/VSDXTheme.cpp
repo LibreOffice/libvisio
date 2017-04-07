@@ -9,13 +9,13 @@
 
 #include "VSDXTheme.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "VSDXMLTokenMap.h"
 #include "libvisio_utils.h"
 #include "libvisio_xml.h"
 
-using boost::shared_ptr;
+using std::shared_ptr;
 
 libvisio::VSDXVariationClrScheme::VSDXVariationClrScheme()
   : m_varColor1()

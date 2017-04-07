@@ -10,7 +10,7 @@
 #ifndef __LIBVISIO_XML_H__
 #define __LIBVISIO_XML_H__
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <librevenge-stream/librevenge-stream.h>
 
@@ -47,16 +47,16 @@ xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input,
                                     XMLErrorWatcher *watcher = 0);
 
 Colour xmlStringToColour(const xmlChar *s);
-Colour xmlStringToColour(const boost::shared_ptr<xmlChar> &s);
+Colour xmlStringToColour(const std::shared_ptr<xmlChar> &s);
 
 long xmlStringToLong(const xmlChar *s);
-long xmlStringToLong(const boost::shared_ptr<xmlChar> &s);
+long xmlStringToLong(const std::shared_ptr<xmlChar> &s);
 
 double xmlStringToDouble(const xmlChar *s);
-double xmlStringToDouble(const boost::shared_ptr<xmlChar> &s);
+double xmlStringToDouble(const std::shared_ptr<xmlChar> &s);
 
 bool xmlStringToBool(const xmlChar *s);
-bool xmlStringToBool(const boost::shared_ptr<xmlChar> &s);
+bool xmlStringToBool(const std::shared_ptr<xmlChar> &s);
 
 } // namespace libvisio
 

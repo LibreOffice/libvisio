@@ -86,7 +86,6 @@ AC_CHECK_HEADERS(
 	boost/algorithm/string.hpp \
 	boost/lexical_cast.hpp \
 	boost/optional.hpp \
-	boost/shared_ptr.hpp \
 	boost/spirit/include/classic.hpp,
 	[],
 	[AC_MSG_ERROR(Required boost headers not found. install boost >= 1.36)],

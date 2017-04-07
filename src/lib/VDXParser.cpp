@@ -7,12 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <memory>
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
 #include <boost/algorithm/string.hpp>
-#include <boost/shared_ptr.hpp>
 #include "VDXParser.h"
 #include "libvisio_utils.h"
 #include "libvisio_xml.h"
@@ -75,7 +75,7 @@ bool libvisio::VDXParser::processXmlDocument(librevenge::RVNGInputStream *input)
   if (!input)
     return false;
 
-  const boost::shared_ptr<xmlTextReader> reader(
+  const std::shared_ptr<xmlTextReader> reader(
     xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
     xmlFreeTextReader);
   if (!reader)

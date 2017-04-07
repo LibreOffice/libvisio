@@ -131,7 +131,7 @@ Colour xmlStringToColour(const xmlChar *s)
   return Colour((val & 0xff0000) >> 16, (val & 0xff00) >> 8, val & 0xff, 0);
 }
 
-Colour xmlStringToColour(const boost::shared_ptr<xmlChar> &s)
+Colour xmlStringToColour(const std::shared_ptr<xmlChar> &s)
 {
   return xmlStringToColour(s.get());
 }
@@ -155,7 +155,7 @@ long xmlStringToLong(const xmlChar *s)
   return 0;
 }
 
-long xmlStringToLong(const boost::shared_ptr<xmlChar> &s)
+long xmlStringToLong(const std::shared_ptr<xmlChar> &s)
 {
   return xmlStringToLong(s.get());
 }
@@ -173,7 +173,7 @@ catch (const boost::bad_lexical_cast &)
   throw XmlParserException();
 }
 
-double xmlStringToDouble(const boost::shared_ptr<xmlChar> &s)
+double xmlStringToDouble(const std::shared_ptr<xmlChar> &s)
 {
   return xmlStringToDouble(s.get());
 }
@@ -197,7 +197,7 @@ bool xmlStringToBool(const xmlChar *s)
 
 }
 
-bool xmlStringToBool(const boost::shared_ptr<xmlChar> &s)
+bool xmlStringToBool(const std::shared_ptr<xmlChar> &s)
 {
   return xmlStringToBool(s.get());
 }

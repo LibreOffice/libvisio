@@ -11,12 +11,12 @@
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE 1
 #endif
 
+#include <memory>
 #include <sstream>
 #include <istream>
 #include <vector>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/shared_ptr.hpp>
 #include <librevenge-stream/librevenge-stream.h>
 #include "VSDXMLHelper.h"
 #include "libvisio_utils.h"
@@ -95,7 +95,7 @@ libvisio::VSDXRelationships::VSDXRelationships(librevenge::RVNGInputStream *inpu
 {
   if (input)
   {
-    const boost::shared_ptr<xmlTextReader> reader(
+    const std::shared_ptr<xmlTextReader> reader(
       xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
       xmlFreeTextReader);
     if (reader)
