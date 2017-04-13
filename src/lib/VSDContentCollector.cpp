@@ -3735,16 +3735,18 @@ void libvisio::VSDContentCollector::collectMisc(unsigned level, const VSDMisc &m
 
 void libvisio::VSDContentCollector::collectLayerMem(unsigned level, const VSDName &layerMem)
 {
-  using namespace ::boost::spirit::classic;
-
   _handleLevelChange(level);
+  m_currentLayerMem.clear();
+
+  if (layerMem.m_data.empty())
+    return;
+
   librevenge::RVNGString text;
   std::vector<unsigned char> tmpData(layerMem.m_data.size());
   memcpy(&tmpData[0], layerMem.m_data.getDataBuffer(), layerMem.m_data.size());
   appendCharacters(text, tmpData, layerMem.m_format);
 
-  m_currentLayerMem.clear();
-
+  using namespace ::boost::spirit::classic;
   bool bRes = parse(text.cstr(),
                     //  Begin grammar
                     (
