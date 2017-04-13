@@ -2134,6 +2134,8 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   // Let knotVector run from 0 to 1
   double firstKnot = knotVector[0];
   double lastKnot = knotVector.back()-knotVector[0];
+  if (VSD_ALMOST_ZERO(lastKnot))
+    lastKnot = VSD_EPSILON;
   for (std::vector<double>::iterator knot = knotVector.begin(); knot != knotVector.end(); ++knot)
   {
     *knot -= firstKnot;
