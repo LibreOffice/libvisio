@@ -11,6 +11,7 @@
 #define __VSDOUTPUTELEMENTLIST_H__
 
 #include <map>
+#include <memory>
 #include <list>
 #include <vector>
 #include <librevenge/librevenge.h>
@@ -52,7 +53,7 @@ public:
     return m_elements.empty();
   }
 private:
-  std::vector<VSDOutputElement *> m_elements;
+  std::vector<std::unique_ptr<VSDOutputElement>> m_elements;
 };
 
 
