@@ -39,6 +39,7 @@ AC_PROG_EGREP
 AC_PROG_SED
 
 AX_CXX_COMPILE_STDCXX_11([noext])
+AX_GCC_FUNC_ATTRIBUTE([format])
 
 dnl ===================================================================
 dnl Check for gperf

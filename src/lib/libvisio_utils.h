@@ -27,6 +27,12 @@
 #include <librevenge-stream/librevenge-stream.h>
 #include <unicode/utypes.h>
 
+#if defined(HAVE_FUNC_ATTRIBUTE_FORMAT)
+#define VSD_ATTRIBUTE_PRINTF(fmt, arg) __attribute__((format(printf, fmt, arg)))
+#else
+#define VSD_ATTRIBUTE_PRINTF(fmt, arg)
+#endif
+
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
 #define VSD_DEBUG_MSG(M) libvisio::debugPrint M
@@ -58,7 +64,7 @@ unsigned long getRemainingLength(librevenge::RVNGInputStream *input);
 
 void appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character);
 
-void debugPrint(const char *format, ...);
+void debugPrint(const char *format, ...) VSD_ATTRIBUTE_PRINTF(1, 2);
 
 class EndOfStreamException
 {
