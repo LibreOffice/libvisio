@@ -84,7 +84,8 @@ unsigned computeBMPDataOffset(librevenge::RVNGInputStream *const input, const un
   // determine palette size
   input->seek(10, librevenge::RVNG_SEEK_CUR);
   unsigned bpp = readU16(input);
-  // sanitize bpp
+  // sanitize bpp - limit to the allowed range and then round up to one
+  // of the allowed values
   if (bpp > 32)
     bpp = 32;
   const unsigned allowedBpp[] = {1, 4, 8, 16, 24, 32};
