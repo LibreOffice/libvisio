@@ -89,7 +89,7 @@ unsigned computeBMPDataOffset(librevenge::RVNGInputStream *const input, const un
     bpp = 32;
   const unsigned allowedBpp[] = {1, 4, 8, 16, 24, 32};
   size_t bppIdx = 0;
-  while (bppIdx < VSD_NUM_ELEMENTS(allowedBpp) && bpp < allowedBpp[bppIdx])
+  while (bppIdx < VSD_NUM_ELEMENTS(allowedBpp) && bpp > allowedBpp[bppIdx])
     ++bppIdx;
   if (bpp < allowedBpp[bppIdx])
     bpp = allowedBpp[bppIdx];
