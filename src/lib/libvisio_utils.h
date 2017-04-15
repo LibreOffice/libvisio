@@ -27,18 +27,10 @@
 #include <librevenge-stream/librevenge-stream.h>
 #include <unicode/utypes.h>
 
-// debug message includes source file and line number
-//#define VERBOSE_DEBUG 1
-
 // do nothing with debug messages in a release compile
 #ifdef DEBUG
-#ifdef VERBOSE_DEBUG
-#define VSD_DEBUG_MSG(M) libvisio::debugPrint("%15s:%5d: ", __FILE__, __LINE__); libvisio::debugPrint M
-#define VSD_DEBUG(M) M
-#else
 #define VSD_DEBUG_MSG(M) libvisio::debugPrint M
 #define VSD_DEBUG(M) M
-#endif
 #else
 #define VSD_DEBUG_MSG(M)
 #define VSD_DEBUG(M)
