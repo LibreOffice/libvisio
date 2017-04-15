@@ -10,44 +10,18 @@
 #ifndef __LIBVISIO_UTILS_H__
 #define __LIBVISIO_UTILS_H__
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <memory>
+
+#include <boost/cstdint.hpp>
 
 #include "VSDTypes.h"
 
 #define VSD_EPSILON 1E-6
 #define VSD_ALMOST_ZERO(m) (fabs(m) <= VSD_EPSILON)
-
-#ifdef _MSC_VER
-
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef short int16_t;
-typedef unsigned uint32_t;
-typedef int int32_t;
-typedef unsigned __int64 uint64_t;
-
-#else /* !defined _MSC_VER */
-
-#ifdef HAVE_CONFIG_H
-
-#include <config.h>
-
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
-
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
-
-#else /* !defined HAVE_CONFIG_H */
-
-#include <stdint.h>
-#include <inttypes.h>
-
-#endif /* HAVE_CONFIG_H */
-
-#endif /* _MSC_VER */
 
 #include <librevenge/librevenge.h>
 #include <librevenge-stream/librevenge-stream.h>

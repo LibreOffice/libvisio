@@ -84,6 +84,7 @@ AC_SUBST(ICU_LIBS)
 
 AC_CHECK_HEADERS(
 	boost/algorithm/string.hpp \
+	boost/cstdint.hpp \
 	boost/lexical_cast.hpp \
 	boost/optional.hpp \
 	boost/spirit/include/classic.hpp,
