@@ -513,24 +513,24 @@ libvisio::VSDOutputElementList::VSDOutputElementList()
 libvisio::VSDOutputElementList::VSDOutputElementList(const libvisio::VSDOutputElementList &elementList)
   : m_elements()
 {
-  for (auto iter = elementList.m_elements.begin(); iter != elementList.m_elements.end(); ++iter)
-    m_elements.push_back(clone(*iter));
+  for (const auto &elem : elementList.m_elements)
+    m_elements.push_back(clone(elem));
 }
 
 libvisio::VSDOutputElementList &libvisio::VSDOutputElementList::operator=(const libvisio::VSDOutputElementList &elementList)
 {
   m_elements.clear();
 
-  for (auto cstiter = elementList.m_elements.begin(); cstiter != elementList.m_elements.end(); ++cstiter)
-    m_elements.push_back(clone(*cstiter));
+  for (const auto &elem : elementList.m_elements)
+    m_elements.push_back(clone(elem));
 
   return *this;
 }
 
 void libvisio::VSDOutputElementList::append(const libvisio::VSDOutputElementList &elementList)
 {
-  for (auto cstiter = elementList.m_elements.begin(); cstiter != elementList.m_elements.end(); ++cstiter)
-    m_elements.push_back(clone(*cstiter));
+  for (const auto &elem : elementList.m_elements)
+    m_elements.push_back(clone(elem));
 }
 
 libvisio::VSDOutputElementList::~VSDOutputElementList()
@@ -539,8 +539,8 @@ libvisio::VSDOutputElementList::~VSDOutputElementList()
 
 void libvisio::VSDOutputElementList::draw(librevenge::RVNGDrawingInterface *painter) const
 {
-  for (auto iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    (*iter)->draw(painter);
+  for (const auto &elem : m_elements)
+    elem->draw(painter);
 }
 
 void libvisio::VSDOutputElementList::addStyle(const librevenge::RVNGPropertyList &propList)
