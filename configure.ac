@@ -38,7 +38,7 @@ PKG_PROG_PKG_CONFIG([0.20])
 AC_PROG_EGREP
 AC_PROG_SED
 
-AX_CXX_COMPILE_STDCXX_11([noext])
+AX_CXX_COMPILE_STDCXX_11
 AX_GCC_FUNC_ATTRIBUTE([format])
 
 dnl ===================================================================
