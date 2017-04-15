@@ -519,10 +519,13 @@ libvisio::VSDOutputElementList::VSDOutputElementList(const libvisio::VSDOutputEl
 
 libvisio::VSDOutputElementList &libvisio::VSDOutputElementList::operator=(const libvisio::VSDOutputElementList &elementList)
 {
-  m_elements.clear();
+  if (&elementList != this)
+  {
+    m_elements.clear();
 
-  for (const auto &elem : elementList.m_elements)
-    m_elements.push_back(clone(elem));
+    for (const auto &elem : elementList.m_elements)
+      m_elements.push_back(clone(elem));
+  }
 
   return *this;
 }
