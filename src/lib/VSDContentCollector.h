@@ -15,6 +15,7 @@
 #include <string>
 #include <cmath>
 #include <map>
+#include <memory>
 #include <list>
 #include <vector>
 #include "libvisio_utils.h"
@@ -37,10 +38,6 @@ public:
     std::vector<std::list<unsigned> > &documentPageShapeOrders,
     VSDStyles &styles, VSDStencils &stencils
   );
-  virtual ~VSDContentCollector()
-  {
-    if (m_txtxform) delete (m_txtxform);
-  };
 
   void collectDocumentTheme(const VSDXTheme *theme);
   void collectEllipticalArcTo(unsigned id, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc);
@@ -246,7 +243,7 @@ private:
   double m_originalX;
   double m_originalY;
   XForm m_xform;
-  XForm *m_txtxform;
+  std::unique_ptr<XForm> m_txtxform;
   VSDMisc m_misc;
   std::vector<librevenge::RVNGPropertyList> m_currentFillGeometry;
   std::vector<librevenge::RVNGPropertyList> m_currentLineGeometry;

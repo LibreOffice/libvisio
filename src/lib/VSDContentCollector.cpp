@@ -118,7 +118,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
 ) :
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
-  m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(), m_txtxform(0), m_misc(),
+  m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(), m_txtxform(), m_misc(),
   m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? 0 : &groupXFormsSequence[0]),
   m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType((unsigned)-1),
   m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
@@ -617,13 +617,13 @@ void libvisio::VSDContentCollector::_flushText()
   double xmiddle = m_txtxform ? m_txtxform->width / 2.0 : m_xform.width / 2.0;
   double ymiddle = m_txtxform ? m_txtxform->height / 2.0 : m_xform.height / 2.0;
 
-  transformPoint(xmiddle,ymiddle, m_txtxform);
+  transformPoint(xmiddle,ymiddle, m_txtxform.get());
 
   double x = xmiddle - (m_txtxform ? m_txtxform->width / 2.0 : m_xform.width / 2.0);
   double y = ymiddle - (m_txtxform ? m_txtxform->height / 2.0 : m_xform.height / 2.0);
 
   double angle = 0.0;
-  transformAngle(angle, m_txtxform);
+  transformAngle(angle, m_txtxform.get());
 
   librevenge::RVNGPropertyList textBlockProps;
 
@@ -2329,9 +2329,7 @@ void libvisio::VSDContentCollector::collectXFormData(unsigned level, const XForm
 void libvisio::VSDContentCollector::collectTxtXForm(unsigned level, const XForm &txtxform)
 {
   _handleLevelChange(level);
-  if (m_txtxform)
-    delete (m_txtxform);
-  m_txtxform = new XForm(txtxform);
+  m_txtxform.reset(new XForm(txtxform));
   m_txtxform->x = m_txtxform->pinX - m_txtxform->pinLocX;
   m_txtxform->y = m_txtxform->pinY - m_txtxform->pinLocY;
 }
@@ -2569,11 +2567,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
     }
 
     if (m_stencilShape->m_txtxform)
-    {
-      if (m_txtxform)
-        delete m_txtxform;
-      m_txtxform = new XForm(*(m_stencilShape->m_txtxform));
-    }
+      m_txtxform.reset(new XForm(*(m_stencilShape->m_txtxform)));
 
     m_stencilFields = m_stencilShape->m_fields;
     for (unsigned i = 0; i < m_stencilFields.size(); i++)
@@ -3477,9 +3471,7 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
     m_originalY = 0.0;
     m_x = 0;
     m_y = 0;
-    if (m_txtxform)
-      delete (m_txtxform);
-    m_txtxform = 0;
+    m_txtxform.reset();
     m_xform = XForm();
     m_NURBSData.clear();
     m_polylineData.clear();
@@ -3499,9 +3491,7 @@ void libvisio::VSDContentCollector::startPage(unsigned pageId)
     _flushShape();
   m_originalX = 0.0;
   m_originalY = 0.0;
-  if (m_txtxform)
-    delete (m_txtxform);
-  m_txtxform = 0;
+  m_txtxform.reset();
   m_xform = XForm();
   m_x = 0;
   m_y = 0;
