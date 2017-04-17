@@ -7,7 +7,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <memory>
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
@@ -24,7 +23,7 @@
 using std::shared_ptr;
 
 libvisio::VSDXMLParserBase::VSDXMLParserBase()
-  : m_collector(), m_stencils(), m_currentStencil(0), m_shape(),
+  : m_collector(), m_stencils(), m_currentStencil(), m_shape(),
     m_isStencilStarted(false), m_currentStencilID(MINUS_ONE),
     m_extractStencils(false), m_isInStyles(false), m_currentLevel(0),
     m_currentShapeLevel(0), m_colours(), m_fieldList(), m_shapeList(),
@@ -38,8 +37,6 @@ libvisio::VSDXMLParserBase::VSDXMLParserBase()
 
 libvisio::VSDXMLParserBase::~VSDXMLParserBase()
 {
-  if (m_currentStencil)
-    delete m_currentStencil;
 }
 
 // Common functions
@@ -1700,9 +1697,7 @@ void libvisio::VSDXMLParserBase::readStencil(xmlTextReaderPtr reader)
   }
   else
     m_currentStencilID = MINUS_ONE;
-  if (m_currentStencil)
-    delete m_currentStencil;
-  m_currentStencil = new VSDStencil();
+  m_currentStencil.reset(new VSDStencil());
 }
 
 void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
@@ -1928,11 +1923,8 @@ void libvisio::VSDXMLParserBase::handleMasterEnd(xmlTextReaderPtr /* reader */)
   else
   {
     if (m_currentStencil)
-    {
       m_stencils.addStencil(m_currentStencilID, *m_currentStencil);
-      delete m_currentStencil;
-    }
-    m_currentStencil = 0;
+    m_currentStencil.reset();
     m_currentStencilID = MINUS_ONE;
   }
 }

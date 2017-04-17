@@ -11,6 +11,7 @@
 #define __VSDXMLPARSERBASE_H__
 
 #include <map>
+#include <memory>
 #include <stack>
 #include <string>
 #include <boost/optional.hpp>
@@ -38,7 +39,7 @@ protected:
   // Protected data
   VSDCollector *m_collector;
   VSDStencils m_stencils;
-  VSDStencil *m_currentStencil;
+  std::unique_ptr<VSDStencil> m_currentStencil;
   VSDShape m_shape;
   bool m_isStencilStarted;
   unsigned m_currentStencilID;
