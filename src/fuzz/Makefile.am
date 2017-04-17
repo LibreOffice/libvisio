@@ -1,4 +1,4 @@
-noinst_PROGRAMS = vsdfuzzer
+noinst_PROGRAMS = vsdfuzzer vsdxfuzzer
 
 AM_CXXFLAGS = -I$(top_srcdir)/inc \
 	$(REVENGE_GENERATORS_CFLAGS) \
@@ -6,12 +6,22 @@ AM_CXXFLAGS = -I$(top_srcdir)/inc \
 	$(REVENGE_STREAM_CFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
-vsdfuzzer_LDADD = \
+commonfuzzer_ldadd = \
 	$(top_builddir)/src/lib/libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la \
 	$(REVENGE_GENERATORS_LIBS) \
 	$(REVENGE_LIBS) \
 	$(REVENGE_STREAM_LIBS) \
 	-lFuzzingEngine
 
+vsdfuzzer_LDADD = $(commonfuzzer_ldadd)
+
 vsdfuzzer_SOURCES = \
 	vsdfuzzer.cpp
+
+vsdxfuzzer_LDADD = $(commonfuzzer_ldadd)
+
+vsdxfuzzer_SOURCES = \
+	vsdxfuzzer.cpp
+
+EXTRA_DIST = \
+	vsdx.dict
