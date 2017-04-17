@@ -1,4 +1,4 @@
-noinst_PROGRAMS = vsdfuzzer vsdxfuzzer
+noinst_PROGRAMS = vsdfuzzer vsdxfuzzer vdxfuzzer
 
 AM_CXXFLAGS = -I$(top_srcdir)/inc \
 	$(REVENGE_GENERATORS_CFLAGS) \
@@ -23,5 +23,11 @@ vsdxfuzzer_LDADD = $(commonfuzzer_ldadd)
 vsdxfuzzer_SOURCES = \
 	vsdxfuzzer.cpp
 
+vdxfuzzer_LDADD = $(commonfuzzer_ldadd)
+
+vdxfuzzer_SOURCES = \
+	vdxfuzzer.cpp
+
 EXTRA_DIST = \
+	vdx.dict \
 	vsdx.dict
