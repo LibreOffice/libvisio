@@ -7,6 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm>
 #include <cassert>
 #include <string.h> // for memcpy
 #include <set>
@@ -1960,8 +1961,10 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
   unsigned b = degree + 1;
   std::vector< std::pair<double, double> > points(degree + 1), nextPoints(degree + 1);
   unsigned i = 0;
-  for (; i <= degree; i++)
+  for (; i <= degree && i < controlPoints.size(); i++)
     points[i] = controlPoints[i];
+  if (degree >= controlPoints.size())
+    fill(points.begin() + controlPoints.size(), points.end(), controlPoints.back());
   while (b < knotVector.size() - 1)
   {
     i = b;
