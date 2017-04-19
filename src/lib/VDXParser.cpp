@@ -152,7 +152,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
       readShape(reader);
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
-      if (m_isStencilStarted)
+      if (m_isStencilStarted && m_currentStencil)
         m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
       else
         _flushShape();
