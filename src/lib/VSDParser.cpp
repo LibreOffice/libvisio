@@ -1190,6 +1190,7 @@ void libvisio::VSDParser::readShapeList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
+    sanitizeListLength(childrenListLength, sizeof(uint32_t), input);
     std::vector<unsigned> shapeOrder;
     shapeOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
