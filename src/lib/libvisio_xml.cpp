@@ -96,7 +96,8 @@ void XMLErrorWatcher::setError()
 xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input, const char *URL, const char *encoding, int options, XMLErrorWatcher *const watcher)
 {
   xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, URL, encoding, options);
-  xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, watcher);
+  if (reader)
+    xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, watcher);
   return reader;
 }
 
