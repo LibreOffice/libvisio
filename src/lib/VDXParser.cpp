@@ -781,7 +781,7 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
   }
   while ((XML_PAGEPROPS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 
-  if (m_isStencilStarted)
+  if (m_isStencilStarted && m_currentStencil)
   {
     m_currentStencil->m_shadowOffsetX = shadowOffsetX;
     m_currentStencil->m_shadowOffsetY = shadowOffsetY;
