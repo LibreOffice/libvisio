@@ -7,6 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -24,58 +25,19 @@
 namespace
 {
 
-#define VISIO_MAGIC_LENGTH 21
-
 static bool checkVisioMagic(librevenge::RVNGInputStream *input)
 {
+  const unsigned char magic[] =
+  {
+    0x56, 0x69, 0x73, 0x69, 0x6f, 0x20, 0x28, 0x54, 0x4d, 0x29,
+    0x20, 0x44, 0x72, 0x61, 0x77, 0x69, 0x6e, 0x67, 0x0d, 0x0a,
+    0x0
+  };
   int startPosition = (int)input->tell();
   unsigned long numBytesRead = 0;
-  const unsigned char *buffer = input->read(VISIO_MAGIC_LENGTH, numBytesRead);
-  bool returnValue = true;
-  if (VISIO_MAGIC_LENGTH != numBytesRead)
-    returnValue = false;
-  else if (0x56 != buffer[0])
-    returnValue = false;
-  else if (0x69 != buffer[1])
-    returnValue = false;
-  else if (0x73 != buffer[2])
-    returnValue = false;
-  else if (0x69 != buffer[3])
-    returnValue = false;
-  else if (0x6f != buffer[4])
-    returnValue = false;
-  else if (0x20 != buffer[5])
-    returnValue = false;
-  else if (0x28 != buffer[6])
-    returnValue = false;
-  else if (0x54 != buffer[7])
-    returnValue = false;
-  else if (0x4d != buffer[8])
-    returnValue = false;
-  else if (0x29 != buffer[9])
-    returnValue = false;
-  else if (0x20 != buffer[10])
-    returnValue = false;
-  else if (0x44 != buffer[11])
-    returnValue = false;
-  else if (0x72 != buffer[12])
-    returnValue = false;
-  else if (0x61 != buffer[13])
-    returnValue = false;
-  else if (0x77 != buffer[14])
-    returnValue = false;
-  else if (0x69 != buffer[15])
-    returnValue = false;
-  else if (0x6e != buffer[16])
-    returnValue = false;
-  else if (0x67 != buffer[17])
-    returnValue = false;
-  else if (0x0d != buffer[18])
-    returnValue = false;
-  else if (0x0a != buffer[19])
-    returnValue = false;
-  else if (0x00 != buffer[20])
-    returnValue = false;
+  const unsigned char *buffer = input->read(VSD_NUM_ELEMENTS(magic), numBytesRead);
+  const bool returnValue = VSD_NUM_ELEMENTS(magic) == numBytesRead
+                           && std::equal(magic, magic + VSD_NUM_ELEMENTS(magic), buffer);
   input->seek(startPosition, librevenge::RVNG_SEEK_SET);
   return returnValue;
 }
