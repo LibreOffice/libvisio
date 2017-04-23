@@ -90,148 +90,91 @@ static bool checkVisioMagic(librevenge::RVNGInputStream *input)
 
 static bool isBinaryVisioDocument(librevenge::RVNGInputStream *input)
 {
-  librevenge::RVNGInputStream *docStream = 0;
-  try
+  std::shared_ptr<librevenge::RVNGInputStream> docStream;
+  input->seek(0, librevenge::RVNG_SEEK_SET);
+  if (input->isStructured())
   {
     input->seek(0, librevenge::RVNG_SEEK_SET);
-    if (input->isStructured())
-    {
-      input->seek(0, librevenge::RVNG_SEEK_SET);
-      docStream = input->getSubStreamByName("VisioDocument");
-    }
-    if (!docStream)
-      docStream = input;
-
-    docStream->seek(0, librevenge::RVNG_SEEK_SET);
-    unsigned char version = 0;
-    if (checkVisioMagic(docStream))
-    {
-      docStream->seek(0x1A, librevenge::RVNG_SEEK_SET);
-      version = libvisio::readU8(docStream);
-    }
-    input->seek(0, librevenge::RVNG_SEEK_SET);
-    if (docStream && docStream != input)
-      delete docStream;
-    docStream = 0;
-
-    VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
-
-    // Versions 2k (6) and 2k3 (11)
-    if ((version >= 1 && version <= 6) || version == 11)
-    {
-      return true;
-    }
+    docStream.reset(input->getSubStreamByName("VisioDocument"));
   }
-  catch (...)
+  if (!docStream)
+    docStream.reset(input, libvisio::VSDDummyDeleter());
+
+  docStream->seek(0, librevenge::RVNG_SEEK_SET);
+  unsigned char version = 0;
+  if (checkVisioMagic(docStream.get()))
   {
-    if (docStream && docStream != input)
-      delete docStream;
-    return false;
+    docStream->seek(0x1A, librevenge::RVNG_SEEK_SET);
+    version = libvisio::readU8(docStream.get());
   }
+  input->seek(0, librevenge::RVNG_SEEK_SET);
 
-  return false;
+  VSD_DEBUG_MSG(("VisioDocument: version %i\n", version));
+
+  // Versions 2k (6) and 2k3 (11)
+  return ((version >= 1 && version <= 6) || version == 11);
 }
 
 static bool parseBinaryVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction)
 {
   VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
   input->seek(0, librevenge::RVNG_SEEK_SET);
-  librevenge::RVNGInputStream *docStream = 0;
+  std::shared_ptr<librevenge::RVNGInputStream> docStream;
   if (input->isStructured())
-    docStream = input->getSubStreamByName("VisioDocument");
+    docStream.reset(input->getSubStreamByName("VisioDocument"));
   if (!docStream)
-    docStream = input;
+    docStream.reset(input, libvisio::VSDDummyDeleter());
 
   docStream->seek(0x1A, librevenge::RVNG_SEEK_SET);
 
-  libvisio::VSDParser *parser = 0;
-  try
+  std::unique_ptr<libvisio::VSDParser> parser;
+
+  unsigned char version = libvisio::readU8(docStream.get());
+  switch (version)
   {
-    unsigned char version = libvisio::readU8(docStream);
-    switch (version)
-    {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-      parser = new libvisio::VSD5Parser(docStream, painter);
-      break;
-    case 6:
-      parser = new libvisio::VSD6Parser(docStream, painter);
-      break;
-    case 11:
-      parser = new libvisio::VSDParser(docStream, painter, input);
-      break;
-    default:
-      break;
-    }
-
-    bool retValue = false;
-    if (parser)
-    {
-      if (isStencilExtraction)
-        retValue = parser->extractStencils();
-      else if (!isStencilExtraction)
-        retValue = parser->parseMain();
-    }
-    else
-    {
-      if (docStream != input)
-        delete docStream;
-      return false;
-    }
-
-    delete parser;
-    if (docStream != input)
-      delete docStream;
-
-    return retValue;
-  }
-  catch (...)
-  {
-    delete parser;
-    if (docStream != input)
-      delete docStream;
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  case 5:
+    parser.reset(new libvisio::VSD5Parser(docStream.get(), painter));
+    break;
+  case 6:
+    parser.reset(new libvisio::VSD6Parser(docStream.get(), painter));
+    break;
+  case 11:
+    parser.reset(new libvisio::VSDParser(docStream.get(), painter, input));
+    break;
+  default:
+    break;
   }
 
-  return false;
+  if (isStencilExtraction)
+    return parser->extractStencils();
+  else
+    return parser->parseMain();
 }
 
 static bool isOpcVisioDocument(librevenge::RVNGInputStream *input)
 {
-  librevenge::RVNGInputStream *tmpInput = 0;
-  try
-  {
-    input->seek(0, librevenge::RVNG_SEEK_SET);
-    if (!input->isStructured())
-      return false;
-
-    tmpInput = input->getSubStreamByName("_rels/.rels");
-    if (!tmpInput)
-      return false;
-
-    libvisio::VSDXRelationships rootRels(tmpInput);
-    delete tmpInput;
-
-    // Check whether the relationship points to a Visio document stream
-    const libvisio::VSDXRelationship *rel = rootRels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/document");
-    if (!rel)
-      return false;
-
-    // check whether the pointed Visio document stream exists in the document
-    tmpInput = input->getSubStreamByName(rel->getTarget().c_str());
-    if (!tmpInput)
-      return false;
-    delete tmpInput;
-    return true;
-  }
-  catch (...)
-  {
-    if (tmpInput)
-      delete tmpInput;
+  input->seek(0, librevenge::RVNG_SEEK_SET);
+  if (!input->isStructured())
     return false;
-  }
+
+  std::unique_ptr<librevenge::RVNGInputStream> tmpInput(input->getSubStreamByName("_rels/.rels"));
+  if (!tmpInput)
+    return false;
+
+  libvisio::VSDXRelationships rootRels(tmpInput.get());
+
+  // Check whether the relationship points to a Visio document stream
+  const libvisio::VSDXRelationship *rel = rootRels.getRelationshipByType("http://schemas.microsoft.com/visio/2010/relationships/document");
+  if (!rel)
+    return false;
+
+  // check whether the pointed Visio document stream exists in the document
+  tmpInput.reset(input->getSubStreamByName(rel->getTarget().c_str()));
+  return bool(tmpInput);
 }
 
 static bool parseOpcVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction)

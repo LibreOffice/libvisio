@@ -49,6 +49,11 @@ namespace libvisio
 
 typedef std::shared_ptr<librevenge::RVNGInputStream> RVNGInputStreamPtr_t;
 
+struct VSDDummyDeleter
+{
+  void operator()(void *) {}
+};
+
 uint8_t readU8(librevenge::RVNGInputStream *input);
 uint16_t readU16(librevenge::RVNGInputStream *input);
 int16_t readS16(librevenge::RVNGInputStream *input);
