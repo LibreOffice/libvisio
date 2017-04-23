@@ -29,63 +29,55 @@ namespace
 static bool checkVisioMagic(librevenge::RVNGInputStream *input)
 {
   int startPosition = (int)input->tell();
-  try
-  {
-    unsigned long numBytesRead = 0;
-    const unsigned char *buffer = input->read(VISIO_MAGIC_LENGTH, numBytesRead);
-    bool returnValue = true;
-    if (VISIO_MAGIC_LENGTH != numBytesRead)
-      returnValue = false;
-    else if (0x56 != buffer[0])
-      returnValue = false;
-    else if (0x69 != buffer[1])
-      returnValue = false;
-    else if (0x73 != buffer[2])
-      returnValue = false;
-    else if (0x69 != buffer[3])
-      returnValue = false;
-    else if (0x6f != buffer[4])
-      returnValue = false;
-    else if (0x20 != buffer[5])
-      returnValue = false;
-    else if (0x28 != buffer[6])
-      returnValue = false;
-    else if (0x54 != buffer[7])
-      returnValue = false;
-    else if (0x4d != buffer[8])
-      returnValue = false;
-    else if (0x29 != buffer[9])
-      returnValue = false;
-    else if (0x20 != buffer[10])
-      returnValue = false;
-    else if (0x44 != buffer[11])
-      returnValue = false;
-    else if (0x72 != buffer[12])
-      returnValue = false;
-    else if (0x61 != buffer[13])
-      returnValue = false;
-    else if (0x77 != buffer[14])
-      returnValue = false;
-    else if (0x69 != buffer[15])
-      returnValue = false;
-    else if (0x6e != buffer[16])
-      returnValue = false;
-    else if (0x67 != buffer[17])
-      returnValue = false;
-    else if (0x0d != buffer[18])
-      returnValue = false;
-    else if (0x0a != buffer[19])
-      returnValue = false;
-    else if (0x00 != buffer[20])
-      returnValue = false;
-    input->seek(startPosition, librevenge::RVNG_SEEK_SET);
-    return returnValue;
-  }
-  catch (...)
-  {
-    input->seek(startPosition, librevenge::RVNG_SEEK_SET);
-    return false;
-  }
+  unsigned long numBytesRead = 0;
+  const unsigned char *buffer = input->read(VISIO_MAGIC_LENGTH, numBytesRead);
+  bool returnValue = true;
+  if (VISIO_MAGIC_LENGTH != numBytesRead)
+    returnValue = false;
+  else if (0x56 != buffer[0])
+    returnValue = false;
+  else if (0x69 != buffer[1])
+    returnValue = false;
+  else if (0x73 != buffer[2])
+    returnValue = false;
+  else if (0x69 != buffer[3])
+    returnValue = false;
+  else if (0x6f != buffer[4])
+    returnValue = false;
+  else if (0x20 != buffer[5])
+    returnValue = false;
+  else if (0x28 != buffer[6])
+    returnValue = false;
+  else if (0x54 != buffer[7])
+    returnValue = false;
+  else if (0x4d != buffer[8])
+    returnValue = false;
+  else if (0x29 != buffer[9])
+    returnValue = false;
+  else if (0x20 != buffer[10])
+    returnValue = false;
+  else if (0x44 != buffer[11])
+    returnValue = false;
+  else if (0x72 != buffer[12])
+    returnValue = false;
+  else if (0x61 != buffer[13])
+    returnValue = false;
+  else if (0x77 != buffer[14])
+    returnValue = false;
+  else if (0x69 != buffer[15])
+    returnValue = false;
+  else if (0x6e != buffer[16])
+    returnValue = false;
+  else if (0x67 != buffer[17])
+    returnValue = false;
+  else if (0x0d != buffer[18])
+    returnValue = false;
+  else if (0x0a != buffer[19])
+    returnValue = false;
+  else if (0x00 != buffer[20])
+    returnValue = false;
+  input->seek(startPosition, librevenge::RVNG_SEEK_SET);
+  return returnValue;
 }
 
 static bool isBinaryVisioDocument(librevenge::RVNGInputStream *input)
