@@ -42,7 +42,7 @@ static bool checkVisioMagic(librevenge::RVNGInputStream *input)
   return returnValue;
 }
 
-static bool isBinaryVisioDocument(librevenge::RVNGInputStream *input)
+static bool isBinaryVisioDocument(librevenge::RVNGInputStream *input) try
 {
   std::shared_ptr<librevenge::RVNGInputStream> docStream;
   input->seek(0, librevenge::RVNG_SEEK_SET);
@@ -68,8 +68,12 @@ static bool isBinaryVisioDocument(librevenge::RVNGInputStream *input)
   // Versions 2k (6) and 2k3 (11)
   return ((version >= 1 && version <= 6) || version == 11);
 }
+catch (...)
+{
+  return false;
+}
 
-static bool parseBinaryVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction)
+static bool parseBinaryVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction) try
 {
   VSD_DEBUG_MSG(("Parsing Binary Visio Document\n"));
   input->seek(0, librevenge::RVNG_SEEK_SET);
@@ -108,8 +112,12 @@ static bool parseBinaryVisioDocument(librevenge::RVNGInputStream *input, libreve
   else
     return parser->parseMain();
 }
+catch (...)
+{
+  return false;
+}
 
-static bool isOpcVisioDocument(librevenge::RVNGInputStream *input)
+static bool isOpcVisioDocument(librevenge::RVNGInputStream *input) try
 {
   input->seek(0, librevenge::RVNG_SEEK_SET);
   if (!input->isStructured())
@@ -130,8 +138,12 @@ static bool isOpcVisioDocument(librevenge::RVNGInputStream *input)
   tmpInput.reset(input->getSubStreamByName(rel->getTarget().c_str()));
   return bool(tmpInput);
 }
+catch (...)
+{
+  return false;
+}
 
-static bool parseOpcVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction)
+static bool parseOpcVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction) try
 {
   VSD_DEBUG_MSG(("Parsing Visio Document based on Open Packaging Convention\n"));
   input->seek(0, librevenge::RVNG_SEEK_SET);
@@ -142,42 +154,43 @@ static bool parseOpcVisioDocument(librevenge::RVNGInputStream *input, librevenge
     return true;
   return false;
 }
-
-static bool isXmlVisioDocument(librevenge::RVNGInputStream *input)
+catch (...)
 {
-  try
-  {
-    input->seek(0, librevenge::RVNG_SEEK_SET);
-    const std::shared_ptr<xmlTextReader> reader(
-      libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
-      xmlFreeTextReader);
-    if (!reader)
-      return false;
-    int ret = xmlTextReaderRead(reader.get());
-    while (ret == 1 && 1 != xmlTextReaderNodeType(reader.get()))
-      ret = xmlTextReaderRead(reader.get());
-    if (ret != 1)
-    {
-      return false;
-    }
-    const xmlChar *name = xmlTextReaderConstName(reader.get());
-    if (!name)
-    {
-      return false;
-    }
-    if (!xmlStrEqual(name, BAD_CAST("VisioDocument")))
-    {
-      return false;
-    }
-    return true;
-  }
-  catch (...)
+  return false;
+}
+
+static bool isXmlVisioDocument(librevenge::RVNGInputStream *input) try
+{
+  input->seek(0, librevenge::RVNG_SEEK_SET);
+  const std::shared_ptr<xmlTextReader> reader(
+    libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
+    xmlFreeTextReader);
+  if (!reader)
+    return false;
+  int ret = xmlTextReaderRead(reader.get());
+  while (ret == 1 && 1 != xmlTextReaderNodeType(reader.get()))
+    ret = xmlTextReaderRead(reader.get());
+  if (ret != 1)
   {
     return false;
   }
+  const xmlChar *name = xmlTextReaderConstName(reader.get());
+  if (!name)
+  {
+    return false;
+  }
+  if (!xmlStrEqual(name, BAD_CAST("VisioDocument")))
+  {
+    return false;
+  }
+  return true;
+}
+catch (...)
+{
+  return false;
 }
 
-static bool parseXmlVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction)
+static bool parseXmlVisioDocument(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, bool isStencilExtraction) try
 {
   VSD_DEBUG_MSG(("Parsing Visio DrawingML Document\n"));
   input->seek(0, librevenge::RVNG_SEEK_SET);
@@ -186,6 +199,10 @@ static bool parseXmlVisioDocument(librevenge::RVNGInputStream *input, librevenge
     return true;
   else if (!isStencilExtraction && parser.parseMain())
     return true;
+  return false;
+}
+catch (...)
+{
   return false;
 }
 
