@@ -1949,7 +1949,7 @@ void libvisio::VSDContentCollector::_outputLinearBezierSegment(const std::vector
 void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned degree,
                                                                      const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector)
 {
-  if (controlPoints.empty() || knotVector.empty() || !degree)
+  if (controlPoints.empty() || knotVector.empty() || degree == 0 || degree > 3)
     return;
 
   /* Decomposition of a uniform spline of a given degree into Bezier segments
@@ -2010,8 +2010,6 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
       break;
     case 3:
       _outputCubicBezierSegment(points);
-      break;
-    default:
       break;
     }
 
