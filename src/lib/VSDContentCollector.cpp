@@ -1959,16 +1959,19 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
 
   unsigned a = degree;
   unsigned b = degree + 1;
+  unsigned m = (controlPoints.size() - 1) + degree + 1;
+  if (m > knotVector.size() - 1)
+    m = knotVector.size() - 1;
   std::vector< std::pair<double, double> > points(degree + 1), nextPoints(degree + 1);
   unsigned i = 0;
   for (; i <= degree && i < controlPoints.size(); i++)
     points[i] = controlPoints[i];
   if (degree >= controlPoints.size())
     fill(points.begin() + controlPoints.size(), points.end(), controlPoints.back());
-  while (b < knotVector.size() - 1)
+  while (b < m)
   {
     i = b;
-    while (b < knotVector.size() - 1 && knotVector[b+1] == knotVector[b])
+    while (b < m && knotVector[b+1] == knotVector[b])
       b++;
     unsigned mult = b - i + 1;
     if (mult > degree) // it doesn't make sense to have knot multiplicity greater than the curve degree
@@ -2015,7 +2018,7 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
 
     std::swap(points, nextPoints);
 
-    if (b < knotVector.size() - 1)
+    if (b < m)
     {
       for (i=degree-mult; i <= degree; i++)
       {
