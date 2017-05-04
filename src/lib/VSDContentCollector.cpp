@@ -2022,6 +2022,18 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
     {
       for (i=degree-mult; i <= degree; i++)
       {
+        // TODO: this seems to be an inherent problem... Possibly our
+        // impl. doesn't match the algorithm's prerequisities correctly?
+        // Def. of NURBS curve is (using symbolic from The NURBS Book):
+        // # of control points... n+1
+        // # of knots... m+1
+        // degree... p
+        // relation between these values... m == n + p + 1
+        // The max. possible value of b-degree+i is (m-1)-p+p == m-1 == n+p.
+        // But n+p >= n+1, which means that there would be at least one
+        // access past the controlPoints array...
+        if (b-degree+i >= controlPoints.size())
+          break;
         points[i].first = controlPoints[b-degree+i].first;
         points[i].second = controlPoints[b-degree+i].second;
       }
