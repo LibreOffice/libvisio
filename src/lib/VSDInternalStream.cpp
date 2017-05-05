@@ -84,7 +84,7 @@ const unsigned char *VSDInternalStream::read(unsigned long numBytes, unsigned lo
 
   int numBytesToRead;
 
-  if ((m_offset+numBytes) < m_buffer.size())
+  if (numBytes < m_buffer.size() - m_offset)
     numBytesToRead = numBytes;
   else
     numBytesToRead = m_buffer.size() - m_offset;
