@@ -15,6 +15,7 @@
 #include <vector>
 #include <stack>
 #include <map>
+#include <set>
 #include <librevenge/librevenge.h>
 #include "VSDTypes.h"
 #include "VSDGeometryList.h"
@@ -124,8 +125,8 @@ protected:
   void parseMetaData();
 
   // Stream handlers
-  void handleStreams(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned level);
-  void handleStream(const Pointer &ptr, unsigned idx, unsigned level);
+  void handleStreams(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned level, std::set<unsigned> &visited);
+  void handleStream(const Pointer &ptr, unsigned idx, unsigned level, std::set<unsigned> &visited);
   void handleChunks(librevenge::RVNGInputStream *input, unsigned level);
   void handleChunk(librevenge::RVNGInputStream *input);
   void handleBlob(librevenge::RVNGInputStream *input, unsigned shift, unsigned level);

@@ -9,6 +9,7 @@
 
 #include <librevenge-stream/librevenge-stream.h>
 #include <locale.h>
+#include <cassert>
 #include <sstream>
 #include <string>
 #include <cmath>
@@ -189,11 +190,14 @@ bool libvisio::VSDParser::parseDocument(librevenge::RVNGInputStream *input, unsi
 {
   try
   {
-    handleStreams(input, VSD_TRAILER_STREAM, shift, 0);
+    std::set<unsigned> visited;
+    handleStreams(input, VSD_TRAILER_STREAM, shift, 0, visited);
+    assert(visited.empty());
     return true;
   }
   catch (...)
   {
+    assert(visited.empty());
     return false;
   }
 }
@@ -224,7 +228,7 @@ void libvisio::VSDParser::readPointerInfo(librevenge::RVNGInputStream *input, un
   input->seek(4, librevenge::RVNG_SEEK_CUR);
 }
 
-void libvisio::VSDParser::handleStreams(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned level)
+void libvisio::VSDParser::handleStreams(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned level, std::set<unsigned> &visited)
 {
   VSD_DEBUG_MSG(("VSDParser::HandleStreams\n"));
   std::vector<unsigned> pointerOrder;
@@ -270,13 +274,13 @@ void libvisio::VSDParser::handleStreams(librevenge::RVNGInputStream *input, unsi
 
   std::map<unsigned, libvisio::Pointer>::iterator iter;
   for (iter = NameList.begin(); iter != NameList.end(); ++iter)
-    handleStream(iter->second, iter->first, level+1);
+    handleStream(iter->second, iter->first, level+1, visited);
 
   for (iter = NameIDX.begin(); iter != NameIDX.end(); ++iter)
-    handleStream(iter->second, iter->first, level+1);
+    handleStream(iter->second, iter->first, level+1, visited);
 
   for (iter = FontFaces.begin(); iter != FontFaces.end(); ++iter)
-    handleStream(iter->second, iter->first, level+1);
+    handleStream(iter->second, iter->first, level+1, visited);
 
   if (!pointerOrder.empty())
   {
@@ -285,17 +289,17 @@ void libvisio::VSDParser::handleStreams(librevenge::RVNGInputStream *input, unsi
       iter = PtrList.find(pointerOrder[j]);
       if (iter != PtrList.end())
       {
-        handleStream(iter->second, iter->first, level+1);
+        handleStream(iter->second, iter->first, level+1, visited);
         PtrList.erase(iter);
       }
     }
   }
   for (iter = PtrList.begin(); iter != PtrList.end(); ++iter)
-    handleStream(iter->second, iter->first, level+1);
+    handleStream(iter->second, iter->first, level+1, visited);
 
 }
 
-void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigned level)
+void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigned level, std::set<unsigned> &visited)
 {
   VSD_DEBUG_MSG(("VSDParser::HandleStream %u type 0x%x\n", idx, ptr.Type));
   m_header.level = level;
@@ -362,7 +366,22 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
   {
     handleBlob(&tmpInput, shift, level+1);
     if ((ptr.Format >> 4) == 0x5 && ptr.Type != VSD_COLORS)
-      handleStreams(&tmpInput, ptr.Type, shift, level+1);
+    {
+      const auto it = visited.insert(ptr.Offset);
+      if (it.second)
+      {
+        try
+        {
+          handleStreams(&tmpInput, ptr.Type, shift, level+1, visited);
+        }
+        catch (...)
+        {
+          visited.erase(it.first);
+          throw;
+        }
+        visited.erase(it.first);
+      }
+    }
   }
   else if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0xc || (ptr.Format >> 4) == 0x8)
     handleChunks(&tmpInput, level+1);
