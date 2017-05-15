@@ -12,7 +12,7 @@
 #include <string.h> // for memcpy
 #include <set>
 #include <stack>
-#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/qi.hpp>
 #include <unicode/ucnv.h>
 #include <unicode/utf8.h>
 
@@ -3551,30 +3551,21 @@ void libvisio::VSDContentCollector::endPages()
 
 bool libvisio::VSDContentCollector::parseFormatId(const char *formatString, unsigned short &result)
 {
-  using namespace ::boost::spirit::classic;
+  using namespace ::boost::spirit::qi;
 
   result = 0xffff;
 
-  uint_parser<unsigned short,10,1,5> ushort_p;
-  if (parse(formatString,
-            // Begin grammar
-            (
-              (
-                str_p("{<") >>
-                ushort_p[assign_a(result)]
-                >> str_p(">}")
-              )
-              |
-              (
-                str_p("esc(") >>
-                ushort_p[assign_a(result)]
-                >> ')'
-              )
-            )>> end_p,
-            // End grammar
-            space_p).full)
+  uint_parser<unsigned short,10,1,5> ushort_;
+  auto first = formatString;
+  const auto last = first + strlen(formatString);
+  if (phrase_parse(first, last,
+                   (
+                     "{<" >> ushort_ >> ">}"
+                     | "esc(" >> ushort_ >> ')'
+                   ),
+                   space, result))
   {
-    return true;
+    return first == last;
   }
   return false;
 }
@@ -3757,21 +3748,10 @@ void libvisio::VSDContentCollector::collectLayerMem(unsigned level, const VSDNam
   memcpy(&tmpData[0], layerMem.m_data.getDataBuffer(), layerMem.m_data.size());
   appendCharacters(text, tmpData, layerMem.m_format);
 
-  using namespace ::boost::spirit::classic;
-  bool bRes = parse(text.cstr(),
-                    //  Begin grammar
-                    (
-                      // parse comma-delimited list of doubles (have to use the
-                      // 'direct' variant, as otherwise spirit refactors our
-                      // parser to push both real num and comma to push_back_a)
-                      list_p.direct
-                      (
-                        int_p[push_back_a(m_currentLayerMem)],
-                        ';'
-                      )
-                    ) >> end_p,
-                    //  End grammar
-                    space_p).full;
+  using namespace ::boost::spirit::qi;
+  auto first = text.cstr();
+  const auto last = first + strlen(first);
+  bool bRes = phrase_parse(first, last, int_ % ';', space, m_currentLayerMem) && first == last;
 
   if (!bRes)
     m_currentLayerMem.clear();

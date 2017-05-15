@@ -11,7 +11,10 @@
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
-#include <boost/spirit/include/classic.hpp>
+
+#include <boost/phoenix.hpp>
+#include <boost/spirit/include/qi.hpp>
+
 #include "VSDXMLParserBase.h"
 #include "libvisio_utils.h"
 #include "libvisio_xml.h"
@@ -1959,8 +1962,6 @@ void libvisio::VSDXMLParserBase::skipPages(xmlTextReaderPtr reader)
 
 int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, xmlTextReaderPtr reader)
 {
-  using namespace ::boost::spirit::classic;
-
   NURBSData tmpData;
 
   bool bRes = false;
@@ -1970,26 +1971,39 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
   {
     std::pair<double, double> point;
 
-    bRes = parse((const char *)formula.get(),
-                 //  Begin grammar
-                 (
-                   str_p("NURBS")
-                   >> '('
-                   >> real_p[assign_a(tmpData.lastKnot)] >> (',' | eps_p)
-                   >> int_p[assign_a(tmpData.degree)] >> (',' | eps_p)
-                   >> int_p[assign_a(tmpData.xType)] >> (',' | eps_p)
-                   >> int_p[assign_a(tmpData.yType)] >> (',' | eps_p) >>
-                   // array of points, weights and knots
-                   (list_p(
-                      (
-                        (real_p[assign_a(point.first)] >> (',' | eps_p) >>
-                         real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]
-                        >> (',' | eps_p) >>
-                        real_p[push_back_a(tmpData.knots)] >> (',' | eps_p) >>
-                        real_p[push_back_a(tmpData.weights)]), ',' | eps_p))
-                 ) >> ')' >> end_p,
-                 //  End grammar
-                 space_p).full;
+    using namespace ::boost::spirit::qi;
+    namespace phx = boost::phoenix;
+    using phx::push_back;
+    using phx::ref;
+
+    auto first = reinterpret_cast<const char *>(formula.get());
+    const auto last = first + strlen(first);
+    bRes = phrase_parse(first, last,
+                        //  Begin grammar
+                        (
+                          lit("NURBS")
+                          >> '('
+                          >> double_[ref(tmpData.lastKnot) = _1] >> -char_(',')
+                          >> int_[ref(tmpData.degree) = _1] >> -char_(',')
+                          >> int_[ref(tmpData.xType) = _1] >> -char_(',')
+                          >> int_[ref(tmpData.yType) = _1] >> -char_(',')
+                          >> // array of points, weights and knots
+                          (
+                            (
+                              (double_[ref(point.first) = _1] >> -char_(',') >>
+                               double_[ref(point.second) = _1]
+                              )[push_back(phx::ref(tmpData.points), phx::cref(point))]
+                              >> -char_(',') >>
+                              double_[push_back(phx::ref(tmpData.knots), _1)] >> -char_(',') >>
+                              double_[push_back(phx::ref(tmpData.weights), _1)]
+                            )
+                            % -char_(',')
+                          )
+                          >> ')'
+                        ),
+                        //  End grammar
+                        space)
+           && first == last;
   }
 
   if (!bRes)
@@ -2000,8 +2014,6 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
 
 int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &data, xmlTextReaderPtr reader)
 {
-  using namespace ::boost::spirit::classic;
-
   PolylineData tmpData;
 
   bool bRes = false;
@@ -2011,21 +2023,30 @@ int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &
   {
     std::pair<double, double> point;
 
-    bRes = parse((const char *)formula.get(),
-                 //  Begin grammar
-                 (
-                   str_p("POLYLINE")
-                   >> '('
-                   >> int_p[assign_a(tmpData.xType)] >> (',' | eps_p)
-                   >> int_p[assign_a(tmpData.yType)] >> (',' | eps_p) >>
-                   // array of points
-                   (list_p(
-                      (
-                        (real_p[assign_a(point.first)] >> (',' | eps_p) >>
-                         real_p[assign_a(point.second)])[push_back_a(tmpData.points,point)]), ',' | eps_p))
-                 ) >> ')' >> end_p,
-                 //  End grammar
-                 space_p).full;
+    using namespace ::boost::spirit::qi;
+    namespace phx = boost::phoenix;
+    using phx::push_back;
+    using phx::ref;
+
+    auto first = reinterpret_cast<const char *>(formula.get());
+    const auto last = first + strlen(first);
+    bRes = phrase_parse(first, last,
+                        (
+                          lit("POLYLINE")
+                          >> '('
+                          >> int_[ref(tmpData.xType) = _1] >> -char_(',')
+                          >> int_[ref(tmpData.yType) = _1] >> -char_(',')
+                          >> // array of points
+                          (
+                            (
+                              double_[ref(point.first) = _1] >> -char_(',')
+                              >> double_[ref(point.second) = _1]
+                            )[push_back(phx::ref(tmpData.points), phx::cref(point))] % -char_(',')
+                          )
+                          >> ')'
+                        ),
+                        space)
+           && first == last;
   }
 
   if (!bRes)
@@ -2215,21 +2236,22 @@ unsigned libvisio::VSDXMLParserBase::getIX(xmlTextReaderPtr reader)
 
 void libvisio::VSDXMLParserBase::readTriggerId(unsigned &id, xmlTextReaderPtr reader)
 {
-  using namespace ::boost::spirit::classic;
+  using namespace ::boost::spirit::qi;
 
   unsigned triggerId = MINUS_ONE;
   const std::shared_ptr<xmlChar> triggerString(xmlTextReaderGetAttribute(reader, BAD_CAST("F")), xmlFree);
   if (triggerString)
   {
-    if (parse((const char *)triggerString.get(),
-              //  Begin grammar
-              (
-                str_p("_XFTRIGGER")
-                >> '(' >> (+(alnum_p|space_p)) >> '.'
-                >> int_p[assign_a(triggerId)] >> '!' >> str_p("EventXFMod")
-              ) >> ')' >> end_p,
-              //  End grammar
-              space_p).full)
+    auto first = reinterpret_cast<const char *>(triggerString.get());
+    const auto last = first + strlen(first);
+    if (phrase_parse(first, last,
+                     (
+                       lit("_XFTRIGGER")
+                       >> '(' >> omit[+alnum] >> '.'
+                       >> int_ >> '!' >> lit("EventXFMod")
+                       >> ')'
+                     ),
+                     space, triggerId) && first == last)
       id = triggerId;
   }
 }
