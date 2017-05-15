@@ -14,7 +14,6 @@
 #include <map>
 #include <librevenge/librevenge.h>
 
-#define FROM_OPTIONAL(t, u) !!t ? t.get() : u
 #define ASSIGN_OPTIONAL(t, u) if(!!t) u = t.get()
 #define MINUS_ONE (unsigned)-1
 
