@@ -3551,7 +3551,7 @@ void libvisio::VSDContentCollector::endPages()
 
 bool libvisio::VSDContentCollector::parseFormatId(const char *formatString, unsigned short &result)
 {
-  using namespace ::boost::spirit::qi;
+  using namespace boost::spirit::qi;
 
   result = 0xffff;
 
@@ -3748,7 +3748,7 @@ void libvisio::VSDContentCollector::collectLayerMem(unsigned level, const VSDNam
   memcpy(&tmpData[0], layerMem.m_data.getDataBuffer(), layerMem.m_data.size());
   appendCharacters(text, tmpData, layerMem.m_format);
 
-  using namespace ::boost::spirit::qi;
+  using namespace boost::spirit::qi;
   auto first = text.cstr();
   const auto last = first + strlen(first);
   bool bRes = phrase_parse(first, last, int_ % ';', space, m_currentLayerMem) && first == last;

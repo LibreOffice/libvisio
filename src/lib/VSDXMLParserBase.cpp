@@ -1971,7 +1971,7 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
   {
     std::pair<double, double> point;
 
-    using namespace ::boost::spirit::qi;
+    using namespace boost::spirit::qi;
     namespace phx = boost::phoenix;
     using phx::push_back;
     using phx::ref;
@@ -2023,7 +2023,7 @@ int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &
   {
     std::pair<double, double> point;
 
-    using namespace ::boost::spirit::qi;
+    using namespace boost::spirit::qi;
     namespace phx = boost::phoenix;
     using phx::push_back;
     using phx::ref;
@@ -2236,7 +2236,7 @@ unsigned libvisio::VSDXMLParserBase::getIX(xmlTextReaderPtr reader)
 
 void libvisio::VSDXMLParserBase::readTriggerId(unsigned &id, xmlTextReaderPtr reader)
 {
-  using namespace ::boost::spirit::qi;
+  using namespace boost::spirit::qi;
 
   unsigned triggerId = MINUS_ONE;
   const std::shared_ptr<xmlChar> triggerString(xmlTextReaderGetAttribute(reader, BAD_CAST("F")), xmlFree);
