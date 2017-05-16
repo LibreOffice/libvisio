@@ -1983,21 +1983,22 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
                         (
                           lit("NURBS")
                           >> '('
-                          >> double_[ref(tmpData.lastKnot) = _1] >> -char_(',')
-                          >> int_[ref(tmpData.degree) = _1] >> -char_(',')
-                          >> int_[ref(tmpData.xType) = _1] >> -char_(',')
-                          >> int_[ref(tmpData.yType) = _1] >> -char_(',')
+                          >> double_[ref(tmpData.lastKnot) = _1] >> -lit(',')
+                          >> int_[ref(tmpData.degree) = _1] >> -lit(',')
+                          >> int_[ref(tmpData.xType) = _1] >> -lit(',')
+                          >> int_[ref(tmpData.yType) = _1] >> -lit(',')
                           >> // array of points, weights and knots
                           (
                             (
-                              (double_[ref(point.first) = _1] >> -char_(',') >>
+                              (double_[ref(point.first) = _1] >> -lit(',') >>
                                double_[ref(point.second) = _1]
                               )[push_back(phx::ref(tmpData.points), phx::cref(point))]
-                              >> -char_(',') >>
-                              double_[push_back(phx::ref(tmpData.knots), _1)] >> -char_(',') >>
+                              >> -lit(',') >>
+                              double_[push_back(phx::ref(tmpData.knots),
+                                _1)] >> -lit(',') >>
                               double_[push_back(phx::ref(tmpData.weights), _1)]
                             )
-                            % -char_(',')
+                            % -lit(',')
                           )
                           >> ')'
                         ),
@@ -2034,14 +2035,14 @@ int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &
                         (
                           lit("POLYLINE")
                           >> '('
-                          >> int_[ref(tmpData.xType) = _1] >> -char_(',')
-                          >> int_[ref(tmpData.yType) = _1] >> -char_(',')
+                          >> int_[ref(tmpData.xType) = _1] >> -lit(',')
+                          >> int_[ref(tmpData.yType) = _1] >> -lit(',')
                           >> // array of points
                           (
                             (
-                              double_[ref(point.first) = _1] >> -char_(',')
+                              double_[ref(point.first) = _1] >> -lit(',')
                               >> double_[ref(point.second) = _1]
-                            )[push_back(phx::ref(tmpData.points), phx::cref(point))] % -char_(',')
+                            )[push_back(phx::ref(tmpData.points), phx::cref(point))] % -lit(',')
                           )
                           >> ')'
                         ),
