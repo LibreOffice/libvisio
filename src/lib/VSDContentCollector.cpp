@@ -3555,13 +3555,13 @@ bool libvisio::VSDContentCollector::parseFormatId(const char *formatString, unsi
 
   result = 0xffff;
 
-  uint_parser<unsigned short,10,1,5> ushort_;
+  uint_parser<unsigned short,10,1,5> ushort5;
   auto first = formatString;
   const auto last = first + strlen(formatString);
   if (phrase_parse(first, last,
                    (
-                     "{<" >> ushort_ >> ">}"
-                     | "esc(" >> ushort_ >> ')'
+                     "{<" >> ushort5 >> ">}"
+                     | "esc(" >> ushort5 >> ')'
                    ),
                    space, result))
   {
