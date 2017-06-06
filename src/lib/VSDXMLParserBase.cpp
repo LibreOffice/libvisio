@@ -1995,7 +1995,7 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
                               )[push_back(phx::ref(tmpData.points), phx::cref(point))]
                               >> -lit(',') >>
                               double_[push_back(phx::ref(tmpData.knots),
-                                _1)] >> -lit(',') >>
+                                                _1)] >> -lit(',') >>
                               double_[push_back(phx::ref(tmpData.weights), _1)]
                             )
                             % -lit(',')
