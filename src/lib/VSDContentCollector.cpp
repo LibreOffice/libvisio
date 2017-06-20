@@ -1396,7 +1396,8 @@ void libvisio::VSDContentCollector::collectEllipse(unsigned /* id */, unsigned l
 {
   _handleLevelChange(level);
   librevenge::RVNGPropertyList ellipse;
-  double angle = fmod(2.0*M_PI + (cy > yleft ? 1.0 : -1.0)*acos((cx-xleft) / hypot(xleft - cx, yleft - cy)), 2.0*M_PI);
+  double h = hypot(xleft - cx, yleft - cy);
+  double angle = h != 0 ? fmod(2.0*M_PI + (cy > yleft ? 1.0 : -1.0)*acos((cx-xleft) / h), 2.0*M_PI) : 0;
   transformPoint(cx, cy);
   transformPoint(xleft, yleft);
   transformPoint(xtop, ytop);
