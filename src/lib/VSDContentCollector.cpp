@@ -51,16 +51,25 @@ void computeRounding(double &prevX, double &prevY, double x0, double y0, double 
     angle -= M_PI;
     sweep = !sweep;
   }
-  double q = fabs(rounding / tan(angle / 2.0));
-  if (q > prevHalfLength)
+  double t = tan(angle / 2.0);
+  double q;
+  if (t != 0)
   {
-    q = prevHalfLength;
-    rounding = fabs(q*tan(angle / 2.0));
+    q = fabs(rounding / t);
+    if (q > prevHalfLength)
+    {
+      q = prevHalfLength;
+      rounding = fabs(q * t);
+    }
+    if (q > halfLength)
+    {
+      q = halfLength;
+      rounding = fabs(q * t);
+    }
   }
-  if (q > halfLength)
+  else
   {
-    q = halfLength;
-    rounding = fabs(q*tan(angle / 2.0));
+    q = fabs(rounding);
   }
   newX0 = x0-q*cos(lambda1);
   newY0 = y0-q*sin(lambda1);
