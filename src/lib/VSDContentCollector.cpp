@@ -39,8 +39,8 @@ namespace
 void computeRounding(double &prevX, double &prevY, double x0, double y0, double x, double y, double &rounding,
                      double &newX0, double &newY0, double &newX, double &newY, bool &sweep)
 {
-  double prevHalfLength = sqrt((y0-prevY)*(y0-prevY)+(x0-prevX)*(x0-prevX)) / 2.0;
-  double halfLength = sqrt((y-y0)*(y-y0)+(x-x0)*(x-x0)) / 2.0;
+  double prevHalfLength = hypot(y0 - prevY, x0 - prevX) / 2.0;
+  double halfLength = hypot(y - y0, x - x0) / 2.0;
   double lambda1 = atan2(y0-prevY, x0-prevX);
   double lambda2 = atan2(y-y0, x-x0);
   double angle = M_PI - lambda2 + lambda1;
@@ -1362,7 +1362,7 @@ void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, un
 
   VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
 
-  double rx = sqrt(pow(x1-x0, 2) + pow(y1-y0, 2));
+  double rx = hypot(x1 - x0, y1 - y0);
   double ry = ecc != 0 ? rx / ecc : rx;
   librevenge::RVNGPropertyList arc;
   int largeArc = 0;
@@ -1396,14 +1396,14 @@ void libvisio::VSDContentCollector::collectEllipse(unsigned /* id */, unsigned l
 {
   _handleLevelChange(level);
   librevenge::RVNGPropertyList ellipse;
-  double angle = fmod(2.0*M_PI + (cy > yleft ? 1.0 : -1.0)*acos((cx-xleft) / sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy))), 2.0*M_PI);
+  double angle = fmod(2.0*M_PI + (cy > yleft ? 1.0 : -1.0)*acos((cx-xleft) / hypot(xleft - cx, yleft - cy)), 2.0*M_PI);
   transformPoint(cx, cy);
   transformPoint(xleft, yleft);
   transformPoint(xtop, ytop);
   transformAngle(angle);
 
-  double rx = sqrt((xleft - cx)*(xleft - cx) + (yleft - cy)*(yleft - cy));
-  double ry = sqrt((xtop - cx)*(xtop - cx) + (ytop - cy)*(ytop - cy));
+  double rx = hypot(xleft - cx, yleft - cy);
+  double ry = hypot(xtop - cx, ytop - cy);
 
   int largeArc = 0;
   double centreSide = (xleft-xtop)*(cy-ytop) - (yleft-ytop)*(cx-xtop);
@@ -1853,7 +1853,7 @@ void libvisio::VSDContentCollector::collectArcTo(unsigned /* id */, unsigned lev
   else
   {
     librevenge::RVNGPropertyList arc;
-    double chord = sqrt(pow((y2 - m_y),2) + pow((x2 - m_x),2));
+    double chord = hypot(y2 - m_y, x2 - m_x);
     double radius = (4 * bow * bow + chord * chord) / (8 * fabs(bow));
     int largeArc = fabs(bow) > radius ? 1 : 0;
     bool sweep = (bow < 0);
@@ -2429,7 +2429,7 @@ void libvisio::VSDContentCollector::transformAngle(double &angle, XForm *txtxfor
   double y1 =m_xform.pinLocY + sin(angle);
   transformPoint(x0, y0, txtxform);
   transformPoint(x1, y1, txtxform);
-  angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0))), 2.0*M_PI);
+  angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / hypot(x1-x0, y1-y0)), 2.0*M_PI);
 }
 
 void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
