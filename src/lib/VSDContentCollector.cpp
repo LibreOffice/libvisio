@@ -1363,7 +1363,7 @@ void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, un
   VSD_DEBUG_MSG(("Centre: (%f,%f), angle %f\n", x0, y0, angle));
 
   double rx = sqrt(pow(x1-x0, 2) + pow(y1-y0, 2));
-  double ry = rx / ecc;
+  double ry = ecc != 0 ? rx / ecc : rx;
   librevenge::RVNGPropertyList arc;
   int largeArc = 0;
   int sweep = 1;
