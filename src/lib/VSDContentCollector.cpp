@@ -2430,7 +2430,8 @@ void libvisio::VSDContentCollector::transformAngle(double &angle, XForm *txtxfor
   double y1 =m_xform.pinLocY + sin(angle);
   transformPoint(x0, y0, txtxform);
   transformPoint(x1, y1, txtxform);
-  angle = fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / hypot(x1-x0, y1-y0)), 2.0*M_PI);
+  const double h = hypot(x1-x0, y1-y0);
+  angle = h != 0 ? fmod(2.0*M_PI + (y1 > y0 ? 1.0 : -1.0)*acos((x1-x0) / h), 2.0*M_PI) : 0;
 }
 
 void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
