@@ -1327,7 +1327,6 @@ void libvisio::VSDContentCollector::collectDocumentTheme(const VSDXTheme *theme)
     m_documentTheme = theme;
 }
 
-#define LIBVISIO_EPSILON 1E-10
 void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, unsigned level, double x3, double y3, double x2, double y2, double angle, double ecc)
 {
   _handleLevelChange(level);
@@ -1348,7 +1347,7 @@ void libvisio::VSDContentCollector::collectEllipticalArcTo(unsigned /* id */, un
   m_x = x3;
   m_y = y3;
 
-  if (fabs(((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n))) <= LIBVISIO_EPSILON || fabs(((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n))) <= LIBVISIO_EPSILON)
+  if (VSD_ALMOST_ZERO(((x1-x2n)*(y2n-y3n) - (x2n-x3n)*(y1-y2n))) || VSD_ALMOST_ZERO(((x2n-x3n)*(y1-y2n) - (x1-x2n)*(y2n-y3n))))
     // most probably all of the points lie on the same line, so use lineTo instead
   {
     librevenge::RVNGPropertyList end;
@@ -2065,10 +2064,10 @@ double libvisio::VSDContentCollector::_NURBSBasis(unsigned knot, unsigned degree
     else
       return 0;
   }
-  if (knotVector.size() > knot+degree && fabs(knotVector[knot+degree]-knotVector[knot]) > LIBVISIO_EPSILON)
+  if (knotVector.size() > knot+degree && !VSD_ALMOST_ZERO(knotVector[knot+degree]-knotVector[knot]))
     basis = (point-knotVector[knot])/(knotVector[knot+degree]-knotVector[knot]) * _NURBSBasis(knot, degree-1, point, knotVector);
 
-  if (knotVector.size() > knot+degree+1 && fabs(knotVector[knot+degree+1] - knotVector[knot+1]) > LIBVISIO_EPSILON)
+  if (knotVector.size() > knot+degree+1 && !VSD_ALMOST_ZERO(knotVector[knot+degree+1] - knotVector[knot+1]))
     basis += (knotVector[knot+degree+1]-point)/(knotVector[knot+degree+1]-knotVector[knot+1]) * _NURBSBasis(knot+1, degree-1, point, knotVector);
 
   return basis;
@@ -2090,7 +2089,7 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
     node.insert("librevenge:path-action", "L");
     double x = 0;
     double y = 0;
-    double denominator = LIBVISIO_EPSILON;
+    double denominator = VSD_EPSILON;
 
     for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
     {
@@ -2119,7 +2118,7 @@ bool libvisio::VSDContentCollector::_isUniform(const std::vector<double> &weight
   double previousValue = weights[0];
   for (std::vector<double>::size_type i = 0; i < weights.size(); ++i)
   {
-    if (fabs(weights[i] - previousValue) < LIBVISIO_EPSILON)
+    if (VSD_ALMOST_ZERO(weights[i] - previousValue))
       previousValue = weights[i];
     else
       return false;

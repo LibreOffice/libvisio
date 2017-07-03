@@ -20,7 +20,7 @@
 
 #include "VSDTypes.h"
 
-#define VSD_EPSILON 1E-6
+#define VSD_EPSILON 1E-10
 #define VSD_ALMOST_ZERO(m) (fabs(m) <= VSD_EPSILON)
 
 #include <librevenge/librevenge.h>
