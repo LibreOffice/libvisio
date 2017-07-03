@@ -1464,14 +1464,14 @@ void libvisio::VSDContentCollector::collectInfiniteLine(unsigned /* id */, unsig
   double xline = 0.0;
   double yline = 0.0;
 
-  if (x1 == x2)
+  if (VSD_APPROX_EQUAL(x1, x2))
   {
     xmove = x1;
     ymove = 0;
     xline = x1;
     yline = m_pageHeight;
   }
-  else if (y1 == y2)
+  else if (VSD_APPROX_EQUAL(y1, y2))
   {
     xmove = 0;
     ymove = y1;

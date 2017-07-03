@@ -22,6 +22,7 @@
 
 #define VSD_EPSILON 1E-10
 #define VSD_ALMOST_ZERO(m) (fabs(m) <= VSD_EPSILON)
+#define VSD_APPROX_EQUAL(x, y) VSD_ALMOST_ZERO((x) - (y))
 
 #include <librevenge/librevenge.h>
 #include <librevenge-stream/librevenge-stream.h>
