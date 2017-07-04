@@ -1958,7 +1958,7 @@ void libvisio::VSDContentCollector::_outputLinearBezierSegment(const std::vector
 void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned degree,
                                                                      const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector)
 {
-  if (controlPoints.empty() || knotVector.empty() || degree == 0 || degree > 3)
+  if (controlPoints.size() <= degree || knotVector.empty() || degree == 0 || degree > 3)
     return;
 
   /* Decomposition of a uniform spline of a given degree into Bezier segments
@@ -1973,10 +1973,8 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
     m = knotVector.size() - 1;
   std::vector< std::pair<double, double> > points(degree + 1), nextPoints(degree + 1);
   unsigned i = 0;
-  for (; i <= degree && i < controlPoints.size(); i++)
+  for (; i <= degree; i++)
     points[i] = controlPoints[i];
-  if (degree >= controlPoints.size())
-    fill(points.begin() + controlPoints.size(), points.end(), controlPoints.back());
   while (b < m)
   {
     i = b;
@@ -2031,18 +2029,6 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
     {
       for (i=degree-mult; i <= degree; i++)
       {
-        // TODO: this seems to be an inherent problem... Possibly our
-        // impl. doesn't match the algorithm's prerequisities correctly?
-        // Def. of NURBS curve is (using symbolic from The NURBS Book):
-        // # of control points... n+1
-        // # of knots... m+1
-        // degree... p
-        // relation between these values... m == n + p + 1
-        // The max. possible value of b-degree+i is (m-1)-p+p == m-1 == n+p.
-        // But n+p >= n+1, which means that there would be at least one
-        // access past the controlPoints array...
-        if (b-degree+i >= controlPoints.size())
-          break;
         points[i].first = controlPoints[b-degree+i].first;
         points[i].second = controlPoints[b-degree+i].second;
       }
