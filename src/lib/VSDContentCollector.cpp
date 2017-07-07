@@ -1978,7 +1978,7 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
   while (b < m)
   {
     i = b;
-    while (b < m && knotVector[b+1] == knotVector[b])
+    while (b < m && VSD_APPROX_EQUAL(knotVector[b+1], knotVector[i]))
       b++;
     unsigned mult = b - i + 1;
     if (mult > degree) // it doesn't make sense to have knot multiplicity greater than the curve degree
