@@ -188,9 +188,9 @@ catch (...)
 
 bool libvisio::VSDParser::parseDocument(librevenge::RVNGInputStream *input, unsigned shift)
 {
+  std::set<unsigned> visited;
   try
   {
-    std::set<unsigned> visited;
     handleStreams(input, VSD_TRAILER_STREAM, shift, 0, visited);
     assert(visited.empty());
     return true;
