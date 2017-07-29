@@ -3572,11 +3572,12 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
     return appendCharacters(text, characters);
   if (format == VSD_TEXT_UTF8)
   {
-    for (std::vector<unsigned char>::const_iterator iter = characters.begin();
-         iter != characters.end(); ++iter)
-    {
-      text.append((const char)*iter);
-    }
+    // TODO: revisit for librevenge 0.1
+    std::vector<unsigned char> buf;
+    buf.reserve(characters.size() + 1);
+    buf.assign(characters.begin(), characters.end());
+    buf.push_back(0);
+    text.append(reinterpret_cast<const char *>(buf.data()));
     return;
   }
 
