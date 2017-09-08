@@ -61,21 +61,7 @@ PKG_CHECK_MODULES([LIBXML],[
 # ========
 # Find icu
 # ========
-AS_IF([test "${ICU_CFLAGS+set}" = set],[
-	ICU_CFLAGS_overriden=yes],[
-	ICU_CFLAGS_overriden=no])
-PKG_CHECK_MODULES([ICU],[icu-i18n],[
-	AS_IF([test "${ICU_CFLAGS_overriden}" = no], [
-		ICU_CFLAGS="${ICU_CFLAGS} `${PKG_CONFIG} icu-i18n --variable=CXXFLAGS`"])
-	], [
-	AC_PATH_PROG([ICU_CONFIG],[icu-config])
-	AC_MSG_CHECKING([ICU installation])
-	AS_IF([${ICU_CONFIG} --cflags >/dev/null 2>&1],[
-		ICU_CFLAGS=`${ICU_CONFIG} --cppflags-searchpath --cxxflags`
-		ICU_LIBS=`${ICU_CONFIG} --ldflags`
-		AC_MSG_RESULT([found])],[
-		AC_MSG_ERROR([libicu config program icu-config not found])])]
-)
+PKG_CHECK_MODULES([ICU], [icu-uc])
 AC_SUBST(ICU_CFLAGS)
 AC_SUBST(ICU_LIBS)
 
