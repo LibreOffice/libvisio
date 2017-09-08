@@ -119,7 +119,7 @@ AS_IF([test "x$enable_tests" = "xyes"], [
 AC_SUBST([CPPUNIT_CFLAGS])
 AC_SUBST([CPPUNIT_LIBS])
 AM_CONDITIONAL([ENABLE_TESTS], [test "x$enable_tests" = "xyes"])
-AS_IF([test "x$enable_tests" = "xyes"], [need_generators=yes])
+AS_IF([test "x$enable_tests" = "xyes"], [need_stream=yes])
 
 AS_IF([test "x$need_stream" = "xyes"], [
 	PKG_CHECK_MODULES([REVENGE_STREAM],[
