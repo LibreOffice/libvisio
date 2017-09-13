@@ -23,19 +23,19 @@ class VSD6Parser : public VSDParser
 {
 public:
   explicit VSD6Parser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
-  ~VSD6Parser();
+  ~VSD6Parser() override;
 protected:
-  virtual bool getChunkHeader(librevenge::RVNGInputStream *input);
+  bool getChunkHeader(librevenge::RVNGInputStream *input) override;
 private:
-  void readText(librevenge::RVNGInputStream *input);
-  virtual void readCharIX(librevenge::RVNGInputStream *input);
-  virtual void readParaIX(librevenge::RVNGInputStream *input);
-  virtual void readFillAndShadow(librevenge::RVNGInputStream *input);
-  virtual void readName(librevenge::RVNGInputStream *input);
-  virtual void readName2(librevenge::RVNGInputStream *input);
-  virtual void readTextField(librevenge::RVNGInputStream *input);
-  virtual void readLayerMem(librevenge::RVNGInputStream *input);
-  virtual void readMisc(librevenge::RVNGInputStream *input);
+  void readText(librevenge::RVNGInputStream *input) override;
+  void readCharIX(librevenge::RVNGInputStream *input) override;
+  void readParaIX(librevenge::RVNGInputStream *input) override;
+  void readFillAndShadow(librevenge::RVNGInputStream *input) override;
+  void readName(librevenge::RVNGInputStream *input) override;
+  void readName2(librevenge::RVNGInputStream *input) override;
+  void readTextField(librevenge::RVNGInputStream *input) override;
+  void readLayerMem(librevenge::RVNGInputStream *input) override;
+  void readMisc(librevenge::RVNGInputStream *input) override;
 
 
   VSD6Parser();

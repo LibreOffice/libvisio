@@ -42,13 +42,13 @@ public:
       m_level(level),
       m_nameId(nameId),
       m_formatStringId(formatStringId) {}
-  ~VSDTextField() {}
-  void handle(VSDCollector *collector) const;
-  VSDFieldListElement *clone();
-  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &strVec);
-  void setNameId(int nameId);
-  void setFormat(unsigned short) {}
-  void setValue(double) {}
+  ~VSDTextField() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDFieldListElement *clone() override;
+  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &strVec) override;
+  void setNameId(int nameId) override;
+  void setFormat(unsigned short) override {}
+  void setValue(double) override {}
 private:
   unsigned m_id, m_level;
   int m_nameId, m_formatStringId;
@@ -63,13 +63,13 @@ public:
       m_format(format),
       m_number(number),
       m_formatStringId(formatStringId) {}
-  ~VSDNumericField() {}
-  void handle(VSDCollector *collector) const;
-  VSDFieldListElement *clone();
-  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &);
-  void setNameId(int) {}
-  void setFormat(unsigned short format);
-  void setValue(double number);
+  ~VSDNumericField() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDFieldListElement *clone() override;
+  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &) override;
+  void setNameId(int) override {}
+  void setFormat(unsigned short format) override;
+  void setValue(double number) override;
 private:
   librevenge::RVNGString datetimeToString(const char *format, double datetime);
   unsigned m_id, m_level;

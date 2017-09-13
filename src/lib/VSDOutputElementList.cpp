@@ -69,9 +69,9 @@ class VSDStyleOutputElement : public VSDOutputElement
 {
 public:
   VSDStyleOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDStyleOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDStyleOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDStyleOutputElement(m_propList);
   }
@@ -84,9 +84,9 @@ class VSDPathOutputElement : public VSDOutputElement
 {
 public:
   VSDPathOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDPathOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDPathOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDPathOutputElement(m_propList);
   }
@@ -99,9 +99,9 @@ class VSDGraphicObjectOutputElement : public VSDOutputElement
 {
 public:
   VSDGraphicObjectOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDGraphicObjectOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDGraphicObjectOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDGraphicObjectOutputElement(m_propList);
   }
@@ -114,9 +114,9 @@ class VSDStartTextObjectOutputElement : public VSDOutputElement
 {
 public:
   VSDStartTextObjectOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDStartTextObjectOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDStartTextObjectOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDStartTextObjectOutputElement(m_propList);
   }
@@ -129,9 +129,9 @@ class VSDOpenParagraphOutputElement : public VSDOutputElement
 {
 public:
   VSDOpenParagraphOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDOpenParagraphOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDOpenParagraphOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDOpenParagraphOutputElement(m_propList);
   }
@@ -144,9 +144,9 @@ class VSDStartLayerOutputElement : public VSDOutputElement
 {
 public:
   VSDStartLayerOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDStartLayerOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDStartLayerOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDStartLayerOutputElement(m_propList);
   }
@@ -159,9 +159,9 @@ class VSDEndLayerOutputElement : public VSDOutputElement
 {
 public:
   VSDEndLayerOutputElement();
-  virtual ~VSDEndLayerOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDEndLayerOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDEndLayerOutputElement();
   }
@@ -172,9 +172,9 @@ class VSDOpenSpanOutputElement : public VSDOutputElement
 {
 public:
   VSDOpenSpanOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDOpenSpanOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDOpenSpanOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDOpenSpanOutputElement(m_propList);
   }
@@ -187,9 +187,9 @@ class VSDInsertTextOutputElement : public VSDOutputElement
 {
 public:
   VSDInsertTextOutputElement(const librevenge::RVNGString &text);
-  virtual ~VSDInsertTextOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDInsertTextOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDInsertTextOutputElement(m_text);
   }
@@ -202,9 +202,9 @@ class VSDInsertLineBreakOutputElement : public VSDOutputElement
 {
 public:
   VSDInsertLineBreakOutputElement();
-  virtual ~VSDInsertLineBreakOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDInsertLineBreakOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDInsertLineBreakOutputElement();
   }
@@ -215,9 +215,9 @@ class VSDInsertTabOutputElement : public VSDOutputElement
 {
 public:
   VSDInsertTabOutputElement();
-  virtual ~VSDInsertTabOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDInsertTabOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDInsertTabOutputElement();
   }
@@ -228,9 +228,9 @@ class VSDCloseSpanOutputElement : public VSDOutputElement
 {
 public:
   VSDCloseSpanOutputElement();
-  virtual ~VSDCloseSpanOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDCloseSpanOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDCloseSpanOutputElement();
   }
@@ -241,9 +241,9 @@ class VSDCloseParagraphOutputElement : public VSDOutputElement
 {
 public:
   VSDCloseParagraphOutputElement();
-  virtual ~VSDCloseParagraphOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDCloseParagraphOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDCloseParagraphOutputElement();
   }
@@ -254,9 +254,9 @@ class VSDEndTextObjectOutputElement : public VSDOutputElement
 {
 public:
   VSDEndTextObjectOutputElement();
-  virtual ~VSDEndTextObjectOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDEndTextObjectOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDEndTextObjectOutputElement();
   }
@@ -266,9 +266,9 @@ class VSDOpenListElementOutputElement : public VSDOutputElement
 {
 public:
   VSDOpenListElementOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDOpenListElementOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDOpenListElementOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDOpenListElementOutputElement(m_propList);
   }
@@ -281,9 +281,9 @@ class VSDCloseListElementOutputElement : public VSDOutputElement
 {
 public:
   VSDCloseListElementOutputElement();
-  virtual ~VSDCloseListElementOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDCloseListElementOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDCloseListElementOutputElement();
   }
@@ -294,9 +294,9 @@ class VSDOpenUnorderedListLevelOutputElement : public VSDOutputElement
 {
 public:
   VSDOpenUnorderedListLevelOutputElement(const librevenge::RVNGPropertyList &propList);
-  virtual ~VSDOpenUnorderedListLevelOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDOpenUnorderedListLevelOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDOpenUnorderedListLevelOutputElement(m_propList);
   }
@@ -309,9 +309,9 @@ class VSDCloseUnorderedListLevelOutputElement : public VSDOutputElement
 {
 public:
   VSDCloseUnorderedListLevelOutputElement();
-  virtual ~VSDCloseUnorderedListLevelOutputElement() {}
-  virtual void draw(librevenge::RVNGDrawingInterface *painter);
-  virtual VSDOutputElement *clone()
+  ~VSDCloseUnorderedListLevelOutputElement() override {}
+  void draw(librevenge::RVNGDrawingInterface *painter) override;
+  VSDOutputElement *clone() override
   {
     return new VSDCloseUnorderedListLevelOutputElement();
   }

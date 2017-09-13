@@ -30,9 +30,9 @@ class VSDXParser : public VSDXMLParserBase
 
 public:
   explicit VSDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
-  virtual ~VSDXParser();
-  bool parseMain();
-  bool extractStencils();
+  ~VSDXParser() override;
+  bool parseMain() override;
+  bool extractStencils() override;
 
 private:
   VSDXParser();
@@ -41,10 +41,10 @@ private:
 
   // Helper functions
 
-  xmlChar *readStringData(xmlTextReaderPtr reader);
+  xmlChar *readStringData(xmlTextReaderPtr reader) override;
 
-  int getElementToken(xmlTextReaderPtr reader);
-  int getElementDepth(xmlTextReaderPtr reader);
+  int getElementToken(xmlTextReaderPtr reader) override;
+  int getElementDepth(xmlTextReaderPtr reader) override;
 
   int skipSection(xmlTextReaderPtr reader);
 
@@ -70,7 +70,7 @@ private:
 
   void readShapeProperties(xmlTextReaderPtr reader);
 
-  void getBinaryData(xmlTextReaderPtr reader);
+  void getBinaryData(xmlTextReaderPtr reader) override;
 
   void readLayer(xmlTextReaderPtr reader);
   void readParagraph(xmlTextReaderPtr reader);

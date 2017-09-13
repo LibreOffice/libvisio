@@ -38,14 +38,14 @@ public:
     m_style(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout,
             doublestrikeout, allcaps, initcaps,  smallcaps,  superscript,  subscript, scaleWidth) {}
   VSDCharIX(unsigned id, unsigned level, const VSDOptionalCharStyle &style) : VSDCharacterListElement(id, level), m_style(style) {}
-  ~VSDCharIX() {}
-  void handle(VSDCollector *collector) const;
-  VSDCharacterListElement *clone();
-  unsigned getCharCount() const
+  ~VSDCharIX() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDCharacterListElement *clone() override;
+  unsigned getCharCount() const override
   {
     return m_style.charCount;
   }
-  void setCharCount(unsigned charCount)
+  void setCharCount(unsigned charCount) override
   {
     m_style.charCount = charCount;
   }

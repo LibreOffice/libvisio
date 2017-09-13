@@ -39,14 +39,14 @@ public:
     VSDParagraphListElement(id, level),
     m_style(charCount, indFirst, indLeft, indRight, spLine, spBefore, spAfter,
             align, bullet, bulletStr, bulletFont, bulletFontSize, textPosAfterBullet, flags) {}
-  ~VSDParaIX() {}
-  void handle(VSDCollector *collector) const;
-  VSDParagraphListElement *clone();
-  unsigned getCharCount() const
+  ~VSDParaIX() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDParagraphListElement *clone() override;
+  unsigned getCharCount() const override
   {
     return m_style.charCount;
   }
-  void setCharCount(unsigned charCount)
+  void setCharCount(unsigned charCount) override
   {
     m_style.charCount = charCount;
   }

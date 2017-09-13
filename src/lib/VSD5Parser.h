@@ -23,44 +23,44 @@ class VSD5Parser : public VSD6Parser
 {
 public:
   explicit VSD5Parser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
-  ~VSD5Parser();
+  ~VSD5Parser() override;
 
 protected:
-  virtual void readPointer(librevenge::RVNGInputStream *input, Pointer &ptr);
-  virtual bool getChunkHeader(librevenge::RVNGInputStream *input);
-  virtual void readPointerInfo(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount);
+  void readPointer(librevenge::RVNGInputStream *input, Pointer &ptr) override;
+  bool getChunkHeader(librevenge::RVNGInputStream *input) override;
+  void readPointerInfo(librevenge::RVNGInputStream *input, unsigned ptrType, unsigned shift, unsigned &listSize, int &pointerCount) override;
 
-  virtual void readGeomList(librevenge::RVNGInputStream *input);
-  virtual void readCharList(librevenge::RVNGInputStream *input);
-  virtual void readParaList(librevenge::RVNGInputStream *input);
-  virtual void readShapeList(librevenge::RVNGInputStream *input);
-  virtual void readPropList(librevenge::RVNGInputStream *input);
-  virtual void readFieldList(librevenge::RVNGInputStream *input);
-  virtual void readNameList2(librevenge::RVNGInputStream *input);
-  virtual void readTabsDataList(librevenge::RVNGInputStream *input);
+  void readGeomList(librevenge::RVNGInputStream *input) override;
+  void readCharList(librevenge::RVNGInputStream *input) override;
+  void readParaList(librevenge::RVNGInputStream *input) override;
+  void readShapeList(librevenge::RVNGInputStream *input) override;
+  void readPropList(librevenge::RVNGInputStream *input) override;
+  void readFieldList(librevenge::RVNGInputStream *input) override;
+  void readNameList2(librevenge::RVNGInputStream *input) override;
+  void readTabsDataList(librevenge::RVNGInputStream *input) override;
 
-  virtual void readLine(librevenge::RVNGInputStream *input);
-  virtual void readFillAndShadow(librevenge::RVNGInputStream *input);
-  virtual void readTextBlock(librevenge::RVNGInputStream *input);
-  virtual void readCharIX(librevenge::RVNGInputStream *input);
-  virtual void readParaIX(librevenge::RVNGInputStream *input);
-  virtual void readTextField(librevenge::RVNGInputStream *input);
+  void readLine(librevenge::RVNGInputStream *input) override;
+  void readFillAndShadow(librevenge::RVNGInputStream *input) override;
+  void readTextBlock(librevenge::RVNGInputStream *input) override;
+  void readCharIX(librevenge::RVNGInputStream *input) override;
+  void readParaIX(librevenge::RVNGInputStream *input) override;
+  void readTextField(librevenge::RVNGInputStream *input) override;
 
-  virtual void readShape(librevenge::RVNGInputStream *input);
-  virtual void readPage(librevenge::RVNGInputStream *input);
+  void readShape(librevenge::RVNGInputStream *input) override;
+  void readPage(librevenge::RVNGInputStream *input) override;
 
   virtual void handleChunkRecords(librevenge::RVNGInputStream *input);
 
-  virtual void readStyleSheet(librevenge::RVNGInputStream *input);
+  void readStyleSheet(librevenge::RVNGInputStream *input) override;
 
-  virtual void readNameIDX(librevenge::RVNGInputStream *input);
+  void readNameIDX(librevenge::RVNGInputStream *input) override;
 
-  virtual void readMisc(librevenge::RVNGInputStream *input);
+  void readMisc(librevenge::RVNGInputStream *input) override;
 
-  virtual void readXForm1D(librevenge::RVNGInputStream *input);
+  void readXForm1D(librevenge::RVNGInputStream *input) override;
 
-  virtual unsigned getUInt(librevenge::RVNGInputStream *input);
-  virtual int getInt(librevenge::RVNGInputStream *input);
+  unsigned getUInt(librevenge::RVNGInputStream *input) override;
+  int getInt(librevenge::RVNGInputStream *input) override;
 
 private:
   VSD5Parser();

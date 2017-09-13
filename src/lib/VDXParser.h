@@ -28,9 +28,9 @@ class VDXParser : public VSDXMLParserBase
 
 public:
   explicit VDXParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter);
-  virtual ~VDXParser();
-  bool parseMain();
-  bool extractStencils();
+  ~VDXParser() override;
+  bool parseMain() override;
+  bool extractStencils() override;
 
 private:
   VDXParser();
@@ -39,10 +39,10 @@ private:
 
   // Helper functions
 
-  xmlChar *readStringData(xmlTextReaderPtr reader);
+  xmlChar *readStringData(xmlTextReaderPtr reader) override;
 
-  int getElementToken(xmlTextReaderPtr reader);
-  int getElementDepth(xmlTextReaderPtr reader);
+  int getElementToken(xmlTextReaderPtr reader) override;
+  int getElementDepth(xmlTextReaderPtr reader) override;
 
   // Functions to read the DatadiagramML document structure
 
@@ -65,7 +65,7 @@ private:
   void readTabs(xmlTextReaderPtr reader);
   void readTab(xmlTextReaderPtr reader);
 
-  void getBinaryData(xmlTextReaderPtr reader);
+  void getBinaryData(xmlTextReaderPtr reader) override;
 
   // Private data
 

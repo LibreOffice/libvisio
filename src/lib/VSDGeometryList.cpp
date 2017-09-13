@@ -22,9 +22,9 @@ public:
               const boost::optional<bool> &noLine, const boost::optional<bool> &noShow) :
     VSDGeometryListElement(id, level), m_noFill(get_optional_value_or(noFill, false)),
     m_noLine(get_optional_value_or(noLine, false)), m_noShow(get_optional_value_or(noShow, false)) {}
-  virtual ~VSDGeometry() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDGeometry() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   bool m_noFill;
   bool m_noLine;
   bool m_noShow;
@@ -35,9 +35,9 @@ class VSDEmpty : public VSDGeometryListElement
 public:
   VSDEmpty(unsigned id, unsigned level) :
     VSDGeometryListElement(id, level) {}
-  virtual ~VSDEmpty() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDEmpty() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
 };
 
 class VSDMoveTo : public VSDGeometryListElement
@@ -45,9 +45,9 @@ class VSDMoveTo : public VSDGeometryListElement
 public:
   VSDMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
     VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
-  virtual ~VSDMoveTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDMoveTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x, m_y;
 };
 
@@ -56,9 +56,9 @@ class VSDLineTo : public VSDGeometryListElement
 public:
   VSDLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
     VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
-  virtual ~VSDLineTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDLineTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x, m_y;
 };
 
@@ -67,9 +67,9 @@ class VSDArcTo : public VSDGeometryListElement
 public:
   VSDArcTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2, const boost::optional<double> &bow) :
     VSDGeometryListElement(id, level), m_x2(get_optional_value_or(x2, 0.0)), m_y2(get_optional_value_or(y2, 0.0)), m_bow(get_optional_value_or(bow, 0.0)) {}
-  virtual ~VSDArcTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDArcTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x2, m_y2, m_bow;
 };
 
@@ -82,9 +82,9 @@ public:
     VSDGeometryListElement(id, level), m_cx(get_optional_value_or(cx, 0.0)), m_cy(get_optional_value_or(cy, 0.0)),
     m_xleft(get_optional_value_or(xleft, 0.0)), m_yleft(get_optional_value_or(yleft, 0.0)), m_xtop(get_optional_value_or(xtop, 0.0)),
     m_ytop(get_optional_value_or(ytop, 0.0)) {}
-  virtual ~VSDEllipse() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDEllipse() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_cx, m_cy, m_xleft, m_yleft, m_xtop, m_ytop;
 };
 
@@ -96,9 +96,9 @@ public:
                      const boost::optional<double> &angle, const boost::optional<double> &ecc) :
     VSDGeometryListElement(id, level), m_x3(get_optional_value_or(x3, 0.0)), m_y3(get_optional_value_or(y3, 0.0)), m_x2(get_optional_value_or(x2, 0.0)),
     m_y2(get_optional_value_or(y2, 0.0)), m_angle(get_optional_value_or(angle, 0.0)), m_ecc(get_optional_value_or(ecc, 1.0)) {}
-  virtual ~VSDEllipticalArcTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDEllipticalArcTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
 };
 
@@ -108,9 +108,9 @@ public:
   VSDNURBSTo1(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
               std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) :
     VSDGeometryListElement(id, level), m_x2(x2), m_y2(y2), m_xType(xType), m_yType(yType), m_degree(degree), m_controlPoints(controlPoints), m_knotVector(knotVector), m_weights(weights) {}
-  virtual ~VSDNURBSTo1() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDNURBSTo1() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
 
   double m_x2, m_y2;
   unsigned m_xType, m_yType;
@@ -124,11 +124,11 @@ class VSDNURBSTo2 : public VSDGeometryListElement
 public:
   VSDNURBSTo2(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID) :
     VSDGeometryListElement(id, level), m_dataID(dataID), m_x2(x2), m_y2(y2), m_knot(knot), m_knotPrev(knotPrev), m_weight(weight), m_weightPrev(weightPrev) {}
-  virtual ~VSDNURBSTo2() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDNURBSTo2() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
 
-  unsigned getDataID() const;
+  unsigned getDataID() const override;
   unsigned m_dataID;
   double m_x2, m_y2;
   double m_knot, m_knotPrev;
@@ -143,9 +143,9 @@ public:
               const boost::optional<NURBSData> &data) :
     VSDGeometryListElement(id, level), m_data(get_optional_value_or(data, NURBSData())), m_x2(get_optional_value_or(x2, 0.0)), m_y2(get_optional_value_or(y2, 0.0)),
     m_knot(get_optional_value_or(knot, 0.0)), m_knotPrev(get_optional_value_or(knotPrev, 0.0)), m_weight(get_optional_value_or(weight, 0.0)), m_weightPrev(get_optional_value_or(weightPrev, 0.0)) {}
-  virtual ~VSDNURBSTo3() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDNURBSTo3() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
 
   NURBSData m_data;
   double m_x2, m_y2;
@@ -158,9 +158,9 @@ class VSDPolylineTo1 : public VSDGeometryListElement
 public:
   VSDPolylineTo1(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points) :
     VSDGeometryListElement(id, level), m_x(x), m_y(y), m_xType(xType), m_yType(yType), m_points(points) {}
-  virtual ~VSDPolylineTo1() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDPolylineTo1() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
 
   double m_x, m_y;
   unsigned m_xType, m_yType;
@@ -172,10 +172,10 @@ class VSDPolylineTo2 : public VSDGeometryListElement
 public:
   VSDPolylineTo2(unsigned id, unsigned level, double x, double y, unsigned dataID) :
     VSDGeometryListElement(id, level), m_dataID(dataID), m_x(x), m_y(y) {}
-  virtual ~VSDPolylineTo2() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
-  unsigned getDataID() const;
+  ~VSDPolylineTo2() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
+  unsigned getDataID() const override;
 
   unsigned m_dataID;
   double m_x, m_y;
@@ -187,9 +187,9 @@ public:
   VSDPolylineTo3(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
                  const boost::optional<PolylineData> &data) :
     VSDGeometryListElement(id, level), m_data(get_optional_value_or(data, PolylineData())), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
-  virtual ~VSDPolylineTo3() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDPolylineTo3() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
 
   PolylineData m_data;
   double m_x, m_y;
@@ -203,9 +203,9 @@ public:
                  const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree) :
     VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)), m_secondKnot(get_optional_value_or(secondKnot, 0.0)),
     m_firstKnot(get_optional_value_or(firstKnot, 0.0)), m_lastKnot(get_optional_value_or(lastKnot, 0.0)), m_degree(get_optional_value_or(degree, 0)) {}
-  virtual ~VSDSplineStart() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDSplineStart() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
 
   double m_x, m_y;
   double m_secondKnot, m_firstKnot, m_lastKnot;
@@ -218,9 +218,9 @@ public:
   VSDSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
                 const boost::optional<double> &knot) :
     VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)), m_knot(get_optional_value_or(knot, 0.0)) {}
-  virtual ~VSDSplineKnot() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDSplineKnot() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x, m_y;
   double m_knot;
 };
@@ -232,9 +232,9 @@ public:
                   const boost::optional<double> &x2, const boost::optional<double> &y2) :
     VSDGeometryListElement(id, level), m_x1(get_optional_value_or(x1, 0.0)), m_y1(get_optional_value_or(y1, 0.0)),
     m_x2(get_optional_value_or(x2, 0.0)), m_y2(get_optional_value_or(y2, 0.0)) {}
-  virtual ~VSDInfiniteLine() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDInfiniteLine() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x1, m_y1, m_x2, m_y2;
 };
 
@@ -245,9 +245,9 @@ public:
                  const boost::optional<double> &b, const boost::optional<double> &c, const boost::optional<double> &d) :
     VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)),
     m_a(get_optional_value_or(a, 0.0)), m_b(get_optional_value_or(b, 0.0)), m_c(get_optional_value_or(c, 0.0)), m_d(get_optional_value_or(d, 0.0)) {}
-  virtual ~VSDRelCubBezTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDRelCubBezTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x, m_y, m_a, m_b, m_c, m_d;
 };
 
@@ -260,9 +260,9 @@ public:
     VSDGeometryListElement(id, level), m_x3(get_optional_value_or(x3, 0.0)), m_y3(get_optional_value_or(y3, 0.0)),
     m_x2(get_optional_value_or(x2, 0.0)), m_y2(get_optional_value_or(y2, 0.0)), m_angle(get_optional_value_or(angle, 0.0)),
     m_ecc(get_optional_value_or(ecc, 1.0)) {}
-  virtual ~VSDRelEllipticalArcTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDRelEllipticalArcTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x3, m_y3, m_x2, m_y2, m_angle, m_ecc;
 };
 
@@ -271,9 +271,9 @@ class VSDRelMoveTo : public VSDGeometryListElement
 public:
   VSDRelMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
     VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
-  virtual ~VSDRelMoveTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDRelMoveTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x, m_y;
 };
 
@@ -282,9 +282,9 @@ class VSDRelLineTo : public VSDGeometryListElement
 public:
   VSDRelLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
     VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
-  virtual ~VSDRelLineTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDRelLineTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x, m_y;
 };
 
@@ -295,9 +295,9 @@ public:
                   const boost::optional<double> &a, const boost::optional<double> &b) :
     VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)),
     m_y(get_optional_value_or(y, 0.0)), m_a(get_optional_value_or(a, 0.0)), m_b(get_optional_value_or(b, 0.0)) {}
-  virtual ~VSDRelQuadBezTo() {}
-  void handle(VSDCollector *collector) const;
-  VSDGeometryListElement *clone();
+  ~VSDRelQuadBezTo() override {}
+  void handle(VSDCollector *collector) const override;
+  VSDGeometryListElement *clone() override;
   double m_x, m_y, m_a, m_b;
 };
 
