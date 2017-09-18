@@ -75,7 +75,7 @@ bool libvisio::VDXParser::processXmlDocument(librevenge::RVNGInputStream *input)
     return false;
 
   const std::shared_ptr<xmlTextReader> reader(
-    xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
+    xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
     xmlFreeTextReader);
   if (!reader)
     return false;
@@ -920,7 +920,7 @@ xmlChar *libvisio::VDXParser::readStringData(xmlTextReaderPtr reader)
       return stringValue;
     }
   }
-  return 0;
+  return nullptr;
 }
 
 int libvisio::VDXParser::getElementToken(xmlTextReaderPtr reader)
@@ -1032,7 +1032,7 @@ void libvisio::VDXParser::readTabs(xmlTextReaderPtr reader)
     }
     while ((XML_TABS != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
   }
-  m_currentTabSet = 0;
+  m_currentTabSet = nullptr;
 }
 
 void libvisio::VDXParser::readTab(xmlTextReaderPtr reader)

@@ -44,7 +44,7 @@ xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input,
                                     const char *URL,
                                     const char *encoding,
                                     int options,
-                                    XMLErrorWatcher *watcher = 0);
+                                    XMLErrorWatcher *watcher = nullptr);
 
 Colour xmlStringToColour(const xmlChar *s);
 Colour xmlStringToColour(const std::shared_ptr<xmlChar> &s);

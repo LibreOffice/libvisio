@@ -163,7 +163,7 @@ static bool isXmlVisioDocument(librevenge::RVNGInputStream *input) try
 {
   input->seek(0, librevenge::RVNG_SEEK_SET);
   const std::shared_ptr<xmlTextReader> reader(
-    libvisio::xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
+    libvisio::xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
     xmlFreeTextReader);
   if (!reader)
     return false;

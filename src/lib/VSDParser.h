@@ -47,7 +47,7 @@ struct Pointer
 class VSDParser
 {
 public:
-  explicit VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container = 0);
+  explicit VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container = nullptr);
   virtual ~VSDParser();
   bool parseMain();
   bool extractStencils();

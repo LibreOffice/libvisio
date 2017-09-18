@@ -184,8 +184,8 @@ private:
 
   void applyXForm(double &x, double &y, const XForm &xform);
 
-  void transformPoint(double &x, double &y, XForm *txtxform = 0);
-  void transformAngle(double &angle, XForm *txtxform = 0);
+  void transformPoint(double &x, double &y, XForm *txtxform = nullptr);
+  void transformAngle(double &angle, XForm *txtxform = nullptr);
   void transformFlips(bool &flipX, bool &flipY);
 
   double _NURBSBasis(unsigned knot, unsigned degree, double point, const std::vector<double> &knotVector);

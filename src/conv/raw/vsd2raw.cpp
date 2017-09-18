@@ -54,7 +54,7 @@ int printVersion()
 int main(int argc, char *argv[])
 {
   bool printIndentLevel = false;
-  char *file = 0;
+  char *file = nullptr;
 
   if (argc < 2)
     return printUsage();

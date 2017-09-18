@@ -31,9 +31,9 @@ libvisio::VSDXMLParserBase::VSDXMLParserBase()
     m_extractStencils(false), m_isInStyles(false), m_currentLevel(0),
     m_currentShapeLevel(0), m_colours(), m_fieldList(), m_shapeList(),
     m_currentBinaryData(), m_shapeStack(), m_shapeLevelStack(),
-    m_isShapeStarted(false), m_isPageStarted(false), m_currentGeometryList(0),
-    m_currentGeometryListIndex(MINUS_ONE), m_fonts(), m_currentTabSet(0),
-    m_watcher(0)
+    m_isShapeStarted(false), m_isPageStarted(false), m_currentGeometryList(nullptr),
+    m_currentGeometryListIndex(MINUS_ONE), m_fonts(), m_currentTabSet(nullptr),
+    m_watcher(nullptr)
 {
   initColours();
 }
@@ -64,7 +64,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
       {
         m_currentGeometryList->clear();
         m_shape.m_geometries.erase(ix);
-        m_currentGeometryList = 0;
+        m_currentGeometryList = nullptr;
       }
     }
     return;

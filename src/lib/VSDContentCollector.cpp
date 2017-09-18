@@ -129,24 +129,24 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(), m_txtxform(), m_misc(),
-  m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? 0 : &groupXFormsSequence[0]),
+  m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? nullptr : &groupXFormsSequence[0]),
   m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType((unsigned)-1),
   m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
   m_noLine(false), m_noFill(false), m_noShow(false), m_fonts(),
   m_currentLevel(0), m_isShapeStarted(false),
   m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
   m_groupMemberships(m_groupMembershipsSequence.begin()),
-  m_currentPageNumber(0), m_shapeOutputDrawing(0), m_shapeOutputText(0),
+  m_currentPageNumber(0), m_shapeOutputDrawing(nullptr), m_shapeOutputText(nullptr),
   m_pageOutputDrawing(), m_pageOutputText(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_pageShapeOrder(m_documentPageShapeOrders.begin()), m_isFirstGeometry(true), m_NURBSData(), m_polylineData(),
   m_currentText(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
   m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_currentStyleSheet(0), m_styles(styles),
-  m_stencils(stencils), m_stencilShape(0), m_isStencilStarted(false), m_currentGeometryCount(0),
+  m_stencils(stencils), m_stencilShape(nullptr), m_isStencilStarted(false), m_currentGeometryCount(0),
   m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(), m_layerList(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
-  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem(), m_tabSets(), m_documentTheme(0)
+  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem(), m_tabSets(), m_documentTheme(nullptr)
 {
 }
 
@@ -2205,7 +2205,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
 
     // Get stencil geometry so as to find stencil NURBS data ID
     std::map<unsigned, VSDGeometryList>::const_iterator cstiter = m_stencilShape->m_geometries.find(m_currentGeometryCount-1);
-    VSDGeometryListElement *element = 0;
+    VSDGeometryListElement *element = nullptr;
     if (cstiter == m_stencilShape->m_geometries.end())
     {
       _handleLevelChange(level);
@@ -2285,7 +2285,7 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned leve
 
     // Get stencil geometry so as to find stencil polyline data ID
     std::map<unsigned, VSDGeometryList>::const_iterator cstiter = m_stencilShape->m_geometries.find(m_currentGeometryCount-1);
-    VSDGeometryListElement *element = 0;
+    VSDGeometryListElement *element = nullptr;
     if (cstiter == m_stencilShape->m_geometries.end())
     {
       _handleLevelChange(level);
@@ -3511,7 +3511,7 @@ void libvisio::VSDContentCollector::startPage(unsigned pageId)
   m_y = 0;
   m_currentPageNumber++;
   if (m_groupXFormsSequence.size() >= m_currentPageNumber)
-    m_groupXForms = m_groupXFormsSequence.size() > m_currentPageNumber-1 ? &m_groupXFormsSequence[m_currentPageNumber-1] : 0;
+    m_groupXForms = m_groupXFormsSequence.size() > m_currentPageNumber-1 ? &m_groupXFormsSequence[m_currentPageNumber-1] : nullptr;
   if (m_groupMembershipsSequence.size() >= m_currentPageNumber)
     m_groupMemberships = m_groupMembershipsSequence.begin() + (m_currentPageNumber-1);
   if (m_documentPageShapeOrders.size() >= m_currentPageNumber)
@@ -3631,7 +3631,7 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
   else
   {
     UErrorCode status = U_ZERO_ERROR;
-    UConverter *conv = NULL;
+    UConverter *conv = nullptr;
     switch (format)
     {
     case VSD_TEXT_JAPANESE:

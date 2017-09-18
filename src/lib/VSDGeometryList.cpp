@@ -971,7 +971,7 @@ libvisio::VSDGeometryListElement *libvisio::VSDGeometryList::getElement(unsigned
   if (iter != m_elements.end())
     return iter->second;
   else
-    return 0;
+    return nullptr;
 }
 
 void libvisio::VSDGeometryList::clearElement(unsigned id)

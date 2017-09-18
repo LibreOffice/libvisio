@@ -11,26 +11,26 @@
 #include "libvisio_utils.h"
 
 libvisio::VSDShape::VSDShape()
-  : m_geometries(), m_shapeList(), m_fields(), m_foreign(0), m_parent(0), m_masterPage(MINUS_ONE),
+  : m_geometries(), m_shapeList(), m_fields(), m_foreign(nullptr), m_parent(0), m_masterPage(MINUS_ONE),
     m_masterShape(MINUS_ONE), m_shapeId(MINUS_ONE), m_lineStyleId(MINUS_ONE), m_fillStyleId(MINUS_ONE),
     m_textStyleId(MINUS_ONE), m_lineStyle(), m_fillStyle(), m_textBlockStyle(), m_charStyle(),
     m_charList(), m_paraStyle(), m_paraList(), m_tabSets(), m_text(), m_names(),
-    m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(0),
-    m_xform1d(0), m_misc(), m_layerMem()
+    m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(nullptr),
+    m_xform1d(nullptr), m_misc(), m_layerMem()
 {
 }
 
 libvisio::VSDShape::VSDShape(const libvisio::VSDShape &shape)
   : m_geometries(shape.m_geometries), m_shapeList(shape.m_shapeList), m_fields(shape.m_fields),
-    m_foreign(shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0), m_parent(shape.m_parent),
+    m_foreign(shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : nullptr), m_parent(shape.m_parent),
     m_masterPage(shape.m_masterPage), m_masterShape(shape.m_masterShape), m_shapeId(shape.m_shapeId),
     m_lineStyleId(shape.m_lineStyleId), m_fillStyleId(shape.m_fillStyleId), m_textStyleId(shape.m_textStyleId),
     m_lineStyle(shape.m_lineStyle), m_fillStyle(shape.m_fillStyle), m_textBlockStyle(shape.m_textBlockStyle),
     m_charStyle(shape.m_charStyle), m_charList(shape.m_charList), m_paraStyle(shape.m_paraStyle),
     m_paraList(shape.m_paraList), m_tabSets(shape.m_tabSets), m_text(shape.m_text), m_names(shape.m_names),
     m_textFormat(shape.m_textFormat), m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData),
-    m_xform(shape.m_xform), m_txtxform(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : 0),
-    m_xform1d(shape.m_xform1d ? new XForm1D(*(shape.m_xform1d)) : 0), m_misc(shape.m_misc),
+    m_xform(shape.m_xform), m_txtxform(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : nullptr),
+    m_xform1d(shape.m_xform1d ? new XForm1D(*(shape.m_xform1d)) : nullptr), m_misc(shape.m_misc),
     m_layerMem(shape.m_layerMem)
 {
 }
@@ -49,7 +49,7 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
     m_fields = shape.m_fields;
     if (m_foreign)
       delete m_foreign;
-    m_foreign = shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : 0;
+    m_foreign = shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : nullptr;
     m_parent = shape.m_parent;
     m_masterPage = shape.m_masterPage;
     m_masterShape = shape.m_masterShape;
@@ -73,10 +73,10 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
     m_xform = shape.m_xform;
     if (m_txtxform)
       delete m_txtxform;
-    m_txtxform = shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : 0;
+    m_txtxform = shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : nullptr;
     if (m_xform1d)
       delete m_xform1d;
-    m_xform1d = shape.m_xform1d ? new XForm1D(*(shape.m_xform1d)) : 0;
+    m_xform1d = shape.m_xform1d ? new XForm1D(*(shape.m_xform1d)) : nullptr;
     m_misc = shape.m_misc;
     m_layerMem = shape.m_layerMem;
   }
@@ -87,13 +87,13 @@ void libvisio::VSDShape::clear()
 {
   if (m_foreign)
     delete m_foreign;
-  m_foreign = 0;
+  m_foreign = nullptr;
   if (m_txtxform)
     delete m_txtxform;
-  m_txtxform = 0;
+  m_txtxform = nullptr;
   if (m_xform1d)
     delete m_xform1d;
-  m_xform1d = 0;
+  m_xform1d = nullptr;
 
   m_geometries.clear();
   m_shapeList.clear();
@@ -167,7 +167,7 @@ const libvisio::VSDShape *libvisio::VSDStencil::getStencilShape(unsigned id) con
   if (iter != m_shapes.end())
     return &(iter->second);
   else
-    return 0;
+    return nullptr;
 }
 
 
@@ -192,16 +192,16 @@ const libvisio::VSDStencil *libvisio::VSDStencils::getStencil(unsigned idx) cons
   if (iter != m_stencils.end())
     return &(iter->second);
   else
-    return 0;
+    return nullptr;
 }
 
 const libvisio::VSDShape *libvisio::VSDStencils::getStencilShape(unsigned pageId, unsigned shapeId) const
 {
   if (MINUS_ONE == pageId)
-    return 0;
+    return nullptr;
   const libvisio::VSDStencil *tmpStencil = getStencil(pageId);
   if (!tmpStencil)
-    return 0;
+    return nullptr;
   if (MINUS_ONE == shapeId)
     shapeId = tmpStencil->m_firstShapeId;
   return tmpStencil->getStencilShape(shapeId);

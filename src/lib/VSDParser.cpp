@@ -35,11 +35,11 @@ void sanitizeListLength(uint32_t &length, const std::size_t elem, librevenge::RV
 }
 
 libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container)
-  : m_input(input), m_painter(painter), m_container(container), m_header(), m_collector(0), m_shapeList(), m_currentLevel(0),
-    m_stencils(), m_currentStencil(0), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
+  : m_input(input), m_painter(painter), m_container(container), m_header(), m_collector(nullptr), m_shapeList(), m_currentLevel(0),
+    m_stencils(), m_currentStencil(nullptr), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
     m_currentShapeLevel(0), m_currentShapeID(MINUS_ONE), m_currentLayerListLevel(0), m_extractStencils(false), m_colours(),
     m_isBackgroundPage(false), m_isShapeStarted(false), m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
-    m_currentGeometryList(0), m_currentGeomListCount(0), m_fonts(), m_names(), m_namesMapMap(),
+    m_currentGeometryList(nullptr), m_currentGeomListCount(0), m_fonts(), m_names(), m_namesMapMap(),
     m_currentPageName(), m_currentTabSet()
 {}
 
@@ -414,7 +414,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     else if (m_currentStencil)
     {
       m_stencils.addStencil(idx, *m_currentStencil);
-      m_currentStencil = 0;
+      m_currentStencil = nullptr;
     }
     break;
   case VSD_SHAPE_GROUP:
@@ -731,7 +731,7 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     if (!m_shape.m_geometries.empty() && m_currentGeometryList && m_currentGeometryList->empty())
     {
       m_shape.m_geometries.erase(--m_currentGeomListCount);
-      m_currentGeometryList = 0;
+      m_currentGeometryList = nullptr;
     }
     m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shapeList.getShapesOrder());
     m_shapeList.clear();
@@ -743,7 +743,7 @@ void libvisio::VSDParser::_handleLevelChange(unsigned level)
     {
       _flushShape();
       m_shape.clear();
-      m_currentGeometryList = 0;
+      m_currentGeometryList = nullptr;
     }
     m_isShapeStarted = false;
     m_currentShapeLevel = 0;
@@ -1313,7 +1313,7 @@ void libvisio::VSDParser::readShape(librevenge::RVNGInputStream *input)
   }
 
   m_shape.clear();
-  m_currentGeometryList = 0;
+  m_currentGeometryList = nullptr;
   const VSDShape *tmpShape = m_stencils.getStencilShape(masterPage, masterShape);
   if (tmpShape)
   {

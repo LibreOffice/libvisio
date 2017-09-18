@@ -52,7 +52,7 @@ libvisio::VSDXParser::VSDXParser(librevenge::RVNGInputStream *input, librevenge:
     m_input(input),
     m_painter(painter),
     m_currentDepth(0),
-    m_rels(0),
+    m_rels(nullptr),
     m_currentTheme()
 {
 }
@@ -131,7 +131,7 @@ bool libvisio::VSDXParser::parseDocument(librevenge::RVNGInputStream *input, con
     if (!parseTheme(input, rel->getTarget().c_str()))
     {
       VSD_DEBUG_MSG(("Could not parse theme\n"));
-      m_collector->collectDocumentTheme(0);
+      m_collector->collectDocumentTheme(nullptr);
     }
     else
       m_collector->collectDocumentTheme(&m_currentTheme);
@@ -304,7 +304,7 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
   XMLErrorWatcher watcher;
 
   const std::shared_ptr<xmlTextReader> reader(
-    xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
+    xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
     xmlFreeTextReader);
   if (!reader)
     return;
@@ -558,7 +558,7 @@ xmlChar *libvisio::VSDXParser::readStringData(xmlTextReaderPtr reader)
     VSD_DEBUG_MSG(("VSDXParser::readStringData stringValue %s\n", (const char *)stringValue));
     return stringValue;
   }
-  return 0;
+  return nullptr;
 }
 
 int libvisio::VSDXParser::getElementToken(xmlTextReaderPtr reader)
@@ -567,7 +567,7 @@ int libvisio::VSDXParser::getElementToken(xmlTextReaderPtr reader)
   if (XML_READER_TYPE_END_ELEMENT == xmlTextReaderNodeType(reader))
     return tokenId;
 
-  xmlChar *stringValue = 0;
+  xmlChar *stringValue = nullptr;
 
   switch (tokenId)
   {
@@ -1426,7 +1426,7 @@ void libvisio::VSDXParser::readTabRow(xmlTextReaderPtr reader)
     }
     while ((XML_ROW != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
   }
-  m_currentTabSet = 0;
+  m_currentTabSet = nullptr;
 }
 
 void libvisio::VSDXParser::readCharacter(xmlTextReaderPtr reader)

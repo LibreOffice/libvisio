@@ -95,7 +95,7 @@ libvisio::VSDXRelationships::VSDXRelationships(librevenge::RVNGInputStream *inpu
   if (input)
   {
     const std::shared_ptr<xmlTextReader> reader(
-      xmlReaderForStream(input, 0, 0, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
+      xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET|XML_PARSE_RECOVER),
       xmlFreeTextReader);
     if (reader)
     {
@@ -151,21 +151,21 @@ void libvisio::VSDXRelationships::rebaseTargets(const char *baseDir)
 const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipByType(const char *type) const
 {
   if (!type)
-    return 0;
+    return nullptr;
   std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsByType.find(type);
   if (iter != m_relsByType.end())
     return &(iter->second);
-  return 0;
+  return nullptr;
 }
 
 const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipById(const char *id) const
 {
   if (!id)
-    return 0;
+    return nullptr;
   std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsById.find(id);
   if (iter != m_relsById.end())
     return &(iter->second);
-  return 0;
+  return nullptr;
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

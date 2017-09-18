@@ -80,7 +80,7 @@ const unsigned char *VSDInternalStream::read(unsigned long numBytes, unsigned lo
   numBytesRead = 0;
 
   if (numBytes == 0)
-    return 0;
+    return nullptr;
 
   int numBytesToRead;
 
@@ -92,7 +92,7 @@ const unsigned char *VSDInternalStream::read(unsigned long numBytes, unsigned lo
   numBytesRead = numBytesToRead; // about as paranoid as we can be..
 
   if (numBytesToRead == 0)
-    return 0;
+    return nullptr;
 
   long oldOffset = m_offset;
   m_offset += numBytesToRead;

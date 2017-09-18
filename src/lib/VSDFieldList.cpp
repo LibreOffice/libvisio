@@ -266,6 +266,6 @@ libvisio::VSDFieldListElement *libvisio::VSDFieldList::getElement(unsigned index
   if (iter != m_elements.end())
     return iter->second;
   else
-    return 0;
+    return nullptr;
 }
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

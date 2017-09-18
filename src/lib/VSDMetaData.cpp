@@ -259,7 +259,7 @@ librevenge::RVNGString libvisio::VSDMetaData::readCodePageString(librevenge::RVN
   else
   {
     UErrorCode status = U_ZERO_ERROR;
-    UConverter *conv = 0;
+    UConverter *conv = nullptr;
 
     switch (codepage)
     {

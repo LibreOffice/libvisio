@@ -75,16 +75,16 @@ const libvisio::Colour *libvisio::VSDLayerList::getColour(const std::vector<unsi
     std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
     // It is enough that one layer does not override colour and the original colour is used
     if (iterMap == m_elements.end() || !iterMap->second.m_colour)
-      return 0;
+      return nullptr;
     // This means we are reading the first layer and it overrides colour
     else if (iterColour == m_elements.end())
       iterColour = iterMap;
     // If two layers override colour to two different values, the original colour is used
     else if (!iterColour->second.m_colour || iterColour->second.m_colour.get() != iterMap->second.m_colour.get())
-      return 0;
+      return nullptr;
   }
   if (iterColour == m_elements.end())
-    return 0;
+    return nullptr;
   return iterColour->second.m_colour.get_ptr();
 }
 
