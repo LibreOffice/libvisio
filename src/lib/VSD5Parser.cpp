@@ -128,11 +128,11 @@ void libvisio::VSD5Parser::handleChunkRecords(librevenge::RVNGInputStream *input
     }
   }
   i = 0;
-  for (std::map<unsigned, ChunkHeader>::iterator iter = records.begin(); iter != records.end(); ++iter)
+  for (auto &record : records)
   {
-    m_header = iter->second;
+    m_header = record.second;
     m_header.id = i++;
-    input->seek(startPosition + iter->first, librevenge::RVNG_SEEK_SET);
+    input->seek(startPosition + record.first, librevenge::RVNG_SEEK_SET);
     handleChunk(input);
   }
 }

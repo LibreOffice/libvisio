@@ -158,9 +158,8 @@ void libvisio::VSDParagraphList::setCharCount(unsigned id, unsigned charCount)
 
 void libvisio::VSDParagraphList::resetCharCount()
 {
-  for (std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.begin();
-       iter != m_elements.end(); ++iter)
-    iter->second->setCharCount(0);
+  for (auto &element : m_elements)
+    element.second->setCharCount(0);
 }
 
 unsigned libvisio::VSDParagraphList::getLevel() const
@@ -173,8 +172,8 @@ unsigned libvisio::VSDParagraphList::getLevel() const
 void libvisio::VSDParagraphList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
-  for (unsigned i = 0; i<elementsOrder.size(); i++)
-    m_elementsOrder.push_back(elementsOrder[i]);
+  for (unsigned int i : elementsOrder)
+    m_elementsOrder.push_back(i);
 }
 
 void libvisio::VSDParagraphList::handle(VSDCollector *collector) const
@@ -201,8 +200,8 @@ void libvisio::VSDParagraphList::handle(VSDCollector *collector) const
 
 void libvisio::VSDParagraphList::clear()
 {
-  for (std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    delete iter->second;
+  for (auto &element : m_elements)
+    delete element.second;
   m_elements.clear();
   m_elementsOrder.clear();
 }

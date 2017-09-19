@@ -333,14 +333,14 @@ void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
   {
     bool firstPoint = true;
     bool wasMove = false;
-    for (unsigned i = 0; i < m_currentFillGeometry.size(); i++)
+    for (auto &i : m_currentFillGeometry)
     {
       if (firstPoint)
       {
         firstPoint = false;
         wasMove = true;
       }
-      else if (m_currentFillGeometry[i]["librevenge:path-action"]->getStr() == "M")
+      else if (i["librevenge:path-action"]->getStr() == "M")
       {
         if (!tmpPath.empty())
         {
@@ -362,7 +362,7 @@ void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
       }
       else
         wasMove = false;
-      tmpPath.push_back(m_currentFillGeometry[i]);
+      tmpPath.push_back(i);
     }
     if (!tmpPath.empty())
     {
@@ -407,16 +407,16 @@ void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
     double y = 0.0;
     double prevX = 0.0;
     double prevY = 0.0;
-    for (unsigned i = 0; i < m_currentLineGeometry.size(); i++)
+    for (auto &i : m_currentLineGeometry)
     {
       if (firstPoint)
       {
         firstPoint = false;
         wasMove = true;
-        x = m_currentLineGeometry[i]["svg:x"]->getDouble();
-        y = m_currentLineGeometry[i]["svg:y"]->getDouble();
+        x = i["svg:x"]->getDouble();
+        y = i["svg:y"]->getDouble();
       }
-      else if (m_currentLineGeometry[i]["librevenge:path-action"]->getStr() == "M")
+      else if (i["librevenge:path-action"]->getStr() == "M")
       {
         if (!tmpPath.empty())
         {
@@ -437,17 +437,17 @@ void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
             tmpPath.pop_back();
           }
         }
-        x = m_currentLineGeometry[i]["svg:x"]->getDouble();
-        y = m_currentLineGeometry[i]["svg:y"]->getDouble();
+        x = i["svg:x"]->getDouble();
+        y = i["svg:y"]->getDouble();
         wasMove = true;
       }
       else
         wasMove = false;
-      tmpPath.push_back(m_currentLineGeometry[i]);
-      if (m_currentLineGeometry[i]["svg:x"])
-        prevX = m_currentLineGeometry[i]["svg:x"]->getDouble();
-      if (m_currentLineGeometry[i]["svg:y"])
-        prevY = m_currentLineGeometry[i]["svg:y"]->getDouble();
+      tmpPath.push_back(i);
+      if (i["svg:x"])
+        prevX = i["svg:x"]->getDouble();
+      if (i["svg:y"])
+        prevY = i["svg:y"]->getDouble();
     }
     if (!tmpPath.empty())
     {
@@ -581,22 +581,22 @@ void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge:
   {
     double prevX = DBL_MAX;
     double prevY = DBL_MAX;
-    for (unsigned i = 0; i < segmentVector.size(); ++i)
+    for (const auto &i : segmentVector)
     {
-      if (!segmentVector[i]["librevenge:path-action"])
+      if (!i["librevenge:path-action"])
         continue;
       double x = DBL_MAX;
       double y = DBL_MAX;
-      if (segmentVector[i]["svg:x"] && segmentVector[i]["svg:y"])
+      if (i["svg:x"] && i["svg:y"])
 
       {
-        x = segmentVector[i]["svg:x"]->getDouble();
-        y = segmentVector[i]["svg:y"]->getDouble();
+        x = i["svg:x"]->getDouble();
+        y = i["svg:y"]->getDouble();
       }
       // skip segment that have length 0.0
       if (!VSD_ALMOST_ZERO(x-prevX) || !VSD_ALMOST_ZERO(y-prevY))
       {
-        path.append(segmentVector[i]);
+        path.append(i);
         prevX = x;
         prevY = y;
       }
@@ -1200,12 +1200,11 @@ void libvisio::VSDContentCollector::_fillParagraphProperties(librevenge::RVNGPro
 void libvisio::VSDContentCollector::_fillTabSet(librevenge::RVNGPropertyList &propList, const VSDTabSet &tabSet)
 {
   librevenge::RVNGPropertyListVector tmpTabSet;
-  for (std::map<unsigned, VSDTabStop>::const_iterator iterTS = tabSet.m_tabStops.begin();
-       iterTS != tabSet.m_tabStops.end(); ++iterTS)
+  for (const auto &tabStop : tabSet.m_tabStops)
   {
     librevenge::RVNGPropertyList tmpTabStop;
-    tmpTabStop.insert("style:position", iterTS->second.m_position);
-    switch (iterTS->second.m_alignment)
+    tmpTabStop.insert("style:position", tabStop.second.m_position);
+    switch (tabStop.second.m_alignment)
     {
     case 0:
       tmpTabStop.insert("style:type", "left");
@@ -1281,9 +1280,9 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
       m_groupMemberships != m_groupMembershipsSequence.end())
   {
     std::stack<std::pair<unsigned, VSDOutputElementList> > groupTextStack;
-    for (std::list<unsigned>::iterator iterList = m_pageShapeOrder->begin(); iterList != m_pageShapeOrder->end(); ++iterList)
+    for (unsigned int &iterList : *m_pageShapeOrder)
     {
-      std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships->find(*iterList);
+      std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships->find(iterList);
       if (iterGroup == m_groupMemberships->end())
       {
         while (!groupTextStack.empty())
@@ -1302,14 +1301,14 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
       }
 
       std::map<unsigned, VSDOutputElementList>::iterator iter;
-      iter = m_pageOutputDrawing.find(*iterList);
+      iter = m_pageOutputDrawing.find(iterList);
       if (iter != m_pageOutputDrawing.end())
         m_currentPage.append(iter->second);
-      iter = m_pageOutputText.find(*iterList);
+      iter = m_pageOutputText.find(iterList);
       if (iter != m_pageOutputText.end())
-        groupTextStack.push(std::make_pair(*iterList, iter->second));
+        groupTextStack.push(std::make_pair(iterList, iter->second));
       else
-        groupTextStack.push(std::make_pair(*iterList, VSDOutputElementList()));
+        groupTextStack.push(std::make_pair(iterList, VSDOutputElementList()));
     }
     while (!groupTextStack.empty())
     {
@@ -1514,12 +1513,12 @@ void libvisio::VSDContentCollector::collectInfiniteLine(unsigned /* id */, unsig
     {
       xmove = points.begin()->first;
       ymove = points.begin()->second;
-      for (std::map<double, double>::iterator iter = points.begin(); iter != points.end(); ++iter)
+      for (auto &point : points)
       {
-        if (iter->first != xmove || iter->second != ymove)
+        if (point.first != xmove || point.second != ymove)
         {
-          xline = iter->first;
-          yline = iter->second;
+          xline = point.first;
+          yline = point.second;
         }
       }
     }
@@ -2102,10 +2101,10 @@ bool libvisio::VSDContentCollector::_isUniform(const std::vector<double> &weight
   if (weights.empty())
     return true;
   double previousValue = weights[0];
-  for (std::vector<double>::size_type i = 0; i < weights.size(); ++i)
+  for (double weight : weights)
   {
-    if (VSD_ALMOST_ZERO(weights[i] - previousValue))
-      previousValue = weights[i];
+    if (VSD_ALMOST_ZERO(weight - previousValue))
+      previousValue = weight;
     else
       return false;
   }
@@ -2125,12 +2124,12 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   std::vector<std::pair<double, double> > controlPoints(ctrlPnts);
 
   // Convert control points to static co-ordinates
-  for (std::vector<std::pair<double, double> >::iterator iter = controlPoints.begin(); iter != controlPoints.end(); ++iter)
+  for (auto &controlPoint : controlPoints)
   {
     if (xType == 0) // Percentage
-      iter->first *= m_xform.width;
+      controlPoint.first *= m_xform.width;
     if (yType == 0) // Percentage
-      iter->second *= m_xform.height;
+      controlPoint.second *= m_xform.height;
   }
 
   controlPoints.push_back(std::pair<double,double>(x2, y2));
@@ -2150,10 +2149,10 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   double lastKnot = knotVector.back()-knotVector[0];
   if (VSD_ALMOST_ZERO(lastKnot))
     lastKnot = VSD_EPSILON;
-  for (std::vector<double>::iterator knot = knotVector.begin(); knot != knotVector.end(); ++knot)
+  for (double &knot : knotVector)
   {
-    *knot -= firstKnot;
-    *knot /= lastKnot;
+    knot -= firstKnot;
+    knot /= lastKnot;
   }
 
   if (degree <= 3 && _isUniform(weights))
@@ -2573,11 +2572,11 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
       _handleForeignData(m_stencilShape->m_foreign->data);
     }
 
-    for (std::map< unsigned, VSDName>::const_iterator iterData = m_stencilShape->m_names.begin(); iterData != m_stencilShape->m_names.end(); ++iterData)
+    for (const auto &name : m_stencilShape->m_names)
     {
       librevenge::RVNGString nameString;
-      _convertDataToString(nameString, iterData->second.m_data, iterData->second.m_format);
-      m_stencilNames[iterData->first] = nameString;
+      _convertDataToString(nameString, name.second.m_data, name.second.m_format);
+      m_stencilNames[name.first] = nameString;
     }
 
     if (m_stencilShape->m_txtxform)
@@ -3469,12 +3468,11 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
 
         if (m_currentFillGeometry.empty() && m_currentLineGeometry.empty() && !m_noShow)
         {
-          for (std::map<unsigned, VSDGeometryList>::const_iterator cstiter = m_stencilShape->m_geometries.begin();
-               cstiter != m_stencilShape->m_geometries.end(); ++cstiter)
+          for (const auto &geometry : m_stencilShape->m_geometries)
           {
             m_x = 0.0;
             m_y = 0.0;
-            cstiter->second.handle(this);
+            geometry.second.handle(this);
           }
         }
         m_isStencilStarted = false;
@@ -3616,15 +3614,14 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
   UChar32  ucs4Character = 0;
   if (format == VSD_TEXT_SYMBOL) // SYMBOL
   {
-    for (std::vector<unsigned char>::const_iterator iter = characters.begin();
-         iter != characters.end(); ++iter)
+    for (unsigned char character : characters)
     {
       if (0x1e == ucs4Character)
         ucs4Character = 0xfffc;
-      else if (*iter < 0x20)
+      else if (character < 0x20)
         ucs4Character = 0x20;
       else
-        ucs4Character = symbolmap[*iter - 0x20];
+        ucs4Character = symbolmap[character - 0x20];
       appendUCS4(text, ucs4Character);
     }
   }

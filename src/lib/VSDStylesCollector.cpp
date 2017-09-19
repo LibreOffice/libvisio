@@ -209,8 +209,8 @@ void libvisio::VSDStylesCollector::collectShapesOrder(unsigned /* id */, unsigne
 {
   _handleLevelChange(level);
   m_shapeList.clear();
-  for (unsigned i = 0; i < shapeIds.size(); ++i)
-    m_shapeList.push_back(shapeIds[i]);
+  for (unsigned int shapeId : shapeIds)
+    m_shapeList.push_back(shapeId);
   _flushShapeList();
 }
 

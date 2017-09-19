@@ -107,9 +107,9 @@ void libvisio::VSDMetaData::readPropertySetStream(librevenge::RVNGInputStream *i
   uint16_t data2 = readU16(input);
   uint16_t data3 = readU16(input);
   uint8_t data4[8];
-  for (int i = 0; i < 8; i++)
+  for (unsigned char &i : data4)
   {
-    data4[i] = readU8(input);
+    i = readU8(input);
   }
   // Pretty-printed GUID is 36 bytes + the terminating null-character.
   char FMTID0[37];

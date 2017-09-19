@@ -83,15 +83,15 @@ void libvisio::VSDPages::draw(librevenge::RVNGDrawingInterface *painter)
   painter->startDocument(librevenge::RVNGPropertyList());
   painter->setDocumentMetaData(m_metaData);
 
-  for (unsigned i = 0; i < m_pages.size(); ++i)
+  for (auto &page : m_pages)
   {
     librevenge::RVNGPropertyList pageProps;
-    pageProps.insert("svg:width", m_pages[i].m_pageWidth);
-    pageProps.insert("svg:height", m_pages[i].m_pageHeight);
-    if (m_pages[i].m_pageName.len())
-      pageProps.insert("draw:name", m_pages[i].m_pageName);
+    pageProps.insert("svg:width", page.m_pageWidth);
+    pageProps.insert("svg:height", page.m_pageHeight);
+    if (page.m_pageName.len())
+      pageProps.insert("draw:name", page.m_pageName);
     painter->startPage(pageProps);
-    _drawWithBackground(painter, m_pages[i]);
+    _drawWithBackground(painter, page);
     painter->endPage();
   }
   // Visio shows background pages in tabs after the normal pages

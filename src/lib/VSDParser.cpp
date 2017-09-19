@@ -97,9 +97,9 @@ bool libvisio::VSDParser::getChunkHeader(librevenge::RVNGInputStream *input)
     m_header.trailer += 4;
   }
 
-  for (unsigned i = 0; i < 14; i++)
+  for (unsigned int trailerChunk : trailerChunks)
   {
-    if (m_header.chunkType == trailerChunks[i] && m_header.trailer != 12 && m_header.trailer != 4)
+    if (m_header.chunkType == trailerChunk && m_header.trailer != 12 && m_header.trailer != 4)
     {
       m_header.trailer += 4;
       break;
@@ -284,9 +284,9 @@ void libvisio::VSDParser::handleStreams(librevenge::RVNGInputStream *input, unsi
 
   if (!pointerOrder.empty())
   {
-    for (unsigned j=0; j < pointerOrder.size(); ++j)
+    for (unsigned int j : pointerOrder)
     {
-      iter = PtrList.find(pointerOrder[j]);
+      iter = PtrList.find(j);
       if (iter != PtrList.end())
       {
         handleStream(iter->second, iter->first, level+1, visited);

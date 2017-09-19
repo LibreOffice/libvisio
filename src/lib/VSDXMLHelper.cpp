@@ -66,20 +66,20 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
   boost::split(segments, target, boost::is_any_of("/\\"));
   std::vector<std::string> normalizedSegments;
 
-  for (unsigned i = 0; i < segments.size(); ++i)
+  for (auto &segment : segments)
   {
-    if (segments[i] == "..")
+    if (segment == "..")
       normalizedSegments.pop_back();
-    else if (segments[i] != "." && !segments[i].empty())
-      normalizedSegments.push_back(segments[i]);
+    else if (segment != "." && !segment.empty())
+      normalizedSegments.push_back(segment);
   }
 
   target.clear();
-  for (unsigned j = 0; j < normalizedSegments.size(); ++j)
+  for (const auto &normalizedSegment : normalizedSegments)
   {
     if (!target.empty())
       target.append("/");
-    target.append(normalizedSegments[j]);
+    target.append(normalizedSegment);
   }
 
   // VSD_DEBUG_MSG(("VSDXRelationship::rebaseTarget %s -> %s\n", m_target.c_str(), target.c_str()));

@@ -918,8 +918,8 @@ void libvisio::VSDGeometryList::addRelQuadBezTo(unsigned id, unsigned level, con
 void libvisio::VSDGeometryList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
-  for (unsigned i = 0; i<elementsOrder.size(); i++)
-    m_elementsOrder.push_back(elementsOrder[i]);
+  for (unsigned int i : elementsOrder)
+    m_elementsOrder.push_back(i);
 }
 
 void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
@@ -929,9 +929,9 @@ void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
   std::map<unsigned, VSDGeometryListElement *>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
-    for (unsigned i = 0; i < m_elementsOrder.size(); i++)
+    for (unsigned int i : m_elementsOrder)
     {
-      iter = m_elements.find(m_elementsOrder[i]);
+      iter = m_elements.find(i);
       if (iter != m_elements.end())
         iter->second->handle(collector);
     }
@@ -944,9 +944,9 @@ void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
       tmpVector.push_back(iter->first);
     std::sort(tmpVector.begin(), tmpVector.end());
 
-    for (unsigned i = 0; i < tmpVector.size(); i++)
+    for (unsigned int i : tmpVector)
     {
-      iter = m_elements.find(tmpVector[i]);
+      iter = m_elements.find(i);
       if (iter != m_elements.end())
         iter->second->handle(collector);
     }
@@ -956,8 +956,8 @@ void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
 
 void libvisio::VSDGeometryList::clear()
 {
-  for (std::map<unsigned, VSDGeometryListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    delete iter->second;
+  for (auto &element : m_elements)
+    delete element.second;
   m_elements.clear();
   m_elementsOrder.clear();
 }
@@ -987,8 +987,8 @@ void libvisio::VSDGeometryList::clearElement(unsigned id)
 
 void libvisio::VSDGeometryList::resetLevel(unsigned level)
 {
-  for (std::map<unsigned, VSDGeometryListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    iter->second->setLevel(level);
+  for (auto &element : m_elements)
+    element.second->setLevel(level);
 
 }
 

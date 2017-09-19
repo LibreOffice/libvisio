@@ -204,8 +204,8 @@ libvisio::VSDFieldList::~VSDFieldList()
 void libvisio::VSDFieldList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
-  for (unsigned i = 0; i<elementsOrder.size(); i++)
-    m_elementsOrder.push_back(elementsOrder[i]);
+  for (unsigned int i : elementsOrder)
+    m_elementsOrder.push_back(i);
 }
 
 void libvisio::VSDFieldList::addFieldList(unsigned id, unsigned level)
@@ -235,9 +235,9 @@ void libvisio::VSDFieldList::handle(VSDCollector *collector) const
   std::map<unsigned, VSDFieldListElement *>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
-    for (unsigned i = 0; i < m_elementsOrder.size(); i++)
+    for (unsigned int i : m_elementsOrder)
     {
-      iter = m_elements.find(m_elementsOrder[i]);
+      iter = m_elements.find(i);
       if (iter != m_elements.end())
         iter->second->handle(collector);
     }
@@ -251,8 +251,8 @@ void libvisio::VSDFieldList::handle(VSDCollector *collector) const
 
 void libvisio::VSDFieldList::clear()
 {
-  for (std::map<unsigned, VSDFieldListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    delete iter->second;
+  for (auto &element : m_elements)
+    delete element.second;
   m_elements.clear();
   m_elementsOrder.clear();
 }

@@ -70,9 +70,9 @@ const std::vector<unsigned> &libvisio::VSDShapeList::getShapesOrder()
   std::map<unsigned, unsigned>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
-    for (unsigned i = 0; i < m_elementsOrder.size(); i++)
+    for (unsigned int i : m_elementsOrder)
     {
-      iter = m_elements.find(m_elementsOrder[i]);
+      iter = m_elements.find(i);
       if (iter != m_elements.end())
         m_shapesOrder.push_back(iter->second);
     }

@@ -70,9 +70,9 @@ void libvisio::VSDLayerList::addLayer(unsigned id, const libvisio::VSDLayer &lay
 const libvisio::Colour *libvisio::VSDLayerList::getColour(const std::vector<unsigned> &ids)
 {
   std::map<unsigned, libvisio::VSDLayer>::const_iterator iterColour = m_elements.end();
-  for (std::vector<unsigned>::const_iterator iter = ids.begin(); iter != ids.end(); ++iter)
+  for (unsigned int id : ids)
   {
-    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
+    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(id);
     // It is enough that one layer does not override colour and the original colour is used
     if (iterMap == m_elements.end() || !iterMap->second.m_colour)
       return nullptr;
@@ -93,9 +93,9 @@ bool libvisio::VSDLayerList::getVisible(const std::vector<unsigned> &ids)
   if (ids.empty())
     return true;
 
-  for (std::vector<unsigned>::const_iterator iter = ids.begin(); iter != ids.end(); ++iter)
+  for (unsigned int id : ids)
   {
-    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
+    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(id);
     if (iterMap == m_elements.end())
       return true;
     else if (iterMap->second.m_visible)
@@ -109,9 +109,9 @@ bool libvisio::VSDLayerList::getPrintable(const std::vector<unsigned> &ids)
   if (ids.empty())
     return true;
 
-  for (std::vector<unsigned>::const_iterator iter = ids.begin(); iter != ids.end(); ++iter)
+  for (unsigned int id : ids)
   {
-    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(*iter);
+    std::map<unsigned, libvisio::VSDLayer>::const_iterator iterMap = m_elements.find(id);
     if (iterMap == m_elements.end())
       return true;
     else if (iterMap->second.m_printable)

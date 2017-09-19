@@ -1790,16 +1790,16 @@ void libvisio::VSDXMLParserBase::_flushShape()
 
   if (!m_shape.m_geometries.empty())
   {
-    for (std::map<unsigned, VSDGeometryList>::iterator iter = m_shape.m_geometries.begin(); iter != m_shape.m_geometries.end(); ++iter)
-      iter->second.resetLevel(m_currentShapeLevel+2);
+    for (auto &geometry : m_shape.m_geometries)
+      geometry.second.resetLevel(m_currentShapeLevel+2);
     std::vector<unsigned> tmpVector;
     for (std::map<unsigned, VSDGeometryList>::const_iterator iterGeom = m_shape.m_geometries.begin(); iterGeom != m_shape.m_geometries.end(); ++iterGeom)
       tmpVector.push_back(iterGeom->first);
     std::sort(tmpVector.begin(), tmpVector.end());
 
-    for (unsigned i = 0; i < tmpVector.size(); i++)
+    for (unsigned int i : tmpVector)
     {
-      std::map<unsigned, VSDGeometryList>::const_iterator iter = m_shape.m_geometries.find(tmpVector[i]);
+      std::map<unsigned, VSDGeometryList>::const_iterator iter = m_shape.m_geometries.find(i);
       if (iter != m_shape.m_geometries.end())
       {
         iter->second.handle(m_collector);

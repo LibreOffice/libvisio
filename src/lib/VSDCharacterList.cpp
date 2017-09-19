@@ -148,9 +148,8 @@ void libvisio::VSDCharacterList::setCharCount(unsigned id, unsigned charCount)
 
 void libvisio::VSDCharacterList::resetCharCount()
 {
-  for (std::map<unsigned, VSDCharacterListElement *>::iterator iter = m_elements.begin();
-       iter != m_elements.end(); ++iter)
-    iter->second->setCharCount(0);
+  for (auto &element : m_elements)
+    element.second->setCharCount(0);
 }
 
 unsigned libvisio::VSDCharacterList::getLevel() const
@@ -163,8 +162,8 @@ unsigned libvisio::VSDCharacterList::getLevel() const
 void libvisio::VSDCharacterList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
-  for (unsigned i = 0; i<elementsOrder.size(); i++)
-    m_elementsOrder.push_back(elementsOrder[i]);
+  for (unsigned int i : elementsOrder)
+    m_elementsOrder.push_back(i);
 }
 
 void libvisio::VSDCharacterList::handle(VSDCollector *collector) const
@@ -191,8 +190,8 @@ void libvisio::VSDCharacterList::handle(VSDCollector *collector) const
 
 void libvisio::VSDCharacterList::clear()
 {
-  for (std::map<unsigned, VSDCharacterListElement *>::iterator iter = m_elements.begin(); iter != m_elements.end(); ++iter)
-    delete iter->second;
+  for (auto &element : m_elements)
+    delete element.second;
   m_elements.clear();
   m_elementsOrder.clear();
 }
