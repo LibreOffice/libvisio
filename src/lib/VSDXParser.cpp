@@ -552,11 +552,11 @@ void libvisio::VSDXParser::extractBinaryData(librevenge::RVNGInputStream *input,
 
 xmlChar *libvisio::VSDXParser::readStringData(xmlTextReaderPtr reader)
 {
-  xmlChar *stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("V"));
+  std::unique_ptr<xmlChar, void (*)(void *)> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("V")), xmlFree);
   if (stringValue)
   {
     VSD_DEBUG_MSG(("VSDXParser::readStringData stringValue %s\n", (const char *)stringValue));
-    return stringValue;
+    return stringValue.release();
   }
   return nullptr;
 }
