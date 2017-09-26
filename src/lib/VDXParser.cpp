@@ -912,12 +912,12 @@ xmlChar *libvisio::VDXParser::readStringData(xmlTextReaderPtr reader)
   int ret = xmlTextReaderRead(reader);
   if (1 == ret && XML_READER_TYPE_TEXT == xmlTextReaderNodeType(reader))
   {
-    xmlChar *stringValue = xmlTextReaderValue(reader);
+    std::unique_ptr<xmlChar, void (*)(void *)> stringValue(xmlTextReaderValue(reader), xmlFree);
     ret = xmlTextReaderRead(reader);
     if (1 == ret && stringValue)
     {
       VSD_DEBUG_MSG(("VDXParser::readStringData stringValue %s\n", (const char *)stringValue));
-      return stringValue;
+      return stringValue.release();
     }
   }
   return nullptr;
