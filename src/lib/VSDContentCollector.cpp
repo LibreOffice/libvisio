@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cassert>
 #include <string.h> // for memcpy
+#include <limits>
 #include <set>
 #include <stack>
 #include <boost/spirit/include/qi.hpp>
@@ -52,24 +53,18 @@ void computeRounding(double &prevX, double &prevY, double x0, double y0, double 
     sweep = !sweep;
   }
   double t = tan(angle / 2.0);
-  double q;
-  if (t != 0)
+  if (!(t < 0 || t > 0))
+    t = std::numeric_limits<double>::epsilon();
+  double q = fabs(rounding / t);
+  if (q > prevHalfLength)
   {
-    q = fabs(rounding / t);
-    if (q > prevHalfLength)
-    {
-      q = prevHalfLength;
-      rounding = fabs(q * t);
-    }
-    if (q > halfLength)
-    {
-      q = halfLength;
-      rounding = fabs(q * t);
-    }
+    q = prevHalfLength;
+    rounding = fabs(q * t);
   }
-  else
+  if (q > halfLength)
   {
-    q = fabs(rounding);
+    q = halfLength;
+    rounding = fabs(q * t);
   }
   newX0 = x0-q*cos(lambda1);
   newY0 = y0-q*sin(lambda1);
