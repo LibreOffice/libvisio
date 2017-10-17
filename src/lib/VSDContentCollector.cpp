@@ -2139,11 +2139,9 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   std::vector<double> knotVector(kntVec);
 
   // Fill in end knots
+  knotVector.reserve(controlPoints.size() + degree + 1);
   while (knotVector.size() < (controlPoints.size() + degree + 1))
-  {
-    double tmpBack = knotVector.back();
-    knotVector.push_back(tmpBack);
-  }
+    knotVector.push_back(knotVector.back());
 
   // Let knotVector run from 0 to 1
   double firstKnot = knotVector[0];
