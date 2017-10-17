@@ -2107,6 +2107,8 @@ bool libvisio::VSDContentCollector::_isUniform(const std::vector<double> &weight
   return true;
 }
 
+#define MAX_ALLOWED_NURBS_DEGREE 16
+
 void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2,
                                                    unsigned char xType, unsigned char yType, unsigned degree, const std::vector<std::pair<double, double> > &ctrlPnts,
                                                    const std::vector<double> &kntVec, const std::vector<double> &weights)
@@ -2116,6 +2118,9 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   if (kntVec.empty() || ctrlPnts.empty() || weights.empty())
     // Here, maybe we should just draw line to (x2,y2)
     return;
+
+  if (degree > MAX_ALLOWED_NURBS_DEGREE)
+    degree = MAX_ALLOWED_NURBS_DEGREE;
 
   std::vector<std::pair<double, double> > controlPoints(ctrlPnts);
 
