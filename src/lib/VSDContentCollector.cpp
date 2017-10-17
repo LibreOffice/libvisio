@@ -2085,9 +2085,9 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
     node.insert("svg:x", m_scale*x);
     node.insert("svg:y", m_scale*y);
 
-    if (!m_noFill && !m_noShow)
+    if (!m_noFill)
       m_currentFillGeometry.push_back(node);
-    if (!m_noLine && !m_noShow)
+    if (!m_noLine)
       m_currentLineGeometry.push_back(node);
   }
 }
