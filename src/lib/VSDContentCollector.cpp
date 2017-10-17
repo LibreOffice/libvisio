@@ -2062,6 +2062,11 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
   if (m_noShow)
     return;
 
+  if (!m_noFill)
+    m_currentFillGeometry.reserve(VSD_NUM_POLYLINES_PER_KNOT * knotVector.size());
+  if (!m_noLine)
+    m_currentLineGeometry.reserve(VSD_NUM_POLYLINES_PER_KNOT * knotVector.size());
+
   for (unsigned i = 0; i < VSD_NUM_POLYLINES_PER_KNOT * knotVector.size(); i++)
   {
     librevenge::RVNGPropertyList node;
