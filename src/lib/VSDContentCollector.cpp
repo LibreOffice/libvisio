@@ -2062,11 +2062,10 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
   if (m_noShow)
     return;
 
-  librevenge::RVNGPropertyList node;
-
   for (unsigned i = 0; i < VSD_NUM_POLYLINES_PER_KNOT * knotVector.size(); i++)
   {
-    node.clear();
+    librevenge::RVNGPropertyList node;
+
     node.insert("librevenge:path-action", "L");
     double x = 0;
     double y = 0;
