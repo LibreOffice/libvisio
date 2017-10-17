@@ -2111,7 +2111,7 @@ bool libvisio::VSDContentCollector::_isUniform(const std::vector<double> &weight
   return true;
 }
 
-#define MAX_ALLOWED_NURBS_DEGREE 16
+#define MAX_ALLOWED_NURBS_DEGREE 8
 
 void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned level, double x2, double y2,
                                                    unsigned char xType, unsigned char yType, unsigned degree, const std::vector<std::pair<double, double> > &ctrlPnts,
