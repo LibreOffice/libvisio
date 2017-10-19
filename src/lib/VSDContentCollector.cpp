@@ -2024,6 +2024,9 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
     {
       for (i=degree-mult; i <= degree; i++)
       {
+        // FIXME: I've absolutely no idea how this can happen, but it can...
+        if (b-degree+i >= controlPoints.size())
+          break;
         points[i].first = controlPoints[b-degree+i].first;
         points[i].second = controlPoints[b-degree+i].second;
       }
