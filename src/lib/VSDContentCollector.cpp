@@ -2145,6 +2145,13 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
 
   std::vector<double> knotVector(kntVec);
 
+  // Ensure knots are sorted in non-decreasing order
+  for (size_t i = 1; i < knotVector.size(); ++i)
+  {
+    if (knotVector[i] < knotVector[i - 1])
+      knotVector[i] = knotVector[i - 1];
+  }
+
   // Fill in end knots
   knotVector.reserve(controlPoints.size() + degree + 1);
   while (knotVector.size() < (controlPoints.size() + degree + 1))
