@@ -1980,11 +1980,11 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
       mult = degree;
     if (mult < degree)
     {
-      double numer = (double)(knotVector[b] - knotVector[a]);
+      double numer = knotVector[b] - knotVector[a];
       unsigned j = degree;
       std::vector<double> alphas(degree - 1, 0.0);
       for (; j >mult; j--)
-        alphas[j-mult-1] = numer/double(knotVector[a+j]-knotVector[a]);
+        alphas[j-mult-1] = numer/(knotVector[a+j]-knotVector[a]);
       unsigned r = degree - mult;
       for (j=1; j<=r; j++)
       {
