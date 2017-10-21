@@ -108,8 +108,8 @@ void libvisio::VSDXMetaData::readCoreProperties(xmlTextReaderPtr reader)
       break;
     }
   }
-  while ((XML_CP_COREPROPERTIES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType ||
-          XML_PROPERTIES != tokenId) && 1 == ret);
+  while (((XML_CP_COREPROPERTIES != tokenId && XML_PROPERTIES != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType)
+         && 1 == ret);
 }
 
 bool libvisio::VSDXMetaData::parse(librevenge::RVNGInputStream *input)
