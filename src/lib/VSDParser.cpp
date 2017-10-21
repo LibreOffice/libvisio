@@ -22,18 +22,6 @@
 #include "VSDStylesCollector.h"
 #include "VSDMetaData.h"
 
-namespace
-{
-
-void sanitizeListLength(uint32_t &length, const std::size_t elem, librevenge::RVNGInputStream *const input)
-{
-  const unsigned long maxLength = libvisio::getRemainingLength(input) / elem;
-  if (length > maxLength)
-    length = maxLength;
-}
-
-}
-
 libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container)
   : m_input(input), m_painter(painter), m_container(container), m_header(), m_collector(nullptr), m_shapeList(), m_currentLevel(0),
     m_stencils(), m_currentStencil(nullptr), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
@@ -824,7 +812,8 @@ void libvisio::VSDParser::readNameIDX(librevenge::RVNGInputStream *input)
 {
   std::map<unsigned, VSDName> names;
   unsigned recordCount = readU32(input);
-  sanitizeListLength(recordCount, 13, input);
+  if (recordCount > getRemainingLength(input) / 13)
+    recordCount = getRemainingLength(input) / 13;
   for (unsigned i = 0; i < recordCount; ++i)
   {
     unsigned nameId = readU32(input);
@@ -1629,7 +1618,8 @@ void libvisio::VSDParser::readShapeData(librevenge::RVNGInputStream *input)
     unsigned char xType = readU8(input);
     unsigned char yType = readU8(input);
     unsigned pointCount = readU32(input);
-    sanitizeListLength(pointCount, 16, input);
+    if (pointCount > getRemainingLength(input) / 16)
+      pointCount = getRemainingLength(input) / 16;
 
     for (unsigned i = 0; i < pointCount; i++)
     {
@@ -1654,7 +1644,8 @@ void libvisio::VSDParser::readShapeData(librevenge::RVNGInputStream *input)
     unsigned char xType = readU8(input);
     unsigned char yType = readU8(input);
     unsigned pointCount = readU32(input);
-    sanitizeListLength(pointCount, 32, input);
+    if (pointCount > getRemainingLength(input) / 32)
+      pointCount = getRemainingLength(input) / 32;
 
     std::vector<double> knotVector;
     std::vector<std::pair<double, double> > controlPoints;
