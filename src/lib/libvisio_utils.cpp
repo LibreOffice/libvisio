@@ -114,26 +114,21 @@ unsigned long libvisio::getRemainingLength(librevenge::RVNGInputStream *const in
   if (!input)
     throw EndOfStreamException();
 
-  const unsigned long begin = (unsigned long) input->tell();
-  unsigned long end = begin;
+  const long begin = input->tell();
 
-  if (0 == input->seek(0, librevenge::RVNG_SEEK_END))
-  {
-    end = (unsigned long) input->tell();
-  }
-  else
+  if (input->seek(0, librevenge::RVNG_SEEK_END) != 0)
   {
     // librevenge::RVNG_SEEK_END does not work. Use the harder way.
     while (!input->isEnd())
-    {
       readU8(input);
-      ++end;
-    }
   }
+  const long end = input->tell();
 
   input->seek(begin, librevenge::RVNG_SEEK_SET);
 
-  return end - begin;
+  if (end < begin)
+    throw EndOfStreamException();
+  return static_cast<unsigned long>(end - begin);
 }
 
 void libvisio::appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character)
