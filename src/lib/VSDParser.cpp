@@ -824,6 +824,7 @@ void libvisio::VSDParser::readNameIDX(librevenge::RVNGInputStream *input)
 {
   std::map<unsigned, VSDName> names;
   unsigned recordCount = readU32(input);
+  sanitizeListLength(recordCount, 13, input);
   for (unsigned i = 0; i < recordCount; ++i)
   {
     unsigned nameId = readU32(input);
