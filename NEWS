@@ -15,6 +15,7 @@ libvisio 0.1.6
 - Fix various crashes, leaks and hangs when reading damaged files found
   by oss-fuzz.
 - Drop outdated Windows project files.
+- Fix some issues found by Coverity.
 - Many other small improvements and fixes.
 
 libvisio 0.1.5
