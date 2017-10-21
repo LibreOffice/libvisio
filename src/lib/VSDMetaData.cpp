@@ -238,6 +238,8 @@ void libvisio::VSDMetaData::readTypedPropertyValue(librevenge::RVNGInputStream *
 librevenge::RVNGString libvisio::VSDMetaData::readCodePageString(librevenge::RVNGInputStream *input)
 {
   uint32_t size = readU32(input);
+  if (size > getRemainingLength(input))
+    size = getRemainingLength(input);
 
   if (size == 0)
     return librevenge::RVNGString();
