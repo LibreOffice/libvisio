@@ -946,7 +946,8 @@ void libvisio::VSDParser::readGeomList(librevenge::RVNGInputStream *input)
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
     std::vector<unsigned> geometryOrder;
-    sanitizeListLength(childrenListLength, 4, input);
+    if (childrenListLength > getRemainingLength(input))
+      childrenListLength = getRemainingLength(input);
     geometryOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       geometryOrder.push_back(readU32(input));
@@ -971,7 +972,8 @@ void libvisio::VSDParser::readCharList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
-    sanitizeListLength(childrenListLength, 4, input);
+    if (childrenListLength > getRemainingLength(input))
+      childrenListLength = getRemainingLength(input);
     std::vector<unsigned> characterOrder;
     characterOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
@@ -992,7 +994,8 @@ void libvisio::VSDParser::readParaList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
-    sanitizeListLength(childrenListLength, 4, input);
+    if (childrenListLength > getRemainingLength(input))
+      childrenListLength = getRemainingLength(input);
     std::vector<unsigned> paragraphOrder;
     paragraphOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
@@ -1017,7 +1020,8 @@ void libvisio::VSDParser::readTabsDataList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
-    sanitizeListLength(childrenListLength, 4, input);
+    if (childrenListLength > getRemainingLength(input))
+      childrenListLength = getRemainingLength(input);
     std::vector<unsigned> tabsOrder;
     tabsOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
@@ -1036,7 +1040,8 @@ void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
-    sanitizeListLength(childrenListLength, 4, input);
+    if (childrenListLength > getRemainingLength(input))
+      childrenListLength = getRemainingLength(input);
     std::vector<unsigned> layerOrder;
     layerOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
@@ -1210,7 +1215,8 @@ void libvisio::VSDParser::readShapeList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
-    sanitizeListLength(childrenListLength, sizeof(uint32_t), input);
+    if (childrenListLength > getRemainingLength(input))
+      childrenListLength = getRemainingLength(input);
     std::vector<unsigned> shapeOrder;
     shapeOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
@@ -1722,7 +1728,8 @@ void libvisio::VSDParser::readFieldList(librevenge::RVNGInputStream *input)
     uint32_t subHeaderLength = readU32(input);
     uint32_t childrenListLength = readU32(input);
     input->seek(subHeaderLength, librevenge::RVNG_SEEK_CUR);
-    sanitizeListLength(childrenListLength, sizeof(uint32_t), input);
+    if (childrenListLength > getRemainingLength(input))
+      childrenListLength = getRemainingLength(input);
     std::vector<unsigned> fieldOrder;
     fieldOrder.reserve(childrenListLength / sizeof(uint32_t));
     for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
