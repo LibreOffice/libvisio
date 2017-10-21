@@ -127,6 +127,9 @@ void libvisio::VSDMetaData::readPropertySet(librevenge::RVNGInputStream *input, 
   // Size
   input->seek(4, librevenge::RVNG_SEEK_CUR);
   uint32_t numProperties = readU32(input);
+  // The exact size of a property is not known beforehand: check upper bound
+  if (numProperties > getRemainingLength(input) / 12)
+    numProperties = getRemainingLength(input) / 12;
   for (uint32_t i = 0; i < numProperties; ++i)
     readPropertyIdentifierAndOffset(input);
   for (uint32_t i = 0; i < numProperties; ++i)
