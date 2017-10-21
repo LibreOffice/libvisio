@@ -1,9 +1,10 @@
 Makefile
 Makefile.in
-test
-testfileinfo
+importtest
+unittest
 .libs
 .deps
+*.la
 *.lo
 *.log
 *.o

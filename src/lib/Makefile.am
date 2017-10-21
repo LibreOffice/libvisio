@@ -4,6 +4,7 @@ else
 version_info = -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 endif
 
+noinst_LTLIBRARIES = libvisio-internal.la
 lib_LTLIBRARIES = libvisio-@VSD_MAJOR_VERSION@.@VSD_MINOR_VERSION@.la
 
 AM_CXXFLAGS = \
@@ -19,10 +20,13 @@ AM_CXXFLAGS = \
 
 BUILT_SOURCES = tokens.h tokenhash.h
 
-libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = $(LIBVISIO_LIBS) @LIBVISIO_WIN32_RESOURCE@
-libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = @LIBVISIO_WIN32_RESOURCE@
+libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LIBADD  = $(LIBVISIO_LIBS) libvisio-internal.la @LIBVISIO_WIN32_RESOURCE@
+libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_DEPENDENCIES = libvisio-internal.la @LIBVISIO_WIN32_RESOURCE@
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_LDFLAGS = $(version_info) -export-dynamic -no-undefined
 libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
+	VisioDocument.cpp
+
+libvisio_internal_la_SOURCES = \
 	VDXParser.cpp \
 	VDXParser.h \
 	VSD5Parser.cpp \
@@ -74,7 +78,6 @@ libvisio_@VSD_MAJOR_VERSION@_@VSD_MINOR_VERSION@_la_SOURCES = \
 	VSDXParser.h \
 	VSDXTheme.cpp \
 	VSDXTheme.h \
-	VisioDocument.cpp \
 	libvisio_utils.cpp \
 	libvisio_utils.h \
 	libvisio_xml.cpp \
