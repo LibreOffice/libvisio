@@ -1,4 +1,5 @@
 libvisio 0.1.6
+
 - Consider stencil txtxform in binary formats (tdf#67914).
 - Parse font width scaling.
 - Fix dependency of tests on time zone (tdf#92396).
