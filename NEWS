@@ -1,3 +1,22 @@
+libvisio 0.1.6
+- Consider stencil txtxform in binary formats (tdf#67914).
+- Parse font width scaling.
+- Fix dependency of tests on time zone (tdf#92396).
+- Enable building of unit tests without command-line tools.
+- Remove namespace check for VDX to allow parsing documents produced by
+  lucidchart.com (tdf#98791).
+- Output shape ID if set.
+- Fix parsing of text block background color in some cases.
+- Write bitmaps with color palette correctly.
+- Deduce text encoding from font name.
+- Parse theme fill and shadow color.
+- Parse font scheme in VSDX documents.
+- Require C++11 for build.
+- Fix various crashes, leaks and hangs when reading damaged files found
+  by oss-fuzz.
+- Drop outdated Windows project files.
+- Many other small improvements and fixes.
+
 libvisio 0.1.5
 
 - Rewrite text output to avoid empty spans and to make the function
