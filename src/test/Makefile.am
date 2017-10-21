@@ -56,8 +56,7 @@ EXTRA_DIST = \
 	data/fdo86729-utf8.vsd \
 	data/dwg.vsd \
 	data/dwg.vsdx \
-	data/no-bgcolor.vsd \
-	$(importtest_SOURCES)
+	data/no-bgcolor.vsd
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
 AM_TESTS_ENVIRONMENT = TZ=UTC; export TZ;
