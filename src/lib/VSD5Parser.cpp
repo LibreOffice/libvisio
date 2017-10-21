@@ -472,6 +472,8 @@ void libvisio::VSD5Parser::readNameIDX(librevenge::RVNGInputStream *input)
   VSD_DEBUG_MSG(("VSD5Parser::readNameIDX\n"));
   std::map<unsigned, VSDName> names;
   unsigned recordCount = readU16(input);
+  if (recordCount > getRemainingLength(input) / 4)
+    recordCount = getRemainingLength(input) / 4;
   for (unsigned i = 0; i < recordCount; ++i)
   {
     unsigned nameId = readU16(input);
