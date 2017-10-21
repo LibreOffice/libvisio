@@ -1623,6 +1623,7 @@ void libvisio::VSDParser::readShapeData(librevenge::RVNGInputStream *input)
     unsigned char xType = readU8(input);
     unsigned char yType = readU8(input);
     unsigned pointCount = readU32(input);
+    sanitizeListLength(pointCount, 16, input);
 
     for (unsigned i = 0; i < pointCount; i++)
     {
@@ -1647,6 +1648,7 @@ void libvisio::VSDParser::readShapeData(librevenge::RVNGInputStream *input)
     unsigned char xType = readU8(input);
     unsigned char yType = readU8(input);
     unsigned pointCount = readU32(input);
+    sanitizeListLength(pointCount, 32, input);
 
     std::vector<double> knotVector;
     std::vector<std::pair<double, double> > controlPoints;
