@@ -916,7 +916,7 @@ xmlChar *libvisio::VDXParser::readStringData(xmlTextReaderPtr reader)
     ret = xmlTextReaderRead(reader);
     if (1 == ret && stringValue)
     {
-      VSD_DEBUG_MSG(("VDXParser::readStringData stringValue %s\n", (const char *)stringValue));
+      VSD_DEBUG_MSG(("VDXParser::readStringData stringValue %s\n", (const char *)stringValue.get()));
       return stringValue.release();
     }
   }

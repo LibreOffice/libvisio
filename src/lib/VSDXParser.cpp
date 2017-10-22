@@ -555,7 +555,7 @@ xmlChar *libvisio::VSDXParser::readStringData(xmlTextReaderPtr reader)
   std::unique_ptr<xmlChar, void (*)(void *)> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("V")), xmlFree);
   if (stringValue)
   {
-    VSD_DEBUG_MSG(("VSDXParser::readStringData stringValue %s\n", (const char *)stringValue));
+    VSD_DEBUG_MSG(("VSDXParser::readStringData stringValue %s\n", (const char *)stringValue.get()));
     return stringValue.release();
   }
   return nullptr;
