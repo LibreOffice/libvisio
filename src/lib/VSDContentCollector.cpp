@@ -1983,7 +1983,11 @@ void libvisio::VSDContentCollector::_generateBezierSegmentsFromNURBS(unsigned de
       double numer = knotVector[b] - knotVector[a];
       unsigned j = degree;
       std::vector<double> alphas(degree - 1, 0.0);
-      for (; j >mult; j--)
+      // TODO: The second part of the end condition should not be
+      // necessary, but for some reason it can happen. I'm still
+      // convinced there is an inherent off-by-one bug in our impl. of
+      // the algorithm somewhere...
+      for (; j >mult && j < knotVector.size() - a; j--)
         alphas[j-mult-1] = numer/(knotVector[a+j]-knotVector[a]);
       unsigned r = degree - mult;
       for (j=1; j<=r; j++)
