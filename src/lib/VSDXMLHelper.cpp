@@ -152,7 +152,7 @@ const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipBy
 {
   if (!type)
     return nullptr;
-  std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsByType.find(type);
+  auto iter = m_relsByType.find(type);
   if (iter != m_relsByType.end())
     return &(iter->second);
   return nullptr;
@@ -162,7 +162,7 @@ const libvisio::VSDXRelationship *libvisio::VSDXRelationships::getRelationshipBy
 {
   if (!id)
     return nullptr;
-  std::map<std::string, libvisio::VSDXRelationship>::const_iterator iter = m_relsById.find(id);
+  auto iter = m_relsById.find(id);
   if (iter != m_relsById.end())
     return &(iter->second);
   return nullptr;

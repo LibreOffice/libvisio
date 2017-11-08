@@ -380,11 +380,11 @@ void libvisio::VSD5Parser::readShape(librevenge::RVNGInputStream *input)
     m_currentShapeID = m_header.id;
   m_currentShapeLevel = m_header.level;
   unsigned parent = 0;
-  unsigned masterPage = MINUS_ONE;
-  unsigned masterShape = MINUS_ONE;
-  unsigned lineStyle = MINUS_ONE;
-  unsigned fillStyle = MINUS_ONE;
-  unsigned textStyle = MINUS_ONE;
+  auto masterPage = MINUS_ONE;
+  auto masterShape = MINUS_ONE;
+  auto lineStyle = MINUS_ONE;
+  auto fillStyle = MINUS_ONE;
+  auto textStyle = MINUS_ONE;
 
   try
   {

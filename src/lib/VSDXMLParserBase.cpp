@@ -1067,8 +1067,8 @@ void libvisio::VSDXMLParserBase::readPage(xmlTextReaderPtr reader)
     pageName.reset(xmlTextReaderGetAttribute(reader, BAD_CAST("NameU")), xmlFree);
   if (id)
   {
-    unsigned nId = (unsigned)xmlStringToLong(id);
-    unsigned backgroundPageID = (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
+    auto nId = (unsigned)xmlStringToLong(id);
+    auto backgroundPageID = (unsigned)(bgndPage ? xmlStringToLong(bgndPage) : -1);
     bool isBackgroundPage = background ? xmlStringToBool(background) : false;
     m_isPageStarted = true;
     m_collector->startPage(nId);
@@ -1218,7 +1218,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
         {
           try
           {
-            unsigned fontIndex = (unsigned)xmlStringToLong(stringValue);
+            auto fontIndex = (unsigned)xmlStringToLong(stringValue);
             std::map<unsigned, VSDName>::const_iterator iter = m_fonts.find(fontIndex);
             if (iter != m_fonts.end())
               font = iter->second;
@@ -1499,7 +1499,7 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
         {
           try
           {
-            unsigned fontIndex = (unsigned)xmlStringToLong(stringValue);
+            auto fontIndex = (unsigned)xmlStringToLong(stringValue);
             if (fontIndex)
             {
               std::map<unsigned, VSDName>::const_iterator iter = m_fonts.find(fontIndex);
@@ -1556,10 +1556,10 @@ void libvisio::VSDXMLParserBase::readStyleSheet(xmlTextReaderPtr reader)
   const shared_ptr<xmlChar> textStyle(xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle")), xmlFree);
   if (id)
   {
-    unsigned nId = (unsigned)xmlStringToLong(id);
-    unsigned nLineStyle = (unsigned)(lineStyle ? xmlStringToLong(lineStyle) : -1);
-    unsigned nFillStyle = (unsigned)(fillStyle ? xmlStringToLong(fillStyle) : -1);
-    unsigned nTextStyle = (unsigned)(textStyle ? xmlStringToLong(textStyle) : -1);
+    auto nId = (unsigned)xmlStringToLong(id);
+    auto nLineStyle = (unsigned)(lineStyle ? xmlStringToLong(lineStyle) : -1);
+    auto nFillStyle = (unsigned)(fillStyle ? xmlStringToLong(fillStyle) : -1);
+    auto nTextStyle = (unsigned)(textStyle ? xmlStringToLong(textStyle) : -1);
     m_collector->collectStyleSheet(nId, (unsigned)getElementDepth(reader), nLineStyle, nFillStyle, nTextStyle);
   }
 }
@@ -1695,7 +1695,7 @@ void libvisio::VSDXMLParserBase::readStencil(xmlTextReaderPtr reader)
   const shared_ptr<xmlChar> id(xmlTextReaderGetAttribute(reader, BAD_CAST("ID")), xmlFree);
   if (id)
   {
-    unsigned nId = (unsigned)xmlStringToLong(id);
+    auto nId = (unsigned)xmlStringToLong(id);
     m_currentStencilID = nId;
   }
   else
@@ -2228,7 +2228,7 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextRea
 
 unsigned libvisio::VSDXMLParserBase::getIX(xmlTextReaderPtr reader)
 {
-  unsigned ix = MINUS_ONE;
+  auto ix = MINUS_ONE;
   const std::shared_ptr<xmlChar> ixString(xmlTextReaderGetAttribute(reader, BAD_CAST("IX")), xmlFree);
   if (ixString)
     ix = (unsigned)xmlStringToLong(ixString.get());
@@ -2239,7 +2239,7 @@ void libvisio::VSDXMLParserBase::readTriggerId(unsigned &id, xmlTextReaderPtr re
 {
   using namespace boost::spirit::qi;
 
-  unsigned triggerId = MINUS_ONE;
+  auto triggerId = MINUS_ONE;
   const std::shared_ptr<xmlChar> triggerString(xmlTextReaderGetAttribute(reader, BAD_CAST("F")), xmlFree);
   if (triggerString)
   {

@@ -41,7 +41,7 @@ void libvisio::VSDParser::_nameFromId(VSDName &name, unsigned id, unsigned level
   std::map<unsigned, std::map<unsigned, VSDName> >::const_iterator iter1 = m_namesMapMap.find(level);
   if (iter1 != m_namesMapMap.end())
   {
-    std::map<unsigned, VSDName>::const_iterator iter = iter1->second.find(id);
+    auto iter = iter1->second.find(id);
     if (iter != iter1->second.end())
       name = iter->second;
   }
@@ -1283,11 +1283,11 @@ void libvisio::VSDParser::readShape(librevenge::RVNGInputStream *input)
     m_currentShapeID = m_header.id;
   m_currentShapeLevel = m_header.level;
   unsigned parent = 0;
-  unsigned masterPage = MINUS_ONE;
-  unsigned masterShape = MINUS_ONE;
-  unsigned lineStyle = MINUS_ONE;
-  unsigned fillStyle = MINUS_ONE;
-  unsigned textStyle = MINUS_ONE;
+  auto masterPage = MINUS_ONE;
+  auto masterShape = MINUS_ONE;
+  auto lineStyle = MINUS_ONE;
+  auto fillStyle = MINUS_ONE;
+  auto textStyle = MINUS_ONE;
 
   try
   {
@@ -1771,14 +1771,14 @@ void libvisio::VSDParser::readFontIX(librevenge::RVNGInputStream *input)
 {
   long tmpAdjust = input->tell();
   input->seek(2, librevenge::RVNG_SEEK_CUR);
-  unsigned char codePage = (unsigned char)(getUInt(input) & 0xff);
+  auto codePage = (unsigned char)(getUInt(input) & 0xff);
   tmpAdjust -= input->tell();
 
   std::string fontName;
 
   for (long i = 0; i < (long)(m_header.dataLength + tmpAdjust); i++)
   {
-    char curchar = (char)readU8(input);
+    auto curchar = (char)readU8(input);
     if (curchar == 0)
       break;
     fontName.append(1, curchar);

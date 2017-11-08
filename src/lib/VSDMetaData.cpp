@@ -277,7 +277,7 @@ librevenge::RVNGString libvisio::VSDMetaData::readCodePageString(librevenge::RVN
     if (U_SUCCESS(status) && conv)
     {
       assert(!characters.empty());
-      const char *src = (const char *)&characters[0];
+      const auto *src = (const char *)&characters[0];
       const char *srcLimit = (const char *)src + characters.size();
       while (src < srcLimit)
       {

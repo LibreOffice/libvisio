@@ -30,7 +30,7 @@ extern "C"
 
   static int vsdxInputReadFunc(void *context, char *buffer, int len)
   {
-    librevenge::RVNGInputStream *input = (librevenge::RVNGInputStream *)context;
+    auto *input = (librevenge::RVNGInputStream *)context;
 
     if ((!input) || (!buffer) || (len < 0))
       return -1;
@@ -52,7 +52,7 @@ extern "C"
   static void vsdxReaderErrorFunc(void *arg, const char *, xmlParserSeverities severity, xmlTextReaderLocatorPtr)
 #endif
   {
-    XMLErrorWatcher *const watcher = reinterpret_cast<XMLErrorWatcher *>(arg);
+    auto *const watcher = reinterpret_cast<XMLErrorWatcher *>(arg);
     switch (severity)
     {
     case XML_PARSER_SEVERITY_VALIDITY_WARNING:

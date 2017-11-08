@@ -321,7 +321,7 @@ void libvisio::VDXParser::readLine(xmlTextReaderPtr reader)
   boost::optional<unsigned char> lineCap;
   boost::optional<double> rounding;
 
-  unsigned level = (unsigned)getElementDepth(reader);
+  auto level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
@@ -389,7 +389,7 @@ void libvisio::VDXParser::readFillAndShadow(xmlTextReaderPtr reader)
   boost::optional<double> shadowOffsetX;
   boost::optional<double> shadowOffsetY;
 
-  unsigned level = (unsigned)getElementDepth(reader);
+  auto level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
@@ -736,7 +736,7 @@ void libvisio::VDXParser::readPageProps(xmlTextReaderPtr reader)
   double pageScale = 1.0;
   double drawingScale = 1.0;
 
-  unsigned level = (unsigned)getElementDepth(reader);
+  auto level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
@@ -814,7 +814,7 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
       xmlChar *name = xmlTextReaderGetAttribute(reader, BAD_CAST("Name"));
       if (id && name)
       {
-        unsigned idx = (unsigned)xmlStringToLong(id);
+        auto idx = (unsigned)xmlStringToLong(id);
         librevenge::RVNGBinaryData textStream(name, xmlStrlen(name));
         m_fonts[idx] = VSDName(textStream, libvisio::VSD_TEXT_UTF8);
       }
@@ -837,7 +837,7 @@ void libvisio::VDXParser::readTextBlock(xmlTextReaderPtr reader)
   double defaultTabStop = 0.0;
   unsigned char textDirection = 0;
 
-  unsigned level = (unsigned)getElementDepth(reader);
+  auto level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;

@@ -614,7 +614,7 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
   double pageScale = 1.0;
   double drawingScale = 1.0;
 
-  unsigned level = (unsigned)getElementDepth(reader);
+  auto level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
@@ -746,7 +746,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   boost::optional<double> defaultTabStop;
   boost::optional<unsigned char> textDirection;
 
-  unsigned level = (unsigned)getElementDepth(reader);
+  auto level = (unsigned)getElementDepth(reader);
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;

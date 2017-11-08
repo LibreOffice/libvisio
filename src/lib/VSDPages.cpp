@@ -118,7 +118,7 @@ void libvisio::VSDPages::_drawWithBackground(librevenge::RVNGDrawingInterface *p
 
   if (page.m_backgroundPageID != MINUS_ONE)
   {
-    std::map<unsigned, libvisio::VSDPage>::iterator iter = m_backgroundPages.find(page.m_backgroundPageID);
+    auto iter = m_backgroundPages.find(page.m_backgroundPageID);
     if (iter != m_backgroundPages.end())
       _drawWithBackground(painter, iter->second);
   }

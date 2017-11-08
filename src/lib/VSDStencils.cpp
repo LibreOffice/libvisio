@@ -163,7 +163,7 @@ void libvisio::VSDStencil::setFirstShape(unsigned id)
 
 const libvisio::VSDShape *libvisio::VSDStencil::getStencilShape(unsigned id) const
 {
-  std::map<unsigned, VSDShape>::const_iterator iter = m_shapes.find(id);
+  auto iter = m_shapes.find(id);
   if (iter != m_shapes.end())
     return &(iter->second);
   else
@@ -188,7 +188,7 @@ void libvisio::VSDStencils::addStencil(unsigned idx, const libvisio::VSDStencil 
 
 const libvisio::VSDStencil *libvisio::VSDStencils::getStencil(unsigned idx) const
 {
-  std::map<unsigned, VSDStencil>::const_iterator iter = m_stencils.find(idx);
+  auto iter = m_stencils.find(idx);
   if (iter != m_stencils.end())
     return &(iter->second);
   else

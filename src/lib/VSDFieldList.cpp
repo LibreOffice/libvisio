@@ -23,7 +23,7 @@ libvisio::VSDFieldListElement *libvisio::VSDTextField::clone()
 
 librevenge::RVNGString libvisio::VSDTextField::getString(const std::map<unsigned, librevenge::RVNGString> &strVec)
 {
-  std::map<unsigned, librevenge::RVNGString>::const_iterator iter = strVec.find(m_nameId);
+  auto iter = strVec.find(m_nameId);
   if (iter != strVec.end())
     return iter->second;
   else
@@ -52,7 +52,7 @@ librevenge::RVNGString libvisio::VSDNumericField::datetimeToString(const char *f
 {
   librevenge::RVNGString result;
   char buffer[MAX_BUFFER];
-  time_t timer = (time_t)(86400 * datetime - 2209161600.0);
+  auto timer = (time_t)(86400 * datetime - 2209161600.0);
   const struct tm *const time = gmtime(&timer);
   if (time)
   {
@@ -176,8 +176,7 @@ libvisio::VSDFieldList::VSDFieldList(const libvisio::VSDFieldList &fieldList) :
   m_id(fieldList.m_id),
   m_level(fieldList.m_level)
 {
-  std::map<unsigned, VSDFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
-  for (; iter != fieldList.m_elements.end(); ++iter)
+  for (auto iter = fieldList.m_elements.begin(); iter != fieldList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
@@ -186,8 +185,7 @@ libvisio::VSDFieldList &libvisio::VSDFieldList::operator=(const libvisio::VSDFie
   if (this != &fieldList)
   {
     clear();
-    std::map<unsigned, VSDFieldListElement *>::const_iterator iter = fieldList.m_elements.begin();
-    for (; iter != fieldList.m_elements.end(); ++iter)
+    for (auto iter = fieldList.m_elements.begin(); iter != fieldList.m_elements.end(); ++iter)
       m_elements[iter->first] = iter->second->clone();
     m_elementsOrder = fieldList.m_elementsOrder;
     m_id = fieldList.m_id;

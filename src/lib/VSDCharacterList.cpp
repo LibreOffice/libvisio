@@ -82,16 +82,14 @@ libvisio::VSDCharacterList::VSDCharacterList(const libvisio::VSDCharacterList &c
   m_elements(),
   m_elementsOrder(charList.m_elementsOrder)
 {
-  std::map<unsigned, VSDCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
-  for (; iter != charList.m_elements.end(); ++iter)
+  for (auto iter = charList.m_elements.begin(); iter != charList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
 libvisio::VSDCharacterList &libvisio::VSDCharacterList::operator=(const libvisio::VSDCharacterList &charList)
 {
   clear();
-  std::map<unsigned, VSDCharacterListElement *>::const_iterator iter = charList.m_elements.begin();
-  for (; iter != charList.m_elements.end(); ++iter)
+  for (auto iter = charList.m_elements.begin(); iter != charList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = charList.m_elementsOrder;
   return *this;
@@ -109,7 +107,7 @@ void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, unsigned
                                            const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
                                            const boost::optional<bool> &superscript, const boost::optional<bool> &subscript, const boost::optional<double> &scaleWidth)
 {
-  VSDCharIX *tmpElement = dynamic_cast<VSDCharIX *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDCharIX *>(m_elements[id]);
   if (!tmpElement)
   {
     if (m_elements[id])
@@ -132,7 +130,7 @@ void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, const VS
 
 unsigned libvisio::VSDCharacterList::getCharCount(unsigned id) const
 {
-  std::map<unsigned, VSDCharacterListElement *>::const_iterator iter = m_elements.find(id);
+  auto iter = m_elements.find(id);
   if (iter != m_elements.end() && iter->second)
     return iter->second->getCharCount();
   else
@@ -141,7 +139,7 @@ unsigned libvisio::VSDCharacterList::getCharCount(unsigned id) const
 
 void libvisio::VSDCharacterList::setCharCount(unsigned id, unsigned charCount)
 {
-  std::map<unsigned, VSDCharacterListElement *>::iterator iter = m_elements.find(id);
+  auto iter = m_elements.find(id);
   if (iter !=  m_elements.end() && iter->second)
     iter->second->setCharCount(charCount);
 }

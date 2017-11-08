@@ -29,7 +29,7 @@ T getOptionalStyle(const std::map<unsigned, unsigned> &styleMasters, const std::
   styleIdStack.push(styleIndex);
   while (true)
   {
-    std::map<unsigned, unsigned>::const_iterator iter = styleMasters.find(styleIdStack.top());
+    auto iter = styleMasters.find(styleIdStack.top());
     if (iter != styleMasters.end() && iter->second != MINUS_ONE)
     {
       if (foundStyles.insert(iter->second).second)
@@ -42,7 +42,7 @@ T getOptionalStyle(const std::map<unsigned, unsigned> &styleMasters, const std::
   }
   while (!styleIdStack.empty())
   {
-    typename std::map<unsigned, T>::const_iterator iter = styles.find(styleIdStack.top());
+    auto iter = styles.find(styleIdStack.top());
     if (iter != styles.end())
       style.override(iter->second);
     styleIdStack.pop();

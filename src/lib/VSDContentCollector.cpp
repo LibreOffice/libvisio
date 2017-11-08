@@ -1277,7 +1277,7 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
     std::stack<std::pair<unsigned, VSDOutputElementList> > groupTextStack;
     for (unsigned int &iterList : *m_pageShapeOrder)
     {
-      std::map<unsigned, unsigned>::iterator iterGroup = m_groupMemberships->find(iterList);
+      auto iterGroup = m_groupMemberships->find(iterList);
       if (iterGroup == m_groupMemberships->end())
       {
         while (!groupTextStack.empty())
@@ -2220,7 +2220,7 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
     }
 
     // Get stencil geometry so as to find stencil NURBS data ID
-    std::map<unsigned, VSDGeometryList>::const_iterator cstiter = m_stencilShape->m_geometries.find(m_currentGeometryCount-1);
+    auto cstiter = m_stencilShape->m_geometries.find(m_currentGeometryCount-1);
     VSDGeometryListElement *element = nullptr;
     if (cstiter == m_stencilShape->m_geometries.end())
     {
@@ -2300,7 +2300,7 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned id, unsigned leve
     }
 
     // Get stencil geometry so as to find stencil polyline data ID
-    std::map<unsigned, VSDGeometryList>::const_iterator cstiter = m_stencilShape->m_geometries.find(m_currentGeometryCount-1);
+    auto cstiter = m_stencilShape->m_geometries.find(m_currentGeometryCount-1);
     VSDGeometryListElement *element = nullptr;
     if (cstiter == m_stencilShape->m_geometries.end())
     {
@@ -2401,7 +2401,7 @@ void libvisio::VSDContentCollector::transformPoint(double &x, double &y, XForm *
 
   while (true && m_groupXForms)
   {
-    std::map<unsigned, XForm>::iterator iterX = m_groupXForms->find(shapeId);
+    auto iterX = m_groupXForms->find(shapeId);
     if (iterX != m_groupXForms->end())
     {
       XForm xform = iterX->second;
@@ -2412,7 +2412,7 @@ void libvisio::VSDContentCollector::transformPoint(double &x, double &y, XForm *
     bool shapeFound = false;
     if (m_groupMemberships != m_groupMembershipsSequence.end())
     {
-      std::map<unsigned, unsigned>::iterator iter = m_groupMemberships->find(shapeId);
+      auto iter = m_groupMemberships->find(shapeId);
       if (iter != m_groupMemberships->end() && shapeId != iter->second)
       {
         shapeId = iter->second;
@@ -2459,7 +2459,7 @@ void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
 
   while (true && m_groupXForms)
   {
-    std::map<unsigned, XForm>::iterator iterX = m_groupXForms->find(shapeId);
+    auto iterX = m_groupXForms->find(shapeId);
     if (iterX != m_groupXForms->end())
     {
       XForm xform = iterX->second;
@@ -2473,7 +2473,7 @@ void libvisio::VSDContentCollector::transformFlips(bool &flipX, bool &flipY)
     bool shapeFound = false;
     if (m_groupMemberships != m_groupMembershipsSequence.end())
     {
-      std::map<unsigned, unsigned>::iterator iter = m_groupMemberships->find(shapeId);
+      auto iter = m_groupMemberships->find(shapeId);
       if (iter != m_groupMemberships->end() && shapeId != iter->second)
       {
         shapeId = iter->second;
@@ -2747,7 +2747,7 @@ void libvisio::VSDContentCollector::collectTabsDataList(unsigned level, const st
   _handleLevelChange(level);
 
   m_tabSets.clear();
-  for (std::map<unsigned, VSDTabSet>::const_iterator iter = tabSets.begin(); iter != tabSets.end(); ++iter)
+  for (auto iter = tabSets.begin(); iter != tabSets.end(); ++iter)
     if (tabSets.begin() == iter || iter->second.m_numChars)
       m_tabSets.push_back(iter->second);
 }
@@ -3693,7 +3693,7 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
     }
     if (U_SUCCESS(status) && conv)
     {
-      const char *src = (const char *)&characters[0];
+      const auto *src = (const char *)&characters[0];
       const char *srcLimit = (const char *)src + characters.size();
       while (src < srcLimit)
       {
@@ -3719,7 +3719,7 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
 
   if (U_SUCCESS(status) && conv)
   {
-    const char *src = (const char *)&characters[0];
+    const auto *src = (const char *)&characters[0];
     const char *srcLimit = (const char *)src + characters.size();
     while (src < srcLimit)
     {

@@ -430,9 +430,9 @@ void libvisio::VSDStylesCollector::endPage()
   while (!m_groupShapeOrder.empty() && changed)
   {
     changed = false;
-    for (std::list<unsigned>::iterator j = m_pageShapeOrder.begin(); j != m_pageShapeOrder.end();)
+    for (auto j = m_pageShapeOrder.begin(); j != m_pageShapeOrder.end();)
     {
-      std::map<unsigned, std::list<unsigned> >::iterator iter = m_groupShapeOrder.find(*j++);
+      auto iter = m_groupShapeOrder.find(*j++);
       if (m_groupShapeOrder.end() != iter)
       {
         m_pageShapeOrder.splice(j, iter->second, iter->second.begin(), iter->second.end());

@@ -83,16 +83,14 @@ libvisio::VSDParagraphList::VSDParagraphList(const libvisio::VSDParagraphList &p
   m_elements(),
   m_elementsOrder(paraList.m_elementsOrder)
 {
-  std::map<unsigned, VSDParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
-  for (; iter != paraList.m_elements.end(); ++iter)
+  for (auto iter = paraList.m_elements.begin(); iter != paraList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
 }
 
 libvisio::VSDParagraphList &libvisio::VSDParagraphList::operator=(const libvisio::VSDParagraphList &paraList)
 {
   clear();
-  std::map<unsigned, VSDParagraphListElement *>::const_iterator iter = paraList.m_elements.begin();
-  for (; iter != paraList.m_elements.end(); ++iter)
+  for (auto iter = paraList.m_elements.begin(); iter != paraList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second->clone();
   m_elementsOrder = paraList.m_elementsOrder;
   return *this;
@@ -111,10 +109,10 @@ void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, unsigned
                                            const boost::optional<VSDName> &bulletFont, const boost::optional<double> &bulletFontSize,
                                            const boost::optional<double> &textPosAfterBullet, const boost::optional<unsigned> &flags)
 {
-  VSDParaIX *tmpElement = dynamic_cast<VSDParaIX *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDParaIX *>(m_elements[id]);
   if (!tmpElement)
   {
-    std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.find(id);
+    auto iter = m_elements.find(id);
     if (m_elements.end() != iter)
     {
       if (iter->second)
@@ -142,7 +140,7 @@ void libvisio::VSDParagraphList::addParaIX(unsigned id, unsigned level, const VS
 
 unsigned libvisio::VSDParagraphList::getCharCount(unsigned id) const
 {
-  std::map<unsigned, VSDParagraphListElement *>::const_iterator iter = m_elements.find(id);
+  auto iter = m_elements.find(id);
   if (iter != m_elements.end() && iter->second)
     return iter->second->getCharCount();
   else
@@ -151,7 +149,7 @@ unsigned libvisio::VSDParagraphList::getCharCount(unsigned id) const
 
 void libvisio::VSDParagraphList::setCharCount(unsigned id, unsigned charCount)
 {
-  std::map<unsigned, VSDParagraphListElement *>::iterator iter = m_elements.find(id);
+  auto iter = m_elements.find(id);
   if (iter != m_elements.end() && iter->second)
     iter->second->setCharCount(charCount);
 }

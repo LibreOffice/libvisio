@@ -33,7 +33,7 @@ static bool checkVisioMagic(librevenge::RVNGInputStream *input)
     0x20, 0x44, 0x72, 0x61, 0x77, 0x69, 0x6e, 0x67, 0x0d, 0x0a,
     0x0
   };
-  int startPosition = (int)input->tell();
+  auto startPosition = (int)input->tell();
   unsigned long numBytesRead = 0;
   const unsigned char *buffer = input->read(VSD_NUM_ELEMENTS(magic), numBytesRead);
   const bool returnValue = VSD_NUM_ELEMENTS(magic) == numBytesRead

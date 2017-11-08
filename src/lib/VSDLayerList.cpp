@@ -35,8 +35,7 @@ libvisio::VSDLayerList::VSDLayerList() :
 libvisio::VSDLayerList::VSDLayerList(const libvisio::VSDLayerList &layerList) :
   m_elements()
 {
-  std::map<unsigned, VSDLayer>::const_iterator iter = layerList.m_elements.begin();
-  for (; iter != layerList.m_elements.end(); ++iter)
+  for (auto iter = layerList.m_elements.begin(); iter != layerList.m_elements.end(); ++iter)
     m_elements[iter->first] = iter->second;
 }
 
@@ -45,8 +44,7 @@ libvisio::VSDLayerList &libvisio::VSDLayerList::operator=(const libvisio::VSDLay
   if (this != &layerList)
   {
     clear();
-    std::map<unsigned, VSDLayer>::const_iterator iter = layerList.m_elements.begin();
-    for (; iter != layerList.m_elements.end(); ++iter)
+    for (auto iter = layerList.m_elements.begin(); iter != layerList.m_elements.end(); ++iter)
       m_elements[iter->first] = iter->second;
   }
   return *this;
