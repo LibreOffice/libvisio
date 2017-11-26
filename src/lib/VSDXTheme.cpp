@@ -219,8 +219,8 @@ void libvisio::VSDXTheme::readFont(xmlTextReaderPtr reader, int idToken, VSDXFon
     {
       int script;
       librevenge::RVNGString typeFace;
-      readTypeFace(reader, script, typeFace);
-      font.m_typeFaces[script] = typeFace;
+      if (readTypeFace(reader, script, typeFace) && !typeFace.empty())
+        font.m_typeFaces[script] = typeFace;
       break;
     }
     default:
@@ -230,7 +230,7 @@ void libvisio::VSDXTheme::readFont(xmlTextReaderPtr reader, int idToken, VSDXFon
   while ((idToken != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
-void libvisio::VSDXTheme::readTypeFace(xmlTextReaderPtr reader, librevenge::RVNGString &typeFace)
+bool libvisio::VSDXTheme::readTypeFace(xmlTextReaderPtr reader, librevenge::RVNGString &typeFace)
 {
   const shared_ptr<xmlChar> sTypeFace(xmlTextReaderGetAttribute(reader, BAD_CAST("typeface")), xmlFree);
   if (sTypeFace)
@@ -238,18 +238,21 @@ void libvisio::VSDXTheme::readTypeFace(xmlTextReaderPtr reader, librevenge::RVNG
     typeFace.clear();
     typeFace.sprintf("%s", (const char *)sTypeFace.get());
   }
+  return bool(sTypeFace);
 }
 
-void libvisio::VSDXTheme::readTypeFace(xmlTextReaderPtr reader, int &script, librevenge::RVNGString &typeFace)
+bool libvisio::VSDXTheme::readTypeFace(xmlTextReaderPtr reader, int &script, librevenge::RVNGString &typeFace)
 {
   const shared_ptr<xmlChar> sScript(xmlTextReaderGetAttribute(reader, BAD_CAST("script")), xmlFree);
+  bool knownScript = false;
   if (sScript)
   {
     int token = libvisio::VSDXMLTokenMap::getTokenId(sScript.get());
-    if (XML_TOKEN_INVALID != token)
+    knownScript = XML_TOKEN_INVALID != token;
+    if (knownScript)
       script = token;
   }
-  readTypeFace(reader, typeFace);
+  return readTypeFace(reader, typeFace) && knownScript;
 }
 
 void libvisio::VSDXTheme::readClrScheme(xmlTextReaderPtr reader)

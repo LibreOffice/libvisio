@@ -94,8 +94,8 @@ private:
   void readVariationClrScheme(xmlTextReaderPtr reader, VSDXVariationClrScheme &varClrSch);
   void readFontScheme(xmlTextReaderPtr reader);
   void readFont(xmlTextReaderPtr reader, int idToken, VSDXFont &font);
-  void readTypeFace(xmlTextReaderPtr reader, librevenge::RVNGString &typeFace);
-  void readTypeFace(xmlTextReaderPtr reader, int &script, librevenge::RVNGString &typeFace);
+  bool readTypeFace(xmlTextReaderPtr reader, librevenge::RVNGString &typeFace);
+  bool readTypeFace(xmlTextReaderPtr reader, int &script, librevenge::RVNGString &typeFace);
 
   int getElementToken(xmlTextReaderPtr reader);
 
