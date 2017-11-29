@@ -475,7 +475,6 @@ void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
         librevenge::RVNGString stringId;
         stringId.sprintf("id%u", shapeId);
         propList.insert("draw:id", stringId);
-        shapeId = MINUS_ONE;
       }
       _appendVisibleAndPrintable(propList);
       m_shapeOutputDrawing->addPath(propList);
