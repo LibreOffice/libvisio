@@ -1098,7 +1098,6 @@ void libvisio::VSDContentCollector::_flushText()
         sOutputText.clear();
       }
       m_shapeOutputText->addCloseSpan();
-      isSpanOpened = false;
     }
 
     if (!currentBullet)
