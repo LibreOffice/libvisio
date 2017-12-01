@@ -1104,7 +1104,6 @@ void libvisio::VSDContentCollector::_flushText()
       m_shapeOutputText->addCloseParagraph();
     else
       m_shapeOutputText->addCloseListElement();
-    isParagraphOpened = false;
   }
 
   /* Last paragraph style had a bullet and we have to close
