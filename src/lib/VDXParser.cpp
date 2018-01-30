@@ -810,16 +810,14 @@ void libvisio::VDXParser::readFonts(xmlTextReaderPtr reader)
 
     if (XML_FACENAME == tokenId)
     {
-      xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("ID"));
-      xmlChar *name = xmlTextReaderGetAttribute(reader, BAD_CAST("Name"));
+      std::unique_ptr<xmlChar, decltype(xmlFree)> id(xmlTextReaderGetAttribute(reader, BAD_CAST("ID")), xmlFree);
+      std::unique_ptr<xmlChar, decltype(xmlFree)> name(xmlTextReaderGetAttribute(reader, BAD_CAST("Name")), xmlFree);
       if (id && name)
       {
-        auto idx = (unsigned)xmlStringToLong(id);
-        librevenge::RVNGBinaryData textStream(name, xmlStrlen(name));
+        auto idx = (unsigned)xmlStringToLong(id.get());
+        librevenge::RVNGBinaryData textStream(name.get(), xmlStrlen(name.get()));
         m_fonts[idx] = VSDName(textStream, libvisio::VSD_TEXT_UTF8);
       }
-      xmlFree(name);
-      xmlFree(id);
     }
   }
   while ((XML_FACENAMES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
