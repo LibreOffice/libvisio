@@ -567,41 +567,39 @@ int libvisio::VSDXParser::getElementToken(xmlTextReaderPtr reader)
   if (XML_READER_TYPE_END_ELEMENT == xmlTextReaderNodeType(reader))
     return tokenId;
 
-  xmlChar *stringValue = nullptr;
+  std::unique_ptr<xmlChar, decltype(xmlFree)> stringValue(nullptr, xmlFree);
 
   switch (tokenId)
   {
   case XML_CELL:
-    stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("N"));
+    stringValue.reset(xmlTextReaderGetAttribute(reader, BAD_CAST("N")));
     if (stringValue)
     {
-      tokenId = VSDXMLTokenMap::getTokenId(stringValue);
+      tokenId = VSDXMLTokenMap::getTokenId(stringValue.get());
       if (tokenId == XML_TOKEN_INVALID)
       {
-        if (*stringValue == 'P' && !strncmp((char *)stringValue, "Position", 8))
+        if (*stringValue.get() == 'P' && !strncmp((char *)stringValue.get(), "Position", 8))
           tokenId = XML_POSITION;
-        else if (*stringValue == 'A' && !strncmp((char *)stringValue, "Alignment", 9))
+        else if (*stringValue.get() == 'A' && !strncmp((char *)stringValue.get(), "Alignment", 9))
           tokenId = XML_ALIGNMENT;
       }
     }
     break;
   case XML_ROW:
-    stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("N"));
+    stringValue.reset(xmlTextReaderGetAttribute(reader, BAD_CAST("N")));
     if (!stringValue)
-      stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("T"));
+      stringValue.reset(xmlTextReaderGetAttribute(reader, BAD_CAST("T")));
     if (stringValue)
-      tokenId = VSDXMLTokenMap::getTokenId(stringValue);
+      tokenId = VSDXMLTokenMap::getTokenId(stringValue.get());
     break;
   case XML_SECTION:
-    stringValue = xmlTextReaderGetAttribute(reader, BAD_CAST("N"));
+    stringValue.reset(xmlTextReaderGetAttribute(reader, BAD_CAST("N")));
     if (stringValue)
-      tokenId = VSDXMLTokenMap::getTokenId(stringValue);
+      tokenId = VSDXMLTokenMap::getTokenId(stringValue.get());
     break;
   default:
     break;
   }
-  if (stringValue)
-    xmlFree(stringValue);
   return tokenId;
 }
 
@@ -694,12 +692,11 @@ void libvisio::VSDXParser::readFonts(xmlTextReaderPtr reader)
 
     if (XML_FACENAME == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
     {
-      xmlChar *name = xmlTextReaderGetAttribute(reader, BAD_CAST("NameU"));
+      std::unique_ptr<xmlChar, decltype(xmlFree)> name(xmlTextReaderGetAttribute(reader, BAD_CAST("NameU")), xmlFree);
       if (name)
       {
-        librevenge::RVNGBinaryData textStream(name, xmlStrlen(name));
+        librevenge::RVNGBinaryData textStream(name.get(), xmlStrlen(name.get()));
         m_fonts[idx] = VSDName(textStream, libvisio::VSD_TEXT_UTF8);
-        xmlFree(name);
       }
       ++idx;
     }
@@ -1459,17 +1456,16 @@ void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
   m_currentBinaryData.clear();
   if (1 == ret && XML_REL == tokenId && XML_READER_TYPE_ELEMENT == tokenType)
   {
-    xmlChar *id = xmlTextReaderGetAttribute(reader, BAD_CAST("r:id"));
+    std::unique_ptr<xmlChar, decltype(xmlFree)> id(xmlTextReaderGetAttribute(reader, BAD_CAST("r:id")), xmlFree);
     if (id)
     {
-      const VSDXRelationship *rel = m_rels->getRelationshipById((char *)id);
+      const VSDXRelationship *rel = m_rels->getRelationshipById((char *)id.get());
       if (rel)
       {
         if ("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" == rel->getType()
             || "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" == rel->getType())
           extractBinaryData(m_input, rel->getTarget().c_str());
       }
-      xmlFree(id);
     }
   }
   if (!m_shape.m_foreign)
