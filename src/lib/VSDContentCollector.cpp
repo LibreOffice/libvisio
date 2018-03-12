@@ -638,9 +638,8 @@ void libvisio::VSDContentCollector::_flushText()
   if (flipX)
     angle -= M_PI;
 
-  while (angle > M_PI)
-    angle -= 2 * M_PI;
-  while (angle < -M_PI)
+  angle = std::fmod(angle, 2 * M_PI);
+  if (angle < 0)
     angle += 2 * M_PI;
 
   textBlockProps.insert("svg:x", m_scale * x);
