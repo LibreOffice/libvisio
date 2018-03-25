@@ -7,12 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "VSDXParser.h"
+
 #include <memory>
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
 #include <librevenge-stream/librevenge-stream.h>
-#include "VSDXParser.h"
 #include "libvisio_utils.h"
 #include "libvisio_xml.h"
 #include "VSDContentCollector.h"

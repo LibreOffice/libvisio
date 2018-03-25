@@ -7,9 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "VSDFieldList.h"
+
 #include <time.h>
 #include "VSDCollector.h"
-#include "VSDFieldList.h"
 #include "libvisio_utils.h"
 
 void libvisio::VSDTextField::handle(VSDCollector *collector) const

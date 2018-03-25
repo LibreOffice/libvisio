@@ -11,13 +11,14 @@
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE 1
 #endif
 
+#include "VSDXMLHelper.h"
+
 #include <memory>
 #include <sstream>
 #include <istream>
 #include <vector>
 #include <boost/algorithm/string.hpp>
 #include <librevenge-stream/librevenge-stream.h>
-#include "VSDXMLHelper.h"
 #include "libvisio_utils.h"
 #include "libvisio_xml.h"
 

@@ -8,6 +8,7 @@
  */
 
 #include "VSDStencils.h"
+
 #include "libvisio_utils.h"
 
 libvisio::VSDShape::VSDShape()

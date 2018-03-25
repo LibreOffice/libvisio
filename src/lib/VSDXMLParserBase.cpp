@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "VSDXMLParserBase.h"
+
 #include <string.h>
 #include <libxml/xmlIO.h>
 #include <libxml/xmlstring.h>
@@ -15,7 +17,6 @@
 #include <boost/phoenix.hpp>
 #include <boost/spirit/include/qi.hpp>
 
-#include "VSDXMLParserBase.h"
 #include "libvisio_utils.h"
 #include "libvisio_xml.h"
 #include "VSDContentCollector.h"

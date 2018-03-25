@@ -7,9 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <string.h>
 #include "VSDInternalStream.h"
 
+#include <string.h>
 
 VSDInternalStream::VSDInternalStream(librevenge::RVNGInputStream *input, unsigned long size, bool compressed) :
   librevenge::RVNGInputStream(),

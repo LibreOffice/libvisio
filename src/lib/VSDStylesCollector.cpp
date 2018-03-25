@@ -7,9 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "VSDStylesCollector.h"
+
 #include <vector>
 #include <map>
-#include "VSDStylesCollector.h"
 
 libvisio::VSDStylesCollector::VSDStylesCollector(
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,

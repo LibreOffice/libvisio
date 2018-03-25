@@ -8,6 +8,7 @@
  */
 
 #include "VSDPages.h"
+
 #include "libvisio_utils.h"
 
 libvisio::VSDPage::VSDPage()

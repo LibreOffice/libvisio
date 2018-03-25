@@ -7,12 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "VSD6Parser.h"
+
 #include <librevenge-stream/librevenge-stream.h>
 #include <locale.h>
 #include <sstream>
 #include <string>
 #include "libvisio_utils.h"
-#include "VSD6Parser.h"
 #include "VSDInternalStream.h"
 #include "VSDDocumentStructure.h"
 #include "VSDContentCollector.h"

@@ -7,12 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <libvisio/libvisio.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
 
 #include <librevenge/librevenge.h>
-#include <libvisio/libvisio.h>
 #include "libvisio_utils.h"
 #include "libvisio_xml.h"
 #include "VDXParser.h"

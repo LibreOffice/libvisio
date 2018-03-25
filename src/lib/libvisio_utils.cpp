@@ -7,10 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "libvisio_utils.h"
+
 #include <cstdarg>
 #include <cstdio>
 #include "VSDInternalStream.h"
-#include "libvisio_utils.h"
 
 uint8_t libvisio::readU8(librevenge::RVNGInputStream *input)
 {

@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "VSDParser.h"
+
 #include <librevenge-stream/librevenge-stream.h>
 #include <locale.h>
 #include <cassert>
@@ -15,7 +17,6 @@
 #include <cmath>
 #include <set>
 #include "libvisio_utils.h"
-#include "VSDParser.h"
 #include "VSDInternalStream.h"
 #include "VSDDocumentStructure.h"
 #include "VSDContentCollector.h"

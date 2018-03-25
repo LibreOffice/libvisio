@@ -8,6 +8,7 @@
  */
 
 #include "VSDMetaData.h"
+
 #include <cassert>
 #include <cmath>
 #include <cstdio>

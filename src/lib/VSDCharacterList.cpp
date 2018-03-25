@@ -7,8 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "VSDCollector.h"
 #include "VSDCharacterList.h"
+
+#include "VSDCollector.h"
 
 namespace libvisio
 {

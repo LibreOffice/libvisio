@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "VSDContentCollector.h"
+
 #include <algorithm>
 #include <cassert>
 #include <string.h> // for memcpy
@@ -17,7 +19,6 @@
 #include <unicode/ucnv.h>
 #include <unicode/utf8.h>
 
-#include "VSDContentCollector.h"
 #include "VSDParser.h"
 #include "VSDInternalStream.h"
 

@@ -7,8 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include "VSDCollector.h"
 #include "VSDGeometryList.h"
+
+#include "VSDCollector.h"
 #include "libvisio_utils.h"
 
 namespace libvisio
