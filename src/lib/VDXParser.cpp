@@ -488,7 +488,7 @@ void libvisio::VDXParser::readMisc(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = new XForm1D();
+          m_shape.m_xform1d = make_unique<XForm1D>();
         readTriggerId(m_shape.m_xform1d->beginId, reader);
       }
       break;
@@ -496,7 +496,7 @@ void libvisio::VDXParser::readMisc(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = new XForm1D();
+          m_shape.m_xform1d = make_unique<XForm1D>();
         readTriggerId(m_shape.m_xform1d->endId, reader);
       }
       break;
@@ -692,7 +692,7 @@ void libvisio::VDXParser::readXForm1D(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = new XForm1D();
+          m_shape.m_xform1d = make_unique<XForm1D>();
         ret = readDoubleData(m_shape.m_xform1d->beginX, reader);
       }
       break;
@@ -700,7 +700,7 @@ void libvisio::VDXParser::readXForm1D(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = new XForm1D();
+          m_shape.m_xform1d = make_unique<XForm1D>();
         ret = readDoubleData(m_shape.m_xform1d->beginY, reader);
       }
       break;
@@ -708,7 +708,7 @@ void libvisio::VDXParser::readXForm1D(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = new XForm1D();
+          m_shape.m_xform1d = make_unique<XForm1D>();
         ret = readDoubleData(m_shape.m_xform1d->endX, reader);
       }
       break;
@@ -716,7 +716,7 @@ void libvisio::VDXParser::readXForm1D(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = new XForm1D();
+          m_shape.m_xform1d = make_unique<XForm1D>();
         ret = readDoubleData(m_shape.m_xform1d->endY, reader);
       }
       break;

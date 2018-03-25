@@ -497,7 +497,7 @@ void libvisio::VSD5Parser::readMisc(librevenge::RVNGInputStream *input)
 void libvisio::VSD5Parser::readXForm1D(librevenge::RVNGInputStream *input)
 {
   if (!m_shape.m_xform1d)
-    m_shape.m_xform1d = new XForm1D();
+    m_shape.m_xform1d = make_unique<XForm1D>();
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shape.m_xform1d->beginX = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);

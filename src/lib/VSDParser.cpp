@@ -1154,7 +1154,7 @@ void libvisio::VSDParser::readXFormData(librevenge::RVNGInputStream *input)
 void libvisio::VSDParser::readXForm1D(librevenge::RVNGInputStream *input)
 {
   if (!m_shape.m_xform1d)
-    m_shape.m_xform1d = new XForm1D();
+    m_shape.m_xform1d = make_unique<XForm1D>();
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shape.m_xform1d->beginX = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
@@ -2268,7 +2268,7 @@ void libvisio::VSDParser::readMisc(librevenge::RVNGInputStream *input)
             if (0x40000073 == readU32(input))
             {
               if (!m_shape.m_xform1d)
-                m_shape.m_xform1d = new XForm1D();
+                m_shape.m_xform1d = make_unique<XForm1D>();
               if (m_shape.m_xform1d->beginId == MINUS_ONE)
                 m_shape.m_xform1d->beginId = shapeId;
               else if (m_shape.m_xform1d->endId == MINUS_ONE)
