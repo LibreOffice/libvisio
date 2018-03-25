@@ -9,6 +9,9 @@
 
 #include "libvisio_xml.h"
 
+#ifndef BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
+#define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE 1
+#endif
 #include <boost/lexical_cast.hpp>
 
 #include "VSDTypes.h"
