@@ -3441,7 +3441,7 @@ void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned le
   VSDFieldListElement *pElement = m_stencilFields.getElement(m_fields.size());
   if (pElement)
   {
-    VSDFieldListElement *element = pElement->clone();
+    std::unique_ptr<VSDFieldListElement> element{pElement->clone()};
     if (element)
     {
       element->setValue(number);
@@ -3455,7 +3455,6 @@ void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned le
         element->setFormat(format);
 
       m_fields.push_back(element->getString(m_names));
-      delete element;
     }
   }
   else

@@ -10,6 +10,7 @@
 #ifndef __VSDFIELDLIST_H__
 #define __VSDFIELDLIST_H__
 
+#include <memory>
 #include <vector>
 #include <map>
 #include <librevenge/librevenge.h>
@@ -102,7 +103,7 @@ public:
   }
   VSDFieldListElement *getElement(unsigned index);
 private:
-  std::map<unsigned, VSDFieldListElement *> m_elements;
+  std::map<unsigned, std::unique_ptr<VSDFieldListElement>> m_elements;
   std::vector<unsigned> m_elementsOrder;
   unsigned m_id, m_level;
 };

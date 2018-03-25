@@ -171,7 +171,7 @@ libvisio::VSDFieldList::VSDFieldList(const libvisio::VSDFieldList &fieldList) :
   m_level(fieldList.m_level)
 {
   for (auto iter = fieldList.m_elements.begin(); iter != fieldList.m_elements.end(); ++iter)
-    m_elements[iter->first] = iter->second->clone();
+    m_elements[iter->first].reset(iter->second->clone());
 }
 
 libvisio::VSDFieldList &libvisio::VSDFieldList::operator=(const libvisio::VSDFieldList &fieldList)
@@ -180,7 +180,7 @@ libvisio::VSDFieldList &libvisio::VSDFieldList::operator=(const libvisio::VSDFie
   {
     clear();
     for (auto iter = fieldList.m_elements.begin(); iter != fieldList.m_elements.end(); ++iter)
-      m_elements[iter->first] = iter->second->clone();
+      m_elements[iter->first].reset(iter->second->clone());
     m_elementsOrder = fieldList.m_elementsOrder;
     m_id = fieldList.m_id;
     m_level = fieldList.m_level;
@@ -190,7 +190,6 @@ libvisio::VSDFieldList &libvisio::VSDFieldList::operator=(const libvisio::VSDFie
 
 libvisio::VSDFieldList::~VSDFieldList()
 {
-  clear();
 }
 
 void libvisio::VSDFieldList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
@@ -209,13 +208,13 @@ void libvisio::VSDFieldList::addFieldList(unsigned id, unsigned level)
 void libvisio::VSDFieldList::addTextField(unsigned id, unsigned level, int nameId, int formatStringId)
 {
   if (m_elements.find(id) == m_elements.end())
-    m_elements[id] = new VSDTextField(id, level, nameId, formatStringId);
+    m_elements[id].reset(new VSDTextField(id, level, nameId, formatStringId));
 }
 
 void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
 {
   if (m_elements.find(id) == m_elements.end())
-    m_elements[id] = new VSDNumericField(id, level, format, number, formatStringId);
+    m_elements[id].reset(new VSDNumericField(id, level, format, number, formatStringId));
 }
 
 void libvisio::VSDFieldList::handle(VSDCollector *collector) const
@@ -224,27 +223,24 @@ void libvisio::VSDFieldList::handle(VSDCollector *collector) const
     return;
 
   collector->collectFieldList(m_id, m_level);
-  std::map<unsigned, VSDFieldListElement *>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned int i : m_elementsOrder)
     {
-      iter = m_elements.find(i);
+      auto iter = m_elements.find(i);
       if (iter != m_elements.end())
         iter->second->handle(collector);
     }
   }
   else
   {
-    for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
+    for (auto iter = m_elements.begin(); iter != m_elements.end(); ++iter)
       iter->second->handle(collector);
   }
 }
 
 void libvisio::VSDFieldList::clear()
 {
-  for (auto &element : m_elements)
-    delete element.second;
   m_elements.clear();
   m_elementsOrder.clear();
 }
@@ -254,9 +250,9 @@ libvisio::VSDFieldListElement *libvisio::VSDFieldList::getElement(unsigned index
   if (m_elementsOrder.size() > index)
     index = m_elementsOrder[index];
 
-  std::map<unsigned, VSDFieldListElement *>::const_iterator iter = m_elements.find(index);
+  auto iter = m_elements.find(index);
   if (iter != m_elements.end())
-    return iter->second;
+    return iter->second.get();
   else
     return nullptr;
 }
