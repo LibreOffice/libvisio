@@ -1098,7 +1098,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_foreign)
-          m_shape.m_foreign = new ForeignData();
+          m_shape.m_foreign = make_unique<ForeignData>();
         ret = readDoubleData(m_shape.m_foreign->offsetX, reader);
       }
       break;
@@ -1106,7 +1106,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_foreign)
-          m_shape.m_foreign = new ForeignData();
+          m_shape.m_foreign = make_unique<ForeignData>();
         ret = readDoubleData(m_shape.m_foreign->offsetY, reader);
       }
       break;
@@ -1114,7 +1114,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_foreign)
-          m_shape.m_foreign = new ForeignData();
+          m_shape.m_foreign = make_unique<ForeignData>();
         ret = readDoubleData(m_shape.m_foreign->width, reader);
       }
       break;
@@ -1122,7 +1122,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_foreign)
-          m_shape.m_foreign = new ForeignData();
+          m_shape.m_foreign = make_unique<ForeignData>();
         ret = readDoubleData(m_shape.m_foreign->height, reader);
       }
       break;
@@ -1469,7 +1469,7 @@ void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
     }
   }
   if (!m_shape.m_foreign)
-    m_shape.m_foreign = new ForeignData();
+    m_shape.m_foreign = make_unique<ForeignData>();
   m_shape.m_foreign->data = m_currentBinaryData;
 }
 

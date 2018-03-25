@@ -406,7 +406,7 @@ void libvisio::VSD5Parser::readShape(librevenge::RVNGInputStream *input)
   if (tmpShape)
   {
     if (tmpShape->m_foreign)
-      m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
+      m_shape.m_foreign = make_unique<ForeignData>(*(tmpShape->m_foreign));
     m_shape.m_text = tmpShape->m_text;
     m_shape.m_textFormat = tmpShape->m_textFormat;
   }

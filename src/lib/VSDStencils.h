@@ -36,7 +36,7 @@ public:
   std::map<unsigned, VSDGeometryList> m_geometries;
   VSDShapeList m_shapeList;
   VSDFieldList m_fields;
-  ForeignData *m_foreign;
+  std::unique_ptr<ForeignData> m_foreign;
   unsigned m_parent, m_masterPage, m_masterShape, m_shapeId;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
   VSDOptionalLineStyle m_lineStyle;

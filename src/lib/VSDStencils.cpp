@@ -11,7 +11,7 @@
 #include "libvisio_utils.h"
 
 libvisio::VSDShape::VSDShape()
-  : m_geometries(), m_shapeList(), m_fields(), m_foreign(nullptr), m_parent(0), m_masterPage(MINUS_ONE),
+  : m_geometries(), m_shapeList(), m_fields(), m_foreign(), m_parent(0), m_masterPage(MINUS_ONE),
     m_masterShape(MINUS_ONE), m_shapeId(MINUS_ONE), m_lineStyleId(MINUS_ONE), m_fillStyleId(MINUS_ONE),
     m_textStyleId(MINUS_ONE), m_lineStyle(), m_fillStyle(), m_textBlockStyle(), m_charStyle(),
     m_charList(), m_paraStyle(), m_paraList(), m_tabSets(), m_text(), m_names(),
@@ -47,9 +47,7 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
     m_geometries = shape.m_geometries;
     m_shapeList = shape.m_shapeList;
     m_fields = shape.m_fields;
-    if (m_foreign)
-      delete m_foreign;
-    m_foreign = shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : nullptr;
+    m_foreign.reset(shape.m_foreign ? new ForeignData(*(shape.m_foreign)) : nullptr);
     m_parent = shape.m_parent;
     m_masterPage = shape.m_masterPage;
     m_masterShape = shape.m_masterShape;
@@ -83,8 +81,6 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
 
 void libvisio::VSDShape::clear()
 {
-  if (m_foreign)
-    delete m_foreign;
   m_foreign = nullptr;
   if (m_txtxform)
     delete m_txtxform;

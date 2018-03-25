@@ -966,7 +966,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
     if (tmpShape)
     {
       if (tmpShape->m_foreign)
-        m_shape.m_foreign = new ForeignData(*(tmpShape->m_foreign));
+        m_shape.m_foreign = make_unique<ForeignData>(*(tmpShape->m_foreign));
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
         m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
@@ -1707,7 +1707,7 @@ void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
 {
   VSD_DEBUG_MSG(("VSDXMLParser::readForeignData\n"));
   if (!m_shape.m_foreign)
-    m_shape.m_foreign = new ForeignData();
+    m_shape.m_foreign = make_unique<ForeignData>();
 
   const shared_ptr<xmlChar> foreignTypeString(xmlTextReaderGetAttribute(reader, BAD_CAST("ForeignType")), xmlFree);
   if (foreignTypeString)
