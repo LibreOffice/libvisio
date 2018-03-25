@@ -10,6 +10,7 @@
 #ifndef __VSDCHARACTERLIST_H__
 #define __VSDCHARACTERLIST_H__
 
+#include <memory>
 #include <vector>
 #include <map>
 #include "VSDTypes.h"
@@ -48,7 +49,7 @@ public:
     return (m_elements.empty());
   }
 private:
-  std::map<unsigned, VSDCharacterListElement *> m_elements;
+  std::map<unsigned, std::unique_ptr<VSDCharacterListElement>> m_elements;
   std::vector<unsigned> m_elementsOrder;
 };
 
