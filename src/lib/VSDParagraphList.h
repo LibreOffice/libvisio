@@ -10,6 +10,7 @@
 #ifndef __VSDPARAGRAPHLIST_H__
 #define __VSDPARAGRAPHLIST_H__
 
+#include <memory>
 #include <vector>
 #include <map>
 #include "VSDStyles.h"
@@ -47,7 +48,7 @@ public:
     return (m_elements.empty());
   }
 private:
-  std::map<unsigned, VSDParagraphListElement *> m_elements;
+  std::map<unsigned, std::unique_ptr<VSDParagraphListElement>> m_elements;
   std::vector<unsigned> m_elementsOrder;
 };
 
