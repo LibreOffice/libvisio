@@ -9,6 +9,8 @@
 
 #include "VSDOutputElementList.h"
 
+#include "libvisio_utils.h"
+
 namespace libvisio
 {
 
@@ -319,23 +321,6 @@ public:
 
 
 } // namespace libvisio
-
-namespace
-{
-
-template<typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args &&... args)
-{
-  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}
-
-template<typename T>
-std::unique_ptr<T> clone(const std::unique_ptr<T> &other)
-{
-  return std::unique_ptr<T>(other->clone());
-}
-
-}
 
 libvisio::VSDStyleOutputElement::VSDStyleOutputElement(const librevenge::RVNGPropertyList &propList) :
   m_propList(propList) {}

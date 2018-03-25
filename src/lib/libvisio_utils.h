@@ -55,6 +55,18 @@ struct VSDDummyDeleter
   void operator()(void *) {}
 };
 
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args &&... args)
+{
+  return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
+template<typename T>
+std::unique_ptr<T> clone(const std::unique_ptr<T> &other)
+{
+  return std::unique_ptr<T>(other->clone());
+}
+
 uint8_t readU8(librevenge::RVNGInputStream *input);
 uint16_t readU16(librevenge::RVNGInputStream *input);
 int16_t readS16(librevenge::RVNGInputStream *input);

@@ -574,31 +574,29 @@ libvisio::VSDGeometryList::VSDGeometryList(const VSDGeometryList &geomList) :
   m_elementsOrder(geomList.m_elementsOrder)
 {
   for (auto iter = geomList.m_elements.begin(); iter != geomList.m_elements.end(); ++iter)
-    m_elements[iter->first] = iter->second->clone();
+    m_elements[iter->first] = clone(iter->second);
 }
 
 libvisio::VSDGeometryList &libvisio::VSDGeometryList::operator=(const VSDGeometryList &geomList)
 {
   clear();
   for (auto iter = geomList.m_elements.begin(); iter != geomList.m_elements.end(); ++iter)
-    m_elements[iter->first] = iter->second->clone();
+    m_elements[iter->first] = clone(iter->second);
   m_elementsOrder = geomList.m_elementsOrder;
   return *this;
 }
 
 libvisio::VSDGeometryList::~VSDGeometryList()
 {
-  clear();
 }
 
 void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, const boost::optional<bool> &noFill,
                                             const boost::optional<bool> &noLine, const boost::optional<bool> &noShow)
 {
-  auto *tmpElement = dynamic_cast<VSDGeometry *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDGeometry *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDGeometry(id, level, noFill, noLine, noShow);
+    m_elements[id] = make_unique<VSDGeometry>(id, level, noFill, noLine, noShow);
   }
   else
   {
@@ -610,18 +608,16 @@ void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, const b
 
 void libvisio::VSDGeometryList::addEmpty(unsigned id, unsigned level)
 {
-  clearElement(id);
-  m_elements[id] = new VSDEmpty(id, level);
+  m_elements[id] = make_unique<VSDEmpty>(id, level);
 }
 
 void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x,
                                           const boost::optional<double> &y)
 {
-  auto *tmpElement = dynamic_cast<VSDMoveTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDMoveTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDMoveTo(id, level, x, y);
+    m_elements[id] = make_unique<VSDMoveTo>(id, level, x, y);
   }
   else
   {
@@ -632,11 +628,10 @@ void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const boo
 
 void libvisio::VSDGeometryList::addLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
 {
-  auto *tmpElement = dynamic_cast<VSDLineTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDLineTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDLineTo(id, level, x, y);
+    m_elements[id] = make_unique<VSDLineTo>(id, level, x, y);
   }
   else
   {
@@ -648,11 +643,10 @@ void libvisio::VSDGeometryList::addLineTo(unsigned id, unsigned level, const boo
 void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, const boost::optional<double> &x2,
                                          const boost::optional<double> &y2, const boost::optional<double> &bow)
 {
-  auto *tmpElement = dynamic_cast<VSDArcTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDArcTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDArcTo(id, level, x2, y2, bow);
+    m_elements[id] = make_unique<VSDArcTo>(id, level, x2, y2, bow);
   }
   else
   {
@@ -665,25 +659,22 @@ void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, const boos
 void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
                                            const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector, const std::vector<double> &weights)
 {
-  clearElement(id);
-  m_elements[id] = new VSDNURBSTo1(id, level, x2, y2, xType, yType, degree, controlPoints, knotVector, weights);
+  m_elements[id] = libvisio::make_unique<VSDNURBSTo1>(id, level, x2, y2, xType, yType, degree, controlPoints, knotVector, weights);
 }
 
 void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
 {
-  clearElement(id);
-  m_elements[id] = new VSDNURBSTo2(id, level, x2, y2, knot, knotPrev, weight, weightPrev, dataID);
+  m_elements[id] = make_unique<VSDNURBSTo2>(id, level, x2, y2, knot, knotPrev, weight, weightPrev, dataID);
 }
 
 void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2,
                                            const boost::optional<double> &knot, const boost::optional<double> &knotPrev, const boost::optional<double> &weight,
                                            const boost::optional<double> &weightPrev, const boost::optional<NURBSData> &data)
 {
-  auto *tmpElement = dynamic_cast<VSDNURBSTo3 *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDNURBSTo3 *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDNURBSTo3(id, level, x2, y2, knot, knotPrev, weight, weightPrev, data);
+    m_elements[id] = make_unique<VSDNURBSTo3>(id, level, x2, y2, knot, knotPrev, weight, weightPrev, data);
   }
   else
   {
@@ -700,23 +691,20 @@ void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const bo
 void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType,
                                               const std::vector<std::pair<double, double> > &points)
 {
-  clearElement(id);
-  m_elements[id] = new VSDPolylineTo1(id, level, x, y, xType, yType, points);
+  m_elements[id] = libvisio::make_unique<VSDPolylineTo1>(id, level, x, y, xType, yType, points);
 }
 
 void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
-  clearElement(id);
-  m_elements[id] = new VSDPolylineTo2(id, level, x, y, dataID);
+  m_elements[id] = make_unique<VSDPolylineTo2>(id, level, x, y, dataID);
 }
 
 void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, boost::optional<double> &x, boost::optional<double> &y, boost::optional<PolylineData> &data)
 {
-  auto *tmpElement = dynamic_cast<VSDPolylineTo3 *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDPolylineTo3 *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDPolylineTo3(id, level, x, y, data);
+    m_elements[id] = make_unique<VSDPolylineTo3>(id, level, x, y, data);
   }
   else
   {
@@ -730,11 +718,10 @@ void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, const bo
                                            const boost::optional<double> &cy,const boost::optional<double> &xleft, const boost::optional<double> &yleft,
                                            const boost::optional<double> &xtop, const boost::optional<double> &ytop)
 {
-  auto *tmpElement = dynamic_cast<VSDEllipse *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDEllipse *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDEllipse(id, level, cx, cy, xleft, yleft, xtop, ytop);
+    m_elements[id] = make_unique<VSDEllipse>(id, level, cx, cy, xleft, yleft, xtop, ytop);
   }
   else
   {
@@ -751,11 +738,10 @@ void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, 
                                                    const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
                                                    const boost::optional<double> &angle, const boost::optional<double> &ecc)
 {
-  auto *tmpElement = dynamic_cast<VSDEllipticalArcTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDEllipticalArcTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDEllipticalArcTo(id, level, x3, y3, x2, y2, angle, ecc);
+    m_elements[id] = make_unique<VSDEllipticalArcTo>(id, level, x3, y3, x2, y2, angle, ecc);
   }
   else
   {
@@ -772,11 +758,10 @@ void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, cons
                                                const boost::optional<double> &y, const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
                                                const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree)
 {
-  auto *tmpElement = dynamic_cast<VSDSplineStart *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDSplineStart *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDSplineStart(id, level, x, y, secondKnot, firstKnot, lastKnot, degree);
+    m_elements[id] = make_unique<VSDSplineStart>(id, level, x, y, secondKnot, firstKnot, lastKnot, degree);
   }
   else
   {
@@ -792,11 +777,10 @@ void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, cons
 void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x,
                                               const boost::optional<double> &y, const boost::optional<double> &knot)
 {
-  auto *tmpElement = dynamic_cast<VSDSplineKnot *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDSplineKnot *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDSplineKnot(id, level, x, y, knot);
+    m_elements[id] = make_unique<VSDSplineKnot>(id, level, x, y, knot);
   }
   else
   {
@@ -809,11 +793,10 @@ void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, const
 void libvisio::VSDGeometryList::addInfiniteLine(unsigned id, unsigned level, const boost::optional<double> &x1,
                                                 const boost::optional<double> &y1, const boost::optional<double> &x2, const boost::optional<double> &y2)
 {
-  auto *tmpElement = dynamic_cast<VSDInfiniteLine *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDInfiniteLine *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDInfiniteLine(id, level, x1, y1, x2, y2);
+    m_elements[id] = make_unique<VSDInfiniteLine>(id, level, x1, y1, x2, y2);
   }
   else
   {
@@ -828,11 +811,10 @@ void libvisio::VSDGeometryList::addRelCubBezTo(unsigned id, unsigned level, cons
                                                const boost::optional<double> &y, const boost::optional<double> &a, const boost::optional<double> &b,
                                                const boost::optional<double> &c, const boost::optional<double> &d)
 {
-  auto *tmpElement = dynamic_cast<VSDRelCubBezTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDRelCubBezTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDRelCubBezTo(id, level, x, y, a, b, c, d);
+    m_elements[id] = make_unique<VSDRelCubBezTo>(id, level, x, y, a, b, c, d);
   }
   else
   {
@@ -849,11 +831,10 @@ void libvisio::VSDGeometryList::addRelEllipticalArcTo(unsigned id, unsigned leve
                                                       const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
                                                       const boost::optional<double> &angle, const boost::optional<double> &ecc)
 {
-  auto *tmpElement = dynamic_cast<VSDRelEllipticalArcTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDRelEllipticalArcTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDRelEllipticalArcTo(id, level, x3, y3, x2, y2, angle, ecc);
+    m_elements[id] = make_unique<VSDRelEllipticalArcTo>(id, level, x3, y3, x2, y2, angle, ecc);
   }
   else
   {
@@ -868,11 +849,10 @@ void libvisio::VSDGeometryList::addRelEllipticalArcTo(unsigned id, unsigned leve
 
 void libvisio::VSDGeometryList::addRelMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
 {
-  auto *tmpElement = dynamic_cast<VSDRelMoveTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDRelMoveTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDRelMoveTo(id, level, x, y);
+    m_elements[id] = make_unique<VSDRelMoveTo>(id, level, x, y);
   }
   else
   {
@@ -883,11 +863,10 @@ void libvisio::VSDGeometryList::addRelMoveTo(unsigned id, unsigned level, const 
 
 void libvisio::VSDGeometryList::addRelLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
 {
-  auto *tmpElement = dynamic_cast<VSDRelLineTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDRelLineTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDRelLineTo(id, level, x, y);
+    m_elements[id] = make_unique<VSDRelLineTo>(id, level, x, y);
   }
   else
   {
@@ -898,11 +877,10 @@ void libvisio::VSDGeometryList::addRelLineTo(unsigned id, unsigned level, const 
 
 void libvisio::VSDGeometryList::addRelQuadBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y, const boost::optional<double> &a, const boost::optional<double> &b)
 {
-  auto *tmpElement = dynamic_cast<VSDRelQuadBezTo *>(m_elements[id]);
+  auto *tmpElement = dynamic_cast<VSDRelQuadBezTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    clearElement(id);
-    m_elements[id] = new VSDRelQuadBezTo(id, level, x, y, a, b);
+    m_elements[id] = make_unique<VSDRelQuadBezTo>(id, level, x, y, a, b);
   }
   else
   {
@@ -924,12 +902,11 @@ void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
 {
   if (empty())
     return;
-  std::map<unsigned, VSDGeometryListElement *>::const_iterator iter;
   if (!m_elementsOrder.empty())
   {
     for (unsigned int i : m_elementsOrder)
     {
-      iter = m_elements.find(i);
+      auto iter = m_elements.find(i);
       if (iter != m_elements.end())
         iter->second->handle(collector);
     }
@@ -938,13 +915,13 @@ void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
   {
     std::vector<unsigned> tmpVector;
 
-    for (iter = m_elements.begin(); iter != m_elements.end(); ++iter)
+    for (auto iter = m_elements.begin(); iter != m_elements.end(); ++iter)
       tmpVector.push_back(iter->first);
     std::sort(tmpVector.begin(), tmpVector.end());
 
     for (unsigned int i : tmpVector)
     {
-      iter = m_elements.find(i);
+      auto iter = m_elements.find(i);
       if (iter != m_elements.end())
         iter->second->handle(collector);
     }
@@ -954,8 +931,6 @@ void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
 
 void libvisio::VSDGeometryList::clear()
 {
-  for (auto &element : m_elements)
-    delete element.second;
   m_elements.clear();
   m_elementsOrder.clear();
 }
@@ -967,20 +942,9 @@ libvisio::VSDGeometryListElement *libvisio::VSDGeometryList::getElement(unsigned
 
   auto iter = m_elements.find(index);
   if (iter != m_elements.end())
-    return iter->second;
+    return iter->second.get();
   else
     return nullptr;
-}
-
-void libvisio::VSDGeometryList::clearElement(unsigned id)
-{
-  auto iter = m_elements.find(id);
-  if (m_elements.end() != iter)
-  {
-    if (iter->second)
-      delete iter->second;
-    m_elements.erase(iter);
-  }
 }
 
 void libvisio::VSDGeometryList::resetLevel(unsigned level)

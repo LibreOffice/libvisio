@@ -11,6 +11,7 @@
 #define __VSDGEOMETRYLIST_H__
 
 #include <map>
+#include <memory>
 #include <vector>
 #include <functional>
 #include <algorithm>
@@ -110,8 +111,7 @@ public:
   }
   void resetLevel(unsigned level);
 private:
-  void clearElement(unsigned id);
-  std::map<unsigned, VSDGeometryListElement *> m_elements;
+  std::map<unsigned, std::unique_ptr<VSDGeometryListElement>> m_elements;
   std::vector<unsigned> m_elementsOrder;
 };
 
