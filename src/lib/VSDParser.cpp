@@ -1167,9 +1167,7 @@ void libvisio::VSDParser::readXForm1D(librevenge::RVNGInputStream *input)
 
 void libvisio::VSDParser::readTxtXForm(librevenge::RVNGInputStream *input)
 {
-  if (m_shape.m_txtxform)
-    delete m_shape.m_txtxform;
-  m_shape.m_txtxform = new XForm();
+  m_shape.m_txtxform = make_unique<XForm>();
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shape.m_txtxform->pinX = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
@@ -1317,7 +1315,7 @@ void libvisio::VSDParser::readShape(librevenge::RVNGInputStream *input)
       m_shape.m_foreign = make_unique<ForeignData>(*(tmpShape->m_foreign));
     m_shape.m_xform = tmpShape->m_xform;
     if (tmpShape->m_txtxform)
-      m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
+      m_shape.m_txtxform = make_unique<XForm>(*(tmpShape->m_txtxform));
     m_shape.m_tabSets = tmpShape->m_tabSets;
     m_shape.m_text = tmpShape->m_text;
     m_shape.m_textFormat = tmpShape->m_textFormat;

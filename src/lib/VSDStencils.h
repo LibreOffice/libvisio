@@ -53,7 +53,7 @@ public:
   std::map<unsigned, NURBSData> m_nurbsData;
   std::map<unsigned, PolylineData> m_polylineData;
   XForm m_xform;
-  XForm *m_txtxform;
+  std::unique_ptr<XForm> m_txtxform;
   std::unique_ptr<XForm1D> m_xform1d;
   VSDMisc m_misc;
   VSDName m_layerMem;

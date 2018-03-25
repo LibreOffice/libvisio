@@ -969,7 +969,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
         m_shape.m_foreign = make_unique<ForeignData>(*(tmpShape->m_foreign));
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
-        m_shape.m_txtxform = new XForm(*(tmpShape->m_txtxform));
+        m_shape.m_txtxform = make_unique<XForm>(*(tmpShape->m_txtxform));
       m_shape.m_geometries = tmpShape->m_geometries;
       m_shape.m_charList = tmpShape->m_charList;
       m_shape.m_paraList = tmpShape->m_paraList;

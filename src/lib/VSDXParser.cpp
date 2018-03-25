@@ -994,7 +994,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = new XForm();
+          m_shape.m_txtxform = make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->pinX, reader);
       }
       break;
@@ -1002,7 +1002,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = new XForm();
+          m_shape.m_txtxform = make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->pinY, reader);
       }
       break;
@@ -1010,7 +1010,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = new XForm();
+          m_shape.m_txtxform = make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->width, reader);
       }
       break;
@@ -1018,7 +1018,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = new XForm();
+          m_shape.m_txtxform = make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->height, reader);
       }
       break;
@@ -1026,7 +1026,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = new XForm();
+          m_shape.m_txtxform = make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->pinLocX, reader);
       }
       break;
@@ -1034,7 +1034,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = new XForm();
+          m_shape.m_txtxform = make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->pinLocY, reader);
       }
       break;
@@ -1042,7 +1042,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = new XForm();
+          m_shape.m_txtxform = make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->angle, reader);
       }
       break;

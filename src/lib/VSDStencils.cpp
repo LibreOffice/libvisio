@@ -15,7 +15,7 @@ libvisio::VSDShape::VSDShape()
     m_masterShape(MINUS_ONE), m_shapeId(MINUS_ONE), m_lineStyleId(MINUS_ONE), m_fillStyleId(MINUS_ONE),
     m_textStyleId(MINUS_ONE), m_lineStyle(), m_fillStyle(), m_textBlockStyle(), m_charStyle(),
     m_charList(), m_paraStyle(), m_paraList(), m_tabSets(), m_text(), m_names(),
-    m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(nullptr),
+    m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(),
     m_xform1d(), m_misc(), m_layerMem()
 {
 }
@@ -69,9 +69,7 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
     m_nurbsData = shape.m_nurbsData;
     m_polylineData = shape.m_polylineData;
     m_xform = shape.m_xform;
-    if (m_txtxform)
-      delete m_txtxform;
-    m_txtxform = shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : nullptr;
+    m_txtxform.reset(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : nullptr);
     m_xform1d.reset(shape.m_xform1d ? new XForm1D(*shape.m_xform1d) : nullptr);
     m_misc = shape.m_misc;
     m_layerMem = shape.m_layerMem;
@@ -82,8 +80,6 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
 void libvisio::VSDShape::clear()
 {
   m_foreign = nullptr;
-  if (m_txtxform)
-    delete m_txtxform;
   m_txtxform = nullptr;
   m_xform1d = nullptr;
 
