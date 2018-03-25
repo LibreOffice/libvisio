@@ -10,6 +10,7 @@
 #include <time.h>
 #include "VSDCollector.h"
 #include "VSDFieldList.h"
+#include "libvisio_utils.h"
 
 void libvisio::VSDTextField::handle(VSDCollector *collector) const
 {
@@ -171,7 +172,7 @@ libvisio::VSDFieldList::VSDFieldList(const libvisio::VSDFieldList &fieldList) :
   m_level(fieldList.m_level)
 {
   for (auto iter = fieldList.m_elements.begin(); iter != fieldList.m_elements.end(); ++iter)
-    m_elements[iter->first].reset(iter->second->clone());
+    m_elements[iter->first] = clone(iter->second);
 }
 
 libvisio::VSDFieldList &libvisio::VSDFieldList::operator=(const libvisio::VSDFieldList &fieldList)
@@ -180,7 +181,7 @@ libvisio::VSDFieldList &libvisio::VSDFieldList::operator=(const libvisio::VSDFie
   {
     clear();
     for (auto iter = fieldList.m_elements.begin(); iter != fieldList.m_elements.end(); ++iter)
-      m_elements[iter->first].reset(iter->second->clone());
+      m_elements[iter->first] = clone(iter->second);
     m_elementsOrder = fieldList.m_elementsOrder;
     m_id = fieldList.m_id;
     m_level = fieldList.m_level;
@@ -208,13 +209,13 @@ void libvisio::VSDFieldList::addFieldList(unsigned id, unsigned level)
 void libvisio::VSDFieldList::addTextField(unsigned id, unsigned level, int nameId, int formatStringId)
 {
   if (m_elements.find(id) == m_elements.end())
-    m_elements[id].reset(new VSDTextField(id, level, nameId, formatStringId));
+    m_elements[id] = make_unique<VSDTextField>(id, level, nameId, formatStringId);
 }
 
 void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
 {
   if (m_elements.find(id) == m_elements.end())
-    m_elements[id].reset(new VSDNumericField(id, level, format, number, formatStringId));
+    m_elements[id] = make_unique<VSDNumericField>(id, level, format, number, formatStringId);
 }
 
 void libvisio::VSDFieldList::handle(VSDCollector *collector) const
