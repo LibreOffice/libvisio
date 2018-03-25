@@ -89,10 +89,13 @@ libvisio::VSDParagraphList::VSDParagraphList(const libvisio::VSDParagraphList &p
 
 libvisio::VSDParagraphList &libvisio::VSDParagraphList::operator=(const libvisio::VSDParagraphList &paraList)
 {
-  clear();
-  for (auto iter = paraList.m_elements.begin(); iter != paraList.m_elements.end(); ++iter)
-    m_elements[iter->first] = iter->second->clone();
-  m_elementsOrder = paraList.m_elementsOrder;
+  if (this != &paraList)
+  {
+    clear();
+    for (auto iter = paraList.m_elements.begin(); iter != paraList.m_elements.end(); ++iter)
+      m_elements[iter->first] = iter->second->clone();
+    m_elementsOrder = paraList.m_elementsOrder;
+  }
   return *this;
 }
 

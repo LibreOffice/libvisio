@@ -579,10 +579,13 @@ libvisio::VSDGeometryList::VSDGeometryList(const VSDGeometryList &geomList) :
 
 libvisio::VSDGeometryList &libvisio::VSDGeometryList::operator=(const VSDGeometryList &geomList)
 {
-  clear();
-  for (auto iter = geomList.m_elements.begin(); iter != geomList.m_elements.end(); ++iter)
-    m_elements[iter->first] = clone(iter->second);
-  m_elementsOrder = geomList.m_elementsOrder;
+  if (this != &geomList)
+  {
+    clear();
+    for (auto iter = geomList.m_elements.begin(); iter != geomList.m_elements.end(); ++iter)
+      m_elements[iter->first] = clone(iter->second);
+    m_elementsOrder = geomList.m_elementsOrder;
+  }
   return *this;
 }
 

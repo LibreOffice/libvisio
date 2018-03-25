@@ -88,10 +88,13 @@ libvisio::VSDCharacterList::VSDCharacterList(const libvisio::VSDCharacterList &c
 
 libvisio::VSDCharacterList &libvisio::VSDCharacterList::operator=(const libvisio::VSDCharacterList &charList)
 {
-  clear();
-  for (auto iter = charList.m_elements.begin(); iter != charList.m_elements.end(); ++iter)
-    m_elements[iter->first] = clone(iter->second);
-  m_elementsOrder = charList.m_elementsOrder;
+  if (this != &charList)
+  {
+    clear();
+    for (auto iter = charList.m_elements.begin(); iter != charList.m_elements.end(); ++iter)
+      m_elements[iter->first] = clone(iter->second);
+    m_elementsOrder = charList.m_elementsOrder;
+  }
   return *this;
 }
 
