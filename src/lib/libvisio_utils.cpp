@@ -7,9 +7,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <vector>
-#include <string>
-#include <algorithm> // std::count
 #include <cstdarg>
 #include <cstdio>
 #include "VSDInternalStream.h"
