@@ -10,7 +10,6 @@
 #ifndef __VSDGEOMETRYLIST_H__
 #define __VSDGEOMETRYLIST_H__
 
-#include <vector>
 #include <map>
 #include <vector>
 #include <functional>
