@@ -141,12 +141,9 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   default:
   {
     librevenge::RVNGString result;
-    librevenge::RVNGProperty *pProp = librevenge::RVNGPropertyFactory::newDoubleProp(m_number);
+    std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newDoubleProp(m_number)};
     if (pProp)
-    {
       result = pProp->getStr();
-      delete pProp;
-    }
     return result;
   }
   }
