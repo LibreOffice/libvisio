@@ -140,11 +140,8 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
     return datetimeToString("%x %X", m_number);
   default:
   {
-    librevenge::RVNGString result;
     std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newDoubleProp(m_number)};
-    if (pProp)
-      result = pProp->getStr();
-    return result;
+    return pProp ? pProp->getStr() : librevenge::RVNGString();
   }
   }
 }
