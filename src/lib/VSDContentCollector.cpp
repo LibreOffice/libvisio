@@ -495,7 +495,7 @@ void libvisio::VSDContentCollector::_convertToPath(const std::vector<librevenge:
     double prevY = segmentVector[0]["svg:y"] ? segmentVector[0]["svg:y"]->getDouble() : 0.0;
     unsigned moveIndex = 0;
     std::vector<librevenge::RVNGPropertyList> tmpSegment;
-    for (unsigned i = 0; i < segmentVector.size(); ++i)
+    for (size_t i = 0; i < segmentVector.size(); ++i)
     {
       if (segmentVector[i]["librevenge:path-action"] && segmentVector[i]["librevenge:path-action"]->getStr() == "M")
       {
@@ -2071,7 +2071,7 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
   if (!m_noLine)
     m_currentLineGeometry.reserve(VSD_NUM_POLYLINES_PER_KNOT * knotVector.size());
 
-  for (unsigned i = 0; i < VSD_NUM_POLYLINES_PER_KNOT * knotVector.size(); i++)
+  for (size_t i = 0; i < VSD_NUM_POLYLINES_PER_KNOT * knotVector.size(); i++)
   {
     librevenge::RVNGPropertyList node;
 
@@ -2246,7 +2246,7 @@ void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */, unsigne
 
   librevenge::RVNGPropertyList polyline;
   std::vector<std::pair<double, double> > tmpPoints(points);
-  for (unsigned i = 0; i< points.size(); i++)
+  for (size_t i = 0; i< points.size(); i++)
   {
     polyline.clear();
     if (xType == 0)
@@ -2597,7 +2597,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
       m_txtxform.reset(new XForm(*(m_stencilShape->m_txtxform)));
 
     m_stencilFields = m_stencilShape->m_fields;
-    for (unsigned i = 0; i < m_stencilFields.size(); i++)
+    for (size_t i = 0; i < m_stencilFields.size(); i++)
     {
       VSDFieldListElement *elem = m_stencilFields.getElement(i);
       if (elem)
@@ -2681,7 +2681,7 @@ void libvisio::VSDContentCollector::collectSplineEnd()
   }
   m_splineKnotVector.push_back(m_splineLastKnot);
   std::vector<double> weights(m_splineControlPoints.size()+2);
-  for (unsigned i=0; i < m_splineControlPoints.size()+2; i++)
+  for (size_t i=0; i < m_splineControlPoints.size()+2; i++)
     weights[i] = 1.0;
   collectNURBSTo(0, m_splineLevel, m_splineX, m_splineY, 1, 1, m_splineDegree, m_splineControlPoints, m_splineKnotVector, weights);
   m_splineKnotVector.clear();

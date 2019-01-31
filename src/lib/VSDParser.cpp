@@ -939,7 +939,7 @@ void libvisio::VSDParser::readGeomList(librevenge::RVNGInputStream *input)
     if (childrenListLength > getRemainingLength(input))
       childrenListLength = getRemainingLength(input);
     geometryOrder.reserve(childrenListLength / sizeof(uint32_t));
-    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    for (size_t i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       geometryOrder.push_back(readU32(input));
 
     if (m_currentGeometryList)
@@ -966,7 +966,7 @@ void libvisio::VSDParser::readCharList(librevenge::RVNGInputStream *input)
       childrenListLength = getRemainingLength(input);
     std::vector<unsigned> characterOrder;
     characterOrder.reserve(childrenListLength / sizeof(uint32_t));
-    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    for (size_t i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       characterOrder.push_back(readU32(input));
 
     m_shape.m_charList.setElementsOrder(characterOrder);
@@ -988,7 +988,7 @@ void libvisio::VSDParser::readParaList(librevenge::RVNGInputStream *input)
       childrenListLength = getRemainingLength(input);
     std::vector<unsigned> paragraphOrder;
     paragraphOrder.reserve(childrenListLength / sizeof(uint32_t));
-    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    for (size_t i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       paragraphOrder.push_back(readU32(input));
 
     m_shape.m_paraList.setElementsOrder(paragraphOrder);
@@ -1014,7 +1014,7 @@ void libvisio::VSDParser::readTabsDataList(librevenge::RVNGInputStream *input)
       childrenListLength = getRemainingLength(input);
     std::vector<unsigned> tabsOrder;
     tabsOrder.reserve(childrenListLength / sizeof(uint32_t));
-    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    for (size_t i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       tabsOrder.push_back(readU32(input));
   }
 }
@@ -1034,7 +1034,7 @@ void libvisio::VSDParser::readLayerList(librevenge::RVNGInputStream *input)
       childrenListLength = getRemainingLength(input);
     std::vector<unsigned> layerOrder;
     layerOrder.reserve(childrenListLength / sizeof(uint32_t));
-    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    for (size_t i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       layerOrder.push_back(readU32(input));
   }
 }
@@ -1207,7 +1207,7 @@ void libvisio::VSDParser::readShapeList(librevenge::RVNGInputStream *input)
       childrenListLength = getRemainingLength(input);
     std::vector<unsigned> shapeOrder;
     shapeOrder.reserve(childrenListLength / sizeof(uint32_t));
-    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    for (size_t i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       shapeOrder.push_back(readU32(input));
 
     if (!m_isShapeStarted)
@@ -1722,7 +1722,7 @@ void libvisio::VSDParser::readFieldList(librevenge::RVNGInputStream *input)
       childrenListLength = getRemainingLength(input);
     std::vector<unsigned> fieldOrder;
     fieldOrder.reserve(childrenListLength / sizeof(uint32_t));
-    for (unsigned i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
+    for (size_t i = 0; i < (childrenListLength / sizeof(uint32_t)); i++)
       fieldOrder.push_back(readU32(input));
 
     m_shape.m_fields.setElementsOrder(fieldOrder);

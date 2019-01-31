@@ -173,7 +173,7 @@ void libvisio::VSDParagraphList::handle(VSDCollector *collector) const
     return;
   if (!m_elementsOrder.empty())
   {
-    for (unsigned i = 0; i < m_elementsOrder.size(); i++)
+    for (size_t i = 0; i < m_elementsOrder.size(); i++)
     {
       auto iter = m_elements.find(m_elementsOrder[i]);
       if (iter != m_elements.end() && (0 == i || iter->second->getCharCount()))
