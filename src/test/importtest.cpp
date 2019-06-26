@@ -110,7 +110,6 @@ void assertBmpDataOffset(xmlDocPtr doc, const librevenge::RVNGString &xpath, con
   CPPUNIT_ASSERT_EQUAL_MESSAGE(message.cstr(), expectedValue, actualValue);
 }
 
-#if 0 // keep for future use
 /// Same as the assertXPathContent(), but don't assert: return the string instead.
 librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath)
 {
@@ -127,7 +126,6 @@ librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGStri
   xmlXPathFreeObject(xpathObject);
   return s;
 }
-
 /// Assert that xpath exists, and its content equals to content.
 void assertXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath, const librevenge::RVNGString &content)
 {
@@ -136,7 +134,6 @@ void assertXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath, cons
   message.append("': contents of child does not match.");
   CPPUNIT_ASSERT_EQUAL_MESSAGE(message.cstr(), content, getXPathContent(doc, xpath));
 }
-#endif
 
 /// Paints an XML representation of filename into buffer, then returns the parsed buffer content.
 xmlDocPtr parse(const char *filename, xmlBufferPtr buffer)
@@ -179,6 +176,8 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxCharBgColor);
 #endif
   CPPUNIT_TEST(testVsdTextBlockWithoutBgColor);
+  CPPUNIT_TEST(testVsdNumericFormat);
+  CPPUNIT_TEST(testVsdDateTimeFormatting);
   CPPUNIT_TEST(testBmpFileHeader);
   CPPUNIT_TEST(testBmpFileHeader2);
   CPPUNIT_TEST_SUITE_END();
@@ -191,6 +190,8 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxImportBgColorFromTheme();
   void testVsdxCharBgColor();
   void testVsdTextBlockWithoutBgColor();
+  void testVsdNumericFormat();
+  void testVsdDateTimeFormatting();
   void testBmpFileHeader();
   void testBmpFileHeader2();
 
@@ -311,6 +312,19 @@ void ImportTest::testVsdTextBlockWithoutBgColor()
 {
   m_doc = parse("no-bgcolor.vsd", m_buffer);
   assertXPathNoAttribute(m_doc, "/document/page/layer[5]/textObject/paragraph[1]/span", "background-color");
+}
+
+void ImportTest::testVsdNumericFormat()
+{
+  m_doc = parse("tdf76829-numeric-format.vsd", m_buffer);
+  assertXPathContent(m_doc, "/document/page[1]/textObject[1]/paragraph[1]/span/insertText", "Zeichenblatt 1 ");
+  assertXPathContent(m_doc, "/document/page[2]/textObject[1]/paragraph[1]/span/insertText", "Zeichenblatt 2 ");
+}
+
+void ImportTest::testVsdDateTimeFormatting()
+{
+  m_doc = parse("tdf76829-Timeline.vsd", m_buffer);
+  assertXPathContent(m_doc, "/document/page/textObject/paragraph/span/insertText", "11/30/2005");
 }
 
 void ImportTest::testBmpFileHeader()
