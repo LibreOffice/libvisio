@@ -10,6 +10,7 @@
 #include "VSDFieldList.h"
 
 #include <time.h>
+#include <cmath>
 #include "VSDCollector.h"
 #include "libvisio_utils.h"
 
@@ -70,6 +71,24 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
     return librevenge::RVNGString();
   switch (m_format)
   {
+  case VSD_FIELD_FORMAT_NumGenNoUnits:
+  case VSD_FIELD_FORMAT_NumGenDefUnits:
+
+  {
+    // 0 Format string: 0.#### Example: 30060.9167
+    // 1 Format string: 0.#### u Example: 30060.9167 cm
+    //TODO We need to implement number of digits support after decimal separator in librevenge
+    double intpart;
+    // If there is no decimal value, then treat number as Integer
+    if (std::modf(m_number, &intpart) == 0.0)
+    {
+      std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newIntProp(m_number)};
+      return pProp ? pProp->getStr() : librevenge::RVNGString();
+    }
+    std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newDoubleProp(m_number)};
+    return pProp ? pProp->getStr() : librevenge::RVNGString();
+  }
+
   case VSD_FIELD_FORMAT_DateMDYY:
   case VSD_FIELD_FORMAT_DateMMDDYY:
   case VSD_FIELD_FORMAT_DateMmmDYYYY:
@@ -78,6 +97,44 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   case VSD_FIELD_FORMAT_DateDDMMYY:
   case VSD_FIELD_FORMAT_DateDMMMYYYY:
   case VSD_FIELD_FORMAT_DateDMMMMYYYY:
+    // TODO
+    return datetimeToString("%x", m_number);
+  case VSD_FIELD_FORMAT_TimeGen:
+    // The value is formatted using a format string "h:mm:ss tt" and inserted to the result string.
+    // For example, FORMAT(DATETIME("6/25/07 12:05"), "T") displays 12:05:00 PM.
+    // 30 Format string: T Example: 10:02:02 PM
+    return datetimeToString("%r", m_number);
+  case VSD_FIELD_FORMAT_TimeHMM:
+  case VSD_FIELD_FORMAT_TimeHHMM:
+  case VSD_FIELD_FORMAT_TimeHMM24:
+  case VSD_FIELD_FORMAT_TimeHHMM24:
+    // 31 Format string: h:mm Example: 10:02
+    // 32 Format string: hh:mm Example: 10:02
+    // 33 Format string: H:mm Example: 10:02
+    // 34 Format string: HH:mm Example: 10:02
+    return datetimeToString("%H:%m:%S", m_number);
+  case VSD_FIELD_FORMAT_TimeHMMAMPM:
+  case VSD_FIELD_FORMAT_TimeHHMMAMPM:
+    // 35 Format string: h:mm tt Example: 10:02 PM
+    // 36 Format string: HH:mm tt Example: 10:02 PM
+    return datetimeToString("%I:%m %p", m_number);
+  case VSD_FIELD_FORMAT_TimeAMPMhmm_J:
+  case VSD_FIELD_FORMAT_TimeAMPMhmm_C:
+  case VSD_FIELD_FORMAT_TimeAMPMhmm_K:
+  case VSD_FIELD_FORMAT_TimeAMPM_hmm_J:
+  case VSD_FIELD_FORMAT_Timehmm_J:
+  case VSD_FIELD_FORMAT_TimeAMPM_hmm_C:
+  case VSD_FIELD_FORMAT_Timehmm_C:
+  case VSD_FIELD_FORMAT_TimeAMPM_hmm_K:
+  case VSD_FIELD_FORMAT_Timehmm_K:
+  case VSD_FIELD_FORMAT_TimeHMMAMPM_E:
+  case VSD_FIELD_FORMAT_TimeHHMMAMPM_E:
+  case VSD_FIELD_FORMAT_TimeAMPMhmm_S:
+  case VSD_FIELD_FORMAT_TimeAMPMhhmm_S:
+    return datetimeToString("%X", m_number);
+  //TODO VSD_FIELD_FORMAT_StrNormal  37
+  //TODO VSD_FIELD_FORMAT_StrLower  38
+  //TODO VSD_FIELD_FORMAT_StrUpper  39
   case VSD_FIELD_FORMAT_Dateyyyymd:
   case VSD_FIELD_FORMAT_Dateyymmdd:
   case VSD_FIELD_FORMAT_DateTWNfYYYYMMDDD_C:
@@ -101,45 +158,61 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   case VSD_FIELD_FORMAT_Datewwyyyymmdd_S:
   case VSD_FIELD_FORMAT_Datewwyyyymd_S:
   case VSD_FIELD_FORMAT_MsoDateShort:
+  case VSD_FIELD_FORMAT_MsoFEExtra1:
+  case VSD_FIELD_FORMAT_MsoFEExtra2:
+  case VSD_FIELD_FORMAT_MsoFEExtra3:
+  case VSD_FIELD_FORMAT_MsoFEExtra4:
+  case VSD_FIELD_FORMAT_MsoFEExtra5:
+    // 40-81, 200, 217-221 Format string: M/d/yyyy Example: 4/19/1982
+    return datetimeToString("%m/%e/%Y", m_number);
   case VSD_FIELD_FORMAT_MsoDateLongDay:
+    // 201 Format string: dddd, MMMM dd, yyyy Example: Monday, April 19, 1982
+    return datetimeToString("%A, %B %d, %Y", m_number);
   case VSD_FIELD_FORMAT_MsoDateLong:
+    // 202 Format string: MMMM d, yyyy Example: April 19, 1982
+    return datetimeToString("%B %e, %Y", m_number);
   case VSD_FIELD_FORMAT_MsoDateShortAlt:
+    // 203 Format string: M/d/yy Example: 4/19/82
+    return datetimeToString("%m/%e/%y", m_number);
   case VSD_FIELD_FORMAT_MsoDateISO:
+    // 204 Format string: yyyy-MM-dd Example: 1982-04-19
+    return datetimeToString("%Y-%m-%d", m_number);
   case VSD_FIELD_FORMAT_MsoDateShortMon:
+    // 205 Format string: d`-MMM-yy Example: 19-Apr-1982
+    return datetimeToString("%e-%b-%y", m_number);
   case VSD_FIELD_FORMAT_MsoDateShortSlash:
+    // 206 Format string: M.d.yyyy Example: 4.19.1982
+    return datetimeToString("%m.%e.%Y", m_number);
   case VSD_FIELD_FORMAT_MsoDateShortAbb:
+    // 207 Format string: MMM.d, yy Example: Apr.19, 82
+    return datetimeToString("%b.%e, %y", m_number);
   case VSD_FIELD_FORMAT_MsoDateEnglish:
+    // 208 Format string: D MMMM yyyy Example: 19 April 1982
+    return datetimeToString("%e %B %Y", m_number);
   case VSD_FIELD_FORMAT_MsoDateMonthYr:
+    // 209 Format string: MMMM yy Example: April 82
+    return datetimeToString("%B %y", m_number);
   case VSD_FIELD_FORMAT_MsoDateMon_Yr:
-    return datetimeToString("%x", m_number);
-  case VSD_FIELD_FORMAT_TimeGen:
-  case VSD_FIELD_FORMAT_TimeHMM:
-  case VSD_FIELD_FORMAT_TimeHHMM:
-  case VSD_FIELD_FORMAT_TimeHMM24:
-  case VSD_FIELD_FORMAT_TimeHHMM24:
-  case VSD_FIELD_FORMAT_TimeHMMAMPM:
-  case VSD_FIELD_FORMAT_TimeHHMMAMPM:
-  case VSD_FIELD_FORMAT_TimeAMPMhmm_J:
-  case VSD_FIELD_FORMAT_TimeAMPMhmm_C:
-  case VSD_FIELD_FORMAT_TimeAMPMhmm_K:
-  case VSD_FIELD_FORMAT_TimeAMPM_hmm_J:
-  case VSD_FIELD_FORMAT_Timehmm_J:
-  case VSD_FIELD_FORMAT_TimeAMPM_hmm_C:
-  case VSD_FIELD_FORMAT_Timehmm_C:
-  case VSD_FIELD_FORMAT_TimeAMPM_hmm_K:
-  case VSD_FIELD_FORMAT_Timehmm_K:
-  case VSD_FIELD_FORMAT_TimeHMMAMPM_E:
-  case VSD_FIELD_FORMAT_TimeHHMMAMPM_E:
-  case VSD_FIELD_FORMAT_TimeAMPMhmm_S:
-  case VSD_FIELD_FORMAT_TimeAMPMhhmm_S:
-  case VSD_FIELD_FORMAT_MsoTimePM:
-  case VSD_FIELD_FORMAT_MsoTimeSecPM:
-  case VSD_FIELD_FORMAT_MsoTime24:
-  case VSD_FIELD_FORMAT_MsoTimeSec24:
-    return datetimeToString("%X", m_number);
+    // 210 Format string: MMM-yy Example: Apr-82
+    return datetimeToString("%b-%y", m_number);
   case VSD_FIELD_FORMAT_MsoTimeDatePM:
+    // 211 Format string: M/d/yyyy h:mm am/pm Example: 4/19/1982 10:02 PM
+    return datetimeToString("%m/%e/%Y %I:%m %p", m_number);
   case VSD_FIELD_FORMAT_MsoTimeDateSecPM:
-    return datetimeToString("%x %X", m_number);
+    // 212 Format string: M/d/yyyy h:mm:ss am/pm Example: 4/19/1982 10:02:02 PM
+    return datetimeToString("%m/%e/%Y %I:%m:%S %p", m_number);
+  case VSD_FIELD_FORMAT_MsoTimePM:
+    // 213 Format string: H:mm am/pm Example: 10:02 PM
+    return datetimeToString("%I:%m %p", m_number);
+  case VSD_FIELD_FORMAT_MsoTimeSecPM:
+    // 214 Format string: h:mm:ss am/pm Example: 10:02:02 PM
+    return datetimeToString("%I:%m:%S %p", m_number);
+  case VSD_FIELD_FORMAT_MsoTime24:
+    // 215 Format string: HH:mm Example: 10:02
+    return datetimeToString("%H:%m", m_number);
+  case VSD_FIELD_FORMAT_MsoTimeSec24:
+    // 216 Format string: HH:mm:ss Example: 10:02:01
+    return datetimeToString("%H:%m:%S", m_number);
   default:
   {
     std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newDoubleProp(m_number)};
