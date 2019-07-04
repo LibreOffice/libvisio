@@ -68,6 +68,33 @@ librevenge::RVNGString libvisio::VSDNumericField::datetimeToString(const char *f
   return result;
 }
 
+// This method is copied from:
+// https://sourceforge.net/p/libwpd/librevenge/ci/master/tree/src/lib/RVNGProperty.cpp#l35
+// to avoid ABI breakage. If upstream file was modified, please update method accordingly.
+static librevenge::RVNGString doubleToString(const double value, const char* format)
+{
+  librevenge::RVNGString tempString;
+  if (value < 0.0001 && value > -0.0001)
+    tempString.sprintf(format, 0.0);
+  else
+    tempString.sprintf(format, value);
+#ifndef __ANDROID__
+  std::string decimalPoint(localeconv()->decimal_point);
+#else
+  std::string decimalPoint(".");
+#endif
+  if ((decimalPoint.size() == 0) || (decimalPoint == "."))
+    return tempString;
+  std::string stringValue(tempString.cstr());
+  if (!stringValue.empty())
+  {
+    std::string::size_type pos;
+    while ((pos = stringValue.find(decimalPoint)) != std::string::npos)
+      stringValue.replace(pos,decimalPoint.size(),".");
+  }
+  return librevenge::RVNGString(stringValue.c_str());
+}
+
 librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, librevenge::RVNGString> &)
 {
   if (m_format == VSD_FIELD_FORMAT_Unknown)
@@ -79,16 +106,7 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   {
     // 0 Format string: 0.#### Example: 30060.9167
     // 1 Format string: 0.#### u Example: 30060.9167 cm
-    //TODO We need to implement number of digits support after decimal separator in librevenge
-    double intpart;
-    // If there is no decimal value, then treat number as Integer
-    if (std::modf(m_number, &intpart) == 0.0)
-    {
-      std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newIntProp(m_number)};
-      return pProp ? pProp->getStr() : librevenge::RVNGString();
-    }
-    std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newDoubleProp(m_number)};
-    return pProp ? pProp->getStr() : librevenge::RVNGString();
+    return doubleToString(m_number, "%.4g");
   }
   case VSD_FIELD_FORMAT_0PlNoUnits:
   case VSD_FIELD_FORMAT_0PlDefUnits:
@@ -98,12 +116,30 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
     std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newIntProp(m_number)};
     return pProp ? pProp->getStr() : librevenge::RVNGString();
   }
-  //TODO VSD_FIELD_FORMAT_1PlNoUnits  4 Format string: 0.0
-  //TODO VSD_FIELD_FORMAT_1PlDefUnits  5 Format string: 0.0 u
-  //TODO VSD_FIELD_FORMAT_2PlNoUnits  6 Format string: 0.00
-  //TODO VSD_FIELD_FORMAT_2PlDefUnits  7 Format string: 0.00 u
-  //TODO VSD_FIELD_FORMAT_3PlNoUnits  8 Format string: 0.000
-  //TODO VSD_FIELD_FORMAT_3PlDefUnits  9 Format string: 0.000 u
+
+  case VSD_FIELD_FORMAT_1PlNoUnits:
+  case VSD_FIELD_FORMAT_1PlDefUnits:
+  {
+    // 2 Format string: 0.0 Example: 30060.9
+    // 3 Format string: 0.0 u Example: 30060.9 cm
+    return doubleToString(m_number, "%.1f");
+  }
+
+  case VSD_FIELD_FORMAT_2PlNoUnits:
+  case VSD_FIELD_FORMAT_2PlDefUnits:
+  {
+    // 2 Format string: 0.00 Example: 30061.92
+    // 3 Format string: 0.00 u Example: 30061.92 cm
+    return doubleToString(m_number, "%.2f");
+  }
+
+  case VSD_FIELD_FORMAT_3PlNoUnits:
+  case VSD_FIELD_FORMAT_3PlDefUnits:
+  {
+    // 2 Format string: 0.000 Example: 30061.916
+    // 3 Format string: 0.000 u Example: 30061.916 cm
+    return doubleToString(m_number, "%.3f");
+  }
   //TODO VSD_FIELD_FORMAT_FeetAndInches  10 Format string: <,FEET/INCH>0.000 u
   //TODO VSD_FIELD_FORMAT_Radians  11 Format string: <,rad>0.#### u
   //TODO VSD_FIELD_FORMAT_Degrees  12 Format string: <,deg>0.# u
