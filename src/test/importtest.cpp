@@ -317,8 +317,14 @@ void ImportTest::testVsdTextBlockWithoutBgColor()
 void ImportTest::testVsdNumericFormat()
 {
   m_doc = parse("tdf76829-numeric-format.vsd", m_buffer);
-  assertXPathContent(m_doc, "/document/page[1]/textObject[1]/paragraph[1]/span/insertText", "Zeichenblatt 1 ");
-  assertXPathContent(m_doc, "/document/page[2]/textObject[1]/paragraph[1]/span/insertText", "Zeichenblatt 2 ");
+  assertXPathContent(m_doc, "/document/page[1]/textObject[1]/paragraph[1]/span/insertText", "Number of lines, generic format: 1");
+  assertXPathContent(m_doc, "/document/page[1]/textObject[2]/paragraph[1]/span/insertText", "Number of lines, Number decimal places:: 1.00");
+  assertXPathContent(m_doc, "/document/page[1]/textObject[4]/paragraph[1]/span/insertText", "Creation date, generic: 07/06/2019");
+  assertXPathContent(m_doc, "/document/page[1]/textObject[6]/paragraph[1]/span/insertText", "Creation date, {{dd.MM.yyyy}}/Polish custom format: 07/06/2019");
+
+  //TODO Add support for custom formatting:
+  //assertXPathContent(m_doc, "/document/page[1]/textObject[3]/paragraph[1]/span/insertText", "Number of lines, percentage format: 100.00%");
+  //assertXPathContent(m_doc, "/document/page[1]/textObject[7]/paragraph[1]/span/insertText", "Creation date, {{dd.MM.yyyy}} German format:: 07.06.2019");
 }
 
 void ImportTest::testVsdDateTimeFormatting()
