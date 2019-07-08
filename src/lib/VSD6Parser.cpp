@@ -392,9 +392,9 @@ void libvisio::VSD6Parser::readTextField(librevenge::RVNGInputStream *input)
     if (blockIdx != 2)
     {
       if (tmpCode == 0x28)
-        formatNumber = 200;
+        formatNumber = VSD_FIELD_FORMAT_MsoDateShort;
       else
-        formatNumber = 0xffff;
+        formatNumber = VSD_FIELD_FORMAT_Unknown;
     }
 
     m_shape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, numericValue, formatStringId);
