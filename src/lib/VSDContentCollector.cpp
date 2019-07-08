@@ -3446,13 +3446,13 @@ void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned le
     if (element)
     {
       element->setValue(number);
-      if (format == 0xffff)
+      if (format == VSD_FIELD_FORMAT_Unknown)
       {
         std::map<unsigned, librevenge::RVNGString>::const_iterator iter = m_names.find(formatStringId);
         if (iter != m_names.end())
           parseFormatId(iter->second.cstr(), format);
       }
-      if (format != 0xffff)
+      if (format != VSD_FIELD_FORMAT_Unknown)
         element->setFormat(format);
 
       m_fields.push_back(element->getString(m_names));
