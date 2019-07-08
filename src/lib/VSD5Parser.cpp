@@ -464,7 +464,7 @@ void libvisio::VSD5Parser::readTextField(librevenge::RVNGInputStream *input)
   else
   {
     double numericValue = readDouble(input);
-    m_shape.m_fields.addNumericField(m_header.id, m_header.level, 0xffff, numericValue, 0xffff);
+    m_shape.m_fields.addNumericField(m_header.id, m_header.level, VSD_FIELD_FORMAT_Unknown, numericValue, 0xffff);
   }
 }
 
