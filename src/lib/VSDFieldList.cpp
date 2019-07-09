@@ -71,13 +71,13 @@ librevenge::RVNGString libvisio::VSDNumericField::datetimeToString(const char *f
 // This method is copied from:
 // https://sourceforge.net/p/libwpd/librevenge/ci/master/tree/src/lib/RVNGProperty.cpp#l35
 // to avoid ABI breakage. If upstream file was modified, please update method accordingly.
-static librevenge::RVNGString doubleToString(const double value, const char* format)
+static librevenge::RVNGString doubleToString(const double value, const char* format, const char* postfix)
 {
   librevenge::RVNGString tempString;
   if (value < 0.0001 && value > -0.0001)
-    tempString.sprintf(format, 0.0);
+    tempString.sprintf(format, 0.0, postfix);
   else
-    tempString.sprintf(format, value);
+    tempString.sprintf(format, value, postfix);
 #ifndef __ANDROID__
   std::string decimalPoint(localeconv()->decimal_point);
 #else
@@ -101,40 +101,64 @@ double convertNumber(const unsigned short unit, const double number)
   {
   case UNIT_Percent:
     return number*100.0;
+  // All elapsed times are stored in days
+  case UNIT_ElapsedDay:
+    return number;
+  case UNIT_ElapsedWeek:
+    return number/7.0;
+  case UNIT_ElapsedHour:
+    return number*24.0;
+  case UNIT_ElapsedMin:
+    return number*24.0*60.0;
+  case UNIT_ElapsedSec:
+    return number*24.0*60.0*60.0;
 
+  // All lenght values are stored in Inches
+  case UNIT_Inches:
+    return number;
   case UNIT_Points:
     return number*72.0;
   case UNIT_Picas:
     return number*6.0;
   case UNIT_Didots:
-    return number*67.37400530504;
+    return number*67.75;
+
   case UNIT_Ciceros:
-    return number*5.62984854;
-  case UNIT_Inches:
-    return number;
+    return number*5.644444444444;
   case UNIT_Feet:
     return number*0.0833333333;
   case UNIT_Centimeters:
     return number*2.54;
   case UNIT_Miles:
-    return number*63360;
+    return number/63360;
   case UNIT_Millimeters:
     return number*25.4;
   case UNIT_Meters:
     return number*0.0254;
   case UNIT_Kilometers:
     return number*0.0000254;
-  default:
+  case UNIT_Yards:
+    return number*0.0277777778;
+  case UNIT_NauticalMiles:
+    return number/72913.386;
+  // All angles values are stored in radians
+  case UNIT_Radians:
     return number;
+  case UNIT_Degrees:
+    return number*57.2957795;
+  default:
+  {
+    VSD_DEBUG_MSG(("TODO Add support for unit number %d\n", unit));
+    return number;
+  }
   }
 }
 
-librevenge::RVNGString getUnitString(const unsigned short unit)
+const char* getUnitString(const unsigned short unit)
 {
   switch (unit)
   {
   case UNIT_Number:
-  case UNIT_Date: // TODO
   case UNIT_String:
   case UNIT_StringWithoutUnit:
   case UNIT_NoCast:
@@ -143,32 +167,52 @@ librevenge::RVNGString getUnitString(const unsigned short unit)
   case UNIT_Percent:
     return "%";
   case UNIT_Acre:
-    return "acres";
+    return " acres";
   case UNIT_Hectare:
-    return "ha";
+    return " ha";
+
+  case UNIT_ElapsedWeek:
+    return " ew.";
+  case UNIT_ElapsedDay:
+    return " ed.";
+  case UNIT_ElapsedHour:
+    return " eh.";
+  case UNIT_ElapsedMin:
+    return " em.";
+  case UNIT_ElapsedSec:
+    return " es.";;
 
   case UNIT_Points:
-    return "pt";
+    return " pt";
   case UNIT_Picas:
-    return "p";
+    return " p";
   case UNIT_Didots:
-    return "d";
+    return " d";
   case UNIT_Ciceros:
-    return "c";
+    return " c";
   case UNIT_Inches:
-    return "in";
+    return " in";
   case UNIT_Feet:
-    return "ft";
+    return " ft";
   case UNIT_Centimeters:
-    return "cm";
+    return " cm";
   case UNIT_Miles:
-    return "mi";
+    return " mi";
   case UNIT_Millimeters:
-    return "mm";
+    return " mm";
   case UNIT_Meters:
-    return "m";
+    return " m";
   case UNIT_Kilometers:
-    return "km";
+    return " km";
+  case UNIT_Yards:
+    return " yd";
+  case UNIT_NauticalMiles:
+    return " nm.";
+
+  case UNIT_Radians:
+    return " rad";
+  case UNIT_Degrees:
+    return " deg";
   default:
     return "";
   }
@@ -181,42 +225,55 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   switch (m_format)
   {
   case VSD_FIELD_FORMAT_NumGenNoUnits:
-  case VSD_FIELD_FORMAT_NumGenDefUnits:
   {
     // 0 Format string: 0.#### Example: 30060.9167
+    return doubleToString(convertNumber(m_unit, m_number), "%.4g%s", "");
+  }
+  case VSD_FIELD_FORMAT_NumGenDefUnits:
+  {
     // 1 Format string: 0.#### u Example: 30060.9167 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.4g");
+    return doubleToString(convertNumber(m_unit, m_number), "%.4g%s", getUnitString(m_unit));
   }
   case VSD_FIELD_FORMAT_0PlNoUnits:
-  case VSD_FIELD_FORMAT_0PlDefUnits:
   {
     // 2 Format string: 0 Example: 30061
-    // 3 Format string: 0 u Example: 30061 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.0f");
+    return doubleToString(convertNumber(m_unit, m_number), "%.0f%s", "");
   }
-
+  case VSD_FIELD_FORMAT_0PlDefUnits:
+  {
+    // 3 Format string: 0 u Example: 30061 cm
+    return doubleToString(convertNumber(m_unit, m_number), "%.0f%s", getUnitString(m_unit));
+  }
   case VSD_FIELD_FORMAT_1PlNoUnits:
-  case VSD_FIELD_FORMAT_1PlDefUnits:
   {
     // 4 Format string: 0.0 Example: 30060.9
-    // 5 Format string: 0.0 u Example: 30060.9 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.1f");
+    return doubleToString(convertNumber(m_unit, m_number), "%.1f%s", "");
   }
-
+  case VSD_FIELD_FORMAT_1PlDefUnits:
+  {
+    // 5 Format string: 0.0 u Example: 30060.9 cm
+    return doubleToString(convertNumber(m_unit, m_number), "%.1f%s", getUnitString(m_unit));
+  }
   case VSD_FIELD_FORMAT_2PlNoUnits:
-  case VSD_FIELD_FORMAT_2PlDefUnits:
   {
     // 6 Format string: 0.00 Example: 30061.92
+    return doubleToString(convertNumber(m_unit, m_number), "%.2f%s", "");
+  }
+  case VSD_FIELD_FORMAT_2PlDefUnits:
+  {
     // 7 Format string: 0.00 u Example: 30061.92 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.2f");
+    return doubleToString(convertNumber(m_unit, m_number), "%.2f%s", getUnitString(m_unit));
   }
 
   case VSD_FIELD_FORMAT_3PlNoUnits:
-  case VSD_FIELD_FORMAT_3PlDefUnits:
   {
     // 8 Format string: 0.000 Example: 30061.916
+    return doubleToString(convertNumber(m_unit, m_number), "%.3f%s", "");
+  }
+  case VSD_FIELD_FORMAT_3PlDefUnits:
+  {
     // 9 Format string: 0.000 u Example: 30061.916 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.3f");
+    return doubleToString(convertNumber(m_unit, m_number), "%.3f%s", getUnitString(m_unit));
   }
   //TODO VSD_FIELD_FORMAT_FeetAndInches  10 Format string: <,FEET/INCH>0.000 u
   //TODO VSD_FIELD_FORMAT_Radians  11 Format string: <,rad>0.#### u
