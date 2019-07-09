@@ -44,12 +44,12 @@ void libvisio::VSDTextField::setNameId(int nameId)
 
 void libvisio::VSDNumericField::handle(VSDCollector *collector) const
 {
-  collector->collectNumericField(m_id, m_level, m_format, m_number, m_formatStringId);
+  collector->collectNumericField(m_id, m_level, m_format, m_unit, m_number, m_formatStringId);
 }
 
 libvisio::VSDFieldListElement *libvisio::VSDNumericField::clone()
 {
-  return new VSDNumericField(m_id, m_level, m_format, m_number, m_formatStringId);
+  return new VSDNumericField(m_id, m_level, m_format, m_unit, m_number, m_formatStringId);
 }
 
 #define MAX_BUFFER 1024
@@ -95,6 +95,85 @@ static librevenge::RVNGString doubleToString(const double value, const char* for
   return librevenge::RVNGString(stringValue.c_str());
 }
 
+double convertNumber(const unsigned short unit, const double number)
+{
+  switch (unit)
+  {
+  case UNIT_Percent:
+    return number*100.0;
+
+  case UNIT_Points:
+    return number*72.0;
+  case UNIT_Picas:
+    return number*6.0;
+  case UNIT_Didots:
+    return number*67.37400530504;
+  case UNIT_Ciceros:
+    return number*5.62984854;
+  case UNIT_Inches:
+    return number;
+  case UNIT_Feet:
+    return number*0.0833333333;
+  case UNIT_Centimeters:
+    return number*2.54;
+  case UNIT_Miles:
+    return number*63360;
+  case UNIT_Millimeters:
+    return number*25.4;
+  case UNIT_Meters:
+    return number*0.0254;
+  case UNIT_Kilometers:
+    return number*0.0000254;
+  default:
+    return number;
+  }
+}
+
+librevenge::RVNGString getUnitString(const unsigned short unit)
+{
+  switch (unit)
+  {
+  case UNIT_Number:
+  case UNIT_Date: // TODO
+  case UNIT_String:
+  case UNIT_StringWithoutUnit:
+  case UNIT_NoCast:
+  case UNIT_Invalid:
+    return "";
+  case UNIT_Percent:
+    return "%";
+  case UNIT_Acre:
+    return "acres";
+  case UNIT_Hectare:
+    return "ha";
+
+  case UNIT_Points:
+    return "pt";
+  case UNIT_Picas:
+    return "p";
+  case UNIT_Didots:
+    return "d";
+  case UNIT_Ciceros:
+    return "c";
+  case UNIT_Inches:
+    return "in";
+  case UNIT_Feet:
+    return "ft";
+  case UNIT_Centimeters:
+    return "cm";
+  case UNIT_Miles:
+    return "mi";
+  case UNIT_Millimeters:
+    return "mm";
+  case UNIT_Meters:
+    return "m";
+  case UNIT_Kilometers:
+    return "km";
+  default:
+    return "";
+  }
+}
+
 librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, librevenge::RVNGString> &)
 {
   if (m_format == VSD_FIELD_FORMAT_Unknown)
@@ -106,15 +185,14 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   {
     // 0 Format string: 0.#### Example: 30060.9167
     // 1 Format string: 0.#### u Example: 30060.9167 cm
-    return doubleToString(m_number, "%.4g");
+    return doubleToString(convertNumber(m_unit, m_number), "%.4g");
   }
   case VSD_FIELD_FORMAT_0PlNoUnits:
   case VSD_FIELD_FORMAT_0PlDefUnits:
   {
     // 2 Format string: 0 Example: 30061
     // 3 Format string: 0 u Example: 30061 cm
-    std::unique_ptr<librevenge::RVNGProperty> pProp{librevenge::RVNGPropertyFactory::newIntProp(m_number)};
-    return pProp ? pProp->getStr() : librevenge::RVNGString();
+    return doubleToString(convertNumber(m_unit, m_number), "%.0f");
   }
 
   case VSD_FIELD_FORMAT_1PlNoUnits:
@@ -122,7 +200,7 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   {
     // 4 Format string: 0.0 Example: 30060.9
     // 5 Format string: 0.0 u Example: 30060.9 cm
-    return doubleToString(m_number, "%.1f");
+    return doubleToString(convertNumber(m_unit, m_number), "%.1f");
   }
 
   case VSD_FIELD_FORMAT_2PlNoUnits:
@@ -130,7 +208,7 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   {
     // 6 Format string: 0.00 Example: 30061.92
     // 7 Format string: 0.00 u Example: 30061.92 cm
-    return doubleToString(m_number, "%.2f");
+    return doubleToString(convertNumber(m_unit, m_number), "%.2f");
   }
 
   case VSD_FIELD_FORMAT_3PlNoUnits:
@@ -138,7 +216,7 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
   {
     // 8 Format string: 0.000 Example: 30061.916
     // 9 Format string: 0.000 u Example: 30061.916 cm
-    return doubleToString(m_number, "%.3f");
+    return doubleToString(convertNumber(m_unit, m_number), "%.3f");
   }
   //TODO VSD_FIELD_FORMAT_FeetAndInches  10 Format string: <,FEET/INCH>0.000 u
   //TODO VSD_FIELD_FORMAT_Radians  11 Format string: <,rad>0.#### u
@@ -301,6 +379,12 @@ void libvisio::VSDNumericField::setFormat(unsigned short format)
 {
   m_format = format;
 }
+
+void libvisio::VSDNumericField::setUnit(unsigned short unit)
+{
+  m_unit = unit;
+}
+
 void libvisio::VSDNumericField::setValue(double number)
 {
   m_number = number;
@@ -362,10 +446,10 @@ void libvisio::VSDFieldList::addTextField(unsigned id, unsigned level, int nameI
     m_elements[id] = make_unique<VSDTextField>(id, level, nameId, formatStringId);
 }
 
-void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, double number, int formatStringId)
+void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, unsigned short unit, double number, int formatStringId)
 {
   if (m_elements.find(id) == m_elements.end())
-    m_elements[id] = make_unique<VSDNumericField>(id, level, format, number, formatStringId);
+    m_elements[id] = make_unique<VSDNumericField>(id, level, format, unit, number, formatStringId);
 }
 
 void libvisio::VSDFieldList::handle(VSDCollector *collector) const

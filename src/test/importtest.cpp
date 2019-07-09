@@ -153,7 +153,7 @@ xmlDocPtr parse(const char *filename, xmlBufferPtr buffer)
   xmlTextWriterEndDocument(writer);
   xmlFreeTextWriter(writer);
 
-  //std::cerr << "XML is '" << (const char *)xmlBufferContent(buffer) << "'" << std::endl;
+  std::cerr << "XML is '" << (const char *)xmlBufferContent(buffer) << "'" << std::endl;
   return xmlParseMemory((const char *)xmlBufferContent(buffer), xmlBufferLength(buffer));
 }
 
@@ -178,6 +178,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdTextBlockWithoutBgColor);
   CPPUNIT_TEST(testVsdNumericFormat);
   CPPUNIT_TEST(testVsdDateTimeFormatting);
+  CPPUNIT_TEST(testVsd11TextfieldsWithUnits);
   CPPUNIT_TEST(testBmpFileHeader);
   CPPUNIT_TEST(testBmpFileHeader2);
   CPPUNIT_TEST_SUITE_END();
@@ -192,6 +193,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdTextBlockWithoutBgColor();
   void testVsdNumericFormat();
   void testVsdDateTimeFormatting();
+  void testVsd11TextfieldsWithUnits();
   void testBmpFileHeader();
   void testBmpFileHeader2();
 
@@ -330,6 +332,13 @@ void ImportTest::testVsdNumericFormat()
 void ImportTest::testVsdDateTimeFormatting()
 {
   m_doc = parse("tdf76829-datetime-format.vsd", m_buffer);
+  assertXPathContent(m_doc, "/document/page/textObject/paragraph/span/insertText", "11/30/2005");
+}
+
+// tdf#126292
+void ImportTest::testVsd11TextfieldsWithUnits()
+{
+  m_doc = parse("Visio11TextFieldsWithUnits.vsd", m_buffer);
   assertXPathContent(m_doc, "/document/page/textObject/paragraph/span/insertText", "11/30/2005");
 }
 

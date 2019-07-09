@@ -408,7 +408,7 @@ void libvisio::VSDStylesCollector::collectTextField(unsigned /* id */, unsigned 
   _handleLevelChange(level);
 }
 
-void libvisio::VSDStylesCollector::collectNumericField(unsigned /* id */, unsigned level, unsigned short /* format */, double /* number */, int /* formatStringId */)
+void libvisio::VSDStylesCollector::collectNumericField(unsigned /* id */, unsigned level, unsigned short /* format */,  unsigned short /* unit */, double /* number */, int /* formatStringId */)
 {
   _handleLevelChange(level);
 }

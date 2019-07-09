@@ -126,6 +126,57 @@
 #define VSD_FONTFACE 0xd7
 #define VSD_FONTFACES 0xd8
 
+// Unit conversions:
+#define UNIT_Number             32
+#define UNIT_Percent            33
+#define UNIT_Acre               36
+#define UNIT_Hectare            37
+#define UNIT_Date               40
+#define UNIT_DurationUnits      42
+#define UNIT_ElapsedWeek        43
+#define UNIT_ElapsedDay         44
+#define UNIT_ElapsedHour        45
+#define UNIT_ElapsedMin         46
+#define UNIT_ElapsedSec         47
+#define UNIT_TypeUnits          48
+#define UNIT_PicasAndPoints     49
+#define UNIT_Points             50
+#define UNIT_Picas              51
+#define UNIT_CicerosAndDidots   52
+#define UNIT_Didots             53
+#define UNIT_Ciceros            54
+#define UNIT_PageUnits          63
+#define UNIT_DrawingUnits       64
+#define UNIT_Inches             65
+#define UNIT_Feet               66
+#define UNIT_FeetAndInches      67
+#define UNIT_Centimeters        69
+#define UNIT_Miles              68
+#define UNIT_Millimeters        70
+#define UNIT_Meters             71
+#define UNIT_Kilometers         72
+#define UNIT_InchFractions      73
+#define UNIT_MileFractions      74
+#define UNIT_Yards              75
+#define UNIT_NauticalMiles      76
+#define UNIT_AngleUnits         80
+#define UNIT_Degrees            81
+#define UNIT_DegreeMinuteSecond 82
+#define UNIT_Radians            83
+#define UNIT_Minutes            84
+#define UNIT_Sec                85
+#define UNIT_GUID               95
+#define UNIT_Currency          111
+#define UNIT_NURBS             138
+#define UNIT_Polyline          139
+#define UNIT_Point             225
+#define UNIT_String            231
+#define UNIT_StringWithoutUnit 232
+#define UNIT_Multidimensional  233 // like Acre, square meters, sq. inches, hectare, sq. yards
+#define UNIT_Color             251
+#define UNIT_NoCast            252 // No unit conversion
+#define UNIT_Invalid           255
+
 // Field formats
 
 #define VSD_FIELD_FORMAT_NumGenNoUnits  0
