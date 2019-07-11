@@ -3436,7 +3436,7 @@ void libvisio::VSDContentCollector::collectTextField(unsigned id, unsigned level
   }
 }
 
-void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned level, unsigned short format, unsigned short unit, double number, int formatStringId)
+void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned level, unsigned short format, unsigned short cellType, double number, int formatStringId)
 {
   _handleLevelChange(level);
   VSDFieldListElement *pElement = m_stencilFields.getElement(m_fields.size());
@@ -3446,7 +3446,7 @@ void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned le
     if (element)
     {
       element->setValue(number);
-      element->setUnit(unit);
+      element->setCellType(cellType);
       if (format == VSD_FIELD_FORMAT_Unknown)
       {
         std::map<unsigned, librevenge::RVNGString>::const_iterator iter = m_names.find(formatStringId);
@@ -3461,7 +3461,7 @@ void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned le
   }
   else
   {
-    VSDNumericField tmpField(id, level, format, unit, number, formatStringId);
+    VSDNumericField tmpField(id, level, format, cellType, number, formatStringId);
     m_fields.push_back(tmpField.getString(m_names));
   }
 }

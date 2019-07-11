@@ -2172,8 +2172,8 @@ void libvisio::VSDParser::readTextField(librevenge::RVNGInputStream *input)
 {
   unsigned long initialPosition = input->tell();
   input->seek(7, librevenge::RVNG_SEEK_CUR);
-  unsigned char unit = readU8(input);
-  if (unit == UNIT_StringWithoutUnit)
+  unsigned char cellType = readU8(input);
+  if (cellType == CELL_TYPE_StringWithoutUnit)
   {
     int nameId = readS32(input);
     input->seek(6, librevenge::RVNG_SEEK_CUR);
@@ -2227,13 +2227,13 @@ void libvisio::VSDParser::readTextField(librevenge::RVNGInputStream *input)
 
     if (blockIdx != 2)
     {
-      if (unit == UNIT_Date)
+      if (cellType == CELL_TYPE_Date)
         formatNumber = VSD_FIELD_FORMAT_MsoDateShort;
       else
         formatNumber = VSD_FIELD_FORMAT_Unknown;
     }
 
-    m_shape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, unit, numericValue, formatStringId);
+    m_shape.m_fields.addNumericField(m_header.id, m_header.level, formatNumber, cellType, numericValue, formatStringId);
   }
 }
 

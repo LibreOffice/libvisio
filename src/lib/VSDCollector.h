@@ -150,7 +150,7 @@ public:
   // Field list
   virtual void collectFieldList(unsigned id, unsigned level) = 0;
   virtual void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId) = 0;
-  virtual void collectNumericField(unsigned id, unsigned level, unsigned short format, unsigned short unit, double number, int formatStringId) = 0;
+  virtual void collectNumericField(unsigned id, unsigned level, unsigned short format, unsigned short cellType, double number, int formatStringId) = 0;
 
   // Metadata
   virtual void collectMetaData(const librevenge::RVNGPropertyList &metaData) = 0;
