@@ -170,7 +170,7 @@ public:
   // Field list
   void collectFieldList(unsigned id, unsigned level) override;
   void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId) override;
-  void collectNumericField(unsigned id, unsigned level, unsigned short format, unsigned short unit, double number, int formatStringId) override;
+  void collectNumericField(unsigned id, unsigned level, unsigned short format, unsigned short cellType, double number, int formatStringId) override;
 
   void startPage(unsigned pageId) override;
   void endPage() override;

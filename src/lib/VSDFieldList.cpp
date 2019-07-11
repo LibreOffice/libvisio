@@ -44,12 +44,12 @@ void libvisio::VSDTextField::setNameId(int nameId)
 
 void libvisio::VSDNumericField::handle(VSDCollector *collector) const
 {
-  collector->collectNumericField(m_id, m_level, m_format, m_unit, m_number, m_formatStringId);
+  collector->collectNumericField(m_id, m_level, m_format, m_cell_type, m_number, m_formatStringId);
 }
 
 libvisio::VSDFieldListElement *libvisio::VSDNumericField::clone()
 {
-  return new VSDNumericField(m_id, m_level, m_format, m_unit, m_number, m_formatStringId);
+  return new VSDNumericField(m_id, m_level, m_format, m_cell_type, m_number, m_formatStringId);
 }
 
 #define MAX_BUFFER 1024
@@ -71,13 +71,13 @@ librevenge::RVNGString libvisio::VSDNumericField::datetimeToString(const char *f
 // This method is copied from:
 // https://sourceforge.net/p/libwpd/librevenge/ci/master/tree/src/lib/RVNGProperty.cpp#l35
 // to avoid ABI breakage. If upstream file was modified, please update method accordingly.
-static librevenge::RVNGString doubleToString(const double value, const char* format)
+static librevenge::RVNGString doubleToString(const double value, const char* format, const char* postfix)
 {
   librevenge::RVNGString tempString;
   if (value < 0.0001 && value > -0.0001)
-    tempString.sprintf(format, 0.0);
+    tempString.sprintf(format, 0.0, postfix);
   else
-    tempString.sprintf(format, value);
+    tempString.sprintf(format, value, postfix);
 #ifndef __ANDROID__
   std::string decimalPoint(localeconv()->decimal_point);
 #else
@@ -95,80 +95,124 @@ static librevenge::RVNGString doubleToString(const double value, const char* for
   return librevenge::RVNGString(stringValue.c_str());
 }
 
-double convertNumber(const unsigned short unit, const double number)
+double convertNumber(const unsigned short cellType, const double number)
 {
-  switch (unit)
+  switch (cellType)
   {
-  case UNIT_Percent:
+  case CELL_TYPE_Percent:
     return number*100.0;
+  // All elapsed times are stored in days
+  case CELL_TYPE_ElapsedDay:
+    return number;
+  case CELL_TYPE_ElapsedWeek:
+    return number/7.0;
+  case CELL_TYPE_ElapsedHour:
+    return number*24.0;
+  case CELL_TYPE_ElapsedMin:
+    return number*24.0*60.0;
+  case CELL_TYPE_ElapsedSec:
+    return number*24.0*60.0*60.0;
 
-  case UNIT_Points:
+  // All lenght values are stored in Inches
+  case CELL_TYPE_Inches:
+    return number;
+  case CELL_TYPE_Points:
     return number*72.0;
-  case UNIT_Picas:
+  case CELL_TYPE_Picas:
     return number*6.0;
-  case UNIT_Didots:
-    return number*67.37400530504;
-  case UNIT_Ciceros:
-    return number*5.62984854;
-  case UNIT_Inches:
-    return number;
-  case UNIT_Feet:
+  case CELL_TYPE_Didots:
+    return number*67.75;
+
+  case CELL_TYPE_Ciceros:
+    return number*5.644444444444;
+  case CELL_TYPE_Feet:
     return number*0.0833333333;
-  case UNIT_Centimeters:
+  case CELL_TYPE_Centimeters:
     return number*2.54;
-  case UNIT_Miles:
-    return number*63360;
-  case UNIT_Millimeters:
+  case CELL_TYPE_Miles:
+    return number/63360;
+  case CELL_TYPE_Millimeters:
     return number*25.4;
-  case UNIT_Meters:
+  case CELL_TYPE_Meters:
     return number*0.0254;
-  case UNIT_Kilometers:
+  case CELL_TYPE_Kilometers:
     return number*0.0000254;
-  default:
+  case CELL_TYPE_Yards:
+    return number*0.0277777778;
+  case CELL_TYPE_NauticalMiles:
+    return number/72913.386;
+  // All angles values are stored in radians
+  case CELL_TYPE_Radians:
     return number;
+  case CELL_TYPE_Degrees:
+    return number*57.2957795;
+  default:
+  {
+    VSD_DEBUG_MSG(("TODO Add support for cell type %d\n", cellType));
+    return number;
+  }
   }
 }
 
-librevenge::RVNGString getUnitString(const unsigned short unit)
+const char* getUnitString(const unsigned short cellType)
 {
-  switch (unit)
+  switch (cellType)
   {
-  case UNIT_Number:
-  case UNIT_Date: // TODO
-  case UNIT_String:
-  case UNIT_StringWithoutUnit:
-  case UNIT_NoCast:
-  case UNIT_Invalid:
+  case CELL_TYPE_Number:
+  case CELL_TYPE_String:
+  case CELL_TYPE_StringWithoutUnit:
+  case CELL_TYPE_NoCast:
+  case CELL_TYPE_Invalid:
     return "";
-  case UNIT_Percent:
+  case CELL_TYPE_Percent:
     return "%";
-  case UNIT_Acre:
-    return "acres";
-  case UNIT_Hectare:
-    return "ha";
+  case CELL_TYPE_Acre:
+    return " acres";
+  case CELL_TYPE_Hectare:
+    return " ha";
 
-  case UNIT_Points:
-    return "pt";
-  case UNIT_Picas:
-    return "p";
-  case UNIT_Didots:
-    return "d";
-  case UNIT_Ciceros:
-    return "c";
-  case UNIT_Inches:
-    return "in";
-  case UNIT_Feet:
-    return "ft";
-  case UNIT_Centimeters:
-    return "cm";
-  case UNIT_Miles:
-    return "mi";
-  case UNIT_Millimeters:
-    return "mm";
-  case UNIT_Meters:
-    return "m";
-  case UNIT_Kilometers:
-    return "km";
+  case CELL_TYPE_ElapsedWeek:
+    return " ew.";
+  case CELL_TYPE_ElapsedDay:
+    return " ed.";
+  case CELL_TYPE_ElapsedHour:
+    return " eh.";
+  case CELL_TYPE_ElapsedMin:
+    return " em.";
+  case CELL_TYPE_ElapsedSec:
+    return " es.";;
+
+  case CELL_TYPE_Points:
+    return " pt";
+  case CELL_TYPE_Picas:
+    return " p";
+  case CELL_TYPE_Didots:
+    return " d";
+  case CELL_TYPE_Ciceros:
+    return " c";
+  case CELL_TYPE_Inches:
+    return " in";
+  case CELL_TYPE_Feet:
+    return " ft";
+  case CELL_TYPE_Centimeters:
+    return " cm";
+  case CELL_TYPE_Miles:
+    return " mi";
+  case CELL_TYPE_Millimeters:
+    return " mm";
+  case CELL_TYPE_Meters:
+    return " m";
+  case CELL_TYPE_Kilometers:
+    return " km";
+  case CELL_TYPE_Yards:
+    return " yd";
+  case CELL_TYPE_NauticalMiles:
+    return " nm.";
+
+  case CELL_TYPE_Radians:
+    return " rad";
+  case CELL_TYPE_Degrees:
+    return " deg";
   default:
     return "";
   }
@@ -176,47 +220,62 @@ librevenge::RVNGString getUnitString(const unsigned short unit)
 
 librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, librevenge::RVNGString> &)
 {
+  // Augmented BNF for Syntax Specifications: ABNF
+  // http://www.rfc-editor.org/rfc/rfc5234.txt
   if (m_format == VSD_FIELD_FORMAT_Unknown)
     return librevenge::RVNGString();
   switch (m_format)
   {
   case VSD_FIELD_FORMAT_NumGenNoUnits:
-  case VSD_FIELD_FORMAT_NumGenDefUnits:
   {
     // 0 Format string: 0.#### Example: 30060.9167
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.4g%s", "");
+  }
+  case VSD_FIELD_FORMAT_NumGenDefUnits:
+  {
     // 1 Format string: 0.#### u Example: 30060.9167 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.4g");
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.4g%s", getUnitString(m_cell_type));
   }
   case VSD_FIELD_FORMAT_0PlNoUnits:
-  case VSD_FIELD_FORMAT_0PlDefUnits:
   {
     // 2 Format string: 0 Example: 30061
-    // 3 Format string: 0 u Example: 30061 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.0f");
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.0f%s", "");
   }
-
+  case VSD_FIELD_FORMAT_0PlDefUnits:
+  {
+    // 3 Format string: 0 u Example: 30061 cm
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.0f%s", getUnitString(m_cell_type));
+  }
   case VSD_FIELD_FORMAT_1PlNoUnits:
-  case VSD_FIELD_FORMAT_1PlDefUnits:
   {
     // 4 Format string: 0.0 Example: 30060.9
-    // 5 Format string: 0.0 u Example: 30060.9 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.1f");
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.1f%s", "");
   }
-
+  case VSD_FIELD_FORMAT_1PlDefUnits:
+  {
+    // 5 Format string: 0.0 u Example: 30060.9 cm
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.1f%s", getUnitString(m_cell_type));
+  }
   case VSD_FIELD_FORMAT_2PlNoUnits:
-  case VSD_FIELD_FORMAT_2PlDefUnits:
   {
     // 6 Format string: 0.00 Example: 30061.92
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.2f%s", "");
+  }
+  case VSD_FIELD_FORMAT_2PlDefUnits:
+  {
     // 7 Format string: 0.00 u Example: 30061.92 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.2f");
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.2f%s", getUnitString(m_cell_type));
   }
 
   case VSD_FIELD_FORMAT_3PlNoUnits:
-  case VSD_FIELD_FORMAT_3PlDefUnits:
   {
     // 8 Format string: 0.000 Example: 30061.916
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.3f%s", "");
+  }
+  case VSD_FIELD_FORMAT_3PlDefUnits:
+  {
     // 9 Format string: 0.000 u Example: 30061.916 cm
-    return doubleToString(convertNumber(m_unit, m_number), "%.3f");
+    return doubleToString(convertNumber(m_cell_type, m_number), "%.3f%s", getUnitString(m_cell_type));
   }
   //TODO VSD_FIELD_FORMAT_FeetAndInches  10 Format string: <,FEET/INCH>0.000 u
   //TODO VSD_FIELD_FORMAT_Radians  11 Format string: <,rad>0.#### u
@@ -380,9 +439,9 @@ void libvisio::VSDNumericField::setFormat(unsigned short format)
   m_format = format;
 }
 
-void libvisio::VSDNumericField::setUnit(unsigned short unit)
+void libvisio::VSDNumericField::setCellType(unsigned short cellType)
 {
-  m_unit = unit;
+  m_cell_type = cellType;
 }
 
 void libvisio::VSDNumericField::setValue(double number)
@@ -446,10 +505,10 @@ void libvisio::VSDFieldList::addTextField(unsigned id, unsigned level, int nameI
     m_elements[id] = make_unique<VSDTextField>(id, level, nameId, formatStringId);
 }
 
-void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, unsigned short unit, double number, int formatStringId)
+void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, unsigned short cellType, double number, int formatStringId)
 {
   if (m_elements.find(id) == m_elements.end())
-    m_elements[id] = make_unique<VSDNumericField>(id, level, format, unit, number, formatStringId);
+    m_elements[id] = make_unique<VSDNumericField>(id, level, format, cellType, number, formatStringId);
 }
 
 void libvisio::VSDFieldList::handle(VSDCollector *collector) const
