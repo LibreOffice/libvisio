@@ -157,15 +157,17 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned
     return "0 0 20 10";
   case 8:
     return "0 0 20 18";
-  case 3:
+  case 3: // Short line Arrow
+    return "0 0 3000 3000";
   case 4:
   case 5:
   case 6:
-  case 11:
   case 16:
   case 17:
   case 18:
     return "0 0 20 20";
+  case 11: // Centered square filled
+    return "0 0 10 10";
   case 12:
   case 13:
   case 14:
@@ -173,8 +175,8 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned
   case 22:
   case 39:
     return "0 0 20 40";
-  case 21:
-    return "0 0 30 30";
+  case 21: // Centered square unfilled
+    return "0 0 300 300";
   case 10:
     return "0 0 1131 1131";
   default:
@@ -184,50 +186,108 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned
 
 const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned marker)
 {
+  // Information how to draw path
+  // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/d
+
+  /*
+  SVG defines 6 types of path commands, for a total of 20 commands:
+
+  MoveTo: M, m
+  LineTo: L, l, H, h, V, v
+  Cubic Bézier Curve: C, c, S, s
+  Quadratic Bézier Curve: Q, q, T, t
+  Elliptical Arc Curve: A, a
+  ClosePath: Z, z
+  */
   switch (marker)
   {
-  case 1:
-    return "m10 -4l-14 14l4 4l10 -10l10 10l4 -4z";
-  case 2:
+  case 1: // TODO
+    return "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z";
+  case 2: //
     return "m10 0-10 10h20z";
-  case 3:
-    return "m10 -8l-14 28l6 3l8 -16l8 16l6 -3z";
-  case 4:
+  case 3: // Short line arrow, Copied from LO
+    return "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z";
+  case 4: // Filled equilateral triangle
     return "m10 0-10 20h20z";
-  case 5:
+  case 5: // Arrow concave
     return "m10 0-10 20q10,-5 20,0z";
-  case 6:
+  case 6: //
     return "m10 0-10 20q10,5 20,0z";
-  case 8:
+  case 7: // TODO
     return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
-  case 9:
-    return "m-2 -8l4 -4l20 20l-4 4z";
-  case 10: // Copied from what LO exports when using the "circle" marker
-    return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";
-  case 11:
-    return "m0 0v10h10v-10z";
-  case 12:
-    return "m10 -12l-14 42l9 3l5 -15l5 15l9 -3z";
+  case 8: // filled arrow
+    return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
+  case 9:  // Centered line
+    return "M1 2l1 -1l20 20l-1 1zM11 11v12h1v-10z";//
+  case 10: // Centered Filled circle
+  case 42: // Filled circle, Copied from LO
+    return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";//
+  case 11: // Centered square filled, Copied from LO
+    return "M0 0h10v10h-10z";
+  case 12: // TODO
+    return "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z";
   case 13:
     return "m10 0-10 30h20z";
   case 14:
     return "m10 0-10 30h20z m0 12l-5 15h10z";
   case 15:
-    return "m10 0-10 10h20z m0 3l-5 5h10z";
+    return "m10 0-10 10h20z m0 1l-8 8h16z";
   case 16:
     return "m10 0-10 20h20z m0 7l-5 10h10z";
   case 17:
     return "m10 0-10 20q10,-5 20,0z m0 7l-4 8q4,-2 8,0z";
   case 18:
     return "m10 0-10 20q10,5 20,0z m0 7l-5 10q5,2 10,0z";
-  case 21:
-    return "m0 0v30h30v-30z m10 10v10h10v-10z";
-  case 22:
-    return "m10 0-10 20l10 20l10 -20z m0 8l-6 12l6 12l6 -12z";
-  case 39:
-    return "m10 0-10 20h20z m0 20-10 20h20z";
-  default:
-    return "m10 0-10 30h20z";
+  case 19: // TODO
+    return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
+  case 20: // Centered unfilled circle,
+  case 41: // unfilled circle, Copied from LO
+    return "M1500 3000c-276 0-511-63-750-201s-411-310-549-549-201-474-201-750 63-511 201-750 310-411 549-549 474-201 750-201 511 63 750 201 411 310 549 549 201 474 201 750-63 511-201 750-310 411-549 549-474 201-750 201zM1500 2800c-239 0-443-55-650-174s-356-269-476-476-174-411-174-650 55-443 174-650 269-356 476-476c207-119 411-174 650-174s443 55 650 174c207 120 356 269 476 476s174 411 174 650-55 443-174 650-269 356-476 476c-207 119-411 174-650 174z";
+  case 21: // Centered unfilled square, Copied from LO
+    return "M0 0h300v300h-300zM20 20h260v260h-260z";
+  case 22: // Unfilled diamond, Copied from LO
+    return "M1500 0l1500 3000-1500 3000-1500-3000zM1500 447l-1276 2553 1276 2553 1276-2553z";
+  case 23:
+    return "M1 32l1 1l19 -19l-1 -1zM11 0v33h1v-33z";
+  case 24: // CF One, Copied from LO
+    return "M0 0h1v-40h-2v40zM1 0h-20v-2h20zM-1 0h20v-2h-20z";
+  case 25: // CF Only One, Copied from LO
+    return "M0 0h1v-40h-2v40zM1 0h-20v-2h20zM-1 0h20v-2h-20zM1-18h-20v-2h20zM-1-18h20v-2h-20z";
+  case 26: // TODO CF Only One with three lines
+    return "M0 0h1v-40h-2v40zM1 0h-20v-2h20zM-1 0h20v-2h-20zM1-18h-20v-2h20zM-1-18h20v-2h-20z";
+  case 27: // CF Many, Copied from LO
+    return "M1500 0l1500-2789v-211h-114l-1286 2392v-2392h-200v2392l-1286-2392h-114v211z";
+  case 28: // CF Many One, Copied from LO
+    return "M1500 3200h1500v-200h-3000v200zM1500 3000l1500-2789v-211h-114l-1286 2392v-2392h-200v2392l-1286-2392h-114v211z";
+  case 29: // CF Zero Many, Copied from LO
+    return "M-1500 0c0-276 63-511 201-749 138-240 310-411 549-550 239-138 474-201 750-201s511 63 750 201c239 139 411 310 549 549 138 240 201 474 201 750 0 277-63 511-201 750-138 240-310 411-549 550-239 138-474 201-750 201s-511-63-750-201c-239-139-411-310-549-549s-201-474-201-750zM-1350 0c0-248 57-459 181-674 124-216 279-370 494-495 215-124 426-181 675-181s460 57 675 181c215 125 370 279 494 494 124 216 181 427 181 675 0 249-57 460-181 675-124 216-279 370-494 495-215 124-426 181-675 181s-460-57-675-181c-215-125-370-279-494-494-124-216-181-427-181-675zM0-1500l1500-2789v-211h-114l-1286 2392v-2392h-200v2392l-1286-2392h-114v211z";
+  case 30: // CF Zero One, Copied from LO
+    return "M100 4300c0-276 63-511 201-749 138-240 310-411 549-550 239-138 474-201 750-201s511 63 750 201c239 139 411 310 549 549 138 240 201 474 201 750 0 277-63 511-201 750-138 240-310 411-549 550-239 138-474 201-750 201s-511-63-750-201c-239-139-411-310-549-549s-201-474-201-750zM250 4300c0-248 57-459 181-674 124-216 279-370 494-495 215-124 426-181 675-181s460 57 675 181c215 125 370 279 494 494 124 216 181 427 181 675 0 249-57 460-181 675-124 216-279 370-494 495-215 124-426 181-675 181s-460-57-675-181c-215-125-370-279-494-494-124-216-181-427-181-675zM1600 2800h100v-2800h-200v2800zM1700 1400v100h1500v-200h-1500zM1500 1400v100h-1500v-200h1500z";
+  case 31: // TODO unfilled circle and line
+  case 32: // TODO unfilled circle and two lines
+  case 33: // TODO unfilled circle and three lines
+    return "M1500 3000c-276 0-511-63-750-201s-411-310-549-549-201-474-201-750 63-511 201-750 310-411 549-549 474-201 750-201 511 63 750 201 411 310 549 549 201 474 201 750-63 511-201 750-310 411-549 549-474 201-750 201zM1500 2800c-239 0-443-55-650-174s-356-269-476-476-174-411-174-650 55-443 174-650 269-356 476-476c207-119 411-174 650-174s443 55 650 174c207 120 356 269 476 476s174 411 174 650-55 443-174 650-269 356-476 476c-207 119-411 174-650 174z";
+  case 34: // TODO unfilled circle and diamond
+    return "M1500 3000c-276 0-511-63-750-201s-411-310-549-549-201-474-201-750 63-511 201-750 310-411 549-549 474-201 750-201 511 63 750 201 411 310 549 549 201 474 201 750-63 511-201 750-310 411-549 549-474 201-750 201zM1500 2800c-239 0-443-55-650-174s-356-269-476-476-174-411-174-650 55-443 174-650 269-356 476-476c207-119 411-174 650-174s443 55 650 174c207 120 356 269 476 476s174 411 174 650-55 443-174 650-269 356-476 476c-207 119-411 174-650 174z";
+  case 35: // TODO Filled circle with line,
+  case 36: // TODO Filled circle with two lines,
+  case 37: // TODO Filled circle with three lines,
+    return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";//
+  case 38: // TODO Filled circle with diamond,
+    return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";//
+  case 39: // double filled equilateral triangle arrow, Copied from LO
+    return "M737 1131h394l-564-1131-567 1131h398l-398 787h1131z";
+  case 40: // TODO double unfilled equilateral triangle arrow
+    return "M737 1131h394l-564-1131-567 1131h398l-398 787h1131z";
+  case 43: // TODO double Short line arrow
+    return "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z";
+  case 44: // TODO Short line arrow with line
+    return "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z";
+  case 45: // TODO double Short line arrow with line
+    return "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z";
+
+  default: // default arrow
+    return "m10 0-10 30h20z";//
   }
 }
 
@@ -2902,7 +2962,9 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, l
   switch (style.cap)
   {
   case 0:
+    // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-linecap
     styleProps.insert("svg:stroke-linecap", "round");
+    // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-linejoin
     styleProps.insert("svg:stroke-linejoin", "round");
     break;
   case 2:
@@ -2919,6 +2981,8 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, l
   if (style.startMarker > 0)
   {
     styleProps.insert("draw:marker-start-viewbox", _linePropertiesMarkerViewbox(style.startMarker));
+    if ((style.startMarker == 9) || (style.startMarker == 10) || (style.startMarker == 11) || (style.startMarker == 20) || (style.startMarker == 21))
+      styleProps.insert("draw:marker-start-center", "true");
     styleProps.insert("draw:marker-start-path", _linePropertiesMarkerPath(style.startMarker));
     double w =  m_scale*_linePropertiesMarkerScale(style.startMarker)*(0.1/(style.width*style.width+1)+2.54*style.width);
     styleProps.insert("draw:marker-start-width", (std::max)(w, 0.05));
@@ -2926,6 +2990,8 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, l
   if (style.endMarker > 0)
   {
     styleProps.insert("draw:marker-end-viewbox", _linePropertiesMarkerViewbox(style.endMarker));
+    if ((style.endMarker == 9) || (style.endMarker == 10) || (style.endMarker == 11) || (style.endMarker == 20) || (style.endMarker == 21))
+      styleProps.insert("draw:marker-end-center", "true");
     styleProps.insert("draw:marker-end-path", _linePropertiesMarkerPath(style.endMarker));
     double w =  m_scale*_linePropertiesMarkerScale(style.endMarker)*(0.1/(style.width*style.width+1)+2.54*style.width);
     styleProps.insert("draw:marker-end-width", (std::max)(w, 0.05));
