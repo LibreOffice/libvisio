@@ -39,6 +39,7 @@ xmlXPathObjectPtr getXPathNode(xmlDocPtr doc, const librevenge::RVNGString &xpat
 /// Same as the assertXPath(), but don't assert: return the string instead.
 librevenge::RVNGString getXPath(xmlDocPtr doc, const librevenge::RVNGString &xpath, const librevenge::RVNGString &attribute)
 {
+  CPPUNIT_ASSERT(doc);
   xmlXPathObjectPtr xpathobject = getXPathNode(doc, xpath);
   xmlNodeSetPtr nodeset = xpathobject->nodesetval;
 
@@ -113,18 +114,45 @@ void assertBmpDataOffset(xmlDocPtr doc, const librevenge::RVNGString &xpath, con
 /// Same as the assertXPathContent(), but don't assert: return the string instead.
 librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath)
 {
-  xmlXPathObjectPtr xpathObject = getXPathNode(doc, xpath);
-  xmlNodeSetPtr nodeset = xpathObject->nodesetval;
+  xmlXPathObjectPtr xpathobject = getXPathNode(doc, xpath);
+  switch (xpathobject->type)
+  {
+      case XPATH_UNDEFINED:
+          CPPUNIT_FAIL("Undefined XPath type");
+      case XPATH_NODESET:
+      {
+          xmlNodeSetPtr nodeset = xpathobject->nodesetval;
 
-  librevenge::RVNGString message("XPath '");
-  message.append(xpath);
-  message.append("': not found.");
-  CPPUNIT_ASSERT_MESSAGE(message.cstr(), xmlXPathNodeSetGetLength(nodeset) > 0);
+          librevenge::RVNGString message("XPath '");
+          message.append(xpath);
+          message.append("': not found.");
+          CPPUNIT_ASSERT_MESSAGE(message.cstr(), xmlXPathNodeSetGetLength(nodeset) > 0);
 
-  xmlNodePtr node = nodeset->nodeTab[0];
-  librevenge::RVNGString s(reinterpret_cast<char *>((node->children[0]).content));
-  xmlXPathFreeObject(xpathObject);
-  return s;
+          xmlNodePtr xmlnode = nodeset->nodeTab[0];
+          xmlNodePtr xmlchild = xmlnode->children;
+          librevenge::RVNGString s;
+          while (xmlchild && xmlchild->type != XML_TEXT_NODE)
+              xmlchild = xmlchild->next;
+          if (xmlchild && xmlchild->type == XML_TEXT_NODE)
+              s = (reinterpret_cast<char *>((xmlnode->children[0]).content));
+          xmlXPathFreeObject(xpathobject);
+          return s;
+      }
+      case XPATH_BOOLEAN:
+          return xpathobject->boolval ? librevenge::RVNGString("true") : librevenge::RVNGString("false");
+      case XPATH_STRING:
+          return librevenge::RVNGString(reinterpret_cast<char *>(xpathobject->stringval));
+      case XPATH_NUMBER:
+      case XPATH_POINT:
+      case XPATH_RANGE:
+      case XPATH_LOCATIONSET:
+      case XPATH_USERS:
+      case XPATH_XSLT_TREE:
+          CPPUNIT_FAIL("Unsupported XPath type");
+  }
+
+  CPPUNIT_FAIL("Invalid XPath type");
+
 }
 /// Assert that xpath exists, and its content equals to content.
 void assertXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath, const librevenge::RVNGString &content)
@@ -153,7 +181,7 @@ xmlDocPtr parse(const char *filename, xmlBufferPtr buffer)
   xmlTextWriterEndDocument(writer);
   xmlFreeTextWriter(writer);
 
-  // std::cerr << "XML is '" << (const char *)xmlBufferContent(buffer) << "'" << std::endl;
+  //std::cerr << "XML is '" << (const char *)xmlBufferContent(buffer) << "'" << std::endl;
   return xmlParseMemory((const char *)xmlBufferContent(buffer), xmlBufferLength(buffer));
 }
 
@@ -178,6 +206,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdTextBlockWithoutBgColor);
   CPPUNIT_TEST(testVsdNumericFormat);
   CPPUNIT_TEST(testVsdDateTimeFormatting);
+  CPPUNIT_TEST(testVsd11FormatLine);
   CPPUNIT_TEST(testVsd6TextfieldsWithUnits);
   CPPUNIT_TEST(testVsd11TextfieldsWithUnits);
   CPPUNIT_TEST(testBmpFileHeader);
@@ -193,6 +222,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxCharBgColor();
   void testVsdTextBlockWithoutBgColor();
   void testVsdNumericFormat();
+  void testVsd11FormatLine();
   void testVsdDateTimeFormatting();
   void testVsd6TextfieldsWithUnits();
   void testVsd11TextfieldsWithUnits();
@@ -336,6 +366,32 @@ void ImportTest::testVsdDateTimeFormatting()
   m_doc = parse("tdf76829-datetime-format.vsd", m_buffer);
   assertXPathContent(m_doc, "/document/page/textObject/paragraph/span/insertText", "11/30/2005");
 }
+
+
+// tdf#126402
+void ImportTest::testVsd11FormatLine()
+{
+  m_doc = parse("Visio11FormatLine.vsd", m_buffer);
+  assertXPathNoAttribute(m_doc, "/document/page/setStyle[4]", "marker-end-center");
+
+  // Centered filled circle, copied from LO to be able to edit
+  assertXPath(m_doc, "/document/page/setStyle[5]", "marker-end-path",
+              "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z");
+  assertXPath(m_doc, "/document/page/setStyle[5]", "marker-end-center", "true");
+  // Centered line
+  assertXPath(m_doc, "/document/page/setStyle[5]", "marker-start-path", "M1 2l1 -1l20 20l-1 1zM11 11v12h1v-10z");
+  assertXPath(m_doc, "/document/page/setStyle[5]", "marker-start-center", "true");
+
+  assertXPath(m_doc, "/document/page/setStyle[6]", "marker-end-path",
+              "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z");
+  assertXPathNoAttribute(m_doc, "/document/page/setStyle[6]", "marker-end-center");
+  assertXPath(m_doc, "/document/page/setStyle[6]", "marker-start-center", "true");
+  assertXPathNoAttribute(m_doc, "/document/page/setStyle[11]", "marker-start-center");
+  assertXPath(m_doc, "/document/page/setStyle[11]", "marker-end-center", "true");
+  assertXPathNoAttribute(m_doc, "/document/page/setStyle[12]", "marker-end-center");
+  assertXPath(m_doc, "/document/page/setStyle[12]", "marker-start-center", "true");
+}
+
 
 // tdf#126292
 void ImportTest::testVsd6TextfieldsWithUnits()
