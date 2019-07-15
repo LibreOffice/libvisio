@@ -479,6 +479,10 @@ void libvisio::VDXParser::readMisc(xmlTextReaderPtr reader)
     tokenType = xmlTextReaderNodeType(reader);
     switch (tokenId)
     {
+    case XML_OBJTYPE:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readByteData(m_shape.m_misc.m_objType, reader);
+      break;
     case XML_HIDETEXT:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readBoolData(m_shape.m_misc.m_hideText, reader);

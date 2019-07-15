@@ -2954,7 +2954,15 @@ void libvisio::VSDContentCollector::_lineProperties(const VSDLineStyle &style, l
   const Colour *pColour = m_currentLayerList.getColour(m_currentLayerMem);
   if (pColour)
     colour = *pColour;
-  styleProps.insert("svg:stroke-color", getColourString(colour));
+  if (m_misc.m_objType == 2) {
+    // mark all connectors with blue color
+    styleProps.insert("svg:stroke-color", "#11aaff");
+  }
+  else
+  {
+    styleProps.insert("svg:stroke-color", getColourString(colour));
+  }
+
   if (style.colour.a)
     styleProps.insert("svg:stroke-opacity", (1 - style.colour.a/255.0), librevenge::RVNG_PERCENT);
   else
