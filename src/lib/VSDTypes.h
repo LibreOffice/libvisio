@@ -210,8 +210,9 @@ struct VSDFont
 struct VSDMisc
 {
   bool m_hideText;
-  VSDMisc() : m_hideText(false) {}
-  VSDMisc(const VSDMisc &misc) : m_hideText(misc.m_hideText) {}
+  unsigned char m_objType;
+  VSDMisc() : m_hideText(false), m_objType(0) {}
+  VSDMisc(const VSDMisc &misc) : m_hideText(misc.m_hideText), m_objType(0) {}
 };
 
 struct VSDTabStop
