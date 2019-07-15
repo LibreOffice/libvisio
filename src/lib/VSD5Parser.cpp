@@ -493,6 +493,9 @@ void libvisio::VSD5Parser::readMisc(librevenge::RVNGInputStream *input)
     m_shape.m_misc.m_hideText = true;
   else
     m_shape.m_misc.m_hideText = false;
+
+  input->seek(5, librevenge::RVNG_SEEK_CUR);
+  m_shape.m_misc.m_objType = readU8(input);
 }
 
 void libvisio::VSD5Parser::readXForm1D(librevenge::RVNGInputStream *input)
