@@ -2247,6 +2247,15 @@ void libvisio::VSDParser::readMisc(librevenge::RVNGInputStream *input)
   else
     m_shape.m_misc.m_hideText = false;
 
+  input->seek(initialPosition+6, librevenge::RVNG_SEEK_SET);
+  m_shape.m_misc.m_objType = readU8(input);
+  unsigned tmp = readU8(input);
+  unsigned tmp2 = readU8(input);
+
+  unsigned tmp3 = readU8(input);
+  unsigned tmp4 = readU8(input);
+  VSD_DEBUG_MSG(("VSDParser::readMisc Bako %02x\n", m_shape.m_misc.m_objType));
+  VSD_DEBUG_MSG(("VSDParser::readMisc Bako %02x %02x %02x %02x\n", tmp, tmp2, tmp3, tmp4));
   input->seek(initialPosition+45, librevenge::RVNG_SEEK_SET);
   while (!input->isEnd() && (unsigned long) input->tell() < (unsigned long)(initialPosition+m_header.dataLength+m_header.trailer))
   {
