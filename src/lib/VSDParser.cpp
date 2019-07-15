@@ -2247,6 +2247,8 @@ void libvisio::VSDParser::readMisc(librevenge::RVNGInputStream *input)
   else
     m_shape.m_misc.m_hideText = false;
 
+  input->seek(initialPosition+6, librevenge::RVNG_SEEK_SET);
+  m_shape.m_misc.m_objType = readU8(input);
   input->seek(initialPosition+45, librevenge::RVNG_SEEK_SET);
   while (!input->isEnd() && (unsigned long) input->tell() < (unsigned long)(initialPosition+m_header.dataLength+m_header.trailer))
   {

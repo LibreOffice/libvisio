@@ -169,6 +169,7 @@ NoFill
 NoLine
 NoShow
 NURBSTo
+ObjType
 ORYA
 Overline
 Page
