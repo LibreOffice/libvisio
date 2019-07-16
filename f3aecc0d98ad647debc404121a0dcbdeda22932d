@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bf659307_d62f3ff4",
+        "filename": "src/lib/VSDContentCollector.cpp",
+        "patchSetId": 3
+      },
+      "lineNbr": 2898,
+      "author": {
+        "id": 1001339
+      },
+      "writtenOn": "2019-07-16T12:11:19Z",
+      "side": 1,
+      "message": "To make sure that I have identified connectors properly, I have changed it\u0027s colour to blue.",
+      "revId": "f3aecc0d98ad647debc404121a0dcbdeda22932d",
+      "serverId": "6622c302-437a-49ad-a91d-55ba7dcf1615",
+      "unresolved": false
+    }
+  ]
+}
