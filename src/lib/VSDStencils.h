@@ -37,7 +37,7 @@ public:
   VSDShapeList m_shapeList;
   VSDFieldList m_fields;
   std::unique_ptr<ForeignData> m_foreign;
-  unsigned m_parent, m_masterPage, m_masterShape, m_shapeId;
+  unsigned m_parent, m_masterPage, m_masterShape, m_shapeId, m_type;
   unsigned m_lineStyleId, m_fillStyleId, m_textStyleId;
   VSDOptionalLineStyle m_lineStyle;
   VSDOptionalFillStyle m_fillStyle;

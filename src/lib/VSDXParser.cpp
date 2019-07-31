@@ -436,22 +436,41 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_SHAPE:
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
+      const xmlChar *name = xmlTextReaderConstName(reader);
       readShape(reader);
-      if (!xmlTextReaderIsEmptyElement(reader))
+
+      if ((m_shape.m_type == 1)) {
+        VSD_DEBUG_MSG((" BAKO XML_SHAPE start %d %s\n", m_shape.m_type, name ? (const char *)name : "") );
+
+          while (xmlTextReaderMoveToNextAttribute(reader))
+          {
+            const xmlChar *name1 = xmlTextReaderConstName(reader);
+            const xmlChar *value1 = xmlTextReaderConstValue(reader);
+            fprintf(stderr, " %s=\"%s\"", name1, value1);
+          }
+      }
+      if (!xmlTextReaderIsEmptyElement(reader)) {
         readShapeProperties(reader);
+      }
       else
       {
         if (m_isStencilStarted && m_currentStencil)
           m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
         else
+        {
           _flushShape();
+        }
         m_shape.clear();
         if (m_shapeStack.empty())
           m_isShapeStarted = false;
       }
+
+      VSD_DEBUG_MSG((" BAKO XML_SHAPE start4 %d %s\n", m_shape.m_type, name ? (const char *)name : "") );
     }
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
+      //if ((m_shape.m_type == 1) && m_collector)
+      //  m_collector->endShapeGroup();
       if (m_isStencilStarted && m_currentStencil)
         m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
       else
@@ -499,15 +518,14 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
 #ifdef DEBUG
   const xmlChar *name = xmlTextReaderConstName(reader);
   const xmlChar *value = xmlTextReaderConstValue(reader);
-  int type = xmlTextReaderNodeType(reader);
   int isEmptyElement = xmlTextReaderIsEmptyElement(reader);
 
   for (int i=0; i<getElementDepth(reader); ++i)
   {
     VSD_DEBUG_MSG((" "));
   }
-  VSD_DEBUG_MSG(("%i %i %s", isEmptyElement, type, name ? (const char *)name : ""));
-  if (xmlTextReaderNodeType(reader) == 1)
+  VSD_DEBUG_MSG(("%i %i %s", isEmptyElement, tokenType, name ? (const char *)name : ""));
+  //if (tokenType == XML_READER_TYPE_ELEMENT)
   {
     while (xmlTextReaderMoveToNextAttribute(reader))
     {
