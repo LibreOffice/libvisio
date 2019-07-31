@@ -129,6 +129,7 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType((unsigned)-1),
   m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
   m_noLine(false), m_noFill(false), m_noShow(false), m_fonts(),
+  m_type(0),
   m_currentLevel(0), m_isShapeStarted(false),
   m_groupXFormsSequence(groupXFormsSequence), m_groupMembershipsSequence(groupMembershipsSequence),
   m_groupMemberships(m_groupMembershipsSequence.begin()),
@@ -331,8 +332,8 @@ void libvisio::VSDContentCollector::_flushShape()
       numTextElements++;
     }
   }
-
-  if (numPathElements+numForeignElements+numTextElements > 1)
+  VSD_DEBUG_MSG((" BAKO VSDContentCollector::_flushShape %d\n", m_type) );
+  if (numPathElements+numForeignElements+numTextElements > 1 )//|| ((m_type == 1) && m_isShapeStarted))
   {
     librevenge::RVNGPropertyList propList;
     if (shapeId && shapeId != MINUS_ONE)
@@ -372,6 +373,26 @@ void libvisio::VSDContentCollector::_flushShape()
   }
 
   m_isShapeStarted = false;
+}
+
+void libvisio::VSDContentCollector::startShapeGroup()
+{
+  unsigned shapeId = m_currentShapeId;
+  librevenge::RVNGPropertyList propList;
+  if (shapeId && shapeId != MINUS_ONE)
+  {
+    librevenge::RVNGString stringId;
+    stringId.sprintf("id%u", shapeId);
+    propList.insert("draw:id", stringId);
+    shapeId = MINUS_ONE;
+  }
+  //m_shapeOutputDrawing->addStartLayer(propList);
+  m_isShapeStarted = false;
+}
+
+void libvisio::VSDContentCollector::endShapeGroup()
+{
+  m_shapeOutputDrawing->addEndLayer();
 }
 
 void libvisio::VSDContentCollector::_flushCurrentPath(unsigned shapeId)
@@ -2581,8 +2602,9 @@ void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned leve
   m_isBackgroundPage = isBackgroundPage;
 }
 
-void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, unsigned /*parent*/, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
+void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, unsigned /*parent*/, unsigned masterPage, unsigned masterShape, unsigned type, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
 {
+  m_type = type;
   _handleLevelChange(level);
   m_currentShapeLevel = level;
 
@@ -2626,6 +2648,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
 
   // Get stencil shape
   m_stencilShape = m_stencils.getStencilShape(masterPage, masterShape);
+
   // Initialize the shape from stencil content
   m_lineStyle = VSDLineStyle();
   m_fillStyle = VSDFillStyle();

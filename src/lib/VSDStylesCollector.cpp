@@ -233,7 +233,7 @@ void libvisio::VSDStylesCollector::collectPage(unsigned /* id */, unsigned level
 }
 
 void libvisio::VSDStylesCollector::collectShape(unsigned id, unsigned level, unsigned parent, unsigned /*masterPage*/, unsigned /*masterShape*/,
-                                                unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
+                                                unsigned /* type */, unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
 {
   _handleLevelChange(level);
   m_currentShapeLevel = level;
@@ -411,6 +411,15 @@ void libvisio::VSDStylesCollector::collectTextField(unsigned /* id */, unsigned 
 void libvisio::VSDStylesCollector::collectNumericField(unsigned /* id */, unsigned level, unsigned short /* format */,  unsigned short /* cellType */, double /* number */, int /* formatStringId */)
 {
   _handleLevelChange(level);
+}
+
+
+void libvisio::VSDStylesCollector::startShapeGroup()
+{
+}
+
+void libvisio::VSDStylesCollector::endShapeGroup()
+{
 }
 
 void libvisio::VSDStylesCollector::startPage(unsigned /* pageId */)
