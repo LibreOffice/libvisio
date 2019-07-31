@@ -637,7 +637,7 @@ void libvisio::VSDParser::_flushShape()
   if (!m_isShapeStarted)
     return;
 
-  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
+  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_type, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
 
   m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
 
