@@ -79,7 +79,7 @@ public:
   void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height) override;
   void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale) override;
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage, const VSDName &pageName) override;
-  void collectShape(unsigned id, unsigned level, unsigned parent, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) override;
+  void collectShape(unsigned id, unsigned level, unsigned parent, unsigned masterPage, unsigned masterShape, unsigned type, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) override;
   void collectSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree) override;
   void collectSplineKnot(unsigned id, unsigned level, double x, double y, double knot) override;
   void collectSplineEnd() override;
@@ -172,6 +172,9 @@ public:
   void collectTextField(unsigned id, unsigned level, int nameId, int formatStringId) override;
   void collectNumericField(unsigned id, unsigned level, unsigned short format, unsigned short cellType, double number, int formatStringId) override;
 
+  void startShapeGroup() override;
+  void endShapeGroup() override;
+
   void startPage(unsigned pageId) override;
   void endPage() override;
   void endPages() override;
@@ -261,6 +264,7 @@ private:
   bool m_noLine;
   bool m_noFill;
   bool m_noShow;
+  bool m_type;
   std::map<unsigned short, VSDFont> m_fonts;
   unsigned m_currentLevel;
   bool m_isShapeStarted;

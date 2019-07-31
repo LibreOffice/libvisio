@@ -437,14 +437,24 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
       readShape(reader);
-      if (!xmlTextReaderIsEmptyElement(reader))
+
+      if ((m_shape.m_type == 1) && m_isShapeStarted && m_collector)
+        m_collector->startShapeGroup();
+      VSD_DEBUG_MSG((" BAKO XML_SHAPE start %d\n", m_shape.m_type) );
+      if (!xmlTextReaderIsEmptyElement(reader)) {
         readShapeProperties(reader);
+      }
       else
       {
         if (m_isStencilStarted && m_currentStencil)
           m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
         else
+        {
+          //VSD_DEBUG_MSG((" BAKO XML_SHAPE 2 start %d\n", m_shape.m_type) );
+          //if ((m_shape.m_type == 1) && m_isShapeStarted && m_collector)
+          //  m_collector->startShapeGroup();
           _flushShape();
+        }
         m_shape.clear();
         if (m_shapeStack.empty())
           m_isShapeStarted = false;
@@ -452,6 +462,9 @@ void libvisio::VSDXParser::processXmlNode(xmlTextReaderPtr reader)
     }
     else if (XML_READER_TYPE_END_ELEMENT == tokenType)
     {
+      VSD_DEBUG_MSG((" BAKO XML_SHAPE end %d\n", m_shape.m_type) );
+      if ((m_shape.m_type == 1) && m_collector)
+        m_collector->endShapeGroup();
       if (m_isStencilStarted && m_currentStencil)
         m_currentStencil->addStencilShape(m_shape.m_shapeId, m_shape);
       else

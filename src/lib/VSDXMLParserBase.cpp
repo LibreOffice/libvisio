@@ -938,6 +938,7 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   const shared_ptr<xmlChar> lineStyleString(xmlTextReaderGetAttribute(reader, BAD_CAST("LineStyle")), xmlFree);
   const shared_ptr<xmlChar> fillStyleString(xmlTextReaderGetAttribute(reader, BAD_CAST("FillStyle")), xmlFree);
   const shared_ptr<xmlChar> textStyleString(xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle")), xmlFree);
+  const shared_ptr<xmlChar> typeString(xmlTextReaderGetAttribute(reader, BAD_CAST("Type")), xmlFree);
 
   unsigned id = idString ? (unsigned)xmlStringToLong(idString) : MINUS_ONE;
   unsigned masterPage = masterPageString ? (unsigned)xmlStringToLong(masterPageString) : MINUS_ONE;
@@ -953,6 +954,15 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   }
 
   m_shape.clear();
+  if (typeString)
+  {
+
+    if (xmlStrEqual(typeString.get(), BAD_CAST("Shape")))
+      m_shape.m_type = 0;
+    else if (xmlStrEqual(typeString.get(), BAD_CAST("Group")))
+      m_shape.m_type = 1;
+  }
+
   m_shape.m_textFormat = VSD_TEXT_UTF8;
 
   if (m_isStencilStarted && m_currentStencil)
@@ -1747,7 +1757,9 @@ void libvisio::VSDXMLParserBase::_flushShape()
   if (!m_isShapeStarted)
     return;
 
-  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
+
+    VSD_DEBUG_MSG((" BAKO libvisio::VSDXMLParserBase::_flushShape() %d\n", m_shape.m_type) );
+  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_type, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
 
   m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
 
