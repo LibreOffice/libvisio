@@ -84,7 +84,7 @@ bool libvisio::VSDXTheme::parse(librevenge::RVNGInputStream *input)
     return false;
 
   const shared_ptr<xmlTextReader> reader(
-    xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET),
+    xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NONET),
     xmlFreeTextReader);
   if (!reader)
     return false;

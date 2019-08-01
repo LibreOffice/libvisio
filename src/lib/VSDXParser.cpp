@@ -305,7 +305,7 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
   XMLErrorWatcher watcher;
 
   const std::shared_ptr<xmlTextReader> reader(
-    xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NOENT|XML_PARSE_NONET, &watcher),
+    xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NONET, &watcher),
     xmlFreeTextReader);
   if (!reader)
     return;
