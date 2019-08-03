@@ -22,6 +22,13 @@ const VSDName &VSDName::operator=(const VSDName &name)
   return *this;
 }
 
+const VSDMisc &VSDMisc::operator=(const VSDMisc &misc)
+{
+  if (this != &misc)
+    m_hideText = misc.m_hideText;
+  return *this;
+}
+
 } // namespace libvisio
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

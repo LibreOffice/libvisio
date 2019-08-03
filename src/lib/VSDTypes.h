@@ -213,6 +213,7 @@ struct VSDMisc
   bool m_hideText;
   VSDMisc() : m_hideText(false) {}
   VSDMisc(const VSDMisc &misc) : m_hideText(misc.m_hideText) {}
+  const VSDMisc &operator=(const VSDMisc &misc);
 };
 
 struct VSDTabStop
