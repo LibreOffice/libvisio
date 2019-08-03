@@ -65,6 +65,7 @@ libvisio_internal_la_SOURCES = \
 	VSDStyles.h \
 	VSDStylesCollector.cpp \
 	VSDStylesCollector.h \
+	VSDTypes.cpp \
 	VSDTypes.h \
 	VSDXMLHelper.cpp \
 	VSDXMLHelper.h \

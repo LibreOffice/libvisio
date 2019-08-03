@@ -183,6 +183,7 @@ public:
       m_format(format) {}
   VSDName() : m_data(), m_format(VSD_TEXT_ANSI) {}
   VSDName(const VSDName &name) : m_data(name.m_data), m_format(name.m_format) {}
+  const VSDName &operator=(const VSDName &name);
   bool empty() const
   {
     return !m_data.size();
