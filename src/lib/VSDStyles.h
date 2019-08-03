@@ -77,6 +77,7 @@ struct VSDLineStyle
     rounding(style.rounding), qsLineColour(style.qsLineColour),
     qsLineMatrix(style.qsLineMatrix) {}
   ~VSDLineStyle() {}
+  const VSDLineStyle &operator=(const VSDLineStyle &style);
   void override(const VSDOptionalLineStyle &style, const VSDXTheme *theme)
   {
     ASSIGN_OPTIONAL(style.width, width);

@@ -70,6 +70,23 @@ const VSDOptionalLineStyle &VSDOptionalLineStyle::operator=(const VSDOptionalLin
   return *this;
 }
 
+const VSDLineStyle &VSDLineStyle::operator=(const VSDLineStyle &style)
+{
+  if (this != &style)
+  {
+    width = style.width;
+    colour = style.colour;
+    pattern = style.pattern;
+    startMarker = style.startMarker;
+    endMarker = style.endMarker;
+    cap = style.cap;
+    rounding = style.rounding;
+    qsLineColour = style.qsLineColour;
+    qsLineMatrix = style.qsLineMatrix;
+  }
+  return *this;
+}
+
 }
 
 libvisio::VSDStyles::VSDStyles() :
