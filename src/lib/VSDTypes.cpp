@@ -48,6 +48,18 @@ const VSDMisc &VSDMisc::operator=(const VSDMisc &misc)
   return *this;
 }
 
+const VSDBullet &VSDBullet::operator=(const VSDBullet &bullet)
+{
+  if (this != &bullet)
+  {
+    m_bulletStr = bullet.m_bulletStr;
+    m_bulletFont = bullet.m_bulletFont;
+    m_bulletFontSize = bullet.m_bulletFontSize;
+    m_textPosAfterBullet = bullet.m_textPosAfterBullet;
+  }
+  return *this;
+}
+
 } // namespace libvisio
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

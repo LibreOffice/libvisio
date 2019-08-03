@@ -252,6 +252,7 @@ struct VSDBullet
     m_bulletFont(bullet.m_bulletFont),
     m_bulletFontSize(bullet.m_bulletFontSize),
     m_textPosAfterBullet(bullet.m_textPosAfterBullet) {}
+  const VSDBullet &operator=(const VSDBullet &bullet);
   inline bool operator==(const VSDBullet &bullet) const
   {
     return ((m_bulletStr == bullet.m_bulletStr) &&
