@@ -312,6 +312,7 @@ struct VSDCharStyle
     smallcaps(style.smallcaps), superscript(style.superscript),
     subscript(style.subscript), scaleWidth(style.scaleWidth) {}
   ~VSDCharStyle() {}
+  const VSDCharStyle &operator=(const VSDCharStyle &style);
   void override(const VSDOptionalCharStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.font, font);
