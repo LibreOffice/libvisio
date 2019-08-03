@@ -250,6 +250,7 @@ struct VSDOptionalCharStyle
     allcaps(style.allcaps), initcaps(style.initcaps), smallcaps(style.smallcaps),
     superscript(style.superscript), subscript(style.subscript), scaleWidth(style.scaleWidth) {}
   ~VSDOptionalCharStyle() {}
+  const VSDOptionalCharStyle &operator=(const VSDOptionalCharStyle &style);
   void override(const VSDOptionalCharStyle &style)
   {
     ASSIGN_OPTIONAL(style.font, font);

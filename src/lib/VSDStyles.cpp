@@ -107,6 +107,30 @@ const VSDFillStyle &VSDFillStyle::operator=(const VSDFillStyle &style)
   return *this;
 }
 
+const VSDOptionalCharStyle &VSDOptionalCharStyle::operator=(const VSDOptionalCharStyle &style)
+{
+  if (this != &style)
+  {
+    charCount = style.charCount;
+    font = style.font;
+    colour = style.colour;
+    size = style.size;
+    bold = style.bold;
+    italic = style.italic;
+    underline = style.underline;
+    doubleunderline = style.doubleunderline;
+    strikeout = style.strikeout;
+    doublestrikeout = style.doublestrikeout;
+    allcaps = style.allcaps;
+    initcaps = style.initcaps;
+    smallcaps = style.smallcaps;
+    superscript = style.superscript;
+    subscript = style.subscript;
+    scaleWidth = style.scaleWidth;
+  }
+  return *this;
+}
+
 }
 
 libvisio::VSDStyles::VSDStyles() :
