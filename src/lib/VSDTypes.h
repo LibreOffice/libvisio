@@ -117,6 +117,7 @@ struct NURBSData
       knots(data.knots),
       weights(data.weights),
       points(data.points) {}
+  const NURBSData &operator=(const NURBSData &data);
 };
 
 struct PolylineData

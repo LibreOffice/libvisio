@@ -31,6 +31,21 @@ const XForm &XForm::operator=(const XForm &xform)
   return *this;
 }
 
+const NURBSData &NURBSData::operator=(const NURBSData &data)
+{
+  if (this != &data)
+  {
+    lastKnot = data.lastKnot;
+    degree = data.degree;
+    xType = data.xType;
+    yType = data.yType;
+    knots = data.knots;
+    weights = data.weights;
+    points = data.points;
+  }
+  return *this;
+}
+
 const VSDName &VSDName::operator=(const VSDName &name)
 {
   if (this != &name)

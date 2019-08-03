@@ -37,6 +37,7 @@ struct VSDOptionalLineStyle
     endMarker(style.endMarker), cap(style.cap), rounding(style.rounding), qsLineColour(style.qsLineColour),
     qsLineMatrix(style.qsLineMatrix) {}
   ~VSDOptionalLineStyle() {}
+  const VSDOptionalLineStyle &operator=(const VSDOptionalLineStyle &style);
   void override(const VSDOptionalLineStyle &style)
   {
     ASSIGN_OPTIONAL(style.width, width);
