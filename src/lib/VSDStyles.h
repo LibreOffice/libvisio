@@ -180,6 +180,7 @@ struct VSDFillStyle
     qsFillColour(style.qsFillColour), qsShadowColour(style.qsShadowColour),
     qsFillMatrix(style.qsFillMatrix) {}
   ~VSDFillStyle() {}
+  const VSDFillStyle &operator=(const VSDFillStyle &style);
   void override(const VSDOptionalFillStyle &style, const VSDXTheme *theme)
   {
     ASSIGN_OPTIONAL(style.pattern, pattern);
