@@ -71,7 +71,7 @@ librevenge::RVNGString libvisio::VSDNumericField::datetimeToString(const char *f
 // This method is copied from:
 // https://sourceforge.net/p/libwpd/librevenge/ci/master/tree/src/lib/RVNGProperty.cpp#l35
 // to avoid ABI breakage. If upstream file was modified, please update method accordingly.
-static librevenge::RVNGString doubleToString(const double value, const char* format, const char* postfix)
+static librevenge::RVNGString doubleToString(const double value, const char *format, const char *postfix)
 {
   librevenge::RVNGString tempString;
   if (value < 0.0001 && value > -0.0001)
@@ -154,7 +154,7 @@ double convertNumber(const unsigned short cellType, const double number)
   }
 }
 
-const char* getUnitString(const unsigned short cellType)
+const char *getUnitString(const unsigned short cellType)
 {
   switch (cellType)
   {

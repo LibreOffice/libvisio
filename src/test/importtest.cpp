@@ -117,38 +117,38 @@ librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGStri
   xmlXPathObjectPtr xpathobject = getXPathNode(doc, xpath);
   switch (xpathobject->type)
   {
-      case XPATH_UNDEFINED:
-          CPPUNIT_FAIL("Undefined XPath type");
-      case XPATH_NODESET:
-      {
-          xmlNodeSetPtr nodeset = xpathobject->nodesetval;
+  case XPATH_UNDEFINED:
+    CPPUNIT_FAIL("Undefined XPath type");
+  case XPATH_NODESET:
+  {
+    xmlNodeSetPtr nodeset = xpathobject->nodesetval;
 
-          librevenge::RVNGString message("XPath '");
-          message.append(xpath);
-          message.append("': not found.");
-          CPPUNIT_ASSERT_MESSAGE(message.cstr(), xmlXPathNodeSetGetLength(nodeset) > 0);
+    librevenge::RVNGString message("XPath '");
+    message.append(xpath);
+    message.append("': not found.");
+    CPPUNIT_ASSERT_MESSAGE(message.cstr(), xmlXPathNodeSetGetLength(nodeset) > 0);
 
-          xmlNodePtr xmlnode = nodeset->nodeTab[0];
-          xmlNodePtr xmlchild = xmlnode->children;
-          librevenge::RVNGString s;
-          while (xmlchild && xmlchild->type != XML_TEXT_NODE)
-              xmlchild = xmlchild->next;
-          if (xmlchild && xmlchild->type == XML_TEXT_NODE)
-              s = (reinterpret_cast<char *>((xmlnode->children[0]).content));
-          xmlXPathFreeObject(xpathobject);
-          return s;
-      }
-      case XPATH_BOOLEAN:
-          return xpathobject->boolval ? librevenge::RVNGString("true") : librevenge::RVNGString("false");
-      case XPATH_STRING:
-          return librevenge::RVNGString(reinterpret_cast<char *>(xpathobject->stringval));
-      case XPATH_NUMBER:
-      case XPATH_POINT:
-      case XPATH_RANGE:
-      case XPATH_LOCATIONSET:
-      case XPATH_USERS:
-      case XPATH_XSLT_TREE:
-          CPPUNIT_FAIL("Unsupported XPath type");
+    xmlNodePtr xmlnode = nodeset->nodeTab[0];
+    xmlNodePtr xmlchild = xmlnode->children;
+    librevenge::RVNGString s;
+    while (xmlchild && xmlchild->type != XML_TEXT_NODE)
+      xmlchild = xmlchild->next;
+    if (xmlchild && xmlchild->type == XML_TEXT_NODE)
+      s = (reinterpret_cast<char *>((xmlnode->children[0]).content));
+    xmlXPathFreeObject(xpathobject);
+    return s;
+  }
+  case XPATH_BOOLEAN:
+    return xpathobject->boolval ? librevenge::RVNGString("true") : librevenge::RVNGString("false");
+  case XPATH_STRING:
+    return librevenge::RVNGString(reinterpret_cast<char *>(xpathobject->stringval));
+  case XPATH_NUMBER:
+  case XPATH_POINT:
+  case XPATH_RANGE:
+  case XPATH_LOCATIONSET:
+  case XPATH_USERS:
+  case XPATH_XSLT_TREE:
+    CPPUNIT_FAIL("Unsupported XPath type");
   }
 
   CPPUNIT_FAIL("Invalid XPath type");
