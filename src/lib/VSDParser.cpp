@@ -23,6 +23,24 @@
 #include "VSDStylesCollector.h"
 #include "VSDMetaData.h"
 
+namespace libvisio
+{
+
+const Pointer &Pointer::operator=(const Pointer &ptr)
+{
+  if (this != &ptr)
+  {
+    Type = ptr.Type;
+    Offset = ptr.Offset;
+    Length = ptr.Length;
+    Format = ptr.Format;
+    ListSize = ptr.ListSize;
+  }
+  return *this;
+}
+
+}
+
 libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container)
   : m_input(input), m_painter(painter), m_container(container), m_header(), m_collector(nullptr), m_shapeList(), m_currentLevel(0),
     m_stencils(), m_currentStencil(nullptr), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
