@@ -199,6 +199,23 @@ const VSDParaStyle &VSDParaStyle::operator=(const VSDParaStyle &style)
   return *this;
 }
 
+const VSDOptionalTextBlockStyle &VSDOptionalTextBlockStyle::operator=(const VSDOptionalTextBlockStyle &style)
+{
+  if (this != &style)
+  {
+    leftMargin = style.leftMargin;
+    rightMargin = style.rightMargin;
+    topMargin = style.topMargin;
+    bottomMargin = style.bottomMargin;
+    verticalAlign = style.verticalAlign;
+    isTextBkgndFilled = style.isTextBkgndFilled;
+    textBkgndColour = style.textBkgndColour;
+    defaultTabStop = style.defaultTabStop;
+    textDirection = style.textDirection;
+  }
+  return *this;
+}
+
 }
 
 libvisio::VSDStyles::VSDStyles() :

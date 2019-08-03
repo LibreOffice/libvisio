@@ -474,6 +474,7 @@ struct VSDOptionalTextBlockStyle
     isTextBkgndFilled(style.isTextBkgndFilled), textBkgndColour(style.textBkgndColour),
     defaultTabStop(style.defaultTabStop), textDirection(style.textDirection) {}
   ~VSDOptionalTextBlockStyle() {}
+  const VSDOptionalTextBlockStyle &operator=(const VSDOptionalTextBlockStyle &style);
   void override(const VSDOptionalTextBlockStyle &style)
   {
     ASSIGN_OPTIONAL(style.leftMargin, leftMargin);
