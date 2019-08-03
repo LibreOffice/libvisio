@@ -87,6 +87,26 @@ const VSDLineStyle &VSDLineStyle::operator=(const VSDLineStyle &style)
   return *this;
 }
 
+const VSDOptionalFillStyle &VSDOptionalFillStyle::operator=(const VSDOptionalFillStyle &style)
+{
+  if (this != &style)
+  {
+    fgColour = style.fgColour;
+    bgColour = style.bgColour;
+    pattern = style.pattern;
+    fgTransparency = style.fgTransparency;
+    bgTransparency = style.bgTransparency;
+    shadowFgColour = style.shadowFgColour;
+    shadowPattern = style.shadowPattern;
+    shadowOffsetX = style.shadowOffsetX;
+    shadowOffsetY = style.shadowOffsetY;
+    qsFillColour = style.qsFillColour;
+    qsShadowColour = style.qsShadowColour;
+    qsFillMatrix = style.qsFillMatrix;
+  }
+  return *this;
+}
+
 const VSDFillStyle &VSDFillStyle::operator=(const VSDFillStyle &style)
 {
   if (this != &style)

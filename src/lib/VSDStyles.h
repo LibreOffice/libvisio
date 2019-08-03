@@ -130,6 +130,7 @@ struct VSDOptionalFillStyle
     qsFillColour(style.qsFillColour), qsShadowColour(style.qsShadowColour),
     qsFillMatrix(style.qsFillMatrix) {}
   ~VSDOptionalFillStyle() {}
+  const VSDOptionalFillStyle &operator=(const VSDOptionalFillStyle &style);
   void override(const VSDOptionalFillStyle &style)
   {
     ASSIGN_OPTIONAL(style.pattern, pattern);
