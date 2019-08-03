@@ -513,6 +513,7 @@ struct VSDTextBlockStyle
     bottomMargin(style.bottomMargin), verticalAlign(style.verticalAlign), isTextBkgndFilled(style.isTextBkgndFilled),
     textBkgndColour(style.textBkgndColour), defaultTabStop(style.defaultTabStop), textDirection(style.textDirection) {}
   ~VSDTextBlockStyle() {}
+  const VSDTextBlockStyle &operator=(const VSDTextBlockStyle &style);
   void override(const VSDOptionalTextBlockStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.leftMargin, leftMargin);
