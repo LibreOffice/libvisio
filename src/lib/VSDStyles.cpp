@@ -155,6 +155,28 @@ const VSDCharStyle &VSDCharStyle::operator=(const VSDCharStyle &style)
   return *this;
 }
 
+const VSDOptionalParaStyle &VSDOptionalParaStyle::operator=(const VSDOptionalParaStyle &style)
+{
+  if (this != &style)
+  {
+    charCount = style.charCount;
+    indFirst = style.indFirst;
+    indLeft = style.indLeft;
+    indRight = style.indRight;
+    spLine = style.spLine;
+    spBefore = style.spBefore;
+    spAfter = style.spAfter;
+    align = style.align;
+    bullet = style.bullet;
+    bulletStr = style.bulletStr;
+    bulletFont = style.bulletFont;
+    bulletFontSize = style.bulletFontSize;
+    textPosAfterBullet = style.textPosAfterBullet;
+    flags = style.flags;
+  }
+  return *this;
+}
+
 }
 
 libvisio::VSDStyles::VSDStyles() :

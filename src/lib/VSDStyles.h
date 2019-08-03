@@ -372,6 +372,7 @@ struct VSDOptionalParaStyle
     bulletFontSize(style.bulletFontSize), textPosAfterBullet(style.textPosAfterBullet),
     flags(style.flags) {}
   ~VSDOptionalParaStyle() {}
+  const VSDOptionalParaStyle &operator=(const VSDOptionalParaStyle &style);
   void override(const VSDOptionalParaStyle &style)
   {
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
