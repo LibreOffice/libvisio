@@ -38,7 +38,7 @@ struct XForm
   XForm(const XForm &xform) : pinX(xform.pinX), pinY(xform.pinY), height(xform.height),
     width(xform.width), pinLocX(xform.pinLocX), pinLocY(xform.pinLocY), angle(xform.angle),
     flipX(xform.flipX), flipY(xform.flipY), x(xform.x), y(xform.y) {}
-
+  const XForm &operator=(const XForm &xform);
 };
 
 struct XForm1D

@@ -12,6 +12,25 @@
 namespace libvisio
 {
 
+const XForm &XForm::operator=(const XForm &xform)
+{
+  if (this != &xform)
+  {
+    pinX = xform.pinX;
+    pinY = xform.pinY;
+    height = xform.height;
+    width = xform.width;
+    pinLocX = xform.pinLocX;
+    pinLocY = xform.pinLocY;
+    angle = xform.angle;
+    flipX = xform.flipX;
+    flipY = xform.flipY;
+    x = xform.x;
+    y = xform.y;
+  }
+  return *this;
+}
+
 const VSDName &VSDName::operator=(const VSDName &name)
 {
   if (this != &name)
