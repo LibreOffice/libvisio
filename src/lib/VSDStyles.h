@@ -422,6 +422,7 @@ struct VSDParaStyle
     bullet(style.bullet), bulletStr(style.bulletStr), bulletFont(style.bulletFont),
     bulletFontSize(style.bulletFontSize), textPosAfterBullet(style.textPosAfterBullet), flags(style.flags) {}
   ~VSDParaStyle() {}
+  const VSDParaStyle &operator=(const VSDParaStyle &style);
   void override(const VSDOptionalParaStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
