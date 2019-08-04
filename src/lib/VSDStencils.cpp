@@ -117,12 +117,6 @@ libvisio::VSDStencil::VSDStencil()
 {
 }
 
-libvisio::VSDStencil::VSDStencil(const libvisio::VSDStencil &stencil)
-  : m_shapes(stencil.m_shapes), m_shadowOffsetX(stencil.m_shadowOffsetX),
-    m_shadowOffsetY(stencil.m_shadowOffsetY), m_firstShapeId(stencil.m_firstShapeId)
-{
-}
-
 libvisio::VSDStencil::~VSDStencil()
 {
 }

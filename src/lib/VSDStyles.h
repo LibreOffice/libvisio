@@ -32,10 +32,7 @@ struct VSDOptionalLineStyle
                        const boost::optional<long> &qlm) :
     width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r),
     qsLineColour(qlc), qsLineMatrix(qlm) {}
-  VSDOptionalLineStyle(const VSDOptionalLineStyle &style) :
-    width(style.width), colour(style.colour), pattern(style.pattern), startMarker(style.startMarker),
-    endMarker(style.endMarker), cap(style.cap), rounding(style.rounding), qsLineColour(style.qsLineColour),
-    qsLineMatrix(style.qsLineMatrix) {}
+  VSDOptionalLineStyle(const VSDOptionalLineStyle &style) = default;
   ~VSDOptionalLineStyle() {}
   VSDOptionalLineStyle &operator=(const VSDOptionalLineStyle &style) = default;
   void override(const VSDOptionalLineStyle &style)
@@ -71,11 +68,7 @@ struct VSDLineStyle
                unsigned char em, unsigned char c, double r, long qlc, long qlm) :
     width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c),
     rounding(r), qsLineColour(qlc), qsLineMatrix(qlm) {}
-  VSDLineStyle(const VSDLineStyle &style) :
-    width(style.width), colour(style.colour), pattern(style.pattern),
-    startMarker(style.startMarker), endMarker(style.endMarker), cap(style.cap),
-    rounding(style.rounding), qsLineColour(style.qsLineColour),
-    qsLineMatrix(style.qsLineMatrix) {}
+  VSDLineStyle(const VSDLineStyle &style) = default;
   ~VSDLineStyle() {}
   VSDLineStyle &operator=(const VSDLineStyle &style) = default;
   void override(const VSDOptionalLineStyle &style, const VSDXTheme *theme)
@@ -122,13 +115,7 @@ struct VSDOptionalFillStyle
     fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
     shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
     qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm) {}
-  VSDOptionalFillStyle(const VSDOptionalFillStyle &style) :
-    fgColour(style.fgColour), bgColour(style.bgColour), pattern(style.pattern),
-    fgTransparency(style.fgTransparency), bgTransparency(style.bgTransparency),
-    shadowFgColour(style.shadowFgColour), shadowPattern(style.shadowPattern),
-    shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY),
-    qsFillColour(style.qsFillColour), qsShadowColour(style.qsShadowColour),
-    qsFillMatrix(style.qsFillMatrix) {}
+  VSDOptionalFillStyle(const VSDOptionalFillStyle &style) = default;
   ~VSDOptionalFillStyle() {}
   VSDOptionalFillStyle &operator=(const VSDOptionalFillStyle &style) = default;
   void override(const VSDOptionalFillStyle &style)
@@ -173,13 +160,7 @@ struct VSDFillStyle
     : fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
       shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
       qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm) {}
-  VSDFillStyle(const VSDFillStyle &style) :
-    fgColour(style.fgColour), bgColour(style.bgColour), pattern(style.pattern),
-    fgTransparency(style.fgTransparency), bgTransparency(style.bgTransparency),
-    shadowFgColour(style.shadowFgColour), shadowPattern(style.shadowPattern),
-    shadowOffsetX(style.shadowOffsetX), shadowOffsetY(style.shadowOffsetY),
-    qsFillColour(style.qsFillColour), qsShadowColour(style.qsShadowColour),
-    qsFillMatrix(style.qsFillMatrix) {}
+  VSDFillStyle(const VSDFillStyle &style) = default;
   ~VSDFillStyle() {}
   VSDFillStyle &operator=(const VSDFillStyle &style) = default;
   void override(const VSDOptionalFillStyle &style, const VSDXTheme *theme)
@@ -243,13 +224,7 @@ struct VSDOptionalCharStyle
     underline(u), doubleunderline(du), strikeout(so), doublestrikeout(dso),
     allcaps(ac), initcaps(ic), smallcaps(sc), superscript(super),
     subscript(sub), scaleWidth(sw) {}
-  VSDOptionalCharStyle(const VSDOptionalCharStyle &style) :
-    charCount(style.charCount), font(style.font), colour(style.colour),
-    size(style.size), bold(style.bold), italic(style.italic),
-    underline(style.underline), doubleunderline(style.doubleunderline),
-    strikeout(style.strikeout), doublestrikeout(style.doublestrikeout),
-    allcaps(style.allcaps), initcaps(style.initcaps), smallcaps(style.smallcaps),
-    superscript(style.superscript), subscript(style.subscript), scaleWidth(style.scaleWidth) {}
+  VSDOptionalCharStyle(const VSDOptionalCharStyle &style) = default;
   ~VSDOptionalCharStyle() {}
   VSDOptionalCharStyle &operator=(const VSDOptionalCharStyle &style) = default;
   void override(const VSDOptionalCharStyle &style)
@@ -304,14 +279,7 @@ struct VSDCharStyle
     underline(u), doubleunderline(du), strikeout(so), doublestrikeout(dso),
     allcaps(ac), initcaps(ic), smallcaps(sc), superscript(super),
     subscript(sub), scaleWidth(sw) {}
-  VSDCharStyle(const VSDCharStyle &style) :
-    charCount(style.charCount), font(style.font), colour(style.colour),
-    size(style.size), bold(style.bold), italic(style.italic),
-    underline(style.underline), doubleunderline(style.doubleunderline),
-    strikeout(style.strikeout), doublestrikeout(style.doublestrikeout),
-    allcaps(style.allcaps), initcaps(style.initcaps),
-    smallcaps(style.smallcaps), superscript(style.superscript),
-    subscript(style.subscript), scaleWidth(style.scaleWidth) {}
+  VSDCharStyle(const VSDCharStyle &style) = default;
   ~VSDCharStyle() {}
   VSDCharStyle &operator=(const VSDCharStyle &style) = default;
   void override(const VSDOptionalCharStyle &style, const VSDXTheme * /* theme */)
@@ -366,12 +334,7 @@ struct VSDOptionalParaStyle
     charCount(cc), indFirst(ifst), indLeft(il), indRight(ir), spLine(sl), spBefore(sb), spAfter(sa),
     align(a), bullet(b), bulletStr(bs), bulletFont(bf), bulletFontSize(bfs),
     textPosAfterBullet(tpab), flags(f) {}
-  VSDOptionalParaStyle(const VSDOptionalParaStyle &style) :
-    charCount(style.charCount), indFirst(style.indFirst), indLeft(style.indLeft),
-    indRight(style.indRight), spLine(style.spLine), spBefore(style.spBefore), spAfter(style.spAfter),
-    align(style.align), bullet(style.bullet), bulletStr(style.bulletStr), bulletFont(style.bulletFont),
-    bulletFontSize(style.bulletFontSize), textPosAfterBullet(style.textPosAfterBullet),
-    flags(style.flags) {}
+  VSDOptionalParaStyle(const VSDOptionalParaStyle &style) = default;
   ~VSDOptionalParaStyle() {}
   VSDOptionalParaStyle &operator=(const VSDOptionalParaStyle &style) = default;
   void override(const VSDOptionalParaStyle &style)
@@ -417,11 +380,7 @@ struct VSDParaStyle
                const VSDName &bf, double bfs, double tpab, unsigned f) :
     charCount(cc), indFirst(ifst), indLeft(il), indRight(ir), spLine(sl), spBefore(sb), spAfter(sa), align(a),
     bullet(b), bulletStr(bs), bulletFont(bf), bulletFontSize(bfs), textPosAfterBullet(tpab), flags(f) {}
-  VSDParaStyle(const VSDParaStyle &style) :
-    charCount(style.charCount), indFirst(style.indFirst), indLeft(style.indLeft), indRight(style.indRight),
-    spLine(style.spLine), spBefore(style.spBefore), spAfter(style.spAfter), align(style.align),
-    bullet(style.bullet), bulletStr(style.bulletStr), bulletFont(style.bulletFont),
-    bulletFontSize(style.bulletFontSize), textPosAfterBullet(style.textPosAfterBullet), flags(style.flags) {}
+  VSDParaStyle(const VSDParaStyle &style) = default;
   ~VSDParaStyle() {}
   VSDParaStyle &operator=(const VSDParaStyle &style) = default;
   void override(const VSDOptionalParaStyle &style, const VSDXTheme * /* theme */)
@@ -469,11 +428,7 @@ struct VSDOptionalTextBlockStyle
                             const boost::optional<unsigned char> &td) :
     leftMargin(lm), rightMargin(rm), topMargin(tm), bottomMargin(bm), verticalAlign(va),
     isTextBkgndFilled(isBgFilled), textBkgndColour(bgClr), defaultTabStop(defTab), textDirection(td) {}
-  VSDOptionalTextBlockStyle(const VSDOptionalTextBlockStyle &style) :
-    leftMargin(style.leftMargin), rightMargin(style.rightMargin), topMargin(style.topMargin),
-    bottomMargin(style.bottomMargin), verticalAlign(style.verticalAlign),
-    isTextBkgndFilled(style.isTextBkgndFilled), textBkgndColour(style.textBkgndColour),
-    defaultTabStop(style.defaultTabStop), textDirection(style.textDirection) {}
+  VSDOptionalTextBlockStyle(const VSDOptionalTextBlockStyle &style) = default;
   ~VSDOptionalTextBlockStyle() {}
   VSDOptionalTextBlockStyle &operator=(const VSDOptionalTextBlockStyle &style) = default;
   void override(const VSDOptionalTextBlockStyle &style)
@@ -509,10 +464,7 @@ struct VSDTextBlockStyle
                     bool isBgFilled, Colour bgClr, double defTab, unsigned char td) :
     leftMargin(lm), rightMargin(rm), topMargin(tm), bottomMargin(bm), verticalAlign(va),
     isTextBkgndFilled(isBgFilled), textBkgndColour(bgClr), defaultTabStop(defTab), textDirection(td) {}
-  VSDTextBlockStyle(const VSDTextBlockStyle &style) :
-    leftMargin(style.leftMargin), rightMargin(style.rightMargin), topMargin(style.topMargin),
-    bottomMargin(style.bottomMargin), verticalAlign(style.verticalAlign), isTextBkgndFilled(style.isTextBkgndFilled),
-    textBkgndColour(style.textBkgndColour), defaultTabStop(style.defaultTabStop), textDirection(style.textDirection) {}
+  VSDTextBlockStyle(const VSDTextBlockStyle &style) = default;
   ~VSDTextBlockStyle() {}
   VSDTextBlockStyle &operator=(const VSDTextBlockStyle &style) = default;
   void override(const VSDOptionalTextBlockStyle &style, const VSDXTheme * /* theme */)
@@ -543,7 +495,7 @@ class VSDStyles
 {
 public:
   VSDStyles();
-  VSDStyles(const VSDStyles &styles);
+  VSDStyles(const VSDStyles &styles) = default;
   ~VSDStyles();
   VSDStyles &operator=(const VSDStyles &styles) = default;
   void addLineStyle(unsigned lineStyleIndex, const VSDOptionalLineStyle &lineStyle);

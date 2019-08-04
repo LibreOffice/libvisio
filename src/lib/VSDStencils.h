@@ -63,7 +63,7 @@ class VSDStencil
 {
 public:
   VSDStencil();
-  VSDStencil(const VSDStencil &stencil);
+  VSDStencil(const VSDStencil &stencil) = default;
   ~VSDStencil();
   VSDStencil &operator=(const VSDStencil &stencil) = default;
   void addStencilShape(unsigned id, const VSDShape &shape);
