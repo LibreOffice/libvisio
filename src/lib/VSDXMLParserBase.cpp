@@ -1519,11 +1519,11 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
       break;
     case XML_BULLETFONTSIZE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(bulletFontSize, reader);
+        ret = readDoubleData(bulletFontSize, reader);
       break;
     case XML_TEXTPOSAFTERBULLET:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readDoubleData(textPosAfterBullet, reader);
+        ret = readDoubleData(textPosAfterBullet, reader);
       break;
     default:
       break;
