@@ -12,7 +12,7 @@
 namespace libvisio
 {
 
-const XForm &XForm::operator=(const XForm &xform)
+XForm &XForm::operator=(const XForm &xform)
 {
   if (this != &xform)
   {
@@ -31,7 +31,7 @@ const XForm &XForm::operator=(const XForm &xform)
   return *this;
 }
 
-const NURBSData &NURBSData::operator=(const NURBSData &data)
+NURBSData &NURBSData::operator=(const NURBSData &data)
 {
   if (this != &data)
   {
@@ -46,7 +46,7 @@ const NURBSData &NURBSData::operator=(const NURBSData &data)
   return *this;
 }
 
-const VSDName &VSDName::operator=(const VSDName &name)
+VSDName &VSDName::operator=(const VSDName &name)
 {
   if (this != &name)
   {
@@ -56,14 +56,14 @@ const VSDName &VSDName::operator=(const VSDName &name)
   return *this;
 }
 
-const VSDMisc &VSDMisc::operator=(const VSDMisc &misc)
+VSDMisc &VSDMisc::operator=(const VSDMisc &misc)
 {
   if (this != &misc)
     m_hideText = misc.m_hideText;
   return *this;
 }
 
-const VSDBullet &VSDBullet::operator=(const VSDBullet &bullet)
+VSDBullet &VSDBullet::operator=(const VSDBullet &bullet)
 {
   if (this != &bullet)
   {

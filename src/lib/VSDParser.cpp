@@ -26,7 +26,7 @@
 namespace libvisio
 {
 
-const Pointer &Pointer::operator=(const Pointer &ptr)
+Pointer &Pointer::operator=(const Pointer &ptr)
 {
   if (this != &ptr)
   {

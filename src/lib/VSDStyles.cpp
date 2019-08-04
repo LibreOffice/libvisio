@@ -53,7 +53,7 @@ T getOptionalStyle(const std::map<unsigned, unsigned> &styleMasters, const std::
 
 }
 
-const VSDOptionalLineStyle &VSDOptionalLineStyle::operator=(const VSDOptionalLineStyle &style)
+VSDOptionalLineStyle &VSDOptionalLineStyle::operator=(const VSDOptionalLineStyle &style)
 {
   if (this != &style)
   {
@@ -70,7 +70,7 @@ const VSDOptionalLineStyle &VSDOptionalLineStyle::operator=(const VSDOptionalLin
   return *this;
 }
 
-const VSDLineStyle &VSDLineStyle::operator=(const VSDLineStyle &style)
+VSDLineStyle &VSDLineStyle::operator=(const VSDLineStyle &style)
 {
   if (this != &style)
   {
@@ -87,7 +87,7 @@ const VSDLineStyle &VSDLineStyle::operator=(const VSDLineStyle &style)
   return *this;
 }
 
-const VSDOptionalFillStyle &VSDOptionalFillStyle::operator=(const VSDOptionalFillStyle &style)
+VSDOptionalFillStyle &VSDOptionalFillStyle::operator=(const VSDOptionalFillStyle &style)
 {
   if (this != &style)
   {
@@ -107,7 +107,7 @@ const VSDOptionalFillStyle &VSDOptionalFillStyle::operator=(const VSDOptionalFil
   return *this;
 }
 
-const VSDFillStyle &VSDFillStyle::operator=(const VSDFillStyle &style)
+VSDFillStyle &VSDFillStyle::operator=(const VSDFillStyle &style)
 {
   if (this != &style)
   {
@@ -127,7 +127,7 @@ const VSDFillStyle &VSDFillStyle::operator=(const VSDFillStyle &style)
   return *this;
 }
 
-const VSDOptionalCharStyle &VSDOptionalCharStyle::operator=(const VSDOptionalCharStyle &style)
+VSDOptionalCharStyle &VSDOptionalCharStyle::operator=(const VSDOptionalCharStyle &style)
 {
   if (this != &style)
   {
@@ -151,7 +151,7 @@ const VSDOptionalCharStyle &VSDOptionalCharStyle::operator=(const VSDOptionalCha
   return *this;
 }
 
-const VSDCharStyle &VSDCharStyle::operator=(const VSDCharStyle &style)
+VSDCharStyle &VSDCharStyle::operator=(const VSDCharStyle &style)
 {
   if (this != &style)
   {
@@ -175,7 +175,7 @@ const VSDCharStyle &VSDCharStyle::operator=(const VSDCharStyle &style)
   return *this;
 }
 
-const VSDOptionalParaStyle &VSDOptionalParaStyle::operator=(const VSDOptionalParaStyle &style)
+VSDOptionalParaStyle &VSDOptionalParaStyle::operator=(const VSDOptionalParaStyle &style)
 {
   if (this != &style)
   {
@@ -197,7 +197,7 @@ const VSDOptionalParaStyle &VSDOptionalParaStyle::operator=(const VSDOptionalPar
   return *this;
 }
 
-const VSDParaStyle &VSDParaStyle::operator=(const VSDParaStyle &style)
+VSDParaStyle &VSDParaStyle::operator=(const VSDParaStyle &style)
 {
   if (this != &style)
   {
@@ -219,7 +219,7 @@ const VSDParaStyle &VSDParaStyle::operator=(const VSDParaStyle &style)
   return *this;
 }
 
-const VSDOptionalTextBlockStyle &VSDOptionalTextBlockStyle::operator=(const VSDOptionalTextBlockStyle &style)
+VSDOptionalTextBlockStyle &VSDOptionalTextBlockStyle::operator=(const VSDOptionalTextBlockStyle &style)
 {
   if (this != &style)
   {
@@ -236,7 +236,7 @@ const VSDOptionalTextBlockStyle &VSDOptionalTextBlockStyle::operator=(const VSDO
   return *this;
 }
 
-const VSDTextBlockStyle &VSDTextBlockStyle::operator=(const VSDTextBlockStyle &style)
+VSDTextBlockStyle &VSDTextBlockStyle::operator=(const VSDTextBlockStyle &style)
 {
   if (this != &style)
   {

@@ -37,7 +37,7 @@ struct Pointer
     : Type(0), Offset(0), Length(0), Format(0), ListSize(0) {}
   Pointer(const Pointer &ptr)
     : Type(ptr.Type), Offset(ptr.Offset), Length(ptr.Length), Format(ptr.Format), ListSize(ptr.ListSize) {}
-  const Pointer &operator=(const Pointer &ptr);
+  Pointer &operator=(const Pointer &ptr);
   unsigned Type;
   unsigned Offset;
   unsigned Length;
