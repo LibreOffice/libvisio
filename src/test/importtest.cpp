@@ -45,7 +45,7 @@ xmlXPathObjectPtr getXPathNode(xmlDocPtr doc, const librevenge::RVNGString &xpat
 librevenge::RVNGString getXPath(xmlDocPtr doc, const librevenge::RVNGString &xpath, const librevenge::RVNGString &attribute)
 {
   CPPUNIT_ASSERT(doc);
-  xmlXPathObjectPtr xpathobject = getXPathNode(doc, xpath);
+  std::unique_ptr<xmlXPathObject, void(*)(xmlXPathObjectPtr)> xpathobject{getXPathNode(doc, xpath), xmlXPathFreeObject};
   xmlNodeSetPtr nodeset = xpathobject->nodesetval;
 
   librevenge::RVNGString message("XPath '");
@@ -58,7 +58,6 @@ librevenge::RVNGString getXPath(xmlDocPtr doc, const librevenge::RVNGString &xpa
   xmlChar *prop = xmlGetProp(node, BAD_CAST(attribute.cstr()));
   librevenge::RVNGString s((const char *)prop);
   xmlFree(prop);
-  xmlXPathFreeObject(xpathobject);
   return s;
 }
 
