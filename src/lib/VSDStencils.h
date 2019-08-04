@@ -65,7 +65,7 @@ public:
   VSDStencil();
   VSDStencil(const VSDStencil &stencil);
   ~VSDStencil();
-  VSDStencil &operator=(const VSDStencil &stencil);
+  VSDStencil &operator=(const VSDStencil &stencil) = default;
   void addStencilShape(unsigned id, const VSDShape &shape);
   void setFirstShape(unsigned id);
   const VSDShape *getStencilShape(unsigned id) const;

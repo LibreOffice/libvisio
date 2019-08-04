@@ -127,18 +127,6 @@ libvisio::VSDStencil::~VSDStencil()
 {
 }
 
-libvisio::VSDStencil &libvisio::VSDStencil::operator=(const libvisio::VSDStencil &stencil)
-{
-  if (this != &stencil)
-  {
-    m_shapes = stencil.m_shapes;
-    m_shadowOffsetX = stencil.m_shadowOffsetX;
-    m_shadowOffsetY = stencil.m_shadowOffsetY;
-    m_firstShapeId = stencil.m_firstShapeId;
-  }
-  return *this;
-}
-
 void libvisio::VSDStencil::addStencilShape(unsigned id, const VSDShape &shape)
 {
   m_shapes[id] = shape;

@@ -38,7 +38,7 @@ struct XForm
   XForm(const XForm &xform) : pinX(xform.pinX), pinY(xform.pinY), height(xform.height),
     width(xform.width), pinLocX(xform.pinLocX), pinLocY(xform.pinLocY), angle(xform.angle),
     flipX(xform.flipX), flipY(xform.flipY), x(xform.x), y(xform.y) {}
-  XForm &operator=(const XForm &xform);
+  XForm &operator=(const XForm &xform) = default;
 };
 
 struct XForm1D
@@ -117,7 +117,7 @@ struct NURBSData
       knots(data.knots),
       weights(data.weights),
       points(data.points) {}
-  NURBSData &operator=(const NURBSData &data);
+  NURBSData &operator=(const NURBSData &data) = default;
 };
 
 struct PolylineData
@@ -184,7 +184,7 @@ public:
       m_format(format) {}
   VSDName() : m_data(), m_format(VSD_TEXT_ANSI) {}
   VSDName(const VSDName &name) : m_data(name.m_data), m_format(name.m_format) {}
-  VSDName &operator=(const VSDName &name);
+  VSDName &operator=(const VSDName &name) = default;
   bool empty() const
   {
     return !m_data.size();
@@ -214,7 +214,7 @@ struct VSDMisc
   bool m_hideText;
   VSDMisc() : m_hideText(false) {}
   VSDMisc(const VSDMisc &misc) : m_hideText(misc.m_hideText) {}
-  VSDMisc &operator=(const VSDMisc &misc);
+  VSDMisc &operator=(const VSDMisc &misc) = default;
 };
 
 struct VSDTabStop
@@ -253,7 +253,7 @@ struct VSDBullet
     m_bulletFont(bullet.m_bulletFont),
     m_bulletFontSize(bullet.m_bulletFontSize),
     m_textPosAfterBullet(bullet.m_textPosAfterBullet) {}
-  VSDBullet &operator=(const VSDBullet &bullet);
+  VSDBullet &operator=(const VSDBullet &bullet) = default;
   inline bool operator==(const VSDBullet &bullet) const
   {
     return ((m_bulletStr == bullet.m_bulletStr) &&
