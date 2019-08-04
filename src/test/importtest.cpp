@@ -7,10 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <libvisio/libvisio.h>
-#include <libxml/xpath.h>
 #include <iostream>
+#include <memory>
+
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <libvisio/libvisio.h>
+
+#include <libxml/xpath.h>
+
 #include "xmldrawinggenerator.h"
 
 namespace librevenge
