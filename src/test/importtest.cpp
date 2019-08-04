@@ -114,7 +114,7 @@ void assertBmpDataOffset(xmlDocPtr doc, const librevenge::RVNGString &xpath, con
 /// Same as the assertXPathContent(), but don't assert: return the string instead.
 librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGString &xpath)
 {
-  xmlXPathObjectPtr xpathobject = getXPathNode(doc, xpath);
+  std::unique_ptr<xmlXPathObject, void(*)(xmlXPathObjectPtr)> xpathobject{getXPathNode(doc, xpath), xmlXPathFreeObject};
   switch (xpathobject->type)
   {
   case XPATH_UNDEFINED:
@@ -135,7 +135,6 @@ librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGStri
       xmlchild = xmlchild->next;
     if (xmlchild && xmlchild->type == XML_TEXT_NODE)
       s = (reinterpret_cast<char *>((xmlnode->children[0]).content));
-    xmlXPathFreeObject(xpathobject);
     return s;
   }
   case XPATH_BOOLEAN:
