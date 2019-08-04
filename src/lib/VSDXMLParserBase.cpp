@@ -1476,7 +1476,7 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
       break;
     case XML_BULLET:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readByteData(bullet, reader);
+        ret = readByteData(bullet, reader);
       break;
     case XML_BULLETSTR:
       if (XML_READER_TYPE_ELEMENT == tokenType && !xmlTextReaderIsEmptyElement(reader))
