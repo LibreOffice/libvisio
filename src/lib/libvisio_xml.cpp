@@ -96,11 +96,19 @@ void XMLErrorWatcher::setError()
   m_error = true;
 }
 
-xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input, const char *URL, const char *encoding, int options, XMLErrorWatcher *const watcher)
+std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)>
+xmlReaderForStream(librevenge::RVNGInputStream *input, XMLErrorWatcher *const watcher, bool recover)
 {
-  xmlTextReaderPtr reader = xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, URL, encoding, options);
+  int options = XML_PARSE_NOBLANKS | XML_PARSE_NONET;
+  if (recover)
+    options |= XML_PARSE_RECOVER;
+  std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)> reader
+  {
+    xmlReaderForIO(vsdxInputReadFunc, vsdxInputCloseFunc, (void *)input, nullptr, nullptr, options),
+    xmlFreeTextReader
+  };
   if (reader)
-    xmlTextReaderSetErrorHandler(reader, vsdxReaderErrorFunc, watcher);
+    xmlTextReaderSetErrorHandler(reader.get(), vsdxReaderErrorFunc, watcher);
   return reader;
 }
 

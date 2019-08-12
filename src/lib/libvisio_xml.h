@@ -37,14 +37,9 @@ private:
   bool m_error;
 };
 
-// create an xmlTextReader pointer from a librevenge::RVNGInputStream pointer
-// needs to be freed using xmlTextReaderFree function.
-
-xmlTextReaderPtr xmlReaderForStream(librevenge::RVNGInputStream *input,
-                                    const char *URL,
-                                    const char *encoding,
-                                    int options,
-                                    XMLErrorWatcher *watcher = nullptr);
+// create an xmlTextReader from a librevenge::RVNGInputStream
+std::unique_ptr<xmlTextReader, void (*)(xmlTextReaderPtr)>
+xmlReaderForStream(librevenge::RVNGInputStream *input, XMLErrorWatcher *watcher = nullptr, bool recover = true);
 
 Colour xmlStringToColour(const xmlChar *s);
 Colour xmlStringToColour(const std::shared_ptr<xmlChar> &s);

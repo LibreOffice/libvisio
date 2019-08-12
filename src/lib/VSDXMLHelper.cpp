@@ -91,9 +91,7 @@ libvisio::VSDXRelationships::VSDXRelationships(librevenge::RVNGInputStream *inpu
 {
   if (input)
   {
-    const std::shared_ptr<xmlTextReader> reader(
-      xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NONET|XML_PARSE_RECOVER),
-      xmlFreeTextReader);
+    auto reader = xmlReaderForStream(input);
     if (reader)
     {
       bool inRelationships = false;

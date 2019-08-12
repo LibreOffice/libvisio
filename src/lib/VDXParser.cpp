@@ -75,9 +75,7 @@ bool libvisio::VDXParser::processXmlDocument(librevenge::RVNGInputStream *input)
   if (!input)
     return false;
 
-  const std::shared_ptr<xmlTextReader> reader(
-    xmlReaderForStream(input, nullptr, nullptr, XML_PARSE_NOBLANKS|XML_PARSE_NONET|XML_PARSE_RECOVER),
-    xmlFreeTextReader);
+  auto reader = xmlReaderForStream(input);
   if (!reader)
     return false;
   int ret = xmlTextReaderRead(reader.get());
