@@ -51,11 +51,11 @@ EXTRA_DIST = \
 	data/bitmaps.vsd \
 	data/bitmaps2.vsd \
 	data/color-boxes.vsdx \
+	data/dwg.vsd \
+	data/dwg.vsdx \
 	data/fdo86664.vsdx \
 	data/fdo86729-ms1252.vsd \
 	data/fdo86729-utf8.vsd \
-	data/dwg.vsd \
-	data/dwg.vsdx \
 	data/no-bgcolor.vsd
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
