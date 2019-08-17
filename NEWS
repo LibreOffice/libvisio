@@ -1,3 +1,15 @@
+libvisio 0.1.7
+
+- Fix a few memory leaks found by oss-fuzz.
+- Fix date and time conversion to string. (tdf#98291)
+- Fix number conversion to string. (tdf#76829)
+- Fix unit conversion. (tdf#126292)
+- Handle more arrow styles. (tdf#126402)
+- Fix some issues found by Coverity.
+- Disable expanding entities by XML parser as a vulnerability
+  prevention measure. Applications writing VSDX/VDX documents do not use
+  entities, so there is no difference in behavior.
+
 libvisio 0.1.6
 
 - Consider stencil txtxform in binary formats (tdf#67914).
