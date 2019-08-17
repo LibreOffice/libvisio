@@ -47,6 +47,11 @@ unittest_SOURCES = \
 	VSDInternalStreamTest.cpp
 
 EXTRA_DIST = \
+	data/Visio11FormatLine.vsd \
+	data/Visio11TextFieldsWithCurrency.vsd \
+	data/Visio11TextFieldsWithUnits.vsd \
+	data/Visio5TextFieldsWithUnits.vsd \
+	data/Visio6TextFieldsWithUnits.vsd \
 	data/bgcolor.vsdx \
 	data/bitmaps.vsd \
 	data/bitmaps2.vsd \
@@ -56,7 +61,9 @@ EXTRA_DIST = \
 	data/fdo86664.vsdx \
 	data/fdo86729-ms1252.vsd \
 	data/fdo86729-utf8.vsd \
-	data/no-bgcolor.vsd
+	data/no-bgcolor.vsd \
+	data/tdf76829-datetime-format.vsd \
+	data/tdf76829-numeric-format.vsd
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
 AM_TESTS_ENVIRONMENT = TZ=UTC; export TZ;
