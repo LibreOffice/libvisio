@@ -14,6 +14,7 @@
 
 #include <libvisio/libvisio.h>
 
+#include <libxml/parser.h>
 #include <libxml/xpath.h>
 
 #include "xmldrawinggenerator.h"
