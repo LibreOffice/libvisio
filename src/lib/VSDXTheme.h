@@ -80,6 +80,7 @@ public:
   ~VSDXTheme();
   bool parse(librevenge::RVNGInputStream *input);
   boost::optional<Colour> getThemeColour(unsigned value, unsigned variationIndex = 0) const;
+  boost::optional<Colour> getFillStyleColour(unsigned value) const;
 
 private:
   VSDXTheme(const VSDXTheme &);
@@ -89,18 +90,22 @@ private:
   boost::optional<Colour> readSysClr(xmlTextReaderPtr reader);
 
   void readClrScheme(xmlTextReaderPtr reader);
-  void readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr);
+  bool readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr);
   void readVariationClrSchemeLst(xmlTextReaderPtr reader);
   void readVariationClrScheme(xmlTextReaderPtr reader, VSDXVariationClrScheme &varClrSch);
   void readFontScheme(xmlTextReaderPtr reader);
   void readFont(xmlTextReaderPtr reader, int idToken, VSDXFont &font);
   bool readTypeFace(xmlTextReaderPtr reader, librevenge::RVNGString &typeFace);
   bool readTypeFace(xmlTextReaderPtr reader, int &script, librevenge::RVNGString &typeFace);
+  void readFmtScheme(xmlTextReaderPtr reader);
+  void readFillStyleLst(xmlTextReaderPtr reader);
 
   int getElementToken(xmlTextReaderPtr reader);
+  void skipUnimplemented(xmlTextReaderPtr reader, int idToken);
 
   VSDXClrScheme m_clrScheme;
   VSDXFontScheme m_fontScheme;
+  std::vector<boost::optional<Colour>> m_fillStyleLst;
 };
 
 } // namespace libvisio

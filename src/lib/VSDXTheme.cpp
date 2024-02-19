@@ -63,7 +63,8 @@ libvisio::VSDXFontScheme::VSDXFontScheme()
 
 libvisio::VSDXTheme::VSDXTheme()
   : m_clrScheme(),
-    m_fontScheme()
+    m_fontScheme(),
+    m_fillStyleLst(std::vector<boost::optional<libvisio::Colour>>(6))
 {
 }
 
@@ -101,6 +102,9 @@ bool libvisio::VSDXTheme::parse(librevenge::RVNGInputStream *input)
         break;
       case XML_A_FONTSCHEME:
         readFontScheme(reader.get());
+        break;
+      case XML_A_FMTSCHEME:
+        readFmtScheme(reader.get());
         break;
       default:
         break;
@@ -320,7 +324,7 @@ void libvisio::VSDXTheme::readClrScheme(xmlTextReaderPtr reader)
   while ((XML_A_CLRSCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
-void libvisio::VSDXTheme::readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr)
+bool libvisio::VSDXTheme::readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr)
 {
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
@@ -350,7 +354,11 @@ void libvisio::VSDXTheme::readThemeColour(xmlTextReaderPtr reader, int idToken, 
   while ((idToken != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 
   if (colour)
+  {
     clr = *colour;
+    return true;
+  }
+  return false;
 }
 
 void libvisio::VSDXTheme::readVariationClrSchemeLst(xmlTextReaderPtr reader)
@@ -489,6 +497,98 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::getThemeColour(unsigned v
     }
   }
   return boost::optional<libvisio::Colour>();
+}
+
+void libvisio::VSDXTheme::readFmtScheme(xmlTextReaderPtr reader)
+{
+  VSD_DEBUG_MSG(("VSDXTheme::readFmtScheme\n"));
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::readFmtScheme: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_A_FILLSTYLELST:
+    {
+      readFillStyleLst(reader);
+      break;
+    }
+    default:
+      // Other style lists not implemented
+      break;
+    }
+  } while ((XML_A_FMTSCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXTheme::skipUnimplemented(xmlTextReaderPtr reader, int idToken)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::skipUnimplemented: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+  } while ((idToken != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
+{
+  VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst\n"));
+  int ret = xmlTextReaderRead(reader);
+  int tokenId = getElementToken(reader);
+  if (XML_TOKEN_INVALID == tokenId)
+  {
+    VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst: unknown token %s\n", xmlTextReaderConstName(reader)));
+  }
+  int tokenType = xmlTextReaderNodeType(reader);
+  int i = 0;
+  while ((XML_A_FILLSTYLELST != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret)
+  {
+    switch (tokenId)
+    {
+    case XML_A_SOLIDFILL:
+    {
+      Colour colour;
+      if (readThemeColour(reader, tokenId, colour))
+      {
+        m_fillStyleLst[i] = colour;
+      }
+      break;
+    }
+    default:
+      // Skip unimplemented fill type
+      skipUnimplemented(reader, tokenId);
+      break;
+    }
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+  }
+}
+
+boost::optional<libvisio::Colour> libvisio::VSDXTheme::getFillStyleColour(unsigned value) const
+{
+  if (value == 0 || value > m_fillStyleLst.size())
+    return boost::optional<libvisio::Colour>();
+  return m_fillStyleLst[value - 1];
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

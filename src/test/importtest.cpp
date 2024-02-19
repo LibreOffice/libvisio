@@ -218,6 +218,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testBmpFileHeader);
   CPPUNIT_TEST(testBmpFileHeader2);
   CPPUNIT_TEST(testVsdxImportDefaultFillColour);
+  CPPUNIT_TEST(testVsdxQickStyleFillStyle);
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();
@@ -236,6 +237,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testBmpFileHeader();
   void testBmpFileHeader2();
   void testVsdxImportDefaultFillColour();
+  void testVsdxQickStyleFillStyle();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -531,6 +533,16 @@ void ImportTest::testVsdxImportDefaultFillColour()
   // - Actual  : #ffffff
   m_doc = parse("blue-box.vsdx", m_buffer);
   assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#5b9bd5");
+}
+
+void ImportTest::testVsdxQickStyleFillStyle()
+{
+  // Without the accompanying fix in place, this test would have failed with:
+  // equality assertion failed
+  // - Expected: #ffffff
+  // - Actual  : #fec000
+  m_doc = parse("qs-box.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#ffffff");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);

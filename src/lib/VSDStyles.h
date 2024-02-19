@@ -129,9 +129,7 @@ struct VSDOptionalFillStyle
     ASSIGN_OPTIONAL(style.qsFillColour, qsFillColour);
     ASSIGN_OPTIONAL(style.qsShadowColour, qsShadowColour);
     ASSIGN_OPTIONAL(style.qsFillMatrix, qsFillMatrix);
-    // Colour 'Blue, Variant 1' is special. It is the default,
-    // and it is not saved explicitely in the VSDX file.
-    ASSIGN_OPTIONAL(style.fgColour, fgColour);else fgColour = Colour(0x5b, 0x9b, 0xd5, 0);
+    ASSIGN_OPTIONAL(style.fgColour, fgColour);
     ASSIGN_OPTIONAL(style.bgColour, bgColour);
     ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
   }
@@ -179,14 +177,13 @@ struct VSDFillStyle
     ASSIGN_OPTIONAL(style.qsFillMatrix, qsFillMatrix);
     if (theme)
     {
-      if (!!style.qsFillColour && style.qsFillColour.get() >= 0)
-        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.get()), fgColour);
-
-      if (!!style.qsFillColour && style.qsFillColour.get() >= 0)
-        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.get()), bgColour);
-
-      if (!!style.qsShadowColour && style.qsShadowColour.get() >= 0)
-        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsShadowColour.get()), shadowFgColour);
+      // Quick Style Colour 100 is special. It is the default,
+      // and it is not saved explicitely in the VSDX file.
+      ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.value_or(100)), fgColour);
+      ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.value_or(100)), bgColour);
+      ASSIGN_OPTIONAL(theme->getThemeColour(style.qsShadowColour.value_or(100)), shadowFgColour);
+      if (!!style.qsFillMatrix && style.qsFillMatrix.get() >= 0)
+        ASSIGN_OPTIONAL(theme->getFillStyleColour(style.qsFillMatrix.get()), fgColour);
     }
     ASSIGN_OPTIONAL(style.fgColour, fgColour);
     ASSIGN_OPTIONAL(style.bgColour, bgColour);
