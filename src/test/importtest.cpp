@@ -147,9 +147,11 @@ librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGStri
   case XPATH_STRING:
     return librevenge::RVNGString(reinterpret_cast<char *>(xpathobject->stringval));
   case XPATH_NUMBER:
+#ifdef LIBXML_XPTR_LOCS_ENABLED
   case XPATH_POINT:
   case XPATH_RANGE:
   case XPATH_LOCATIONSET:
+#endif
   case XPATH_USERS:
   case XPATH_XSLT_TREE:
     CPPUNIT_FAIL("Unsupported XPath type");
