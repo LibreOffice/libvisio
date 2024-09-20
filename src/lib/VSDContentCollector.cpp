@@ -3756,7 +3756,7 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
     }
     if (U_SUCCESS(status) && conv)
     {
-      const auto *src = (const char *)&characters[0];
+      const auto *src = (const char *)characters.data();
       const char *srcLimit = (const char *)src + characters.size();
       while (src < srcLimit)
       {
@@ -3782,7 +3782,7 @@ void libvisio::VSDContentCollector::appendCharacters(librevenge::RVNGString &tex
 
   if (U_SUCCESS(status) && conv)
   {
-    const auto *src = (const char *)&characters[0];
+    const auto *src = (const char *)characters.data();
     const char *srcLimit = (const char *)src + characters.size();
     while (src < srcLimit)
     {
