@@ -210,6 +210,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxCharBgColor);
 #endif
   CPPUNIT_TEST(testVsdTextBlockWithoutBgColor);
+  CPPUNIT_TEST(testVsdxTextBkgndColorFromStylesheet);
   CPPUNIT_TEST(testVsdNumericFormat);
   CPPUNIT_TEST(testVsdDateTimeFormatting);
   CPPUNIT_TEST(testVsd11FormatLine);
@@ -229,6 +230,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxImportBgColorFromTheme();
   void testVsdxCharBgColor();
   void testVsdTextBlockWithoutBgColor();
+  void testVsdxTextBkgndColorFromStylesheet();
   void testVsdNumericFormat();
   void testVsd11FormatLine();
   void testVsdDateTimeFormatting();
@@ -356,6 +358,24 @@ void ImportTest::testVsdTextBlockWithoutBgColor()
 {
   m_doc = parse("no-bgcolor.vsd", m_buffer);
   assertXPathNoAttribute(m_doc, "/document/page/layer[5]/textObject/paragraph[1]/span", "background-color");
+}
+
+void ImportTest::testVsdxTextBkgndColorFromStylesheet()
+{
+  m_doc = parse("tdf136564-WhiteTextBackground.vsdx", m_buffer);
+  assertXPathNoAttribute(m_doc, "/document/page/layer[2]/textObject/paragraph/span", "background-color");
+  assertXPathContent(m_doc, "/document/page/layer[2]/textObject/paragraph/span/insertText", "First triangle without background");
+
+  assertXPathNoAttribute(m_doc, "/document/page/layer[3]/textObject/paragraph/span", "background-color");
+  assertXPathContent(m_doc, "/document/page/layer[3]/textObject/paragraph/span/insertText", "Second triangle without background");
+
+  // Without the accompanying fix in place, this test would have failed with:
+  // equality assertion failed
+  // - Expected: #ffffff
+  // - Actual  :
+  assertXPath(m_doc, "/document/page/layer[4]/textObject/paragraph/span", "background-color", "#ffffff");
+  assertXPath(m_doc, "/document/page/layer[4]/textObject/paragraph/span", "color", "#000000");
+  assertXPathContent(m_doc, "/document/page/layer[4]/textObject/paragraph/span/insertText", "By default Text is with white Background");
 }
 
 void ImportTest::testVsdNumericFormat()

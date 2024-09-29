@@ -55,6 +55,7 @@ EXTRA_DIST = \
 	data/bgcolor.vsdx \
 	data/bitmaps.vsd \
 	data/bitmaps2.vsd \
+	data/blue-box.vsdx \
 	data/color-boxes.vsdx \
 	data/dwg.vsd \
 	data/dwg.vsdx \
@@ -62,8 +63,10 @@ EXTRA_DIST = \
 	data/fdo86729-ms1252.vsd \
 	data/fdo86729-utf8.vsd \
 	data/no-bgcolor.vsd \
+	data/qs-box.vsdx \
 	data/tdf76829-datetime-format.vsd \
-	data/tdf76829-numeric-format.vsd
+	data/tdf76829-numeric-format.vsd \
+	data/tdf136564-WhiteTextBackground.vsdx
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
 AM_TESTS_ENVIRONMENT = TZ=UTC; export TZ;

@@ -737,8 +737,8 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   boost::optional<double> topMargin;
   boost::optional<double> bottomMargin;
   boost::optional<unsigned char> verticalAlign;
-  boost::optional<bool> bgClrId;
-  boost::optional<Colour> bgColour;
+  boost::optional<bool> isTextBkgndFilled;
+  boost::optional<Colour> textBkgndColour;
   boost::optional<double> defaultTabStop;
   boost::optional<unsigned char> textDirection;
 
@@ -846,10 +846,35 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
         ret = readByteData(verticalAlign, reader);
       break;
     case XML_TEXTBKGND:
-#if 0
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        ret = readExtendedColourData(bgColour, bgClrId, reader);
-#endif
+      {
+        long bgClrId = -1;
+        Colour tmpColour;
+        if (readColourOrColourIndex(tmpColour, bgClrId, reader))
+        {
+          isTextBkgndFilled = true;
+          textBkgndColour = tmpColour;
+          break;
+        }
+        /*
+        The TextBkgnd cell can have any value from 0 through 24, or 255.
+        The values 0 and 255 (visTxtBlklOpaque) both indicate a transparent text background.
+        For custom color, is is using the RGB or HSL function plus one.
+        */
+        if ((bgClrId < 1) || (bgClrId >= 255))
+        {
+          isTextBkgndFilled = false;
+          break;
+        }
+        std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId - 1);
+        if (iter != m_colours.end())
+        {
+          textBkgndColour = iter->second;
+          isTextBkgndFilled = true;
+          break;
+        }
+        isTextBkgndFilled = false;
+      }
       break;
     case XML_DEFAULTTABSTOP:
       if (XML_READER_TYPE_ELEMENT == tokenType)
@@ -893,19 +918,6 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
   }
   while ((XML_STYLESHEET != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
 
-#if 0
-  if (bgClrId < 0)
-    bgClrId = 0;
-  if (bgClrId)
-  {
-    std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId-1);
-    if (iter != m_colours.end())
-      bgColour = iter->second;
-    else
-      bgColour = Colour();
-  }
-#endif
-
   if (m_isInStyles)
   {
     m_collector->collectLineStyle(level, strokeWidth, strokeColour, linePattern, startMarker, endMarker, lineCap,
@@ -914,7 +926,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
                                   fillBGTransparency, shadowPattern, shadowColourFG, shadowOffsetX,
                                   shadowOffsetY, qsFillColour, qsShadowColour, qsFillMatrix);
     m_collector->collectTextBlockStyle(level, leftMargin, rightMargin, topMargin, bottomMargin,
-                                       verticalAlign, bgClrId, bgColour, defaultTabStop, textDirection);
+                                       verticalAlign, isTextBkgndFilled, textBkgndColour, defaultTabStop, textDirection);
   }
   else
   {
@@ -923,8 +935,8 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
                                                       shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY,
                                                       qsFillColour, qsShadowColour, qsFillMatrix));
-    m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign, !!bgClrId, bgColour,
-                                                                defaultTabStop, textDirection));
+    m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign,
+                                                                isTextBkgndFilled, textBkgndColour, defaultTabStop, textDirection));
   }
 }
 

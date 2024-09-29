@@ -2221,6 +2221,31 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(boost::optional<Colour> &
   return ret;
 }
 
+/* Currently this method is used only for VSDX import, to avoid regression.
+ * TODO align usage with other file type importers (VSD), and cover it with test cases
+ */
+bool libvisio::VSDXMLParserBase::readColourOrColourIndex(Colour &value, long &idx, xmlTextReaderPtr reader)
+{
+  const shared_ptr<xmlChar> stringValue(readStringData(reader), xmlFree);
+  if (stringValue)
+  {
+    VSD_DEBUG_MSG(("VSDXMLParserBase::readExtendedColourData stringValue %s\n", (const char *)stringValue.get()));
+    if (!xmlStrEqual(stringValue.get(), BAD_CAST("Themed")))
+    {
+      try
+      {
+        value = xmlStringToColour(stringValue);
+        return true;
+      }
+      catch (const XmlParserException &)
+      {
+        idx = xmlStringToLong(stringValue);
+      }
+    }
+  }
+  return false;
+}
+
 int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, xmlTextReaderPtr reader)
 {
   long idx = -1;

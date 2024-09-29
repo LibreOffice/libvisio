@@ -79,6 +79,7 @@ protected:
   int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
   int readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader);
+  bool readColourOrColourIndex(Colour &value, long &idx, xmlTextReaderPtr reader);
   int readNURBSData(boost::optional<NURBSData> &data, xmlTextReaderPtr reader);
   int readPolylineData(boost::optional<PolylineData> &data, xmlTextReaderPtr reader);
   int readStringData(VSDName &text, xmlTextReaderPtr reader);
