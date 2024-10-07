@@ -150,7 +150,8 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned
 {
   switch (marker)
   {
-  case 1:
+  case 1: // Open Short Arrowhead
+    return "0 0 30 10";
   case 2:
   case 9:
   case 15:
@@ -162,16 +163,19 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerViewbox(unsigned
   case 4:
   case 5:
   case 6:
-  case 16:
-  case 17:
-  case 18:
+  case 16: // Unfilled Triangle
+    return "0 0 20 20";
+  case 17: // Concave Unfilled
+    return "0 0 200 200";
+  case 18: // Convex Unfilled
     return "0 0 20 20";
   case 11: // Centered square filled
     return "0 0 10 10";
   case 12:
   case 13:
-  case 14:
     return "0 0 20 30";
+  case 14: // Unfilled Long Triangle
+    return "110 200 200 300";
   case 22:
   case 39:
     return "0 0 20 40";
@@ -201,8 +205,8 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned ma
   */
   switch (marker)
   {
-  case 1: // TODO
-    return "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z";
+  case 1: // Open Short Arrowhead
+    return "M1500 0 l1500 1789 v211 h-114 l-1286 -1543 v2543 h-200 v-2543 l-1286 1543 h-114 v-211 z"; //Change wing angle
   case 2: //
     return "m10 0-10 10h20z";
   case 3: // Short line arrow, Copied from LO
@@ -213,8 +217,8 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned ma
     return "m10 0-10 20q10,-5 20,0z";
   case 6: //
     return "m10 0-10 20q10,5 20,0z";
-  case 7: // TODO
-    return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
+  case 7: // TODO Open
+    return "m100 0q-26 134-100 180 100-50 200 0-74-46-100-180m0 24q-22 107-80 144 80-40 160 0-59-37-80-144";
   case 8: // filled arrow
     return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
   case 9:  // Centered line
@@ -224,22 +228,22 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned ma
     return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";//
   case 11: // Centered square filled, Copied from LO
     return "M0 0h10v10h-10z";
-  case 12: // TODO
-    return "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z";
+  case 12: // Open Long Arrowhead
+    return "m1286 0 1200 2789v211h-114l-986-2392v2392h-200v-2392l-1072 2392h-114v-211z";
   case 13:
     return "m10 0-10 30h20z";
-  case 14:
-    return "m10 0-10 30h20z m0 12l-5 15h10z";
+  case 14: // Unfilled Long Triangle
+    return "m100 0-100 300h200zm0 18-90 275h180z";
   case 15:
     return "m10 0-10 10h20z m0 1l-8 8h16z";
-  case 16:
-    return "m10 0-10 20h20z m0 7l-5 10h10z";
-  case 17:
-    return "m10 0-10 20q10,-5 20,0z m0 7l-4 8q4,-2 8,0z";
-  case 18:
-    return "m10 0-10 20q10,5 20,0z m0 7l-5 10q5,2 10,0z";
-  case 19: // TODO
-    return "m10 0q-2.6,13.4 -10,18q10,-5 20,0q-7.4,-4.6 -10,-18";
+  case 16: // Unfilled Triangle
+    return "m20 0-20 40h40zm0 3-18 36h36z";
+  case 17: // Concave Unfilled
+    return "m100 0-100 200q100-50 200 0zm0 20-80 160q80-35 160 0z";
+  case 18: // Convex Unfilled
+    return "m20 0-20 40q20 10 40 0z m0 3-18 36q18 8 36 0z";
+  case 19: // Unfilled
+    return "m100 0q-26 134-100 180 100-50 200 0-74-46-100-180m0 24q-22 107-80 144 80-40 160 0-59-37-80-144";
   case 20: // Centered unfilled circle,
   case 41: // unfilled circle, Copied from LO
     return "M1500 3000c-276 0-511-63-750-201s-411-310-549-549-201-474-201-750 63-511 201-750 310-411 549-549 474-201 750-201 511 63 750 201 411 310 549 549 201 474 201 750-63 511-201 750-310 411-549 549-474 201-750 201zM1500 2800c-239 0-443-55-650-174s-356-269-476-476-174-411-174-650 55-443 174-650 269-356 476-476c207-119 411-174 650-174s443 55 650 174c207 120 356 269 476 476s174 411 174 650-55 443-174 650-269 356-476 476c-207 119-411 174-650 174z";
@@ -247,7 +251,7 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned ma
     return "M0 0h300v300h-300zM20 20h260v260h-260z";
   case 22: // Unfilled diamond, Copied from LO
     return "M1500 0l1500 3000-1500 3000-1500-3000zM1500 447l-1276 2553 1276 2553 1276-2553z";
-  case 23:
+  case 23: // Oblique single line
     return "M1 32l1 1l19 -19l-1 -1zM11 0v33h1v-33z";
   case 24: // CF One, Copied from LO
     return "M0 0h1v-40h-2v40zM1 0h-20v-2h20zM-1 0h20v-2h-20z";
@@ -269,10 +273,10 @@ const char *libvisio::VSDContentCollector::_linePropertiesMarkerPath(unsigned ma
     return "M1500 3000c-276 0-511-63-750-201s-411-310-549-549-201-474-201-750 63-511 201-750 310-411 549-549 474-201 750-201 511 63 750 201 411 310 549 549 201 474 201 750-63 511-201 750-310 411-549 549-474 201-750 201zM1500 2800c-239 0-443-55-650-174s-356-269-476-476-174-411-174-650 55-443 174-650 269-356 476-476c207-119 411-174 650-174s443 55 650 174c207 120 356 269 476 476s174 411 174 650-55 443-174 650-269 356-476 476c-207 119-411 174-650 174z";
   case 34: // TODO unfilled circle and diamond
     return "M1500 3000c-276 0-511-63-750-201s-411-310-549-549-201-474-201-750 63-511 201-750 310-411 549-549 474-201 750-201 511 63 750 201 411 310 549 549 201 474 201 750-63 511-201 750-310 411-549 549-474 201-750 201zM1500 2800c-239 0-443-55-650-174s-356-269-476-476-174-411-174-650 55-443 174-650 269-356 476-476c207-119 411-174 650-174s443 55 650 174c207 120 356 269 476 476s174 411 174 650-55 443-174 650-269 356-476 476c-207 119-411 174-650 174z";
-  case 35: // TODO Filled circle with line,
+  case 35: // Filled circle with line,
   case 36: // TODO Filled circle with two lines,
   case 37: // TODO Filled circle with three lines,
-    return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";//
+    return "m-106-318-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13zm106 318h20v-306h-40v306zm20 0h-500v-40h500zm-40 0h500v-40h-500z";
   case 38: // TODO Filled circle with diamond,
     return "m462 1118-102-29-102-51-93-72-72-93-51-102-29-102-13-105 13-102 29-106 51-102 72-89 93-72 102-50 102-34 106-9 101 9 106 34 98 50 93 72 72 89 51 102 29 106 13 102-13 105-29 102-51 102-72 93-93 72-98 51-106 29-101 13z";//
   case 39: // double filled equilateral triangle arrow, Copied from LO
