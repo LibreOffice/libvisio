@@ -219,7 +219,8 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testBmpFileHeader);
   CPPUNIT_TEST(testBmpFileHeader2);
   CPPUNIT_TEST(testVsdxImportDefaultFillColour);
-  CPPUNIT_TEST(testVsdxQickStyleFillStyle);
+  CPPUNIT_TEST(testVsdxQuickStyleFillMatrix);
+  CPPUNIT_TEST(testVsdxQuickStyleFillStyle);
   CPPUNIT_TEST_SUITE_END();
 
   void testVsdxMetadataTitle();
@@ -239,7 +240,8 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testBmpFileHeader();
   void testBmpFileHeader2();
   void testVsdxImportDefaultFillColour();
-  void testVsdxQickStyleFillStyle();
+  void testVsdxQuickStyleFillMatrix();
+  void testVsdxQuickStyleFillStyle();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -555,7 +557,31 @@ void ImportTest::testVsdxImportDefaultFillColour()
   assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#5b9bd5");
 }
 
-void ImportTest::testVsdxQickStyleFillStyle()
+void ImportTest::testVsdxQuickStyleFillMatrix()
+{
+  // Without the accompanying fix in place, this test would have failed with:
+  // equality assertion failed
+  // - Expected: #ffffff
+  // - Actual  : #5b9bd5
+  // - Attribute 'fill-color' of '/document/page/layer/layer/setStyle[1]': incorrect value.
+
+  m_doc = parse("tdf154379-QuickStyleFillMatrix.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/page/layer/layer/setStyle[1]", "fill", "solid");
+  assertXPath(m_doc, "/document/page/layer/layer/setStyle[1]", "fill-color", "#ffffff");
+  assertXPath(m_doc, "/document/page/layer/layer/setStyle[1]", "stroke-color", "#5b9bd5");
+  assertXPath(m_doc, "/document/page/layer/layer/setStyle[2]", "fill", "none");
+  assertXPath(m_doc, "/document/page/layer/layer/setStyle[2]", "fill-color", "#ffffff");
+  assertXPath(m_doc, "/document/page/layer/layer/setStyle[2]", "stroke-color", "#5b9bd5");
+
+  assertXPath(m_doc, "/document/page/layer/textObject/paragraph[1]/span", "color", "#5b9bd5");
+  // TODO assertXPath(m_doc, "/document/page/layer/textObject/paragraph[1]/span", "background-color", "#ffffff");
+  assertXPathContent(m_doc, "/document/page/layer/textObject/paragraph[1]/span/insertText", " Kommissionierungs");
+  assertXPath(m_doc, "/document/page/layer/textObject/paragraph[1]/span", "color", "#5b9bd5");
+  // TODO assertXPath(m_doc, "/document/page/layer/textObject/paragraph[2]/span", "background-color", "#ffffff");
+  assertXPathContent(m_doc, "/document/page/layer/textObject/paragraph[2]/span/insertText", "Beleg ");
+}
+
+void ImportTest::testVsdxQuickStyleFillStyle()
 {
   // Without the accompanying fix in place, this test would have failed with:
   // equality assertion failed

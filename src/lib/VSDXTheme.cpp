@@ -555,7 +555,7 @@ void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
     VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst: unknown token %s\n", xmlTextReaderConstName(reader)));
   }
   int tokenType = xmlTextReaderNodeType(reader);
-  int i = 0;
+  std::size_t i = 0;
   while ((XML_A_FILLSTYLELST != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret)
   {
     switch (tokenId)
@@ -565,7 +565,10 @@ void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
       Colour colour;
       if (readThemeColour(reader, tokenId, colour))
       {
-        m_fillStyleLst[i] = colour;
+        if (i < m_fillStyleLst.size())
+          m_fillStyleLst[i] = colour;
+        else
+          VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst Error: Unable to add colour #%02x%02x%02x\n", colour.r, colour.g, colour.b));
       }
       break;
     }
@@ -581,6 +584,7 @@ void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
       VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
     tokenType = xmlTextReaderNodeType(reader);
+    i++;
   }
 }
 
