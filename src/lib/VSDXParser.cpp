@@ -947,9 +947,6 @@ int libvisio::VSDXParser::getElementDepth(xmlTextReaderPtr reader)
 
 void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
 {
-  // Text block properties
-  long bgClrId = -1;
-
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
@@ -1226,19 +1223,27 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
     case XML_TEXTBKGND:
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
-        Colour textBkgndColour(0xff, 0xff, 0xff, 0);
-        ret = readExtendedColourData(textBkgndColour, bgClrId, reader);
-        if (bgClrId < 0) bgClrId = 0;
-        if (bgClrId)
+        long bgClrId = -1;
+        Colour tmpColour;
+        if (readColourOrColourIndex(tmpColour, bgClrId, reader))
         {
-          std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId-1);
-          if (iter != m_colours.end())
-            textBkgndColour = iter->second;
-          else
-            textBkgndColour = Colour(0xff, 0xff, 0xff, 0);
+          m_shape.m_textBlockStyle.isTextBkgndFilled = true;
+          m_shape.m_textBlockStyle.textBkgndColour = tmpColour;
+          break;
         }
-        m_shape.m_textBlockStyle.textBkgndColour = textBkgndColour;
-        m_shape.m_textBlockStyle.isTextBkgndFilled = true;
+        if ((bgClrId < 1) || (bgClrId >= 255))
+        {
+          m_shape.m_textBlockStyle.isTextBkgndFilled = false;
+          break;
+        }
+        std::map<unsigned, Colour>::const_iterator iter = m_colours.find(bgClrId - 1);
+        if (iter != m_colours.end())
+        {
+          m_shape.m_textBlockStyle.textBkgndColour = iter->second;
+          m_shape.m_textBlockStyle.isTextBkgndFilled = true;
+          break;
+        }
+        m_shape.m_textBlockStyle.isTextBkgndFilled = false;
       }
       break;
     case XML_DEFAULTTABSTOP:

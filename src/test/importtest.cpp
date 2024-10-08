@@ -574,10 +574,11 @@ void ImportTest::testVsdxQuickStyleFillMatrix()
   assertXPath(m_doc, "/document/page/layer/layer/setStyle[2]", "stroke-color", "#5b9bd5");
 
   assertXPath(m_doc, "/document/page/layer/textObject/paragraph[1]/span", "color", "#5b9bd5");
-  // TODO assertXPath(m_doc, "/document/page/layer/textObject/paragraph[1]/span", "background-color", "#ffffff");
+  assertXPathNoAttribute(m_doc, "/document/page/layer/textObject/paragraph[1]/span", "background-color");
   assertXPathContent(m_doc, "/document/page/layer/textObject/paragraph[1]/span/insertText", " Kommissionierungs");
-  assertXPath(m_doc, "/document/page/layer/textObject/paragraph[1]/span", "color", "#5b9bd5");
-  // TODO assertXPath(m_doc, "/document/page/layer/textObject/paragraph[2]/span", "background-color", "#ffffff");
+
+  assertXPath(m_doc, "/document/page/layer/textObject/paragraph[2]/span", "color", "#5b9bd5");
+  assertXPathNoAttribute(m_doc, "/document/page/layer/textObject/paragraph[2]/span", "background-color");
   assertXPathContent(m_doc, "/document/page/layer/textObject/paragraph[2]/span/insertText", "Beleg ");
 }
 

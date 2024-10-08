@@ -525,7 +525,8 @@ void libvisio::VSDXTheme::readFmtScheme(xmlTextReaderPtr reader)
       // Other style lists not implemented
       break;
     }
-  } while ((XML_A_FMTSCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  }
+  while ((XML_A_FMTSCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VSDXTheme::skipUnimplemented(xmlTextReaderPtr reader, int idToken)
@@ -542,7 +543,8 @@ void libvisio::VSDXTheme::skipUnimplemented(xmlTextReaderPtr reader, int idToken
       VSD_DEBUG_MSG(("VSDXTheme::skipUnimplemented: unknown token %s\n", xmlTextReaderConstName(reader)));
     }
     tokenType = xmlTextReaderNodeType(reader);
-  } while ((idToken != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+  }
+  while ((idToken != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
 void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
