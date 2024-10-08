@@ -413,7 +413,7 @@ void ImportTest::testVsd11FormatLine()
   assertXPath(m_doc, "/document/page/setStyle[5]", "marker-start-center", "true");
 
   assertXPath(m_doc, "/document/page/setStyle[6]", "marker-end-path",
-              "M1500 0l1500 2789v211h-114l-1286-2392v2392h-200v-2392l-1286 2392h-114v-211z");
+              "m1286 0 1200 2789v211h-114l-986-2392v2392h-200v-2392l-1072 2392h-114v-211z");
   assertXPathNoAttribute(m_doc, "/document/page/setStyle[6]", "marker-end-center");
   assertXPath(m_doc, "/document/page/setStyle[6]", "marker-start-center", "true");
   assertXPathNoAttribute(m_doc, "/document/page/setStyle[11]", "marker-start-center");
