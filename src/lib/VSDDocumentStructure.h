@@ -150,8 +150,8 @@
 #define CELL_TYPE_Inches             65
 #define CELL_TYPE_Feet               66
 #define CELL_TYPE_FeetAndInches      67
-#define CELL_TYPE_Centimeters        69
 #define CELL_TYPE_Miles              68
+#define CELL_TYPE_Centimeters        69
 #define CELL_TYPE_Millimeters        70
 #define CELL_TYPE_Meters             71
 #define CELL_TYPE_Kilometers         72

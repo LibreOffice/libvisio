@@ -668,7 +668,7 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
   else if (m_isPageStarted)
   {
     double scale = drawingScale > 0 || drawingScale < 0 ? pageScale/drawingScale : 1.0;
-    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale);
+    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale, 0);
   }
 }
 

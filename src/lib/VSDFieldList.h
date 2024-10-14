@@ -29,7 +29,7 @@ public:
   virtual ~VSDFieldListElement() {}
   virtual void handle(VSDCollector *collector) const = 0;
   virtual VSDFieldListElement *clone() = 0;
-  virtual librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &) = 0;
+  virtual librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &, unsigned defaultUnit) = 0;
   virtual void setNameId(int) = 0;
   virtual void setFormat(unsigned short) = 0;
   virtual void setCellType(unsigned short) = 0;
@@ -47,7 +47,7 @@ public:
   ~VSDTextField() override {}
   void handle(VSDCollector *collector) const override;
   VSDFieldListElement *clone() override;
-  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &strVec) override;
+  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &strVec, unsigned defaultUnit) override;
   void setNameId(int nameId) override;
   void setFormat(unsigned short) override {}
   void setCellType(unsigned short) override {}
@@ -70,7 +70,7 @@ public:
   ~VSDNumericField() override {}
   void handle(VSDCollector *collector) const override;
   VSDFieldListElement *clone() override;
-  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &) override;
+  librevenge::RVNGString getString(const std::map<unsigned, librevenge::RVNGString> &, unsigned defaultUnit) override;
   void setNameId(int) override {}
   void setFormat(unsigned short format) override;
   void setCellType(unsigned short cellType) override;

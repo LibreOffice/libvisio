@@ -24,7 +24,7 @@ libvisio::VSDFieldListElement *libvisio::VSDTextField::clone()
   return new VSDTextField(m_id, m_level, m_nameId, m_formatStringId);
 }
 
-librevenge::RVNGString libvisio::VSDTextField::getString(const std::map<unsigned, librevenge::RVNGString> &strVec)
+librevenge::RVNGString libvisio::VSDTextField::getString(const std::map<unsigned, librevenge::RVNGString> &strVec, unsigned /* defaultUnit */)
 {
   //TODO VSD_FIELD_FORMAT_StrNormal  37
   //TODO VSD_FIELD_FORMAT_StrLower  38
@@ -154,6 +154,10 @@ double convertNumber(const unsigned short cellType, const double number)
   }
 }
 
+/*
+ * More information about Visio Units:
+ * https://learn.microsoft.com/en-us/office/vba/visio/concepts/about-units-of-measure-visio
+*/
 const char *getUnitString(const unsigned short cellType)
 {
   switch (cellType)
@@ -218,64 +222,70 @@ const char *getUnitString(const unsigned short cellType)
   }
 }
 
-librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, librevenge::RVNGString> &)
+librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsigned, librevenge::RVNGString> &, unsigned defaultDrawingUnit)
 {
   // Augmented BNF for Syntax Specifications: ABNF
   // http://www.rfc-editor.org/rfc/rfc5234.txt
   if (m_format == VSD_FIELD_FORMAT_Unknown)
     return librevenge::RVNGString();
+
+  auto cell_type = m_cell_type;
+  if ((m_cell_type == CELL_TYPE_DrawingUnits) || (m_cell_type == CELL_TYPE_PageUnits))
+
+    cell_type = defaultDrawingUnit;
+
   switch (m_format)
   {
   case VSD_FIELD_FORMAT_NumGenNoUnits:
   {
     // 0 Format string: 0.#### Example: 30060.9167
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.4g%s", "");
+    return doubleToString(convertNumber(cell_type, m_number), "%.4g%s", "");
   }
   case VSD_FIELD_FORMAT_NumGenDefUnits:
   {
     // 1 Format string: 0.#### u Example: 30060.9167 cm
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.4g%s", getUnitString(m_cell_type));
+    return doubleToString(convertNumber(cell_type, m_number), "%.4g%s", getUnitString(cell_type));
   }
   case VSD_FIELD_FORMAT_0PlNoUnits:
   {
     // 2 Format string: 0 Example: 30061
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.0f%s", "");
+    return doubleToString(convertNumber(cell_type, m_number), "%.0f%s", "");
   }
   case VSD_FIELD_FORMAT_0PlDefUnits:
   {
     // 3 Format string: 0 u Example: 30061 cm
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.0f%s", getUnitString(m_cell_type));
+    return doubleToString(convertNumber(cell_type, m_number), "%.0f%s", getUnitString(cell_type));
   }
   case VSD_FIELD_FORMAT_1PlNoUnits:
   {
     // 4 Format string: 0.0 Example: 30060.9
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.1f%s", "");
+    return doubleToString(convertNumber(cell_type, m_number), "%.1f%s", "");
   }
   case VSD_FIELD_FORMAT_1PlDefUnits:
   {
     // 5 Format string: 0.0 u Example: 30060.9 cm
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.1f%s", getUnitString(m_cell_type));
+    return doubleToString(convertNumber(cell_type, m_number), "%.1f%s", getUnitString(cell_type));
   }
   case VSD_FIELD_FORMAT_2PlNoUnits:
   {
     // 6 Format string: 0.00 Example: 30061.92
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.2f%s", "");
+    return doubleToString(convertNumber(cell_type, m_number), "%.2f%s", "");
   }
   case VSD_FIELD_FORMAT_2PlDefUnits:
   {
     // 7 Format string: 0.00 u Example: 30061.92 cm
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.2f%s", getUnitString(m_cell_type));
+    return doubleToString(convertNumber(cell_type, m_number), "%.2f%s", getUnitString(cell_type));
   }
 
   case VSD_FIELD_FORMAT_3PlNoUnits:
   {
     // 8 Format string: 0.000 Example: 30061.916
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.3f%s", "");
+    return doubleToString(convertNumber(cell_type, m_number), "%.3f%s", "");
   }
   case VSD_FIELD_FORMAT_3PlDefUnits:
   {
     // 9 Format string: 0.000 u Example: 30061.916 cm
-    return doubleToString(convertNumber(m_cell_type, m_number), "%.3f%s", getUnitString(m_cell_type));
+    return doubleToString(convertNumber(cell_type, m_number), "%.3f%s", getUnitString(cell_type));
   }
   //TODO VSD_FIELD_FORMAT_FeetAndInches  10 Format string: <,FEET/INCH>0.000 u
   //TODO VSD_FIELD_FORMAT_Radians  11 Format string: <,rad>0.#### u

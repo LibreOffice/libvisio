@@ -187,7 +187,7 @@ xmlDocPtr parse(const char *filename, xmlBufferPtr buffer)
   xmlTextWriterEndDocument(writer);
   xmlFreeTextWriter(writer);
 
-  //std::cerr << "XML is '" << (const char *)xmlBufferContent(buffer) << "'" << std::endl;
+  // std::cerr << "XML is '" << (const char *)xmlBufferContent(buffer) << "'" << std::endl;
   return xmlParseMemory((const char *)xmlBufferContent(buffer), xmlBufferLength(buffer));
 }
 
@@ -216,6 +216,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsd11FormatLine);
   CPPUNIT_TEST(testVsd6TextfieldsWithUnits);
   CPPUNIT_TEST(testVsd11TextfieldsWithUnits);
+  CPPUNIT_TEST(testVsd11DrawingUnitsType);
   CPPUNIT_TEST(testBmpFileHeader);
   CPPUNIT_TEST(testBmpFileHeader2);
   CPPUNIT_TEST(testVsdxImportDefaultFillColour);
@@ -237,8 +238,10 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdDateTimeFormatting();
   void testVsd6TextfieldsWithUnits();
   void testVsd11TextfieldsWithUnits();
+  void testVsd11DrawingUnitsType();
   void testBmpFileHeader();
   void testBmpFileHeader2();
+
   void testVsdxImportDefaultFillColour();
   void testVsdxQuickStyleFillMatrix();
   void testVsdxQuickStyleFillStyle();
@@ -513,6 +516,17 @@ void ImportTest::testVsd11TextfieldsWithUnits()
   // TODO assertXPathContent(m_doc, "/document/page/textObject[38]/paragraph[1]/span/insertText", "1 date with unitout unit 31.12.1899");
   // TODO assertXPathContent(m_doc, "/document/page/textObject[39]/paragraph[1]/span/insertText", "1 date with radians unit 31.12.1899");
   // TODO assertXPathContent(m_doc, "/document/page/textObject[40]/paragraph[1]/span/insertText", "1 date with currency unit zł 1,00");
+}
+
+void ImportTest::testVsd11DrawingUnitsType()
+{
+  // Without the accompanying fix in place, this test would have failed with:
+  //   Test name: ImportTest::testVsd11DrawingUnitsTypeequality assertion failed
+  // - Expected: 180.0 cm x 394.0 cm
+  // - Actual  : 70.9 x 394.0 cm
+  // - XPath '/document/page/textObject[12]/paragraph/span/insertText': contents of child does not match.
+  m_doc = parse("tdf154379-DrawingUnits-type.vsd", m_buffer);
+  assertXPathContent(m_doc, "/document/page/textObject[12]/paragraph/span/insertText", "180.0 cm x 394.0 cm");
 }
 
 void ImportTest::testBmpFileHeader()

@@ -77,7 +77,7 @@ public:
   void collectTxtXForm(unsigned level, const XForm &txtxform) override;
   void collectShapesOrder(unsigned id, unsigned level, const std::vector<unsigned> &shapeIds) override;
   void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height) override;
-  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale) override;
+  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale, unsigned char drawingScaleUnit) override;
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage, const VSDName &pageName) override;
   void collectShape(unsigned id, unsigned level, unsigned parent, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) override;
   void collectSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree) override;
@@ -238,6 +238,7 @@ private:
   double m_shadowOffsetX;
   double m_shadowOffsetY;
   double m_scale;
+  unsigned char m_defaultDrawingUnit;
   double m_x;
   double m_y;
   double m_originalX;

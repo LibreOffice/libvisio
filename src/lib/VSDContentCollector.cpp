@@ -124,7 +124,8 @@ libvisio::VSDContentCollector::VSDContentCollector(
 ) :
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
-  m_scale(1.0), m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(), m_txtxform(), m_misc(),
+  m_scale(1.0), m_defaultDrawingUnit(0),
+  m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(), m_txtxform(), m_misc(),
   m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? nullptr : &groupXFormsSequence[0]),
   m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType((unsigned)-1),
   m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
@@ -2562,7 +2563,8 @@ void libvisio::VSDContentCollector::collectForeignDataType(unsigned level, unsig
   m_foreignHeight = height;
 }
 
-void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale)
+void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight,
+                                                     double shadowOffsetX, double shadowOffsetY, double scale, unsigned char drawingScaleUnit)
 {
   _handleLevelChange(level);
   m_pageWidth = pageWidth;
@@ -2570,6 +2572,7 @@ void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned
   m_scale = scale;
   m_shadowOffsetX = shadowOffsetX;
   m_shadowOffsetY = shadowOffsetY;
+  m_defaultDrawingUnit = drawingScaleUnit;
 
   m_currentPage.m_pageWidth = m_scale*m_pageWidth;
   m_currentPage.m_pageHeight = m_scale*m_pageHeight;
@@ -2665,7 +2668,7 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
     {
       VSDFieldListElement *elem = m_stencilFields.getElement(i);
       if (elem)
-        m_fields.push_back(elem->getString(m_stencilNames));
+        m_fields.push_back(elem->getString(m_stencilNames, m_defaultDrawingUnit));
       else
         m_fields.push_back(librevenge::RVNGString());
     }
@@ -3490,7 +3493,7 @@ void libvisio::VSDContentCollector::collectTextField(unsigned id, unsigned level
   if (element)
   {
     if (nameId == -2)
-      m_fields.push_back(element->getString(m_stencilNames));
+      m_fields.push_back(element->getString(m_stencilNames, m_defaultDrawingUnit));
     else
     {
       if (nameId >= 0)
@@ -3502,7 +3505,7 @@ void libvisio::VSDContentCollector::collectTextField(unsigned id, unsigned level
   else
   {
     VSDTextField tmpField(id, level, nameId, formatStringId);
-    m_fields.push_back(tmpField.getString(m_names));
+    m_fields.push_back(tmpField.getString(m_names, m_defaultDrawingUnit));
   }
 }
 
@@ -3526,13 +3529,13 @@ void libvisio::VSDContentCollector::collectNumericField(unsigned id, unsigned le
       if (format != VSD_FIELD_FORMAT_Unknown)
         element->setFormat(format);
 
-      m_fields.push_back(element->getString(m_names));
+      m_fields.push_back(element->getString(m_names, m_defaultDrawingUnit));
     }
   }
   else
   {
     VSDNumericField tmpField(id, level, format, cellType, number, formatStringId);
-    m_fields.push_back(tmpField.getString(m_names));
+    m_fields.push_back(tmpField.getString(m_names, m_defaultDrawingUnit));
   }
 }
 

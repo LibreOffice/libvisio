@@ -1257,20 +1257,21 @@ void libvisio::VSDParser::readPageProps(librevenge::RVNGInputStream *input)
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shadowOffsetY = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
-  const double numerator = readDouble(input);
-  input->seek(1, librevenge::RVNG_SEEK_CUR);
-  double denominator = readDouble(input);
-  if (VSD_ALMOST_ZERO(denominator))
-    denominator = 1;
+  const double pageScale = readDouble(input);
 
-  const double scale = std::abs(numerator / denominator);
+  const unsigned char drawingScaleUnit = readU8(input);
+  double drawingScale = readDouble(input);
+  if (VSD_ALMOST_ZERO(drawingScale))
+    drawingScale = 1;
+
+  const double scale = std::abs(pageScale / drawingScale);
 
   if (m_isStencilStarted && m_currentStencil)
   {
     m_currentStencil->m_shadowOffsetX = m_shadowOffsetX;
     m_currentStencil->m_shadowOffsetY = m_shadowOffsetY;
   }
-  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, m_shadowOffsetX, m_shadowOffsetY, scale);
+  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, m_shadowOffsetX, m_shadowOffsetY, scale, drawingScaleUnit);
 }
 
 void libvisio::VSDParser::readShape(librevenge::RVNGInputStream *input)
