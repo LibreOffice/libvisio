@@ -456,7 +456,8 @@ void libvisio::VSD5Parser::readTextBlock(librevenge::RVNGInputStream *input)
 void libvisio::VSD5Parser::readTextField(librevenge::RVNGInputStream *input)
 {
   input->seek(3, librevenge::RVNG_SEEK_CUR);
-  if (0xe8 == readU8(input))
+  unsigned char cellType = readU8(input);
+  if (CELL_TYPE_StringWithoutUnit == cellType)
   {
     int nameId = readS16(input);
     m_shape.m_fields.addTextField(m_header.id, m_header.level, nameId, 0xffff);
@@ -464,7 +465,7 @@ void libvisio::VSD5Parser::readTextField(librevenge::RVNGInputStream *input)
   else
   {
     double numericValue = readDouble(input);
-    m_shape.m_fields.addNumericField(m_header.id, m_header.level, VSD_FIELD_FORMAT_Unknown, CELL_TYPE_NoCast, numericValue, 0xffff);
+    m_shape.m_fields.addNumericField(m_header.id, m_header.level, VSD_FIELD_FORMAT_Unknown, cellType, numericValue, 0xffff);
   }
 }
 
