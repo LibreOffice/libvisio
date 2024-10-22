@@ -66,7 +66,9 @@ EXTRA_DIST = \
 	data/qs-box.vsdx \
 	data/tdf76829-datetime-format.vsd \
 	data/tdf76829-numeric-format.vsd \
-	data/tdf136564-WhiteTextBackground.vsdx
+	data/tdf136564-WhiteTextBackground.vsdx \
+	data/tdf154379-DrawingUnits-type.vsd \
+	data/tdf154379-QuickStyleFillMatrix.vsdx
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
 AM_TESTS_ENVIRONMENT = TZ=UTC; export TZ;
