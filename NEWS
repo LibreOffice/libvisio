@@ -1,3 +1,13 @@
+libvisio 0.1.8
+
+- tests: Fix build with libxml 2.12
+- Add support for simple solid fill styles
+- Add support for TextBackground from SheetStyle (tdf136564)
+- Improve Arrowheads appearance (tdf#126402)
+- Fix reading FillStyleLst and TextBkgnd from shape (tdf#154379)
+- Add support to DrawingUnits types (tdf#154379)
+- Visio5: Provide cellType to collector in readTextField
+
 libvisio 0.1.7
 
 - Fix a few memory leaks found by oss-fuzz.
