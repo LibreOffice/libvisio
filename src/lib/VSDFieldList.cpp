@@ -145,6 +145,7 @@ double convertNumber(const unsigned short cellType, const double number)
   case CELL_TYPE_Radians:
     return number;
   case CELL_TYPE_Degrees:
+  case CELL_TYPE_DegreeMinuteSecond:
     return number*57.2957795;
   default:
   {
@@ -212,9 +213,12 @@ const char *getUnitString(const unsigned short cellType)
     return " yd";
   case CELL_TYPE_NauticalMiles:
     return " nm.";
-
   case CELL_TYPE_Radians:
     return " rad";
+  case CELL_TYPE_Minutes:
+    return " min";
+  case CELL_TYPE_Sec:
+    return " sec";
   case CELL_TYPE_Degrees:
     return " deg";
   default:
@@ -231,8 +235,22 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
 
   auto cell_type = m_cell_type;
   if ((m_cell_type == CELL_TYPE_DrawingUnits) || (m_cell_type == CELL_TYPE_PageUnits))
-
     cell_type = defaultDrawingUnit;
+
+  if (m_cell_type == CELL_TYPE_AngleUnits)
+  {
+    if (m_format == VSD_FIELD_FORMAT_Radians)
+      cell_type = CELL_TYPE_Radians;
+    else if (m_format == VSD_FIELD_FORMAT_Degrees)
+      cell_type = CELL_TYPE_Degrees;
+    else
+      cell_type = CELL_TYPE_DegreeMinuteSecond;
+  }
+
+  // In case format is with default units, draw with degree, minutes and seconds
+  if ((m_cell_type == CELL_TYPE_DegreeMinuteSecond) &&
+      (m_format == VSD_FIELD_FORMAT_NumGenDefUnits))
+    m_format = VSD_FIELD_FORMAT_Degrees;
 
   switch (m_format)
   {
@@ -276,7 +294,6 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
     // 7 Format string: 0.00 u Example: 30061.92 cm
     return doubleToString(convertNumber(cell_type, m_number), "%.2f%s", getUnitString(cell_type));
   }
-
   case VSD_FIELD_FORMAT_3PlNoUnits:
   {
     // 8 Format string: 0.000 Example: 30061.916
@@ -288,8 +305,30 @@ librevenge::RVNGString libvisio::VSDNumericField::getString(const std::map<unsig
     return doubleToString(convertNumber(cell_type, m_number), "%.3f%s", getUnitString(cell_type));
   }
   //TODO VSD_FIELD_FORMAT_FeetAndInches  10 Format string: <,FEET/INCH>0.000 u
-  //TODO VSD_FIELD_FORMAT_Radians  11 Format string: <,rad>0.#### u
-  //TODO VSD_FIELD_FORMAT_Degrees  12 Format string: <,deg>0.# u
+  case VSD_FIELD_FORMAT_Radians:
+  {
+    // 11 Format string: <,rad>0.#### u
+    return doubleToString(convertNumber(cell_type, m_number), "%.4f%s", getUnitString(cell_type));
+  }
+  case VSD_FIELD_FORMAT_Degrees:
+  {
+    if (cell_type == CELL_TYPE_DegreeMinuteSecond)
+    {
+      double aDegIntPart, aDegFractPart, aMinIntPart, aMinFractPart;
+      librevenge::RVNGString tempString;
+
+      aDegFractPart = modf(m_number * 57.2957795, &aDegIntPart);
+      aMinFractPart = modf(aDegFractPart * 60, &aMinIntPart);
+
+      tempString.sprintf("%.0f%s %.0f%s %.0f%s", aDegIntPart,
+                         getUnitString(CELL_TYPE_Degrees), aMinIntPart,
+                         getUnitString(CELL_TYPE_Minutes), 60.0 * aMinFractPart,
+                         getUnitString(CELL_TYPE_Sec));
+      return tempString;
+    }
+    else // 12 Format string: <,deg>0.# u
+      return doubleToString(convertNumber(cell_type, m_number), "%.0f%s", getUnitString(cell_type));
+  }
   //TODO VSD_FIELD_FORMAT_FeetAndInches1Pl  13 Format string: <,FEET/INCH># #/# u
   //TODO VSD_FIELD_FORMAT_FeetAndInches2Pl  14 Format string: <,FEET/INCH># #/## u
   //TODO VSD_FIELD_FORMAT_Fraction1PlNoUnits  15 Format string: 0 #/#

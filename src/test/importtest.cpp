@@ -215,6 +215,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdDateTimeFormatting);
   CPPUNIT_TEST(testVsd11FormatLine);
   CPPUNIT_TEST(testVsd6TextfieldsWithUnits);
+  CPPUNIT_TEST(testVsd11TextfieldsWithAngle);
   CPPUNIT_TEST(testVsd11TextfieldsWithUnits);
   CPPUNIT_TEST(testVsd11DrawingUnitsType);
   CPPUNIT_TEST(testBmpFileHeader);
@@ -237,6 +238,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsd11FormatLine();
   void testVsdDateTimeFormatting();
   void testVsd6TextfieldsWithUnits();
+  void testVsd11TextfieldsWithAngle();
   void testVsd11TextfieldsWithUnits();
   void testVsd11DrawingUnitsType();
   void testBmpFileHeader();
@@ -427,6 +429,14 @@ void ImportTest::testVsd11FormatLine()
   assertXPath(m_doc, "/document/page/setStyle[12]", "marker-start-center", "true");
 }
 
+// tdf#126292
+void ImportTest::testVsd11TextfieldsWithAngle()
+{
+  m_doc = parse("Visio11TextFieldsWithAngle.vsd", m_buffer);
+  assertXPathContent(m_doc, "/document/page/textObject[1]/paragraph/span/insertText", "TextField GeometryAngleGeneral -30");
+  assertXPathContent(m_doc, "/document/page/textObject[2]/paragraph/span/insertText", "TextField GeometryAngleRadians -0.5236 rad");
+  assertXPathContent(m_doc, "/document/page/textObject[3]/paragraph/span/insertText", "TextField GeometryAngleDegrees -30 deg");
+}
 
 // tdf#126292
 void ImportTest::testVsd6TextfieldsWithUnits()
@@ -510,8 +520,8 @@ void ImportTest::testVsd11TextfieldsWithUnits()
   assertXPathContent(m_doc, "/document/page/textObject[32]/paragraph[1]/span/insertText", "1 el. Sec 1 es.");
   assertXPathContent(m_doc, "/document/page/textObject[33]/paragraph[1]/span/insertText", "1 miles 1 mi");
   assertXPathContent(m_doc, "/document/page/textObject[34]/paragraph[1]/span/insertText", "1 nautical miles 1 nm.");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[35]/paragraph[1]/span/insertText", "ANGLE 1 seconds 0 deg 0 min 1 sec");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[36]/paragraph[1]/span/insertText", "ANGLE seconds 130 deg 49 min 9 sec");
+  assertXPathContent(m_doc, "/document/page/textObject[35]/paragraph[1]/span/insertText", "ANGLE 1 seconds 0 deg 0 min 1 sec");
+  assertXPathContent(m_doc, "/document/page/textObject[36]/paragraph[1]/span/insertText", "ANGLE seconds 130 deg 49 min 9 sec");
   assertXPathContent(m_doc, "/document/page/textObject[37]/paragraph[1]/span/insertText", "1000 didots 1000 d");
   // TODO assertXPathContent(m_doc, "/document/page/textObject[38]/paragraph[1]/span/insertText", "1 date with unitout unit 31.12.1899");
   // TODO assertXPathContent(m_doc, "/document/page/textObject[39]/paragraph[1]/span/insertText", "1 date with radians unit 31.12.1899");
