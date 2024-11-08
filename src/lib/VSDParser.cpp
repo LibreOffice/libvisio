@@ -902,12 +902,16 @@ void libvisio::VSDParser::readTextBlock(librevenge::RVNGInputStream *input)
   double bottomMargin = readDouble(input);
   unsigned char verticalAlign = readU8(input);
   const unsigned char bgColourIdx = readU8(input);
+  // The TextBkgnd cell can have any value from 0 through 24, or 255.
+  // The values 0 and 255 (visTxtBlklOpaque) both indicate a transparent text background.
   const bool isBgFilled = bgColourIdx != 0 && bgColourIdx != 0xff;
   Colour c;
   c.r = readU8(input);
   c.g = readU8(input);
   c.b = readU8(input);
   c.a = readU8(input);
+  if (isBgFilled)
+    c = _colourFromIndex(bgColourIdx - 1);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   double defaultTabStop = readDouble(input);
   input->seek(12, librevenge::RVNG_SEEK_CUR);

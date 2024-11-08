@@ -200,6 +200,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   ImportTest &operator=(const ImportTest &);
 
   CPPUNIT_TEST_SUITE(ImportTest);
+  CPPUNIT_TEST(testVsd6Textfields);
   CPPUNIT_TEST(testVsdxMetadataTitle);
   CPPUNIT_TEST(testVsdMetadataTitleMs1252);
   CPPUNIT_TEST(testVsdMetadataTitleUtf8);
@@ -214,7 +215,6 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdNumericFormat);
   CPPUNIT_TEST(testVsdDateTimeFormatting);
   CPPUNIT_TEST(testVsd11FormatLine);
-  CPPUNIT_TEST(testVsd6TextfieldsWithUnits);
   CPPUNIT_TEST(testVsd11TextfieldsWithAngle);
   CPPUNIT_TEST(testVsd11TextfieldsWithUnits);
   CPPUNIT_TEST(testVsd11DrawingUnitsType);
@@ -225,6 +225,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxQuickStyleFillStyle);
   CPPUNIT_TEST_SUITE_END();
 
+  void testVsd6Textfields();
   void testVsdxMetadataTitle();
   void testVsdMetadataTitleMs1252();
   void testVsdMetadataTitleUtf8();
@@ -237,7 +238,6 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdNumericFormat();
   void testVsd11FormatLine();
   void testVsdDateTimeFormatting();
-  void testVsd6TextfieldsWithUnits();
   void testVsd11TextfieldsWithAngle();
   void testVsd11TextfieldsWithUnits();
   void testVsd11DrawingUnitsType();
@@ -279,6 +279,23 @@ void ImportTest::tearDown()
 
   xmlBufferFree(m_buffer);
   m_buffer = 0;
+}
+
+// tdf#126292
+void ImportTest::testVsd6Textfields()
+{
+  m_doc = parse("Visio6PlanWithDimensions.vsd", m_buffer);
+  assertXPathContent(m_doc, "/document/page/layer[2]/textObject/paragraph[2]/span/insertText", "80,00 sq. ft.");
+  assertXPath(m_doc, "/document/page/layer[3]/textObject/paragraph/span[1]", "background-color", "#80c864");
+  assertXPathContent(m_doc, "/document/page/layer[3]/textObject/paragraph/span[1]/insertText", "Bold Custom Color ");
+  assertXPath(m_doc, "/document/page/layer[3]/textObject/paragraph/span[2]", "background-color", "#80c864");
+  assertXPathContent(m_doc, "/document/page/layer[3]/textObject/paragraph/span[2]/insertText", "10'-0\" ");
+  assertXPath(m_doc, "/document/page/layer[4]/textObject/paragraph/span", "background-color", "#ffffff");
+  assertXPathContent(m_doc, "/document/page/layer[4]/textObject/paragraph/span/insertText", "6'-0\"");
+  assertXPath(m_doc, "/document/page/layer[7]/textObject/paragraph/span", "background-color", "#ff00ff");
+  assertXPathContent(m_doc, "/document/page/layer[7]/textObject/paragraph/span/insertText", "Indexed color 5'-0\"");
+  assertXPath(m_doc, "/document/page/layer[8]/textObject/paragraph/span", "background-color", 0);
+  assertXPathContent(m_doc, "/document/page/layer[8]/textObject/paragraph/span/insertText", "Without Background color 10'-0\"");
 }
 
 void ImportTest::testVsdxMetadataTitle()
@@ -436,50 +453,6 @@ void ImportTest::testVsd11TextfieldsWithAngle()
   assertXPathContent(m_doc, "/document/page/textObject[1]/paragraph/span/insertText", "TextField GeometryAngleGeneral -30");
   assertXPathContent(m_doc, "/document/page/textObject[2]/paragraph/span/insertText", "TextField GeometryAngleRadians -0.5236 rad");
   assertXPathContent(m_doc, "/document/page/textObject[3]/paragraph/span/insertText", "TextField GeometryAngleDegrees -30 deg");
-}
-
-// tdf#126292
-void ImportTest::testVsd6TextfieldsWithUnits()
-{
-  m_doc = parse("Visio11TextFieldsWithUnits.vsd", m_buffer);
-  assertXPathContent(m_doc, "/document/page/textObject[2]/paragraph[1]/span/insertText", "Number1 with unit [cm] 1 cm");
-  assertXPathContent(m_doc, "/document/page/textObject[3]/paragraph[1]/span/insertText", "Number 1 with unit [cm] hidden 1");
-  assertXPathContent(m_doc, "/document/page/textObject[4]/paragraph[1]/span/insertText", "Number 1 without unit 1");
-  assertXPathContent(m_doc, "/document/page/textObject[5]/paragraph[1]/span/insertText[2]", "with unit [mm] 1 mm");
-  assertXPathContent(m_doc, "/document/page/textObject[6]/paragraph[1]/span/insertText", "Number 1 with [%] unit 1%");
-  assertXPathContent(m_doc, "/document/page/textObject[7]/paragraph[1]/span/insertText", "Number -1 without unit -1");
-  assertXPathContent(m_doc, "/document/page/textObject[8]/paragraph[1]/span/insertText", "1 Ciceros 1 c");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[9]/paragraph[1]/span/insertText", "1 (31.12.1899) date without unit 31.12.1899");
-  assertXPathContent(m_doc, "/document/page/textObject[10]/paragraph[1]/span/insertText", "1 degrees 1 deg");
-  assertXPathContent(m_doc, "/document/page/textObject[11]/paragraph[1]/span/insertText", "1 elapsed week 1 ew.");
-  //TODO assertXPathContent(m_doc, "/document/page/textObject[12]/paragraph[1]/span/insertText", "1 Acre 1 acres");
-  //TODO assertXPathContent(m_doc, "/document/page/textObject[13]/paragraph[1]/span/insertText", "1 sq. Centimeter 1 cm^2");
-  //TODO assertXPathContent(m_doc, "/document/page/textObject[14]/paragraph[1]/span/insertText", "1 sq. hectares 1 ha");
-  //TODO assertXPathContent(m_doc, "/document/page/textObject[15]/paragraph[1]/span/insertText", "1 sq inches 1 in^2");
-  assertXPathContent(m_doc, "/document/page/textObject[16]/paragraph[1]/span/insertText", "Number 100 with [%] unit 100%");
-  assertXPathContent(m_doc, "/document/page/textObject[17]/paragraph[1]/span/insertText", "Didots 1 d");
-  //TODO Add check with 1000 didots
-  assertXPathContent(m_doc, "/document/page/textObject[18]/paragraph[1]/span/insertText", "Points 1 pt");
-  assertXPathContent(m_doc, "/document/page/textObject[19]/paragraph[1]/span/insertText", "Picas 1 p");
-  assertXPathContent(m_doc, "/document/page/textObject[20]/paragraph[1]/span/insertText", "Inch 1 in");
-  assertXPathContent(m_doc, "/document/page/textObject[21]/paragraph[1]/span/insertText", "Feet 1 ft");
-  assertXPathContent(m_doc, "/document/page/textObject[22]/paragraph[1]/span/insertText", "1 elapsed day 1 ed.");
-  assertXPathContent(m_doc, "/document/page/textObject[23]/paragraph[1]/span/insertText", "1 kilometer 1 km");
-  assertXPathContent(m_doc, "/document/page/textObject[24]/paragraph[1]/span/insertText", "1 radians 1 rad");
-  assertXPathContent(m_doc, "/document/page/textObject[25]/paragraph[1]/span/insertText", "1 yard 1 yd");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[26]/paragraph[1]/span/insertText", "1 sq Feet 1 ft^2");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[27]/paragraph[1]/span/insertText", "1 kilometers 1 km^2");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[28]/paragraph[1]/span/insertText", "1 miles 1 mi^2");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[29]/paragraph[1]/span/insertText", "1 Inches in fractions 1,5 in");
-  assertXPathContent(m_doc, "/document/page/textObject[30]/paragraph[1]/span/insertText", "1 elapsed hours1 eh. ");
-  assertXPathContent(m_doc, "/document/page/textObject[31]/paragraph[1]/span/insertText", "1 el. Minutes 1 em.");
-  assertXPathContent(m_doc, "/document/page/textObject[32]/paragraph[1]/span/insertText", "1 el. Sec 1 es.");
-  assertXPathContent(m_doc, "/document/page/textObject[33]/paragraph[1]/span/insertText", "1 miles 1 mi");
-  assertXPathContent(m_doc, "/document/page/textObject[34]/paragraph[1]/span/insertText", "1 nautical miles 1 nm.");
-  assertXPathContent(m_doc, "/document/page/textObject[37]/paragraph[1]/span/insertText", "1000 didots 1000 d");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[38]/paragraph[1]/span/insertText", "1 date with unitout unit 31.12.1899");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[39]/paragraph[1]/span/insertText", "1 date with radians unit 31.12.1899");
-  // TODO assertXPathContent(m_doc, "/document/page/textObject[40]/paragraph[1]/span/insertText", "1 date with currency unit zł 1,00");
 }
 
 // tdf#126292
