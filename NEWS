@@ -1,8 +1,13 @@
+libvisio 0.1.9
+- Implement displaying Angle TextField (tdf#126292)
+- Correctly display Text Background for VSD 6 and 11 format (tdf#126292)
+- Better handling of theme colors (tdf#168475)
+
 libvisio 0.1.8
 
 - tests: Fix build with libxml 2.12
 - Add support for simple solid fill styles
-- Add support for TextBackground from SheetStyle (tdf136564)
+- Add support for TextBackground from SheetStyle (tdf#136564)
 - Improve Arrowheads appearance (tdf#126402)
 - Fix reading FillStyleLst and TextBkgnd from shape (tdf#154379)
 - Add support to DrawingUnits types (tdf#154379)
