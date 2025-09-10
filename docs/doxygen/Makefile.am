@@ -6,9 +6,7 @@ if WITH_LIBVISIO_DOCS
 
 install-data-am:
 	mkdir -p $(DESTDIR)$(docdir)/html
-	$(INSTALL_DATA) html/*.html $(DESTDIR)$(docdir)/html/
-	$(INSTALL_DATA) html/*.png $(DESTDIR)$(docdir)/html/
-	$(INSTALL_DATA) html/*.css $(DESTDIR)$(docdir)/html/
+	$(INSTALL_DATA) html/* $(DESTDIR)$(docdir)/html/
 
 uninstall-am:
 	-rm -rf $(DESTDIR)$(docdir)/html
