@@ -16,8 +16,6 @@
 
 #include <memory>
 
-#include <boost/cstdint.hpp>
-
 #include "VSDTypes.h"
 
 #define VSD_EPSILON 1E-6
