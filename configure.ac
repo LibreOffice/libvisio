@@ -1,6 +1,6 @@
 # Process this file with autoconf to create configure.
 
-AC_PREREQ([2.65])
+AC_PREREQ([2.69])
 
 # ====================
 # Version informations
@@ -15,7 +15,7 @@ m4_define([libvisio_version],[libvisio_version_major.libvisio_version_minor.libv
 # =============
 AC_INIT([libvisio],[libvisio_version])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2])
 AM_SILENT_RULES([yes])
 AC_LANG([C++])
@@ -202,16 +202,14 @@ AS_IF([test $platform_win32 = yes],
         AC_MSG_CHECKING([for -fvisibility=hidden compiler flag])
         saved_CXXFLAGS="$CXXFLAGS"
         CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
-        AC_TRY_COMPILE([], [],
-            [
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[
                 AC_MSG_RESULT([yes])
                 CXXFLAGS="$CXXFLAGS -DLIBVISIO_VISIBILITY"
-            ],
-            [
+            ],[
                 AC_MSG_RESULT([no])
                 CXXFLAGS="$saved_CXXFLAGS"
-            ]
-        )
+            
+        ])
     ]
 )
 
