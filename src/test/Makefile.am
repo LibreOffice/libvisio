@@ -68,7 +68,11 @@ EXTRA_DIST = \
 	data/tdf76829-numeric-format.vsd \
 	data/tdf136564-WhiteTextBackground.vsdx \
 	data/tdf154379-DrawingUnits-type.vsd \
-	data/tdf154379-QuickStyleFillMatrix.vsdx
+	data/tdf154379-QuickStyleFillMatrix.vsdx \
+	data/Visio11PlanWithDimensions.vsd \
+	data/Visio11TextFieldsWithAngle.vsd \
+	data/Visio5PlanWithDimensions.vsd \
+	data/Visio6PlanWithDimensions.vsd
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
 AM_TESTS_ENVIRONMENT = TZ=UTC; export TZ;
