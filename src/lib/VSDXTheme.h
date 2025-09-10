@@ -12,7 +12,7 @@
 
 #include <vector>
 #include <map>
-#include <boost/optional.hpp>
+#include <optional>
 #include <librevenge-stream/librevenge-stream.h>
 #include "VSDXMLHelper.h"
 
@@ -79,15 +79,15 @@ public:
   VSDXTheme();
   ~VSDXTheme();
   bool parse(librevenge::RVNGInputStream *input);
-  boost::optional<Colour> getThemeColour(unsigned value, unsigned variationIndex = 0) const;
-  boost::optional<Colour> getFillStyleColour(unsigned value) const;
+  std::optional<Colour> getThemeColour(unsigned value, unsigned variationIndex = 0) const;
+  std::optional<Colour> getFillStyleColour(unsigned value) const;
 
 private:
   VSDXTheme(const VSDXTheme &);
   VSDXTheme &operator=(const VSDXTheme &);
 
-  boost::optional<Colour> readSrgbClr(xmlTextReaderPtr reader);
-  boost::optional<Colour> readSysClr(xmlTextReaderPtr reader);
+  std::optional<Colour> readSrgbClr(xmlTextReaderPtr reader);
+  std::optional<Colour> readSysClr(xmlTextReaderPtr reader);
 
   void readClrScheme(xmlTextReaderPtr reader);
   bool readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr);
@@ -105,7 +105,7 @@ private:
 
   VSDXClrScheme m_clrScheme;
   VSDXFontScheme m_fontScheme;
-  std::vector<boost::optional<Colour>> m_fillStyleLst;
+  std::vector<std::optional<Colour>> m_fillStyleLst;
 };
 
 } // namespace libvisio

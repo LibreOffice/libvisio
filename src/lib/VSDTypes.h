@@ -14,7 +14,7 @@
 #include <map>
 #include <librevenge/librevenge.h>
 
-#define ASSIGN_OPTIONAL(t, u) if(!!t) u = t.get()
+#define ASSIGN_OPTIONAL(t, u) if(!!t) u = t.value()
 #define MINUS_ONE (unsigned)-1
 
 namespace libvisio

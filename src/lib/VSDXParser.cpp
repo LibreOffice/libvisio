@@ -706,41 +706,41 @@ void libvisio::VSDXParser::readFonts(xmlTextReaderPtr reader)
 void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
 {
   // Line properties
-  boost::optional<double> strokeWidth;
-  boost::optional<Colour> strokeColour;
-  boost::optional<unsigned char> linePattern;
-  boost::optional<double> rounding;
-  boost::optional<unsigned char> startMarker;
-  boost::optional<unsigned char> endMarker;
-  boost::optional<unsigned char> lineCap;
-  boost::optional<long> qsLineColour;
-  boost::optional<long> qsLineMatrix;
+  std::optional<double> strokeWidth;
+  std::optional<Colour> strokeColour;
+  std::optional<unsigned char> linePattern;
+  std::optional<double> rounding;
+  std::optional<unsigned char> startMarker;
+  std::optional<unsigned char> endMarker;
+  std::optional<unsigned char> lineCap;
+  std::optional<long> qsLineColour;
+  std::optional<long> qsLineMatrix;
 
   // Fill and shadow properties
-  boost::optional<Colour> fillColourFG;
-  boost::optional<double> fillFGTransparency;
-  boost::optional<Colour> fillColourBG;
-  boost::optional<double> fillBGTransparency;
-  boost::optional<unsigned char> fillPattern;
-  boost::optional<Colour> shadowColourFG;
-  boost::optional<Colour> shadowColourBG;
-  boost::optional<unsigned char> shadowPattern;
-  boost::optional<double> shadowOffsetX;
-  boost::optional<double> shadowOffsetY;
-  boost::optional<long> qsFillColour;
-  boost::optional<long> qsShadowColour;
-  boost::optional<long> qsFillMatrix;
+  std::optional<Colour> fillColourFG;
+  std::optional<double> fillFGTransparency;
+  std::optional<Colour> fillColourBG;
+  std::optional<double> fillBGTransparency;
+  std::optional<unsigned char> fillPattern;
+  std::optional<Colour> shadowColourFG;
+  std::optional<Colour> shadowColourBG;
+  std::optional<unsigned char> shadowPattern;
+  std::optional<double> shadowOffsetX;
+  std::optional<double> shadowOffsetY;
+  std::optional<long> qsFillColour;
+  std::optional<long> qsShadowColour;
+  std::optional<long> qsFillMatrix;
 
   // Text block properties
-  boost::optional<double> leftMargin;
-  boost::optional<double> rightMargin;
-  boost::optional<double> topMargin;
-  boost::optional<double> bottomMargin;
-  boost::optional<unsigned char> verticalAlign;
-  boost::optional<bool> isTextBkgndFilled;
-  boost::optional<Colour> textBkgndColour;
-  boost::optional<double> defaultTabStop;
-  boost::optional<unsigned char> textDirection;
+  std::optional<double> leftMargin;
+  std::optional<double> rightMargin;
+  std::optional<double> topMargin;
+  std::optional<double> bottomMargin;
+  std::optional<unsigned char> verticalAlign;
+  std::optional<bool> isTextBkgndFilled;
+  std::optional<Colour> textBkgndColour;
+  std::optional<double> defaultTabStop;
+  std::optional<unsigned char> textDirection;
 
   auto level = (unsigned)getElementDepth(reader);
   int ret = 1;
@@ -1002,7 +1002,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = make_unique<XForm>();
+          m_shape.m_txtxform = std::make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->pinX, reader);
       }
       break;
@@ -1010,7 +1010,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = make_unique<XForm>();
+          m_shape.m_txtxform = std::make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->pinY, reader);
       }
       break;
@@ -1018,7 +1018,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = make_unique<XForm>();
+          m_shape.m_txtxform = std::make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->width, reader);
       }
       break;
@@ -1026,7 +1026,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = make_unique<XForm>();
+          m_shape.m_txtxform = std::make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->height, reader);
       }
       break;
@@ -1034,7 +1034,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = make_unique<XForm>();
+          m_shape.m_txtxform = std::make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->pinLocX, reader);
       }
       break;
@@ -1042,7 +1042,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = make_unique<XForm>();
+          m_shape.m_txtxform = std::make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->pinLocY, reader);
       }
       break;
@@ -1050,7 +1050,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_txtxform)
-          m_shape.m_txtxform = make_unique<XForm>();
+          m_shape.m_txtxform = std::make_unique<XForm>();
         ret = readDoubleData(m_shape.m_txtxform->angle, reader);
       }
       break;
@@ -1058,7 +1058,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = make_unique<XForm1D>();
+          m_shape.m_xform1d = std::make_unique<XForm1D>();
         ret = readDoubleData(m_shape.m_xform1d->beginX, reader);
       }
       break;
@@ -1066,7 +1066,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = make_unique<XForm1D>();
+          m_shape.m_xform1d = std::make_unique<XForm1D>();
         ret = readDoubleData(m_shape.m_xform1d->beginY, reader);
       }
       break;
@@ -1074,7 +1074,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = make_unique<XForm1D>();
+          m_shape.m_xform1d = std::make_unique<XForm1D>();
         readTriggerId(m_shape.m_xform1d->beginId, reader);
       }
       break;
@@ -1082,7 +1082,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = make_unique<XForm1D>();
+          m_shape.m_xform1d = std::make_unique<XForm1D>();
         readTriggerId(m_shape.m_xform1d->endId, reader);
       }
       break;
@@ -1090,7 +1090,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = make_unique<XForm1D>();
+          m_shape.m_xform1d = std::make_unique<XForm1D>();
         ret = readDoubleData(m_shape.m_xform1d->endX, reader);
       }
       break;
@@ -1098,7 +1098,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_xform1d)
-          m_shape.m_xform1d = make_unique<XForm1D>();
+          m_shape.m_xform1d = std::make_unique<XForm1D>();
         ret = readDoubleData(m_shape.m_xform1d->endY, reader);
       }
       break;
@@ -1106,7 +1106,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_foreign)
-          m_shape.m_foreign = make_unique<ForeignData>();
+          m_shape.m_foreign = std::make_unique<ForeignData>();
         ret = readDoubleData(m_shape.m_foreign->offsetX, reader);
       }
       break;
@@ -1114,7 +1114,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_foreign)
-          m_shape.m_foreign = make_unique<ForeignData>();
+          m_shape.m_foreign = std::make_unique<ForeignData>();
         ret = readDoubleData(m_shape.m_foreign->offsetY, reader);
       }
       break;
@@ -1122,7 +1122,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_foreign)
-          m_shape.m_foreign = make_unique<ForeignData>();
+          m_shape.m_foreign = std::make_unique<ForeignData>();
         ret = readDoubleData(m_shape.m_foreign->width, reader);
       }
       break;
@@ -1130,7 +1130,7 @@ void libvisio::VSDXParser::readShapeProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         if (!m_shape.m_foreign)
-          m_shape.m_foreign = make_unique<ForeignData>();
+          m_shape.m_foreign = std::make_unique<ForeignData>();
         ret = readDoubleData(m_shape.m_foreign->height, reader);
       }
       break;
@@ -1485,7 +1485,7 @@ void libvisio::VSDXParser::getBinaryData(xmlTextReaderPtr reader)
     }
   }
   if (!m_shape.m_foreign)
-    m_shape.m_foreign = make_unique<ForeignData>();
+    m_shape.m_foreign = std::make_unique<ForeignData>();
   m_shape.m_foreign->data = m_currentBinaryData;
 }
 

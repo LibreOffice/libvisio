@@ -29,12 +29,12 @@ public:
   VSDCharacterList(const VSDCharacterList &charList);
   ~VSDCharacterList();
   VSDCharacterList &operator=(const VSDCharacterList &charList);
-  void addCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
-                 const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
-                 const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
-                 const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
-                 const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
-                 const boost::optional<bool> &subscript, const boost::optional<double> &scaleWidth);
+  void addCharIX(unsigned id, unsigned level, unsigned charCount, const std::optional<VSDName> &font,
+                 const std::optional<Colour> &fontColour, const std::optional<double> &fontSize, const std::optional<bool> &bold,
+                 const std::optional<bool> &italic, const std::optional<bool> &underline, const std::optional<bool> &doubleunderline,
+                 const std::optional<bool> &strikeout, const std::optional<bool> &doublestrikeout, const std::optional<bool> &allcaps,
+                 const std::optional<bool> &initcaps, const std::optional<bool> &smallcaps, const std::optional<bool> &superscript,
+                 const std::optional<bool> &subscript, const std::optional<double> &scaleWidth);
   void addCharIX(unsigned id, unsigned level, const VSDOptionalCharStyle &style);
   unsigned getCharCount(unsigned id) const;
   void setCharCount(unsigned id, unsigned charCount);

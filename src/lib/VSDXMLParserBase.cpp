@@ -71,9 +71,9 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<bool> noFill;
-  boost::optional<bool> noLine;
-  boost::optional<bool> noShow;
+  std::optional<bool> noFill;
+  std::optional<bool> noLine;
+  std::optional<bool> noShow;
 
   do
   {
@@ -188,8 +188,8 @@ void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
+  std::optional<double> x;
+  std::optional<double> y;
 
   do
   {
@@ -238,8 +238,8 @@ void libvisio::VSDXMLParserBase::readLineTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
+  std::optional<double> x;
+  std::optional<double> y;
 
   do
   {
@@ -288,9 +288,9 @@ void libvisio::VSDXMLParserBase::readArcTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
 
   do
   {
@@ -342,12 +342,12 @@ void libvisio::VSDXMLParserBase::readEllipticalArcTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
-  boost::optional<double> b;
-  boost::optional<double> c;
-  boost::optional<double> d;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
+  std::optional<double> b;
+  std::optional<double> c;
+  std::optional<double> d;
 
   do
   {
@@ -408,12 +408,12 @@ void libvisio::VSDXMLParserBase::readEllipse(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
-  boost::optional<double> b;
-  boost::optional<double> c;
-  boost::optional<double> d;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
+  std::optional<double> b;
+  std::optional<double> c;
+  std::optional<double> d;
 
   do
   {
@@ -474,13 +474,13 @@ void libvisio::VSDXMLParserBase::readNURBSTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> knot; // Second last knot
-  boost::optional<double> weight; // Last weight
-  boost::optional<double> knotPrev; // First knot
-  boost::optional<double> weightPrev ; // First weight
-  boost::optional<NURBSData> nurbsData;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> knot; // Second last knot
+  std::optional<double> weight; // Last weight
+  std::optional<double> knotPrev; // First knot
+  std::optional<double> weightPrev ; // First weight
+  std::optional<NURBSData> nurbsData;
 
   do
   {
@@ -545,9 +545,9 @@ void libvisio::VSDXMLParserBase::readPolylineTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<PolylineData> polyLineData;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<PolylineData> polyLineData;
 
   do
   {
@@ -599,10 +599,10 @@ void libvisio::VSDXMLParserBase::readInfiniteLine(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
-  boost::optional<double> b;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
+  std::optional<double> b;
 
   do
   {
@@ -657,12 +657,12 @@ void libvisio::VSDXMLParserBase::readRelEllipticalArcTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
-  boost::optional<double> b;
-  boost::optional<double> c;
-  boost::optional<double> d;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
+  std::optional<double> b;
+  std::optional<double> c;
+  std::optional<double> d;
 
   do
   {
@@ -723,12 +723,12 @@ void libvisio::VSDXMLParserBase::readRelCubBezTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
-  boost::optional<double> b;
-  boost::optional<double> c;
-  boost::optional<double> d;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
+  std::optional<double> b;
+  std::optional<double> c;
+  std::optional<double> d;
 
   do
   {
@@ -789,8 +789,8 @@ void libvisio::VSDXMLParserBase::readRelLineTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
+  std::optional<double> x;
+  std::optional<double> y;
 
   do
   {
@@ -839,8 +839,8 @@ void libvisio::VSDXMLParserBase::readRelMoveTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
+  std::optional<double> x;
+  std::optional<double> y;
 
   do
   {
@@ -889,10 +889,10 @@ void libvisio::VSDXMLParserBase::readRelQuadBezTo(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
-  boost::optional<double> b;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
+  std::optional<double> b;
 
   do
   {
@@ -967,10 +967,10 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
     if (tmpShape)
     {
       if (tmpShape->m_foreign)
-        m_shape.m_foreign = make_unique<ForeignData>(*(tmpShape->m_foreign));
+        m_shape.m_foreign = std::make_unique<ForeignData>(*(tmpShape->m_foreign));
       m_shape.m_xform = tmpShape->m_xform;
       if (tmpShape->m_txtxform)
-        m_shape.m_txtxform = make_unique<XForm>(*(tmpShape->m_txtxform));
+        m_shape.m_txtxform = std::make_unique<XForm>(*(tmpShape->m_txtxform));
       m_shape.m_geometries = tmpShape->m_geometries;
       m_shape.m_charList = tmpShape->m_charList;
       m_shape.m_paraList = tmpShape->m_paraList;
@@ -1183,22 +1183,22 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
   int level = getElementDepth(reader);
 
   unsigned charCount = 0;
-  boost::optional<VSDName> font;
-  boost::optional<Colour> fontColour;
+  std::optional<VSDName> font;
+  std::optional<Colour> fontColour;
 
-  boost::optional<bool> bold;
-  boost::optional<bool> italic;
-  boost::optional<bool> underline;
-  boost::optional<bool> doubleunderline;
-  boost::optional<bool> strikeout;
-  boost::optional<bool> doublestrikeout;
-  boost::optional<bool> allcaps;
-  boost::optional<bool> initcaps;
-  boost::optional<bool> smallcaps;
-  boost::optional<bool> superscript;
-  boost::optional<bool> subscript;
-  boost::optional<double> fontSize;
-  boost::optional<double> scaleWidth;
+  std::optional<bool> bold;
+  std::optional<bool> italic;
+  std::optional<bool> underline;
+  std::optional<bool> doubleunderline;
+  std::optional<bool> strikeout;
+  std::optional<bool> doublestrikeout;
+  std::optional<bool> allcaps;
+  std::optional<bool> initcaps;
+  std::optional<bool> smallcaps;
+  std::optional<bool> superscript;
+  std::optional<bool> subscript;
+  std::optional<double> fontSize;
+  std::optional<double> scaleWidth;
 
   do
   {
@@ -1416,19 +1416,19 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
   int level = getElementDepth(reader);
 
   unsigned charCount = 0;
-  boost::optional<double> indFirst;
-  boost::optional<double> indLeft;
-  boost::optional<double> indRight;
-  boost::optional<double> spLine;
-  boost::optional<double> spBefore;
-  boost::optional<double> spAfter;
-  boost::optional<unsigned char> align;
-  boost::optional<unsigned char> bullet;
-  boost::optional<VSDName> bulletStr;
-  boost::optional<VSDName> bulletFont;
-  boost::optional<double> bulletFontSize;
-  boost::optional<double> textPosAfterBullet;
-  boost::optional<unsigned> flags;
+  std::optional<double> indFirst;
+  std::optional<double> indLeft;
+  std::optional<double> indRight;
+  std::optional<double> spLine;
+  std::optional<double> spBefore;
+  std::optional<double> spAfter;
+  std::optional<unsigned char> align;
+  std::optional<unsigned char> bullet;
+  std::optional<VSDName> bulletStr;
+  std::optional<VSDName> bulletFont;
+  std::optional<double> bulletFontSize;
+  std::optional<double> textPosAfterBullet;
+  std::optional<unsigned> flags;
 
   do
   {
@@ -1591,12 +1591,12 @@ void libvisio::VSDXMLParserBase::readSplineStart(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
-  boost::optional<double> b;
-  boost::optional<double> c;
-  boost::optional<unsigned> d;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
+  std::optional<double> b;
+  std::optional<double> c;
+  std::optional<unsigned> d;
 
   do
   {
@@ -1657,9 +1657,9 @@ void libvisio::VSDXMLParserBase::readSplineKnot(xmlTextReaderPtr reader)
     return;
   }
 
-  boost::optional<double> x;
-  boost::optional<double> y;
-  boost::optional<double> a;
+  std::optional<double> x;
+  std::optional<double> y;
+  std::optional<double> a;
 
   do
   {
@@ -1708,7 +1708,7 @@ void libvisio::VSDXMLParserBase::readForeignData(xmlTextReaderPtr reader)
 {
   VSD_DEBUG_MSG(("VSDXMLParser::readForeignData\n"));
   if (!m_shape.m_foreign)
-    m_shape.m_foreign = make_unique<ForeignData>();
+    m_shape.m_foreign = std::make_unique<ForeignData>();
 
   const shared_ptr<xmlChar> foreignTypeString(xmlTextReaderGetAttribute(reader, BAD_CAST("ForeignType")), xmlFree);
   if (foreignTypeString)
@@ -1961,7 +1961,7 @@ void libvisio::VSDXMLParserBase::skipPages(xmlTextReaderPtr reader)
   while ((XML_PAGES != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
-int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readNURBSData(std::optional<NURBSData> &data, xmlTextReaderPtr reader)
 {
   NURBSData tmpData;
 
@@ -2014,7 +2014,7 @@ int libvisio::VSDXMLParserBase::readNURBSData(boost::optional<NURBSData> &data, 
   return 1;
 }
 
-int libvisio::VSDXMLParserBase::readPolylineData(boost::optional<PolylineData> &data, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readPolylineData(std::optional<PolylineData> &data, xmlTextReaderPtr reader)
 {
   PolylineData tmpData;
 
@@ -2087,7 +2087,7 @@ int libvisio::VSDXMLParserBase::readStringData(libvisio::VSDName &text, xmlTextR
   return -1;
 }
 
-int libvisio::VSDXMLParserBase::readDoubleData(boost::optional<double> &value, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readDoubleData(std::optional<double> &value, xmlTextReaderPtr reader)
 {
   const shared_ptr<xmlChar> stringValue(readStringData(reader), xmlFree);
   if (stringValue)
@@ -2113,7 +2113,7 @@ int libvisio::VSDXMLParserBase::readLongData(long &value, xmlTextReaderPtr reade
   return -1;
 }
 
-int libvisio::VSDXMLParserBase::readLongData(boost::optional<long> &value, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readLongData(std::optional<long> &value, xmlTextReaderPtr reader)
 {
   const shared_ptr<xmlChar> stringValue(readStringData(reader), xmlFree);
   if (stringValue)
@@ -2139,7 +2139,7 @@ int libvisio::VSDXMLParserBase::readBoolData(bool &value, xmlTextReaderPtr reade
   return -1;
 }
 
-int libvisio::VSDXMLParserBase::readBoolData(boost::optional<bool> &value, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readBoolData(std::optional<bool> &value, xmlTextReaderPtr reader)
 {
   const shared_ptr<xmlChar> stringValue(readStringData(reader), xmlFree);
   if (stringValue)
@@ -2152,12 +2152,12 @@ int libvisio::VSDXMLParserBase::readBoolData(boost::optional<bool> &value, xmlTe
   return -1;
 }
 
-int libvisio::VSDXMLParserBase::readUnsignedData(boost::optional<unsigned> &value, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readUnsignedData(std::optional<unsigned> &value, xmlTextReaderPtr reader)
 {
-  boost::optional<long> tmpValue;
+  std::optional<long> tmpValue;
   int ret = readLongData(tmpValue, reader);
   if (!!tmpValue)
-    value = (unsigned)tmpValue.get();
+    value = (unsigned)tmpValue.value();
   return ret;
 }
 
@@ -2169,12 +2169,12 @@ int libvisio::VSDXMLParserBase::readByteData(unsigned char &value, xmlTextReader
   return ret;
 }
 
-int libvisio::VSDXMLParserBase::readByteData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readByteData(std::optional<unsigned char> &value, xmlTextReaderPtr reader)
 {
-  boost::optional<long> tmpValue;
+  std::optional<long> tmpValue;
   int ret = readLongData(tmpValue, reader);
   if (!!tmpValue)
-    value = (unsigned char) tmpValue.get();
+    value = (unsigned char) tmpValue.value();
   return ret;
 }
 
@@ -2210,7 +2210,7 @@ int libvisio::VSDXMLParserBase::readExtendedColourData(Colour &value, long &idx,
   return -1;
 }
 
-int libvisio::VSDXMLParserBase::readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader)
+int libvisio::VSDXMLParserBase::readExtendedColourData(std::optional<Colour> &value, xmlTextReaderPtr reader)
 {
   Colour tmpValue;
   int ret = readExtendedColourData(tmpValue, reader);

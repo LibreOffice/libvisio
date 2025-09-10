@@ -12,7 +12,7 @@
 
 #include <map>
 #include <vector>
-#include <boost/optional.hpp>
+#include <optional>
 #include "VSDTypes.h"
 #include "VSDXTheme.h"
 #include "libvisio_utils.h"
@@ -25,11 +25,11 @@ struct VSDOptionalLineStyle
   VSDOptionalLineStyle() :
     width(), colour(), pattern(), startMarker(), endMarker(), cap(), rounding(),
     qsLineColour(), qsLineMatrix() {}
-  VSDOptionalLineStyle(const boost::optional<double> &w, const boost::optional<Colour> &col,
-                       const boost::optional<unsigned char> &p, const boost::optional<unsigned char> &sm,
-                       const boost::optional<unsigned char> &em, const boost::optional<unsigned char> &c,
-                       const boost::optional<double> &r, const boost::optional<long> &qlc,
-                       const boost::optional<long> &qlm) :
+  VSDOptionalLineStyle(const std::optional<double> &w, const std::optional<Colour> &col,
+                       const std::optional<unsigned char> &p, const std::optional<unsigned char> &sm,
+                       const std::optional<unsigned char> &em, const std::optional<unsigned char> &c,
+                       const std::optional<double> &r, const std::optional<long> &qlc,
+                       const std::optional<long> &qlm) :
     width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r),
     qsLineColour(qlc), qsLineMatrix(qlm) {}
   VSDOptionalLineStyle(const VSDOptionalLineStyle &style) = default;
@@ -48,15 +48,15 @@ struct VSDOptionalLineStyle
     ASSIGN_OPTIONAL(style.qsLineMatrix, qsLineMatrix);
   }
 
-  boost::optional<double> width;
-  boost::optional<Colour> colour;
-  boost::optional<unsigned char> pattern;
-  boost::optional<unsigned char> startMarker;
-  boost::optional<unsigned char> endMarker;
-  boost::optional<unsigned char> cap;
-  boost::optional<double> rounding;
-  boost::optional<long> qsLineColour;
-  boost::optional<long> qsLineMatrix;
+  std::optional<double> width;
+  std::optional<Colour> colour;
+  std::optional<unsigned char> pattern;
+  std::optional<unsigned char> startMarker;
+  std::optional<unsigned char> endMarker;
+  std::optional<unsigned char> cap;
+  std::optional<double> rounding;
+  std::optional<long> qsLineColour;
+  std::optional<long> qsLineMatrix;
 };
 
 struct VSDLineStyle
@@ -83,8 +83,8 @@ struct VSDLineStyle
     ASSIGN_OPTIONAL(style.qsLineMatrix, qsLineMatrix);
     if (theme)
     {
-      if (!!style.qsLineColour && style.qsLineColour.get() >= 0)
-        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsLineColour.get()), colour);
+      if (!!style.qsLineColour && style.qsLineColour.value() >= 0)
+        ASSIGN_OPTIONAL(theme->getThemeColour(style.qsLineColour.value()), colour);
     }
     ASSIGN_OPTIONAL(style.colour, colour);
   }
@@ -106,12 +106,12 @@ struct VSDOptionalFillStyle
     fgColour(), bgColour(), pattern(), fgTransparency(), bgTransparency(), shadowFgColour(),
     shadowPattern(), shadowOffsetX(), shadowOffsetY(), qsFillColour(), qsShadowColour(),
     qsFillMatrix() {}
-  VSDOptionalFillStyle(const boost::optional<Colour> &fgc, const boost::optional<Colour> &bgc,
-                       const boost::optional<unsigned char> &p, const boost::optional<double> &fga,
-                       const boost::optional<double> &bga, const boost::optional<Colour> &sfgc,
-                       const boost::optional<unsigned char> &shp, const boost::optional<double> &shX,
-                       const boost::optional<double> &shY, const boost::optional<long> &qsFc,
-                       const boost::optional<long> &qsSc, const boost::optional<long> &qsFm) :
+  VSDOptionalFillStyle(const std::optional<Colour> &fgc, const std::optional<Colour> &bgc,
+                       const std::optional<unsigned char> &p, const std::optional<double> &fga,
+                       const std::optional<double> &bga, const std::optional<Colour> &sfgc,
+                       const std::optional<unsigned char> &shp, const std::optional<double> &shX,
+                       const std::optional<double> &shY, const std::optional<long> &qsFc,
+                       const std::optional<long> &qsSc, const std::optional<long> &qsFm) :
     fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
     shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
     qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm) {}
@@ -134,18 +134,18 @@ struct VSDOptionalFillStyle
     ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
   }
 
-  boost::optional<Colour> fgColour;
-  boost::optional<Colour> bgColour;
-  boost::optional<unsigned char> pattern;
-  boost::optional<double> fgTransparency;
-  boost::optional<double> bgTransparency;
-  boost::optional<Colour> shadowFgColour;
-  boost::optional<unsigned char> shadowPattern;
-  boost::optional<double> shadowOffsetX;
-  boost::optional<double> shadowOffsetY;
-  boost::optional<long> qsFillColour;
-  boost::optional<long> qsShadowColour;
-  boost::optional<long> qsFillMatrix;
+  std::optional<Colour> fgColour;
+  std::optional<Colour> bgColour;
+  std::optional<unsigned char> pattern;
+  std::optional<double> fgTransparency;
+  std::optional<double> bgTransparency;
+  std::optional<Colour> shadowFgColour;
+  std::optional<unsigned char> shadowPattern;
+  std::optional<double> shadowOffsetX;
+  std::optional<double> shadowOffsetY;
+  std::optional<long> qsFillColour;
+  std::optional<long> qsShadowColour;
+  std::optional<long> qsFillMatrix;
 };
 
 struct VSDFillStyle
@@ -182,8 +182,8 @@ struct VSDFillStyle
       ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.value_or(100)), fgColour);
       ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.value_or(100)), bgColour);
       ASSIGN_OPTIONAL(theme->getThemeColour(style.qsShadowColour.value_or(100)), shadowFgColour);
-      if (!!style.qsFillMatrix && style.qsFillMatrix.get() >= 0)
-        ASSIGN_OPTIONAL(theme->getFillStyleColour(style.qsFillMatrix.get()), fgColour);
+      if (!!style.qsFillMatrix && style.qsFillMatrix.value() >= 0)
+        ASSIGN_OPTIONAL(theme->getFillStyleColour(style.qsFillMatrix.value()), fgColour);
     }
     ASSIGN_OPTIONAL(style.fgColour, fgColour);
     ASSIGN_OPTIONAL(style.bgColour, bgColour);
@@ -211,14 +211,14 @@ struct VSDOptionalCharStyle
       underline(), doubleunderline(), strikeout(), doublestrikeout(),
       allcaps(), initcaps(), smallcaps(), superscript(), subscript(),
       scaleWidth() {}
-  VSDOptionalCharStyle(unsigned cc, const boost::optional<VSDName> &ft,
-                       const boost::optional<Colour> &c, const boost::optional<double> &s,
-                       const boost::optional<bool> &b, const boost::optional<bool> &i,
-                       const boost::optional<bool> &u, const boost::optional<bool> &du,
-                       const boost::optional<bool> &so, const boost::optional<bool> &dso,
-                       const boost::optional<bool> &ac, const boost::optional<bool> &ic,
-                       const boost::optional<bool> &sc, const boost::optional<bool> &super,
-                       const boost::optional<bool> &sub, const boost::optional<double> &sw) :
+  VSDOptionalCharStyle(unsigned cc, const std::optional<VSDName> &ft,
+                       const std::optional<Colour> &c, const std::optional<double> &s,
+                       const std::optional<bool> &b, const std::optional<bool> &i,
+                       const std::optional<bool> &u, const std::optional<bool> &du,
+                       const std::optional<bool> &so, const std::optional<bool> &dso,
+                       const std::optional<bool> &ac, const std::optional<bool> &ic,
+                       const std::optional<bool> &sc, const std::optional<bool> &super,
+                       const std::optional<bool> &sub, const std::optional<double> &sw) :
     charCount(cc), font(ft), colour(c), size(s), bold(b), italic(i),
     underline(u), doubleunderline(du), strikeout(so), doublestrikeout(dso),
     allcaps(ac), initcaps(ic), smallcaps(sc), superscript(super),
@@ -246,21 +246,21 @@ struct VSDOptionalCharStyle
   }
 
   unsigned charCount;
-  boost::optional<VSDName> font;
-  boost::optional<Colour> colour;
-  boost::optional<double> size;
-  boost::optional<bool> bold;
-  boost::optional<bool> italic;
-  boost::optional<bool> underline;
-  boost::optional<bool> doubleunderline;
-  boost::optional<bool> strikeout;
-  boost::optional<bool> doublestrikeout;
-  boost::optional<bool> allcaps;
-  boost::optional<bool> initcaps;
-  boost::optional<bool> smallcaps;
-  boost::optional<bool> superscript;
-  boost::optional<bool> subscript;
-  boost::optional<double> scaleWidth;
+  std::optional<VSDName> font;
+  std::optional<Colour> colour;
+  std::optional<double> size;
+  std::optional<bool> bold;
+  std::optional<bool> italic;
+  std::optional<bool> underline;
+  std::optional<bool> doubleunderline;
+  std::optional<bool> strikeout;
+  std::optional<bool> doublestrikeout;
+  std::optional<bool> allcaps;
+  std::optional<bool> initcaps;
+  std::optional<bool> smallcaps;
+  std::optional<bool> superscript;
+  std::optional<bool> subscript;
+  std::optional<double> scaleWidth;
 };
 
 struct VSDCharStyle
@@ -323,13 +323,13 @@ struct VSDOptionalParaStyle
   VSDOptionalParaStyle() :
     charCount(0), indFirst(), indLeft(), indRight(), spLine(), spBefore(), spAfter(), align(), bullet(),
     bulletStr(), bulletFont(), bulletFontSize(0.0), textPosAfterBullet(0.0), flags() {}
-  VSDOptionalParaStyle(unsigned cc, const boost::optional<double> &ifst, const boost::optional<double> &il,
-                       const boost::optional<double> &ir, const boost::optional<double> &sl,
-                       const boost::optional<double> &sb, const boost::optional<double> &sa,
-                       const boost::optional<unsigned char> &a, const boost::optional<unsigned char> &b,
-                       const boost::optional<VSDName> &bs, const boost::optional<VSDName> &bf,
-                       const boost::optional<double> bfs, const boost::optional<double> &tpab,
-                       const boost::optional<unsigned> &f) :
+  VSDOptionalParaStyle(unsigned cc, const std::optional<double> &ifst, const std::optional<double> &il,
+                       const std::optional<double> &ir, const std::optional<double> &sl,
+                       const std::optional<double> &sb, const std::optional<double> &sa,
+                       const std::optional<unsigned char> &a, const std::optional<unsigned char> &b,
+                       const std::optional<VSDName> &bs, const std::optional<VSDName> &bf,
+                       const std::optional<double> bfs, const std::optional<double> &tpab,
+                       const std::optional<unsigned> &f) :
     charCount(cc), indFirst(ifst), indLeft(il), indRight(ir), spLine(sl), spBefore(sb), spAfter(sa),
     align(a), bullet(b), bulletStr(bs), bulletFont(bf), bulletFontSize(bfs),
     textPosAfterBullet(tpab), flags(f) {}
@@ -354,19 +354,19 @@ struct VSDOptionalParaStyle
   }
 
   unsigned charCount;
-  boost::optional<double> indFirst;
-  boost::optional<double> indLeft;
-  boost::optional<double> indRight;
-  boost::optional<double> spLine;
-  boost::optional<double> spBefore;
-  boost::optional<double> spAfter;
-  boost::optional<unsigned char> align;
-  boost::optional<unsigned char> bullet;
-  boost::optional<VSDName> bulletStr;
-  boost::optional<VSDName> bulletFont;
-  boost::optional<double> bulletFontSize;
-  boost::optional<double> textPosAfterBullet;
-  boost::optional<unsigned> flags;
+  std::optional<double> indFirst;
+  std::optional<double> indLeft;
+  std::optional<double> indRight;
+  std::optional<double> spLine;
+  std::optional<double> spBefore;
+  std::optional<double> spAfter;
+  std::optional<unsigned char> align;
+  std::optional<unsigned char> bullet;
+  std::optional<VSDName> bulletStr;
+  std::optional<VSDName> bulletFont;
+  std::optional<double> bulletFontSize;
+  std::optional<double> textPosAfterBullet;
+  std::optional<unsigned> flags;
 };
 
 struct VSDParaStyle
@@ -420,11 +420,11 @@ struct VSDOptionalTextBlockStyle
   VSDOptionalTextBlockStyle() :
     leftMargin(), rightMargin(), topMargin(), bottomMargin(), verticalAlign(), isTextBkgndFilled(),
     textBkgndColour(), defaultTabStop(), textDirection() {}
-  VSDOptionalTextBlockStyle(const boost::optional<double> &lm, const boost::optional<double> &rm,
-                            const boost::optional<double> &tm, const boost::optional<double> &bm,
-                            const boost::optional<unsigned char> &va, const boost::optional<bool> &isBgFilled,
-                            const boost::optional<Colour> &bgClr, const boost::optional<double> &defTab,
-                            const boost::optional<unsigned char> &td) :
+  VSDOptionalTextBlockStyle(const std::optional<double> &lm, const std::optional<double> &rm,
+                            const std::optional<double> &tm, const std::optional<double> &bm,
+                            const std::optional<unsigned char> &va, const std::optional<bool> &isBgFilled,
+                            const std::optional<Colour> &bgClr, const std::optional<double> &defTab,
+                            const std::optional<unsigned char> &td) :
     leftMargin(lm), rightMargin(rm), topMargin(tm), bottomMargin(bm), verticalAlign(va),
     isTextBkgndFilled(isBgFilled), textBkgndColour(bgClr), defaultTabStop(defTab), textDirection(td) {}
   VSDOptionalTextBlockStyle(const VSDOptionalTextBlockStyle &style) = default;
@@ -443,15 +443,15 @@ struct VSDOptionalTextBlockStyle
     ASSIGN_OPTIONAL(style.textDirection, textDirection);
   }
 
-  boost::optional<double> leftMargin;
-  boost::optional<double> rightMargin;
-  boost::optional<double> topMargin;
-  boost::optional<double> bottomMargin;
-  boost::optional<unsigned char> verticalAlign;
-  boost::optional<bool> isTextBkgndFilled;
-  boost::optional<Colour> textBkgndColour;
-  boost::optional<double> defaultTabStop;
-  boost::optional<unsigned char> textDirection;
+  std::optional<double> leftMargin;
+  std::optional<double> rightMargin;
+  std::optional<double> topMargin;
+  std::optional<double> bottomMargin;
+  std::optional<unsigned char> verticalAlign;
+  std::optional<bool> isTextBkgndFilled;
+  std::optional<Colour> textBkgndColour;
+  std::optional<double> defaultTabStop;
+  std::optional<unsigned char> textDirection;
 };
 
 struct VSDTextBlockStyle

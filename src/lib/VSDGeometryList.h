@@ -15,7 +15,7 @@
 #include <vector>
 #include <functional>
 #include <algorithm>
-#include <boost/optional.hpp>
+#include <optional>
 #include "VSDTypes.h"
 
 namespace libvisio
@@ -52,47 +52,47 @@ public:
   ~VSDGeometryList();
   VSDGeometryList &operator=(const VSDGeometryList &geomList);
 
-  void addGeometry(unsigned id, unsigned level, const boost::optional<bool> &noFill,
-                   const boost::optional<bool> &noLine, const boost::optional<bool> &noShow);
+  void addGeometry(unsigned id, unsigned level, const std::optional<bool> &noFill,
+                   const std::optional<bool> &noLine, const std::optional<bool> &noShow);
   void addEmpty(unsigned id, unsigned level);
-  void addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
-  void addLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
-  void addArcTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2,
-                const boost::optional<double> &bow);
+  void addMoveTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y);
+  void addLineTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y);
+  void addArcTo(unsigned id, unsigned level, const std::optional<double> &x2, const std::optional<double> &y2,
+                const std::optional<double> &bow);
   void addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
                   const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector,
                   const std::vector<double> &weights);
   void addNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID);
-  void addNURBSTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2,
-                  const boost::optional<double> &knot, const boost::optional<double> &knotPrev, const boost::optional<double> &weight,
-                  const boost::optional<double> &weightPrev, const boost::optional<NURBSData> &data);
+  void addNURBSTo(unsigned id, unsigned level, const std::optional<double> &x2, const std::optional<double> &y2,
+                  const std::optional<double> &knot, const std::optional<double> &knotPrev, const std::optional<double> &weight,
+                  const std::optional<double> &weightPrev, const std::optional<NURBSData> &data);
   void addPolylineTo(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType,
                      const std::vector<std::pair<double, double> > &points);
   void addPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID);
-  void addPolylineTo(unsigned id, unsigned level, boost::optional<double> &x, boost::optional<double> &y, boost::optional<PolylineData> &data);
-  void addEllipse(unsigned id, unsigned level, const boost::optional<double> &cx, const boost::optional<double> &cy,
-                  const boost::optional<double> &xleft, const boost::optional<double> &yleft,
-                  const boost::optional<double> &xtop, const boost::optional<double> &ytop);
-  void addEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3, const boost::optional<double> &y3,
-                          const boost::optional<double> &x2, const boost::optional<double> &y2,
-                          const boost::optional<double> &angle, const boost::optional<double> &ecc);
-  void addSplineStart(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
-                      const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
-                      const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree);
-  void addSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
-                     const boost::optional<double> &knot);
-  void addInfiniteLine(unsigned id, unsigned level, const boost::optional<double> &x1, const boost::optional<double> &y1,
-                       const boost::optional<double> &x2, const boost::optional<double> &y2);
-  void addRelCubBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
-                      const boost::optional<double> &a, const boost::optional<double> &b,
-                      const boost::optional<double> &c, const boost::optional<double> &d);
-  void addRelEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3, const boost::optional<double> &y3,
-                             const boost::optional<double> &x2, const boost::optional<double> &y2,
-                             const boost::optional<double> &angle, const boost::optional<double> &ecc);
-  void addRelMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
-  void addRelLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y);
-  void addRelQuadBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
-                       const boost::optional<double> &a, const boost::optional<double> &b);
+  void addPolylineTo(unsigned id, unsigned level, std::optional<double> &x, std::optional<double> &y, std::optional<PolylineData> &data);
+  void addEllipse(unsigned id, unsigned level, const std::optional<double> &cx, const std::optional<double> &cy,
+                  const std::optional<double> &xleft, const std::optional<double> &yleft,
+                  const std::optional<double> &xtop, const std::optional<double> &ytop);
+  void addEllipticalArcTo(unsigned id, unsigned level, const std::optional<double> &x3, const std::optional<double> &y3,
+                          const std::optional<double> &x2, const std::optional<double> &y2,
+                          const std::optional<double> &angle, const std::optional<double> &ecc);
+  void addSplineStart(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y,
+                      const std::optional<double> &secondKnot, const std::optional<double> &firstKnot,
+                      const std::optional<double> &lastKnot, const std::optional<unsigned> &degree);
+  void addSplineKnot(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y,
+                     const std::optional<double> &knot);
+  void addInfiniteLine(unsigned id, unsigned level, const std::optional<double> &x1, const std::optional<double> &y1,
+                       const std::optional<double> &x2, const std::optional<double> &y2);
+  void addRelCubBezTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y,
+                      const std::optional<double> &a, const std::optional<double> &b,
+                      const std::optional<double> &c, const std::optional<double> &d);
+  void addRelEllipticalArcTo(unsigned id, unsigned level, const std::optional<double> &x3, const std::optional<double> &y3,
+                             const std::optional<double> &x2, const std::optional<double> &y2,
+                             const std::optional<double> &angle, const std::optional<double> &ecc);
+  void addRelMoveTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y);
+  void addRelLineTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y);
+  void addRelQuadBezTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y,
+                       const std::optional<double> &a, const std::optional<double> &b);
   void setElementsOrder(const std::vector<unsigned> &m_elementsOrder);
   void handle(VSDCollector *collector) const;
   void clear();

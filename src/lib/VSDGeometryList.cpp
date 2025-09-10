@@ -12,6 +12,8 @@
 #include "VSDCollector.h"
 #include "libvisio_utils.h"
 
+#include <optional>
+
 namespace libvisio
 {
 
@@ -19,10 +21,10 @@ namespace libvisio
 class VSDGeometry : public VSDGeometryListElement
 {
 public:
-  VSDGeometry(unsigned id, unsigned level, const boost::optional<bool> &noFill,
-              const boost::optional<bool> &noLine, const boost::optional<bool> &noShow) :
-    VSDGeometryListElement(id, level), m_noFill(get_optional_value_or(noFill, false)),
-    m_noLine(get_optional_value_or(noLine, false)), m_noShow(get_optional_value_or(noShow, false)) {}
+  VSDGeometry(unsigned id, unsigned level, const std::optional<bool> &noFill,
+              const std::optional<bool> &noLine, const std::optional<bool> &noShow) :
+    VSDGeometryListElement(id, level), m_noFill(noFill.value_or(false)),
+    m_noLine(noLine.value_or(false)), m_noShow(noShow.value_or(false)) {}
   ~VSDGeometry() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -44,8 +46,8 @@ public:
 class VSDMoveTo : public VSDGeometryListElement
 {
 public:
-  VSDMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
-    VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
+  VSDMoveTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y) :
+    VSDGeometryListElement(id, level), m_x(x.value_or(0.0)), m_y(y.value_or(0.0)) {}
   ~VSDMoveTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -55,8 +57,8 @@ public:
 class VSDLineTo : public VSDGeometryListElement
 {
 public:
-  VSDLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
-    VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
+  VSDLineTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y) :
+    VSDGeometryListElement(id, level), m_x(x.value_or(0.0)), m_y(y.value_or(0.0)) {}
   ~VSDLineTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -66,8 +68,8 @@ public:
 class VSDArcTo : public VSDGeometryListElement
 {
 public:
-  VSDArcTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2, const boost::optional<double> &bow) :
-    VSDGeometryListElement(id, level), m_x2(get_optional_value_or(x2, 0.0)), m_y2(get_optional_value_or(y2, 0.0)), m_bow(get_optional_value_or(bow, 0.0)) {}
+  VSDArcTo(unsigned id, unsigned level, const std::optional<double> &x2, const std::optional<double> &y2, const std::optional<double> &bow) :
+    VSDGeometryListElement(id, level), m_x2(x2.value_or(0.0)), m_y2(y2.value_or(0.0)), m_bow(bow.value_or(0.0)) {}
   ~VSDArcTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -77,12 +79,12 @@ public:
 class VSDEllipse : public VSDGeometryListElement
 {
 public:
-  VSDEllipse(unsigned id, unsigned level, const boost::optional<double> &cx, const boost::optional<double> &cy,
-             const boost::optional<double> &xleft, const boost::optional<double> &yleft,
-             const boost::optional<double> &xtop, const boost::optional<double> &ytop) :
-    VSDGeometryListElement(id, level), m_cx(get_optional_value_or(cx, 0.0)), m_cy(get_optional_value_or(cy, 0.0)),
-    m_xleft(get_optional_value_or(xleft, 0.0)), m_yleft(get_optional_value_or(yleft, 0.0)), m_xtop(get_optional_value_or(xtop, 0.0)),
-    m_ytop(get_optional_value_or(ytop, 0.0)) {}
+  VSDEllipse(unsigned id, unsigned level, const std::optional<double> &cx, const std::optional<double> &cy,
+             const std::optional<double> &xleft, const std::optional<double> &yleft,
+             const std::optional<double> &xtop, const std::optional<double> &ytop) :
+    VSDGeometryListElement(id, level), m_cx(cx.value_or(0.0)), m_cy(cy.value_or(0.0)),
+    m_xleft(xleft.value_or(0.0)), m_yleft(yleft.value_or(0.0)), m_xtop(xtop.value_or(0.0)),
+    m_ytop(ytop.value_or(0.0)) {}
   ~VSDEllipse() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -92,11 +94,11 @@ public:
 class VSDEllipticalArcTo : public VSDGeometryListElement
 {
 public:
-  VSDEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3, const boost::optional<double> &y3,
-                     const boost::optional<double> &x2, const boost::optional<double> &y2,
-                     const boost::optional<double> &angle, const boost::optional<double> &ecc) :
-    VSDGeometryListElement(id, level), m_x3(get_optional_value_or(x3, 0.0)), m_y3(get_optional_value_or(y3, 0.0)), m_x2(get_optional_value_or(x2, 0.0)),
-    m_y2(get_optional_value_or(y2, 0.0)), m_angle(get_optional_value_or(angle, 0.0)), m_ecc(get_optional_value_or(ecc, 1.0)) {}
+  VSDEllipticalArcTo(unsigned id, unsigned level, const std::optional<double> &x3, const std::optional<double> &y3,
+                     const std::optional<double> &x2, const std::optional<double> &y2,
+                     const std::optional<double> &angle, const std::optional<double> &ecc) :
+    VSDGeometryListElement(id, level), m_x3(x3.value_or(0.0)), m_y3(y3.value_or(0.0)), m_x2(x2.value_or(0.0)),
+    m_y2(y2.value_or(0.0)), m_angle(angle.value_or(0.0)), m_ecc(ecc.value_or(1.0)) {}
   ~VSDEllipticalArcTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -139,11 +141,11 @@ public:
 class VSDNURBSTo3 : public VSDGeometryListElement
 {
 public:
-  VSDNURBSTo3(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2, const boost::optional<double> &knot,
-              const boost::optional<double> &knotPrev, const boost::optional<double> &weight, const boost::optional<double> &weightPrev,
-              const boost::optional<NURBSData> &data) :
-    VSDGeometryListElement(id, level), m_data(get_optional_value_or(data, NURBSData())), m_x2(get_optional_value_or(x2, 0.0)), m_y2(get_optional_value_or(y2, 0.0)),
-    m_knot(get_optional_value_or(knot, 0.0)), m_knotPrev(get_optional_value_or(knotPrev, 0.0)), m_weight(get_optional_value_or(weight, 0.0)), m_weightPrev(get_optional_value_or(weightPrev, 0.0)) {}
+  VSDNURBSTo3(unsigned id, unsigned level, const std::optional<double> &x2, const std::optional<double> &y2, const std::optional<double> &knot,
+              const std::optional<double> &knotPrev, const std::optional<double> &weight, const std::optional<double> &weightPrev,
+              const std::optional<NURBSData> &data) :
+    VSDGeometryListElement(id, level), m_data(data.value_or(NURBSData())), m_x2(x2.value_or(0.0)), m_y2(y2.value_or(0.0)),
+    m_knot(knot.value_or(0.0)), m_knotPrev(knotPrev.value_or(0.0)), m_weight(weight.value_or(0.0)), m_weightPrev(weightPrev.value_or(0.0)) {}
   ~VSDNURBSTo3() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -185,9 +187,9 @@ public:
 class VSDPolylineTo3 : public VSDGeometryListElement
 {
 public:
-  VSDPolylineTo3(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
-                 const boost::optional<PolylineData> &data) :
-    VSDGeometryListElement(id, level), m_data(get_optional_value_or(data, PolylineData())), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
+  VSDPolylineTo3(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y,
+                 const std::optional<PolylineData> &data) :
+    VSDGeometryListElement(id, level), m_data(data.value_or(PolylineData())), m_x(x.value_or(0.0)), m_y(y.value_or(0.0)) {}
   ~VSDPolylineTo3() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -199,11 +201,11 @@ public:
 class VSDSplineStart : public VSDGeometryListElement
 {
 public:
-  VSDSplineStart(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
-                 const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
-                 const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree) :
-    VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)), m_secondKnot(get_optional_value_or(secondKnot, 0.0)),
-    m_firstKnot(get_optional_value_or(firstKnot, 0.0)), m_lastKnot(get_optional_value_or(lastKnot, 0.0)), m_degree(get_optional_value_or(degree, 0)) {}
+  VSDSplineStart(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y,
+                 const std::optional<double> &secondKnot, const std::optional<double> &firstKnot,
+                 const std::optional<double> &lastKnot, const std::optional<unsigned> &degree) :
+    VSDGeometryListElement(id, level), m_x(x.value_or(0.0)), m_y(y.value_or(0.0)), m_secondKnot(secondKnot.value_or(0.0)),
+    m_firstKnot(firstKnot.value_or(0.0)), m_lastKnot(lastKnot.value_or(0.0)), m_degree(degree.value_or(0)) {}
   ~VSDSplineStart() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -216,9 +218,9 @@ public:
 class VSDSplineKnot : public VSDGeometryListElement
 {
 public:
-  VSDSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
-                const boost::optional<double> &knot) :
-    VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)), m_knot(get_optional_value_or(knot, 0.0)) {}
+  VSDSplineKnot(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y,
+                const std::optional<double> &knot) :
+    VSDGeometryListElement(id, level), m_x(x.value_or(0.0)), m_y(y.value_or(0.0)), m_knot(knot.value_or(0.0)) {}
   ~VSDSplineKnot() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -229,10 +231,9 @@ public:
 class VSDInfiniteLine : public VSDGeometryListElement
 {
 public:
-  VSDInfiniteLine(unsigned id, unsigned level, const boost::optional<double> &x1, const boost::optional<double> &y1,
-                  const boost::optional<double> &x2, const boost::optional<double> &y2) :
-    VSDGeometryListElement(id, level), m_x1(get_optional_value_or(x1, 0.0)), m_y1(get_optional_value_or(y1, 0.0)),
-    m_x2(get_optional_value_or(x2, 0.0)), m_y2(get_optional_value_or(y2, 0.0)) {}
+  VSDInfiniteLine(unsigned id, unsigned level, const std::optional<double> &x1, const std::optional<double> &y1,
+                  const std::optional<double> &x2, const std::optional<double> &y2) :
+    VSDGeometryListElement(id, level), m_x1(x1.value_or(0.0)), m_y1(y1.value_or(0.0)), m_x2(x2.value_or(0.0)), m_y2(y2.value_or(0.0)) {}
   ~VSDInfiniteLine() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -242,10 +243,9 @@ public:
 class VSDRelCubBezTo : public VSDGeometryListElement
 {
 public:
-  VSDRelCubBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y, const boost::optional<double> &a,
-                 const boost::optional<double> &b, const boost::optional<double> &c, const boost::optional<double> &d) :
-    VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)),
-    m_a(get_optional_value_or(a, 0.0)), m_b(get_optional_value_or(b, 0.0)), m_c(get_optional_value_or(c, 0.0)), m_d(get_optional_value_or(d, 0.0)) {}
+  VSDRelCubBezTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y, const std::optional<double> &a,
+                 const std::optional<double> &b, const std::optional<double> &c, const std::optional<double> &d) :
+    VSDGeometryListElement(id, level), m_x(x.value_or(0.0)), m_y(y.value_or(0.0)), m_a(a.value_or(0.0)), m_b(b.value_or(0.0)), m_c(c.value_or(0.0)), m_d(d.value_or(0.0)) {}
   ~VSDRelCubBezTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -255,12 +255,12 @@ public:
 class VSDRelEllipticalArcTo : public VSDGeometryListElement
 {
 public:
-  VSDRelEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3, const boost::optional<double> &y3,
-                        const boost::optional<double> &x2, const boost::optional<double> &y2, const boost::optional<double> &angle,
-                        const boost::optional<double> &ecc) :
-    VSDGeometryListElement(id, level), m_x3(get_optional_value_or(x3, 0.0)), m_y3(get_optional_value_or(y3, 0.0)),
-    m_x2(get_optional_value_or(x2, 0.0)), m_y2(get_optional_value_or(y2, 0.0)), m_angle(get_optional_value_or(angle, 0.0)),
-    m_ecc(get_optional_value_or(ecc, 1.0)) {}
+  VSDRelEllipticalArcTo(unsigned id, unsigned level, const std::optional<double> &x3, const std::optional<double> &y3,
+                        const std::optional<double> &x2, const std::optional<double> &y2, const std::optional<double> &angle,
+                        const std::optional<double> &ecc) :
+    VSDGeometryListElement(id, level), m_x3(x3.value_or(0.0)), m_y3(y3.value_or(0.0)),
+    m_x2(x2.value_or(0.0)), m_y2(y2.value_or(0.0)), m_angle(angle.value_or(0.0)),
+    m_ecc(ecc.value_or(1.0)) {}
   ~VSDRelEllipticalArcTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -270,8 +270,8 @@ public:
 class VSDRelMoveTo : public VSDGeometryListElement
 {
 public:
-  VSDRelMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
-    VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
+  VSDRelMoveTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y) :
+    VSDGeometryListElement(id, level), m_x(x.value_or(0.0)), m_y(y.value_or(0.0)) {}
   ~VSDRelMoveTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -281,8 +281,8 @@ public:
 class VSDRelLineTo : public VSDGeometryListElement
 {
 public:
-  VSDRelLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y) :
-    VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)), m_y(get_optional_value_or(y, 0.0)) {}
+  VSDRelLineTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y) :
+    VSDGeometryListElement(id, level), m_x(x.value_or(0.0)), m_y(y.value_or(0.0)) {}
   ~VSDRelLineTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -292,10 +292,10 @@ public:
 class VSDRelQuadBezTo : public VSDGeometryListElement
 {
 public:
-  VSDRelQuadBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y,
-                  const boost::optional<double> &a, const boost::optional<double> &b) :
-    VSDGeometryListElement(id, level), m_x(get_optional_value_or(x, 0.0)),
-    m_y(get_optional_value_or(y, 0.0)), m_a(get_optional_value_or(a, 0.0)), m_b(get_optional_value_or(b, 0.0)) {}
+  VSDRelQuadBezTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y,
+                  const std::optional<double> &a, const std::optional<double> &b) :
+    VSDGeometryListElement(id, level), m_x(x.value_or(0.0)),
+    m_y(y.value_or(0.0)), m_a(a.value_or(0.0)), m_b(b.value_or(0.0)) {}
   ~VSDRelQuadBezTo() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -594,13 +594,13 @@ libvisio::VSDGeometryList::~VSDGeometryList()
 {
 }
 
-void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, const boost::optional<bool> &noFill,
-                                            const boost::optional<bool> &noLine, const boost::optional<bool> &noShow)
+void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, const std::optional<bool> &noFill,
+                                            const std::optional<bool> &noLine, const std::optional<bool> &noShow)
 {
   auto *tmpElement = dynamic_cast<VSDGeometry *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDGeometry>(id, level, noFill, noLine, noShow);
+    m_elements[id] = std::make_unique<VSDGeometry>(id, level, noFill, noLine, noShow);
   }
   else
   {
@@ -612,16 +612,16 @@ void libvisio::VSDGeometryList::addGeometry(unsigned id, unsigned level, const b
 
 void libvisio::VSDGeometryList::addEmpty(unsigned id, unsigned level)
 {
-  m_elements[id] = make_unique<VSDEmpty>(id, level);
+  m_elements[id] = std::make_unique<VSDEmpty>(id, level);
 }
 
-void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const boost::optional<double> &x,
-                                          const boost::optional<double> &y)
+void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const std::optional<double> &x,
+                                          const std::optional<double> &y)
 {
   auto *tmpElement = dynamic_cast<VSDMoveTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDMoveTo>(id, level, x, y);
+    m_elements[id] = std::make_unique<VSDMoveTo>(id, level, x, y);
   }
   else
   {
@@ -630,12 +630,12 @@ void libvisio::VSDGeometryList::addMoveTo(unsigned id, unsigned level, const boo
   }
 }
 
-void libvisio::VSDGeometryList::addLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
+void libvisio::VSDGeometryList::addLineTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y)
 {
   auto *tmpElement = dynamic_cast<VSDLineTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDLineTo>(id, level, x, y);
+    m_elements[id] = std::make_unique<VSDLineTo>(id, level, x, y);
   }
   else
   {
@@ -644,13 +644,13 @@ void libvisio::VSDGeometryList::addLineTo(unsigned id, unsigned level, const boo
   }
 }
 
-void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, const boost::optional<double> &x2,
-                                         const boost::optional<double> &y2, const boost::optional<double> &bow)
+void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, const std::optional<double> &x2,
+                                         const std::optional<double> &y2, const std::optional<double> &bow)
 {
   auto *tmpElement = dynamic_cast<VSDArcTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDArcTo>(id, level, x2, y2, bow);
+    m_elements[id] = std::make_unique<VSDArcTo>(id, level, x2, y2, bow);
   }
   else
   {
@@ -663,22 +663,22 @@ void libvisio::VSDGeometryList::addArcTo(unsigned id, unsigned level, const boos
 void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
                                            const std::vector<std::pair<double, double> > &controlPoints, const std::vector<double> &knotVector, const std::vector<double> &weights)
 {
-  m_elements[id] = libvisio::make_unique<VSDNURBSTo1>(id, level, x2, y2, xType, yType, degree, controlPoints, knotVector, weights);
+  m_elements[id] = std::make_unique<VSDNURBSTo1>(id, level, x2, y2, xType, yType, degree, controlPoints, knotVector, weights);
 }
 
 void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, double x2, double y2, double knot, double knotPrev, double weight, double weightPrev, unsigned dataID)
 {
-  m_elements[id] = make_unique<VSDNURBSTo2>(id, level, x2, y2, knot, knotPrev, weight, weightPrev, dataID);
+  m_elements[id] = std::make_unique<VSDNURBSTo2>(id, level, x2, y2, knot, knotPrev, weight, weightPrev, dataID);
 }
 
-void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const boost::optional<double> &x2, const boost::optional<double> &y2,
-                                           const boost::optional<double> &knot, const boost::optional<double> &knotPrev, const boost::optional<double> &weight,
-                                           const boost::optional<double> &weightPrev, const boost::optional<NURBSData> &data)
+void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const std::optional<double> &x2, const std::optional<double> &y2,
+                                           const std::optional<double> &knot, const std::optional<double> &knotPrev, const std::optional<double> &weight,
+                                           const std::optional<double> &weightPrev, const std::optional<NURBSData> &data)
 {
   auto *tmpElement = dynamic_cast<VSDNURBSTo3 *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDNURBSTo3>(id, level, x2, y2, knot, knotPrev, weight, weightPrev, data);
+    m_elements[id] = std::make_unique<VSDNURBSTo3>(id, level, x2, y2, knot, knotPrev, weight, weightPrev, data);
   }
   else
   {
@@ -695,20 +695,20 @@ void libvisio::VSDGeometryList::addNURBSTo(unsigned id, unsigned level, const bo
 void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType,
                                               const std::vector<std::pair<double, double> > &points)
 {
-  m_elements[id] = libvisio::make_unique<VSDPolylineTo1>(id, level, x, y, xType, yType, points);
+  m_elements[id] = std::make_unique<VSDPolylineTo1>(id, level, x, y, xType, yType, points);
 }
 
 void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, double x, double y, unsigned dataID)
 {
-  m_elements[id] = make_unique<VSDPolylineTo2>(id, level, x, y, dataID);
+  m_elements[id] = std::make_unique<VSDPolylineTo2>(id, level, x, y, dataID);
 }
 
-void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, boost::optional<double> &x, boost::optional<double> &y, boost::optional<PolylineData> &data)
+void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, std::optional<double> &x, std::optional<double> &y, std::optional<PolylineData> &data)
 {
   auto *tmpElement = dynamic_cast<VSDPolylineTo3 *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDPolylineTo3>(id, level, x, y, data);
+    m_elements[id] = std::make_unique<VSDPolylineTo3>(id, level, x, y, data);
   }
   else
   {
@@ -718,14 +718,14 @@ void libvisio::VSDGeometryList::addPolylineTo(unsigned id, unsigned level, boost
   }
 }
 
-void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, const boost::optional<double> &cx,
-                                           const boost::optional<double> &cy,const boost::optional<double> &xleft, const boost::optional<double> &yleft,
-                                           const boost::optional<double> &xtop, const boost::optional<double> &ytop)
+void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, const std::optional<double> &cx,
+                                           const std::optional<double> &cy,const std::optional<double> &xleft, const std::optional<double> &yleft,
+                                           const std::optional<double> &xtop, const std::optional<double> &ytop)
 {
   auto *tmpElement = dynamic_cast<VSDEllipse *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDEllipse>(id, level, cx, cy, xleft, yleft, xtop, ytop);
+    m_elements[id] = std::make_unique<VSDEllipse>(id, level, cx, cy, xleft, yleft, xtop, ytop);
   }
   else
   {
@@ -738,14 +738,14 @@ void libvisio::VSDGeometryList::addEllipse(unsigned id, unsigned level, const bo
   }
 }
 
-void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3,
-                                                   const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
-                                                   const boost::optional<double> &angle, const boost::optional<double> &ecc)
+void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, const std::optional<double> &x3,
+                                                   const std::optional<double> &y3, const std::optional<double> &x2, const std::optional<double> &y2,
+                                                   const std::optional<double> &angle, const std::optional<double> &ecc)
 {
   auto *tmpElement = dynamic_cast<VSDEllipticalArcTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDEllipticalArcTo>(id, level, x3, y3, x2, y2, angle, ecc);
+    m_elements[id] = std::make_unique<VSDEllipticalArcTo>(id, level, x3, y3, x2, y2, angle, ecc);
   }
   else
   {
@@ -758,14 +758,14 @@ void libvisio::VSDGeometryList::addEllipticalArcTo(unsigned id, unsigned level, 
   }
 }
 
-void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, const boost::optional<double> &x,
-                                               const boost::optional<double> &y, const boost::optional<double> &secondKnot, const boost::optional<double> &firstKnot,
-                                               const boost::optional<double> &lastKnot, const boost::optional<unsigned> &degree)
+void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, const std::optional<double> &x,
+                                               const std::optional<double> &y, const std::optional<double> &secondKnot, const std::optional<double> &firstKnot,
+                                               const std::optional<double> &lastKnot, const std::optional<unsigned> &degree)
 {
   auto *tmpElement = dynamic_cast<VSDSplineStart *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDSplineStart>(id, level, x, y, secondKnot, firstKnot, lastKnot, degree);
+    m_elements[id] = std::make_unique<VSDSplineStart>(id, level, x, y, secondKnot, firstKnot, lastKnot, degree);
   }
   else
   {
@@ -778,13 +778,13 @@ void libvisio::VSDGeometryList::addSplineStart(unsigned id, unsigned level, cons
   }
 }
 
-void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, const boost::optional<double> &x,
-                                              const boost::optional<double> &y, const boost::optional<double> &knot)
+void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, const std::optional<double> &x,
+                                              const std::optional<double> &y, const std::optional<double> &knot)
 {
   auto *tmpElement = dynamic_cast<VSDSplineKnot *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDSplineKnot>(id, level, x, y, knot);
+    m_elements[id] = std::make_unique<VSDSplineKnot>(id, level, x, y, knot);
   }
   else
   {
@@ -794,13 +794,13 @@ void libvisio::VSDGeometryList::addSplineKnot(unsigned id, unsigned level, const
   }
 }
 
-void libvisio::VSDGeometryList::addInfiniteLine(unsigned id, unsigned level, const boost::optional<double> &x1,
-                                                const boost::optional<double> &y1, const boost::optional<double> &x2, const boost::optional<double> &y2)
+void libvisio::VSDGeometryList::addInfiniteLine(unsigned id, unsigned level, const std::optional<double> &x1,
+                                                const std::optional<double> &y1, const std::optional<double> &x2, const std::optional<double> &y2)
 {
   auto *tmpElement = dynamic_cast<VSDInfiniteLine *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDInfiniteLine>(id, level, x1, y1, x2, y2);
+    m_elements[id] = std::make_unique<VSDInfiniteLine>(id, level, x1, y1, x2, y2);
   }
   else
   {
@@ -811,14 +811,14 @@ void libvisio::VSDGeometryList::addInfiniteLine(unsigned id, unsigned level, con
   }
 }
 
-void libvisio::VSDGeometryList::addRelCubBezTo(unsigned id, unsigned level, const boost::optional<double> &x,
-                                               const boost::optional<double> &y, const boost::optional<double> &a, const boost::optional<double> &b,
-                                               const boost::optional<double> &c, const boost::optional<double> &d)
+void libvisio::VSDGeometryList::addRelCubBezTo(unsigned id, unsigned level, const std::optional<double> &x,
+                                               const std::optional<double> &y, const std::optional<double> &a, const std::optional<double> &b,
+                                               const std::optional<double> &c, const std::optional<double> &d)
 {
   auto *tmpElement = dynamic_cast<VSDRelCubBezTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDRelCubBezTo>(id, level, x, y, a, b, c, d);
+    m_elements[id] = std::make_unique<VSDRelCubBezTo>(id, level, x, y, a, b, c, d);
   }
   else
   {
@@ -831,14 +831,14 @@ void libvisio::VSDGeometryList::addRelCubBezTo(unsigned id, unsigned level, cons
   }
 }
 
-void libvisio::VSDGeometryList::addRelEllipticalArcTo(unsigned id, unsigned level, const boost::optional<double> &x3,
-                                                      const boost::optional<double> &y3, const boost::optional<double> &x2, const boost::optional<double> &y2,
-                                                      const boost::optional<double> &angle, const boost::optional<double> &ecc)
+void libvisio::VSDGeometryList::addRelEllipticalArcTo(unsigned id, unsigned level, const std::optional<double> &x3,
+                                                      const std::optional<double> &y3, const std::optional<double> &x2, const std::optional<double> &y2,
+                                                      const std::optional<double> &angle, const std::optional<double> &ecc)
 {
   auto *tmpElement = dynamic_cast<VSDRelEllipticalArcTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDRelEllipticalArcTo>(id, level, x3, y3, x2, y2, angle, ecc);
+    m_elements[id] = std::make_unique<VSDRelEllipticalArcTo>(id, level, x3, y3, x2, y2, angle, ecc);
   }
   else
   {
@@ -851,12 +851,12 @@ void libvisio::VSDGeometryList::addRelEllipticalArcTo(unsigned id, unsigned leve
   }
 }
 
-void libvisio::VSDGeometryList::addRelMoveTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
+void libvisio::VSDGeometryList::addRelMoveTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y)
 {
   auto *tmpElement = dynamic_cast<VSDRelMoveTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDRelMoveTo>(id, level, x, y);
+    m_elements[id] = std::make_unique<VSDRelMoveTo>(id, level, x, y);
   }
   else
   {
@@ -865,12 +865,12 @@ void libvisio::VSDGeometryList::addRelMoveTo(unsigned id, unsigned level, const 
   }
 }
 
-void libvisio::VSDGeometryList::addRelLineTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y)
+void libvisio::VSDGeometryList::addRelLineTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y)
 {
   auto *tmpElement = dynamic_cast<VSDRelLineTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDRelLineTo>(id, level, x, y);
+    m_elements[id] = std::make_unique<VSDRelLineTo>(id, level, x, y);
   }
   else
   {
@@ -879,12 +879,12 @@ void libvisio::VSDGeometryList::addRelLineTo(unsigned id, unsigned level, const 
   }
 }
 
-void libvisio::VSDGeometryList::addRelQuadBezTo(unsigned id, unsigned level, const boost::optional<double> &x, const boost::optional<double> &y, const boost::optional<double> &a, const boost::optional<double> &b)
+void libvisio::VSDGeometryList::addRelQuadBezTo(unsigned id, unsigned level, const std::optional<double> &x, const std::optional<double> &y, const std::optional<double> &a, const std::optional<double> &b)
 {
   auto *tmpElement = dynamic_cast<VSDRelQuadBezTo *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDRelQuadBezTo>(id, level, x, y, a, b);
+    m_elements[id] = std::make_unique<VSDRelQuadBezTo>(id, level, x, y, a, b);
   }
   else
   {

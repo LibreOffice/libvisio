@@ -12,7 +12,7 @@
 
 #include <map>
 #include <vector>
-#include <boost/optional.hpp>
+#include <optional>
 #include "VSDTypes.h"
 
 namespace libvisio
@@ -25,7 +25,7 @@ struct VSDLayer
   ~VSDLayer();
   VSDLayer &operator=(const VSDLayer &layer);
 
-  boost::optional<Colour> m_colour;
+  std::optional<Colour> m_colour;
   bool m_visible;
   bool m_printable;
 };

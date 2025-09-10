@@ -431,7 +431,7 @@ void libvisio::VSD6Parser::readMisc(librevenge::RVNGInputStream *input)
             if (0x40000073 == readU32(input))
             {
               if (!m_shape.m_xform1d)
-                m_shape.m_xform1d = make_unique<XForm1D>();
+                m_shape.m_xform1d = std::make_unique<XForm1D>();
               if (m_shape.m_xform1d->beginId == MINUS_ONE)
                 m_shape.m_xform1d->beginId = shapeId;
               else if (m_shape.m_xform1d->endId == MINUS_ONE)

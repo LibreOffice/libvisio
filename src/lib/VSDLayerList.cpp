@@ -9,6 +9,15 @@
 
 #include "VSDLayerList.h"
 
+namespace
+{
+template<typename T>
+const T *get_ptr(const std::optional<T>& opt) noexcept
+{
+  return opt.has_value() ? std::addressof(opt.value()) : nullptr;
+}
+}
+
 libvisio::VSDLayer::VSDLayer() : m_colour(), m_visible(1), m_printable(1) {}
 
 libvisio::VSDLayer::VSDLayer(const VSDLayer &layer) :
@@ -78,12 +87,12 @@ const libvisio::Colour *libvisio::VSDLayerList::getColour(const std::vector<unsi
     else if (iterColour == m_elements.end())
       iterColour = iterMap;
     // If two layers override colour to two different values, the original colour is used
-    else if (!iterColour->second.m_colour || iterColour->second.m_colour.get() != iterMap->second.m_colour.get())
+    else if (!iterColour->second.m_colour || iterColour->second.m_colour.value() != iterMap->second.m_colour.value())
       return nullptr;
   }
   if (iterColour == m_elements.end())
     return nullptr;
-  return iterColour->second.m_colour.get_ptr();
+  return get_ptr(iterColour->second.m_colour);
 }
 
 bool libvisio::VSDLayerList::getVisible(const std::vector<unsigned> &ids)

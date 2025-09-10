@@ -407,7 +407,7 @@ void libvisio::VSD5Parser::readShape(librevenge::RVNGInputStream *input)
   if (tmpShape)
   {
     if (tmpShape->m_foreign)
-      m_shape.m_foreign = make_unique<ForeignData>(*(tmpShape->m_foreign));
+      m_shape.m_foreign = std::make_unique<ForeignData>(*(tmpShape->m_foreign));
     m_shape.m_text = tmpShape->m_text;
     m_shape.m_textFormat = tmpShape->m_textFormat;
   }
@@ -499,7 +499,7 @@ void libvisio::VSD5Parser::readMisc(librevenge::RVNGInputStream *input)
 void libvisio::VSD5Parser::readXForm1D(librevenge::RVNGInputStream *input)
 {
   if (!m_shape.m_xform1d)
-    m_shape.m_xform1d = make_unique<XForm1D>();
+    m_shape.m_xform1d = std::make_unique<XForm1D>();
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shape.m_xform1d->beginX = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);

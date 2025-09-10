@@ -551,13 +551,13 @@ void libvisio::VSDFieldList::addFieldList(unsigned id, unsigned level)
 void libvisio::VSDFieldList::addTextField(unsigned id, unsigned level, int nameId, int formatStringId)
 {
   if (m_elements.find(id) == m_elements.end())
-    m_elements[id] = make_unique<VSDTextField>(id, level, nameId, formatStringId);
+    m_elements[id] = std::make_unique<VSDTextField>(id, level, nameId, formatStringId);
 }
 
 void libvisio::VSDFieldList::addNumericField(unsigned id, unsigned level, unsigned short format, unsigned short cellType, double number, int formatStringId)
 {
   if (m_elements.find(id) == m_elements.end())
-    m_elements[id] = make_unique<VSDNumericField>(id, level, format, cellType, number, formatStringId);
+    m_elements[id] = std::make_unique<VSDNumericField>(id, level, format, cellType, number, formatStringId);
 }
 
 void libvisio::VSDFieldList::handle(VSDCollector *collector) const

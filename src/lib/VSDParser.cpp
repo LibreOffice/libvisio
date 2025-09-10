@@ -344,7 +344,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     break;
   case VSD_OLE_LIST:
     if (!m_shape.m_foreign)
-      m_shape.m_foreign = make_unique<ForeignData>();
+      m_shape.m_foreign = std::make_unique<ForeignData>();
     m_shape.m_foreign->dataId = idx;
     break;
   default:
@@ -771,7 +771,7 @@ void libvisio::VSDParser::readForeignData(librevenge::RVNGInputStream *input)
   librevenge::RVNGBinaryData binaryData(buffer, tmpBytesRead);
 
   if (!m_shape.m_foreign)
-    m_shape.m_foreign = make_unique<ForeignData>();
+    m_shape.m_foreign = std::make_unique<ForeignData>();
   m_shape.m_foreign->dataId = m_header.id;
   m_shape.m_foreign->data = binaryData;
 }
@@ -789,7 +789,7 @@ void libvisio::VSDParser::readOLEData(librevenge::RVNGInputStream *input)
   librevenge::RVNGBinaryData oleData(buffer, tmpBytesRead);
 
   if (!m_shape.m_foreign)
-    m_shape.m_foreign = make_unique<ForeignData>();
+    m_shape.m_foreign = std::make_unique<ForeignData>();
   // Append data instead of setting it - allows multi-stream OLE objects
   m_shape.m_foreign->data.append(oleData);
 
@@ -1159,7 +1159,7 @@ void libvisio::VSDParser::readXFormData(librevenge::RVNGInputStream *input)
 void libvisio::VSDParser::readXForm1D(librevenge::RVNGInputStream *input)
 {
   if (!m_shape.m_xform1d)
-    m_shape.m_xform1d = make_unique<XForm1D>();
+    m_shape.m_xform1d = std::make_unique<XForm1D>();
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shape.m_xform1d->beginX = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
@@ -1172,7 +1172,7 @@ void libvisio::VSDParser::readXForm1D(librevenge::RVNGInputStream *input)
 
 void libvisio::VSDParser::readTxtXForm(librevenge::RVNGInputStream *input)
 {
-  m_shape.m_txtxform = make_unique<XForm>();
+  m_shape.m_txtxform = std::make_unique<XForm>();
   input->seek(1, librevenge::RVNG_SEEK_CUR);
   m_shape.m_txtxform->pinX = readDouble(input);
   input->seek(1, librevenge::RVNG_SEEK_CUR);
@@ -1239,7 +1239,7 @@ void libvisio::VSDParser::readForeignDataType(librevenge::RVNGInputStream *input
   unsigned foreignFormat = readU32(input);
 
   if (!m_shape.m_foreign)
-    m_shape.m_foreign = make_unique<ForeignData>();
+    m_shape.m_foreign = std::make_unique<ForeignData>();
   m_shape.m_foreign->typeId = m_header.id;
   m_shape.m_foreign->type = foreignType;
   m_shape.m_foreign->format = foreignFormat;
@@ -1318,10 +1318,10 @@ void libvisio::VSDParser::readShape(librevenge::RVNGInputStream *input)
   if (tmpShape)
   {
     if (tmpShape->m_foreign)
-      m_shape.m_foreign = make_unique<ForeignData>(*(tmpShape->m_foreign));
+      m_shape.m_foreign = std::make_unique<ForeignData>(*(tmpShape->m_foreign));
     m_shape.m_xform = tmpShape->m_xform;
     if (tmpShape->m_txtxform)
-      m_shape.m_txtxform = make_unique<XForm>(*(tmpShape->m_txtxform));
+      m_shape.m_txtxform = std::make_unique<XForm>(*(tmpShape->m_txtxform));
     m_shape.m_tabSets = tmpShape->m_tabSets;
     m_shape.m_text = tmpShape->m_text;
     m_shape.m_textFormat = tmpShape->m_textFormat;
@@ -2272,7 +2272,7 @@ void libvisio::VSDParser::readMisc(librevenge::RVNGInputStream *input)
             if (0x40000073 == readU32(input))
             {
               if (!m_shape.m_xform1d)
-                m_shape.m_xform1d = make_unique<XForm1D>();
+                m_shape.m_xform1d = std::make_unique<XForm1D>();
               if (m_shape.m_xform1d->beginId == MINUS_ONE)
                 m_shape.m_xform1d->beginId = shapeId;
               else if (m_shape.m_xform1d->endId == MINUS_ONE)

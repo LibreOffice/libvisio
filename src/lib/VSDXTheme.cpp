@@ -64,7 +64,7 @@ libvisio::VSDXFontScheme::VSDXFontScheme()
 libvisio::VSDXTheme::VSDXTheme()
   : m_clrScheme(),
     m_fontScheme(),
-    m_fillStyleLst(std::vector<boost::optional<libvisio::Colour>>(6))
+    m_fillStyleLst(std::vector<std::optional<libvisio::Colour>>(6))
 {
 }
 
@@ -119,9 +119,9 @@ bool libvisio::VSDXTheme::parse(librevenge::RVNGInputStream *input)
   return true;
 }
 
-boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSrgbClr(xmlTextReaderPtr reader)
+std::optional<libvisio::Colour> libvisio::VSDXTheme::readSrgbClr(xmlTextReaderPtr reader)
 {
-  boost::optional<libvisio::Colour> retVal;
+  std::optional<libvisio::Colour> retVal;
   if (XML_A_SRGBCLR == getElementToken(reader))
   {
     const shared_ptr<xmlChar> val(xmlTextReaderGetAttribute(reader, BAD_CAST("val")), xmlFree);
@@ -139,9 +139,9 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSrgbClr(xmlTextReader
   return retVal;
 }
 
-boost::optional<libvisio::Colour> libvisio::VSDXTheme::readSysClr(xmlTextReaderPtr reader)
+std::optional<libvisio::Colour> libvisio::VSDXTheme::readSysClr(xmlTextReaderPtr reader)
 {
-  boost::optional<libvisio::Colour> retVal;
+  std::optional<libvisio::Colour> retVal;
   if (XML_A_SYSCLR == getElementToken(reader))
   {
     const shared_ptr<xmlChar> lastClr(xmlTextReaderGetAttribute(reader, BAD_CAST("lastClr")), xmlFree);
@@ -329,7 +329,7 @@ bool libvisio::VSDXTheme::readThemeColour(xmlTextReaderPtr reader, int idToken, 
   int ret = 1;
   int tokenId = XML_TOKEN_INVALID;
   int tokenType = -1;
-  boost::optional<libvisio::Colour> colour;
+  std::optional<libvisio::Colour> colour;
   do
   {
     ret = xmlTextReaderRead(reader);
@@ -437,7 +437,7 @@ void libvisio::VSDXTheme::readVariationClrScheme(xmlTextReaderPtr reader, VSDXVa
   while ((XML_VT_VARIATIONCLRSCHEME != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
 }
 
-boost::optional<libvisio::Colour> libvisio::VSDXTheme::getThemeColour(unsigned value, unsigned variationIndex) const
+std::optional<libvisio::Colour> libvisio::VSDXTheme::getThemeColour(unsigned value, unsigned variationIndex) const
 {
   if (value < 100)
   {
@@ -496,7 +496,7 @@ boost::optional<libvisio::Colour> libvisio::VSDXTheme::getThemeColour(unsigned v
       break;
     }
   }
-  return boost::optional<libvisio::Colour>();
+  return std::optional<libvisio::Colour>();
 }
 
 void libvisio::VSDXTheme::readFmtScheme(xmlTextReaderPtr reader)
@@ -568,9 +568,13 @@ void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
       if (readThemeColour(reader, tokenId, colour))
       {
         if (i < m_fillStyleLst.size())
+        {
           m_fillStyleLst[i] = colour;
+        }
         else
+        {
           VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst Error: Unable to add colour #%02x%02x%02x\n", colour.r, colour.g, colour.b));
+        }
       }
       break;
     }
@@ -590,10 +594,10 @@ void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
   }
 }
 
-boost::optional<libvisio::Colour> libvisio::VSDXTheme::getFillStyleColour(unsigned value) const
+std::optional<libvisio::Colour> libvisio::VSDXTheme::getFillStyleColour(unsigned value) const
 {
   if (value == 0 || value > m_fillStyleLst.size())
-    return boost::optional<libvisio::Colour>();
+    return std::optional<libvisio::Colour>();
   return m_fillStyleLst[value - 1];
 }
 

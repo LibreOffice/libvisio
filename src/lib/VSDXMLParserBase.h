@@ -14,7 +14,7 @@
 #include <memory>
 #include <stack>
 #include <string>
-#include <boost/optional.hpp>
+#include <optional>
 #include "VSDXMLHelper.h"
 #include "VSDCharacterList.h"
 #include "VSDParagraphList.h"
@@ -68,20 +68,20 @@ protected:
   // Helper functions
 
   int readByteData(unsigned char &value, xmlTextReaderPtr reader);
-  int readByteData(boost::optional<unsigned char> &value, xmlTextReaderPtr reader);
-  int readUnsignedData(boost::optional<unsigned> &value, xmlTextReaderPtr reader);
-  int readLongData(boost::optional<long> &value, xmlTextReaderPtr reader);
+  int readByteData(std::optional<unsigned char> &value, xmlTextReaderPtr reader);
+  int readUnsignedData(std::optional<unsigned> &value, xmlTextReaderPtr reader);
+  int readLongData(std::optional<long> &value, xmlTextReaderPtr reader);
   int readLongData(long &value, xmlTextReaderPtr reader);
-  int readDoubleData(boost::optional<double> &value, xmlTextReaderPtr reader);
+  int readDoubleData(std::optional<double> &value, xmlTextReaderPtr reader);
   int readDoubleData(double &value, xmlTextReaderPtr reader);
-  int readBoolData(boost::optional<bool> &value, xmlTextReaderPtr reader);
+  int readBoolData(std::optional<bool> &value, xmlTextReaderPtr reader);
   int readBoolData(bool &value, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, long &idx, xmlTextReaderPtr reader);
   int readExtendedColourData(Colour &value, xmlTextReaderPtr reader);
-  int readExtendedColourData(boost::optional<Colour> &value, xmlTextReaderPtr reader);
+  int readExtendedColourData(std::optional<Colour> &value, xmlTextReaderPtr reader);
   bool readColourOrColourIndex(Colour &value, long &idx, xmlTextReaderPtr reader);
-  int readNURBSData(boost::optional<NURBSData> &data, xmlTextReaderPtr reader);
-  int readPolylineData(boost::optional<PolylineData> &data, xmlTextReaderPtr reader);
+  int readNURBSData(std::optional<NURBSData> &data, xmlTextReaderPtr reader);
+  int readPolylineData(std::optional<PolylineData> &data, xmlTextReaderPtr reader);
   int readStringData(VSDName &text, xmlTextReaderPtr reader);
   void readTriggerId(unsigned &id, xmlTextReaderPtr reader);
 

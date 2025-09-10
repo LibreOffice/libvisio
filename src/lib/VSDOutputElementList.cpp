@@ -533,92 +533,92 @@ void libvisio::VSDOutputElementList::draw(librevenge::RVNGDrawingInterface *pain
 
 void libvisio::VSDOutputElementList::addStyle(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDStyleOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDStyleOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addPath(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDPathOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDPathOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addGraphicObject(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDGraphicObjectOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDGraphicObjectOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addStartTextObject(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDStartTextObjectOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDStartTextObjectOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addOpenParagraph(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDOpenParagraphOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDOpenParagraphOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addOpenSpan(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDOpenSpanOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDOpenSpanOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addInsertText(const librevenge::RVNGString &text)
 {
-  m_elements.push_back(make_unique<VSDInsertTextOutputElement>(text));
+  m_elements.push_back(std::make_unique<VSDInsertTextOutputElement>(text));
 }
 
 void libvisio::VSDOutputElementList::addInsertLineBreak()
 {
-  m_elements.push_back(make_unique<VSDInsertLineBreakOutputElement>());
+  m_elements.push_back(std::make_unique<VSDInsertLineBreakOutputElement>());
 }
 
 void libvisio::VSDOutputElementList::addInsertTab()
 {
-  m_elements.push_back(make_unique<VSDInsertTabOutputElement>());
+  m_elements.push_back(std::make_unique<VSDInsertTabOutputElement>());
 }
 
 void libvisio::VSDOutputElementList::addCloseSpan()
 {
-  m_elements.push_back(make_unique<VSDCloseSpanOutputElement>());
+  m_elements.push_back(std::make_unique<VSDCloseSpanOutputElement>());
 }
 
 void libvisio::VSDOutputElementList::addCloseParagraph()
 {
-  m_elements.push_back(make_unique<VSDCloseParagraphOutputElement>());
+  m_elements.push_back(std::make_unique<VSDCloseParagraphOutputElement>());
 }
 
 void libvisio::VSDOutputElementList::addEndTextObject()
 {
-  m_elements.push_back(make_unique<VSDEndTextObjectOutputElement>());
+  m_elements.push_back(std::make_unique<VSDEndTextObjectOutputElement>());
 }
 
 void libvisio::VSDOutputElementList::addStartLayer(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDStartLayerOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDStartLayerOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addEndLayer()
 {
-  m_elements.push_back(make_unique<VSDEndLayerOutputElement>());
+  m_elements.push_back(std::make_unique<VSDEndLayerOutputElement>());
 }
 
 void libvisio::VSDOutputElementList::addOpenListElement(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDOpenListElementOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDOpenListElementOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addOpenUnorderedListLevel(const librevenge::RVNGPropertyList &propList)
 {
-  m_elements.push_back(make_unique<VSDOpenUnorderedListLevelOutputElement>(propList));
+  m_elements.push_back(std::make_unique<VSDOpenUnorderedListLevelOutputElement>(propList));
 }
 
 void libvisio::VSDOutputElementList::addCloseListElement()
 {
-  m_elements.push_back(make_unique<VSDCloseListElementOutputElement>());
+  m_elements.push_back(std::make_unique<VSDCloseListElementOutputElement>());
 }
 
 void libvisio::VSDOutputElementList::addCloseUnorderedListLevel()
 {
-  m_elements.push_back(make_unique<VSDCloseUnorderedListLevelOutputElement>());
+  m_elements.push_back(std::make_unique<VSDCloseUnorderedListLevelOutputElement>());
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

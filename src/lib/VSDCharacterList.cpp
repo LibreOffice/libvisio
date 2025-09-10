@@ -30,12 +30,12 @@ public:
 class VSDCharIX : public VSDCharacterListElement
 {
 public:
-  VSDCharIX(unsigned id, unsigned level, unsigned charCount, const boost::optional<VSDName> &font,
-            const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize, const boost::optional<bool> &bold,
-            const boost::optional<bool> &italic, const boost::optional<bool> &underline, const boost::optional<bool> &doubleunderline,
-            const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout, const boost::optional<bool> &allcaps,
-            const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps, const boost::optional<bool> &superscript,
-            const boost::optional<bool> &subscript, const boost::optional<double> &scaleWidth) : VSDCharacterListElement(id, level),
+  VSDCharIX(unsigned id, unsigned level, unsigned charCount, const std::optional<VSDName> &font,
+            const std::optional<Colour> &fontColour, const std::optional<double> &fontSize, const std::optional<bool> &bold,
+            const std::optional<bool> &italic, const std::optional<bool> &underline, const std::optional<bool> &doubleunderline,
+            const std::optional<bool> &strikeout, const std::optional<bool> &doublestrikeout, const std::optional<bool> &allcaps,
+            const std::optional<bool> &initcaps, const std::optional<bool> &smallcaps, const std::optional<bool> &superscript,
+            const std::optional<bool> &subscript, const std::optional<double> &scaleWidth) : VSDCharacterListElement(id, level),
     m_style(charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline, strikeout,
             doublestrikeout, allcaps, initcaps,  smallcaps,  superscript,  subscript, scaleWidth) {}
   VSDCharIX(unsigned id, unsigned level, const VSDOptionalCharStyle &style) : VSDCharacterListElement(id, level), m_style(style) {}
@@ -105,17 +105,17 @@ libvisio::VSDCharacterList::~VSDCharacterList()
 }
 
 void libvisio::VSDCharacterList::addCharIX(unsigned id, unsigned level, unsigned charCount,
-                                           const boost::optional<VSDName> &font, const boost::optional<Colour> &fontColour, const boost::optional<double> &fontSize,
-                                           const boost::optional<bool> &bold, const boost::optional<bool> &italic, const boost::optional<bool> &underline,
-                                           const boost::optional<bool> &doubleunderline, const boost::optional<bool> &strikeout, const boost::optional<bool> &doublestrikeout,
-                                           const boost::optional<bool> &allcaps, const boost::optional<bool> &initcaps, const boost::optional<bool> &smallcaps,
-                                           const boost::optional<bool> &superscript, const boost::optional<bool> &subscript, const boost::optional<double> &scaleWidth)
+                                           const std::optional<VSDName> &font, const std::optional<Colour> &fontColour, const std::optional<double> &fontSize,
+                                           const std::optional<bool> &bold, const std::optional<bool> &italic, const std::optional<bool> &underline,
+                                           const std::optional<bool> &doubleunderline, const std::optional<bool> &strikeout, const std::optional<bool> &doublestrikeout,
+                                           const std::optional<bool> &allcaps, const std::optional<bool> &initcaps, const std::optional<bool> &smallcaps,
+                                           const std::optional<bool> &superscript, const std::optional<bool> &subscript, const std::optional<double> &scaleWidth)
 {
   auto *tmpElement = dynamic_cast<VSDCharIX *>(m_elements[id].get());
   if (!tmpElement)
   {
-    m_elements[id] = make_unique<VSDCharIX>(id, level, charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline,
-                                            strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth);
+    m_elements[id] = std::make_unique<VSDCharIX>(id, level, charCount, font, fontColour, fontSize, bold, italic, underline, doubleunderline,
+                                                 strikeout, doublestrikeout, allcaps, initcaps, smallcaps, superscript, subscript, scaleWidth);
   }
   else
     tmpElement->m_style.override(VSDOptionalCharStyle(charCount, font, fontColour, fontSize, bold, italic, underline,
