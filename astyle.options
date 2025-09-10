@@ -2,10 +2,10 @@
 style=allman
 indent=spaces=2
 align-pointer=name
-break-closing-brackets
+break-closing-braces
 pad-header
 unpad-paren
-max-instatement-indent=120
+max-continuation-indent=120
 
 # processing options
 recursive
