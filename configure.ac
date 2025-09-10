@@ -38,7 +38,7 @@ PKG_PROG_PKG_CONFIG([0.20])
 AC_PROG_EGREP
 AC_PROG_SED
 
-AX_CXX_COMPILE_STDCXX_11
+AX_CXX_COMPILE_STDCXX([17], [noext], [mandatory])
 AX_GCC_FUNC_ATTRIBUTE([format])
 
 dnl ===================================================================
@@ -50,13 +50,9 @@ AM_MISSING_PROG([PERL], [perl])
 # ====================
 # Find additional apps
 # ====================
-PKG_CHECK_MODULES([REVENGE],[
-	librevenge-0.0
-])
+PKG_CHECK_MODULES([REVENGE],[librevenge-0.0])
 
-PKG_CHECK_MODULES([LIBXML],[
-	libxml-2.0
-])
+PKG_CHECK_MODULES([LIBXML],[libxml-2.0])
 
 # ========
 # Find icu
@@ -73,7 +69,6 @@ AC_CHECK_HEADERS(
 	boost/algorithm/string.hpp \
 	boost/cstdint.hpp \
 	boost/lexical_cast.hpp \
-	boost/optional.hpp \
 	boost/phoenix.hpp \
 	boost/spirit/include/qi.hpp \
         ,
@@ -122,17 +117,13 @@ AM_CONDITIONAL([ENABLE_TESTS], [test "x$enable_tests" = "xyes"])
 AS_IF([test "x$enable_tests" = "xyes"], [need_stream=yes])
 
 AS_IF([test "x$need_stream" = "xyes"], [
-	PKG_CHECK_MODULES([REVENGE_STREAM],[
-		librevenge-stream-0.0
-	])
+	PKG_CHECK_MODULES([REVENGE_STREAM],[librevenge-stream-0.0])
 ])
 AC_SUBST([REVENGE_STREAM_CFLAGS])
 AC_SUBST([REVENGE_STREAM_LIBS])
 
 AS_IF([test "x$need_generators" = "xyes"], [
-	PKG_CHECK_MODULES([REVENGE_GENERATORS],[
-		librevenge-generators-0.0
-	])
+	PKG_CHECK_MODULES([REVENGE_GENERATORS],[librevenge-generators-0.0])
 ])
 AC_SUBST([REVENGE_GENERATORS_CFLAGS])
 AC_SUBST([REVENGE_GENERATORS_LIBS])
