@@ -19,6 +19,11 @@
 
 #include "xmldrawinggenerator.h"
 
+#ifdef BAD_CAST
+#undef BAD_CAST
+#endif
+#define BAD_CAST(a) const_cast<xmlChar*>(reinterpret_cast<const xmlChar*>(a))
+
 namespace librevenge
 {
 
@@ -155,9 +160,9 @@ librevenge::RVNGString getXPathContent(xmlDocPtr doc, const librevenge::RVNGStri
   case XPATH_USERS:
   case XPATH_XSLT_TREE:
     CPPUNIT_FAIL("Unsupported XPath type");
+  default:
+    CPPUNIT_FAIL("Invalid XPath type");
   }
-
-  CPPUNIT_FAIL("Invalid XPath type");
 
 }
 /// Assert that xpath exists, and its content equals to content.

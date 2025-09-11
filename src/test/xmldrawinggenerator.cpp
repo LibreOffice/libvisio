@@ -14,6 +14,11 @@
 #include <utility>
 #include <vector>
 
+#ifdef BAD_CAST
+#undef BAD_CAST
+#endif
+#define BAD_CAST(a) const_cast<xmlChar*>(reinterpret_cast<const xmlChar*>(a))
+
 namespace libvisio
 {
 
