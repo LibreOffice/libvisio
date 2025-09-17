@@ -120,14 +120,15 @@ libvisio::VSDContentCollector::VSDContentCollector(
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
   std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
   std::vector<std::list<unsigned> > &documentPageShapeOrders,
-  VSDStyles &styles, VSDStencils &stencils
+  VSDStyles &styles, VSDStencils &stencils, const std::optional<unsigned> &varColInd,
+  const std::optional<unsigned> &varStyInd
 ) :
   m_painter(painter), m_isPageStarted(false), m_pageWidth(0.0), m_pageHeight(0.0),
   m_shadowOffsetX(0.0), m_shadowOffsetY(0.0),
   m_scale(1.0), m_defaultDrawingUnit(0),
   m_x(0.0), m_y(0.0), m_originalX(0.0), m_originalY(0.0), m_xform(), m_txtxform(), m_misc(),
   m_currentFillGeometry(), m_currentLineGeometry(), m_groupXForms(groupXFormsSequence.empty() ? nullptr : &groupXFormsSequence[0]),
-  m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_foreignType((unsigned)-1),
+  m_currentForeignData(), m_currentOLEData(), m_currentForeignProps(), m_currentShapeId(0), m_parentShapeId(0), m_foreignType((unsigned)-1),
   m_foreignFormat(0), m_foreignOffsetX(0.0), m_foreignOffsetY(0.0), m_foreignWidth(0.0), m_foreignHeight(0.0),
   m_noLine(false), m_noFill(false), m_noShow(false), m_fonts(),
   m_currentLevel(0), m_isShapeStarted(false),
@@ -139,11 +140,12 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_currentText(), m_names(), m_stencilNames(), m_fields(), m_stencilFields(), m_fieldIndex(0),
   m_charFormats(), m_paraFormats(), m_lineStyle(), m_fillStyle(), m_textBlockStyle(),
   m_defaultCharStyle(), m_defaultParaStyle(), m_currentStyleSheet(0), m_styles(styles),
+  m_variationColorIndex(varColInd), m_variationStyleIndex(varStyInd),
   m_stencils(stencils), m_stencilShape(nullptr), m_isStencilStarted(false), m_currentGeometryCount(0),
   m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(), m_layerList(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
-  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem(), m_tabSets(), m_documentTheme(nullptr)
+  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem(), m_tabSets(), m_documentTheme(nullptr), m_currentShapeType()
 {
 }
 
@@ -1693,7 +1695,8 @@ void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const s
 {
   _handleLevelChange(level);
   m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc,
-                                            shadowPattern, shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour, qsFillMatrix), m_documentTheme);
+                                            shadowPattern, shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour, qsFillMatrix,
+                                            m_variationColorIndex, m_variationStyleIndex), !_isDefaultShapeFormat() ? m_documentTheme : nullptr);
 }
 
 void libvisio::VSDContentCollector::collectFillAndShadow(unsigned level, const std::optional<Colour> &colourFG, const std::optional<Colour> &colourBG,
@@ -2564,7 +2567,8 @@ void libvisio::VSDContentCollector::collectForeignDataType(unsigned level, unsig
 }
 
 void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned level, double pageWidth, double pageHeight,
-                                                     double shadowOffsetX, double shadowOffsetY, double scale, unsigned char drawingScaleUnit)
+                                                     double shadowOffsetX, double shadowOffsetY, double scale, unsigned char drawingScaleUnit,
+                                                     const std::optional<unsigned> variationColorIndex, const std::optional<unsigned> variationStyleIndex)
 {
   _handleLevelChange(level);
   m_pageWidth = pageWidth;
@@ -2573,6 +2577,8 @@ void libvisio::VSDContentCollector::collectPageProps(unsigned /* id */, unsigned
   m_shadowOffsetX = shadowOffsetX;
   m_shadowOffsetY = shadowOffsetY;
   m_defaultDrawingUnit = drawingScaleUnit;
+  m_variationColorIndex = variationColorIndex;
+  m_variationStyleIndex = variationStyleIndex;
 
   m_currentPage.m_pageWidth = m_scale*m_pageWidth;
   m_currentPage.m_pageHeight = m_scale*m_pageHeight;
@@ -2588,7 +2594,7 @@ void libvisio::VSDContentCollector::collectPage(unsigned /* id */, unsigned leve
   m_isBackgroundPage = isBackgroundPage;
 }
 
-void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, unsigned /*parent*/, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId)
+void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, unsigned parent, unsigned masterPage, unsigned masterShape, unsigned lineStyleId, unsigned fillStyleId, unsigned textStyleId, const VSDName &aShapeType)
 {
   _handleLevelChange(level);
   m_currentShapeLevel = level;
@@ -2618,7 +2624,12 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
   m_charFormats.clear();
   m_paraFormats.clear();
 
+  m_currentShapeType.clear();
+  if (aShapeType.m_data.size())
+    _convertDataToString(m_currentShapeType, aShapeType.m_data, aShapeType.m_format);
+
   m_currentShapeId = id;
+  m_parentShapeId = parent;
   m_pageOutputDrawing[m_currentShapeId] = VSDOutputElementList();
   m_pageOutputText[m_currentShapeId] = VSDOutputElementList();
   m_shapeOutputDrawing = &m_pageOutputDrawing[m_currentShapeId];
@@ -2678,10 +2689,11 @@ void libvisio::VSDContentCollector::collectShape(unsigned id, unsigned level, un
 
     m_lineStyle.override(m_stencilShape->m_lineStyle, m_documentTheme);
 
+    bool bDefault = _isDefaultShapeFormat();
     if (m_stencilShape->m_fillStyleId != MINUS_ONE)
-      m_fillStyle.override(m_styles.getOptionalFillStyle(m_stencilShape->m_fillStyleId), m_documentTheme);
+      m_fillStyle.override(m_styles.getOptionalFillStyle(m_stencilShape->m_fillStyleId), !bDefault ? m_documentTheme : nullptr);
 
-    m_fillStyle.override(m_stencilShape->m_fillStyle, m_documentTheme);
+    m_fillStyle.override(m_stencilShape->m_fillStyle, !bDefault ? m_documentTheme : nullptr);
 
     if (m_stencilShape->m_textStyleId != MINUS_ONE)
     {
@@ -2898,7 +2910,7 @@ void libvisio::VSDContentCollector::collectFillStyle(unsigned /* level */, const
                                                      const std::optional<long> &qsShadowColour, const std::optional<long> &qsFillMatrix)
 {
   VSDOptionalFillStyle fillStyle(colourFG, colourBG, fillPattern, fillFGTransparency, fillBGTransparency, shfgc, shadowPattern,
-                                 shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour, qsFillMatrix);
+                                 shadowOffsetX, shadowOffsetY, qsFillColour, qsShadowColour, qsFillMatrix, m_variationColorIndex, m_variationStyleIndex);
   m_styles.addFillStyle(m_currentStyleSheet, fillStyle);
 
 }
@@ -3577,6 +3589,23 @@ void libvisio::VSDContentCollector::_handleLevelChange(unsigned level)
   }
 
   m_currentLevel = level;
+}
+
+bool libvisio::VSDContentCollector::_isDefaultShapeFormat()
+{
+  bool bDefault = false;
+  if (m_groupMemberships != m_groupMembershipsSequence.end())
+  {
+    auto iter = m_groupMemberships->find(m_currentShapeId);
+    if (iter != m_groupMemberships->end() && m_parentShapeId == iter->second && (iter == m_groupMemberships->begin() || m_parentShapeId != std::prev(iter)->second))
+    {
+      std::string aValue(m_currentShapeType.cstr());
+      std::size_t found = aValue.find("End Event");
+      if (found != std::string::npos)
+        bDefault = true;
+    }
+  }
+  return bDefault;
 }
 
 void libvisio::VSDContentCollector::collectMetaData(const librevenge::RVNGPropertyList &metaData)

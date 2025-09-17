@@ -71,9 +71,10 @@ public:
   void collectTxtXForm(unsigned level, const XForm &txtxform) override;
   void collectShapesOrder(unsigned id, unsigned level, const std::vector<unsigned> &shapeIds) override;
   void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height) override;
-  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale, unsigned char drawingScaleUnit) override;
+  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale,
+                        unsigned char drawingScaleUnit, const std::optional<unsigned> variationColorIndex, const std::optional<unsigned> variationStyleIndex) override;
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage, const VSDName &pageName) override;
-  void collectShape(unsigned id, unsigned level, unsigned parent, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) override;
+  void collectShape(unsigned id, unsigned level, unsigned parent, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle, const VSDName &aShapeType) override;
   void collectSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree) override;
   void collectSplineKnot(unsigned id, unsigned level, double x, double y, double knot) override;
   void collectSplineEnd() override;
@@ -176,7 +177,8 @@ public:
   {
     return m_styles;
   }
-
+  const std::optional<unsigned>& getvariationColorIndex() const { return m_variationColorIndex; }
+  const std::optional<unsigned>& getvariationStyleIndex() const { return m_variationStyleIndex; }
 
 private:
   VSDStylesCollector(const VSDStylesCollector &);
@@ -203,6 +205,9 @@ private:
 
   unsigned m_currentStyleSheet;
   VSDStyles m_styles;
+
+  std::optional<unsigned> m_variationColorIndex;
+  std::optional<unsigned> m_variationStyleIndex;
 
   unsigned m_currentShapeLevel;
 };

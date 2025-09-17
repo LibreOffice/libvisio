@@ -57,6 +57,7 @@ public:
   std::unique_ptr<XForm1D> m_xform1d;
   VSDMisc m_misc;
   VSDName m_layerMem;
+  VSDName m_aName;
 };
 
 class VSDStencil

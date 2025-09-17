@@ -36,7 +36,8 @@ public:
     std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
     std::vector<std::map<unsigned, unsigned> > &groupMembershipsSequence,
     std::vector<std::list<unsigned> > &documentPageShapeOrders,
-    VSDStyles &styles, VSDStencils &stencils
+    VSDStyles &styles, VSDStencils &stencils, const std::optional<unsigned> &varColInd,
+    const std::optional<unsigned> &varStyInd
   );
 
   void collectDocumentTheme(const VSDXTheme *theme) override;
@@ -77,9 +78,10 @@ public:
   void collectTxtXForm(unsigned level, const XForm &txtxform) override;
   void collectShapesOrder(unsigned id, unsigned level, const std::vector<unsigned> &shapeIds) override;
   void collectForeignDataType(unsigned level, unsigned foreignType, unsigned foreignFormat, double offsetX, double offsetY, double width, double height) override;
-  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale, unsigned char drawingScaleUnit) override;
+  void collectPageProps(unsigned id, unsigned level, double pageWidth, double pageHeight, double shadowOffsetX, double shadowOffsetY, double scale,
+                        unsigned char drawingScaleUnit, const std::optional<unsigned> variationColorIndex, const std::optional<unsigned> variationStyleIndex) override;
   void collectPage(unsigned id, unsigned level, unsigned backgroundPageID, bool isBackgroundPage, const VSDName &pageName) override;
-  void collectShape(unsigned id, unsigned level, unsigned parent, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle) override;
+  void collectShape(unsigned id, unsigned level, unsigned parent, unsigned masterPage, unsigned masterShape, unsigned lineStyle, unsigned fillStyle, unsigned textStyle, const VSDName &aShapeType) override;
   void collectSplineStart(unsigned id, unsigned level, double x, double y, double secondKnot, double firstKnot, double lastKnot, unsigned degree) override;
   void collectSplineKnot(unsigned id, unsigned level, double x, double y, double knot) override;
   void collectSplineEnd() override;
@@ -197,6 +199,7 @@ private:
   void _flushCurrentPage();
 
   void _handleLevelChange(unsigned level);
+  bool _isDefaultShapeFormat();
 
   void _handleForeignData(const librevenge::RVNGBinaryData &data);
 
@@ -253,6 +256,7 @@ private:
   librevenge::RVNGBinaryData m_currentOLEData;
   librevenge::RVNGPropertyList m_currentForeignProps;
   unsigned m_currentShapeId;
+  unsigned m_parentShapeId;
   unsigned m_foreignType;
   unsigned m_foreignFormat;
   double m_foreignOffsetX;
@@ -296,6 +300,9 @@ private:
   unsigned m_currentStyleSheet;
   VSDStyles m_styles;
 
+  std::optional<unsigned> m_variationColorIndex;
+  std::optional<unsigned> m_variationStyleIndex;
+
   VSDStencils m_stencils;
   const VSDShape *m_stencilShape;
   bool m_isStencilStarted;
@@ -323,6 +330,7 @@ private:
   std::vector<VSDTabSet> m_tabSets;
 
   const VSDXTheme *m_documentTheme;
+  librevenge::RVNGString m_currentShapeType;
 };
 
 } // namespace libvisio

@@ -939,6 +939,8 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   const shared_ptr<xmlChar> fillStyleString(xmlTextReaderGetAttribute(reader, BAD_CAST("FillStyle")), xmlFree);
   const shared_ptr<xmlChar> textStyleString(xmlTextReaderGetAttribute(reader, BAD_CAST("TextStyle")), xmlFree);
 
+  shared_ptr<xmlChar> pShapeName(xmlTextReaderGetAttribute(reader, BAD_CAST("NameU")), xmlFree);
+
   unsigned id = idString ? (unsigned)xmlStringToLong(idString) : MINUS_ONE;
   unsigned masterPage = masterPageString ? (unsigned)xmlStringToLong(masterPageString) : MINUS_ONE;
   unsigned masterShape = masterShapeString ? (unsigned)xmlStringToLong(masterShapeString) : MINUS_ONE;
@@ -994,6 +996,17 @@ void libvisio::VSDXMLParserBase::readShape(xmlTextReaderPtr reader)
   m_shape.m_masterPage = masterPage;
   m_shape.m_masterShape = masterShape;
   m_shape.m_shapeId = id;
+  if (pShapeName.get())
+  {
+      m_shape.m_aName = VSDName(
+          librevenge::RVNGBinaryData(pShapeName.get(), xmlStrlen(pShapeName.get())),
+                     VSD_TEXT_UTF8);
+  }
+  else if (MINUS_ONE != m_shape.m_parent && !m_shapeStack.top().m_aName.empty())
+  {
+      m_shape.m_aName = m_shapeStack.top().m_aName;
+  }
+
 }
 
 void libvisio::VSDXMLParserBase::initColours()
@@ -1747,7 +1760,9 @@ void libvisio::VSDXMLParserBase::_flushShape()
   if (!m_isShapeStarted)
     return;
 
-  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
+  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent,
+                            m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId,
+                            m_shape.m_fillStyleId, m_shape.m_textStyleId, m_shape.m_aName);
 
   m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
 

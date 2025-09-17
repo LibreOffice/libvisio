@@ -24,6 +24,7 @@ libvisio::VSDStylesCollector::VSDStylesCollector(
   m_groupMembershipsSequence(groupMembershipsSequence),
   m_pageShapeOrder(), m_documentPageShapeOrders(documentPageShapeOrders),
   m_groupShapeOrder(), m_shapeList(), m_currentStyleSheet(0), m_styles(),
+  m_variationColorIndex(), m_variationStyleIndex(),
   m_currentShapeLevel(0)
 {
   m_groupXFormsSequence.clear();
@@ -223,9 +224,12 @@ void libvisio::VSDStylesCollector::collectForeignDataType(unsigned level, unsign
 
 void libvisio::VSDStylesCollector::collectPageProps(unsigned /* id */, unsigned level, double /* pageWidth */, double /* pageHeight */,
                                                     double /* shadowOffsetX */, double /* shadowOffsetY */, double /* scale */,
-                                                    unsigned char /* drawingScaleUnit */)
+                                                    unsigned char /* drawingScaleUnit */, const std::optional<unsigned> variationColorIndex,
+                                                    const std::optional<unsigned> variationStyleIndex)
 {
   _handleLevelChange(level);
+  m_variationColorIndex = variationColorIndex;
+  m_variationStyleIndex = variationStyleIndex;
 }
 
 void libvisio::VSDStylesCollector::collectPage(unsigned /* id */, unsigned level, unsigned /* backgroundPageID */, bool /* isBackgroundPage */, const VSDName & /* pageName */)
@@ -234,7 +238,7 @@ void libvisio::VSDStylesCollector::collectPage(unsigned /* id */, unsigned level
 }
 
 void libvisio::VSDStylesCollector::collectShape(unsigned id, unsigned level, unsigned parent, unsigned /*masterPage*/, unsigned /*masterShape*/,
-                                                unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */)
+                                                unsigned /* lineStyle */, unsigned /* fillStyle */, unsigned /* textStyle */, const VSDName & /*aShapeType*/)
 {
   _handleLevelChange(level);
   m_currentShapeLevel = level;

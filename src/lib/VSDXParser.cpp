@@ -89,8 +89,10 @@ bool libvisio::VSDXParser::parseMain() try
     return false;
 
   VSDStyles styles = stylesCollector.getStyleSheets();
+  const std::optional<unsigned> varColInd = stylesCollector.getvariationColorIndex();
+  const std::optional<unsigned> varStyInd = stylesCollector.getvariationStyleIndex();
 
-  VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
+  VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils, varColInd, varStyInd);
   m_collector = &contentCollector;
   parseMetaData(m_input, rootRels);
 
@@ -610,6 +612,8 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
   double shadowOffsetY = 0.0;
   double pageScale = 1.0;
   double drawingScale = 1.0;
+  std::optional<unsigned> variationColorIndex;
+  std::optional<unsigned> variationStyleIndex;
 
   auto level = (unsigned)getElementDepth(reader);
   int ret = 1;
@@ -650,6 +654,14 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
         ret = readDoubleData(drawingScale, reader);
       break;
+    case XML_VARIATIONCOLORINDEX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readUnsignedData(variationColorIndex, reader);
+      break;
+    case XML_VARIATIONSTYLEINDEX:
+      if (XML_READER_TYPE_ELEMENT == tokenType)
+        ret = readUnsignedData(variationStyleIndex, reader);
+      break;
     case XML_LAYER:
       if (XML_READER_TYPE_ELEMENT == tokenType)
         readLayer(reader);
@@ -668,7 +680,7 @@ void libvisio::VSDXParser::readPageSheetProperties(xmlTextReaderPtr reader)
   else if (m_isPageStarted)
   {
     double scale = drawingScale > 0 || drawingScale < 0 ? pageScale/drawingScale : 1.0;
-    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale, 0);
+    m_collector->collectPageProps(0, level, pageWidth, pageHeight, shadowOffsetX, shadowOffsetY, scale, 0, variationColorIndex, variationStyleIndex);
   }
 }
 
@@ -934,7 +946,7 @@ void libvisio::VSDXParser::readStyleProperties(xmlTextReaderPtr reader)
                                                       qsLineColour, qsLineMatrix));
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(fillColourFG, fillColourBG, fillPattern, fillFGTransparency, fillBGTransparency,
                                                       shadowColourFG, shadowPattern, shadowOffsetX, shadowOffsetY,
-                                                      qsFillColour, qsShadowColour, qsFillMatrix));
+                                                      qsFillColour, qsShadowColour, qsFillMatrix, 0, 0));
     m_shape.m_textBlockStyle.override(VSDOptionalTextBlockStyle(leftMargin, rightMargin, topMargin, bottomMargin, verticalAlign,
                                                                 isTextBkgndFilled, textBkgndColour, defaultTabStop, textDirection));
   }

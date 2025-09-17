@@ -17,7 +17,7 @@ libvisio::VSDShape::VSDShape()
     m_textStyleId(MINUS_ONE), m_lineStyle(), m_fillStyle(), m_textBlockStyle(), m_charStyle(),
     m_charList(), m_paraStyle(), m_paraList(), m_tabSets(), m_text(), m_names(),
     m_textFormat(libvisio::VSD_TEXT_UTF16), m_nurbsData(), m_polylineData(), m_xform(), m_txtxform(),
-    m_xform1d(), m_misc(), m_layerMem()
+    m_xform1d(), m_misc(), m_layerMem(), m_aName()
 {
 }
 
@@ -32,7 +32,7 @@ libvisio::VSDShape::VSDShape(const libvisio::VSDShape &shape)
     m_textFormat(shape.m_textFormat), m_nurbsData(shape.m_nurbsData), m_polylineData(shape.m_polylineData),
     m_xform(shape.m_xform), m_txtxform(shape.m_txtxform ? new XForm(*(shape.m_txtxform)) : nullptr),
     m_xform1d(shape.m_xform1d ? new XForm1D(*(shape.m_xform1d)) : nullptr), m_misc(shape.m_misc),
-    m_layerMem(shape.m_layerMem)
+    m_layerMem(shape.m_layerMem), m_aName(shape.m_aName)
 {
 }
 
@@ -74,6 +74,7 @@ libvisio::VSDShape &libvisio::VSDShape::operator=(const libvisio::VSDShape &shap
     m_xform1d.reset(shape.m_xform1d ? new XForm1D(*shape.m_xform1d) : nullptr);
     m_misc = shape.m_misc;
     m_layerMem = shape.m_layerMem;
+    m_aName = shape.m_aName;
   }
   return *this;
 }
@@ -110,6 +111,7 @@ void libvisio::VSDShape::clear()
   m_textFormat = libvisio::VSD_TEXT_UTF16;
   m_misc = VSDMisc();
   m_layerMem = VSDName();
+  m_aName = VSDName();
 }
 
 libvisio::VSDStencil::VSDStencil()

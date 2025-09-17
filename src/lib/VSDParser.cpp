@@ -136,8 +136,10 @@ bool libvisio::VSDParser::parseMain()
   _handleLevelChange(0);
 
   VSDStyles styles = stylesCollector.getStyleSheets();
+  const std::optional<unsigned> varColInd = stylesCollector.getvariationColorIndex();
+  const std::optional<unsigned> varStyInd = stylesCollector.getvariationStyleIndex();
 
-  VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils);
+  VSDContentCollector contentCollector(m_painter, groupXFormsSequence, groupMembershipsSequence, documentPageShapeOrders, styles, m_stencils, varColInd, varStyInd);
   m_collector = &contentCollector;
   if (m_container)
     parseMetaData();
@@ -637,7 +639,7 @@ void libvisio::VSDParser::_flushShape()
   if (!m_isShapeStarted)
     return;
 
-  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId);
+  m_collector->collectShape(m_shape.m_shapeId, m_currentShapeLevel, m_shape.m_parent, m_shape.m_masterPage, m_shape.m_masterShape, m_shape.m_lineStyleId, m_shape.m_fillStyleId, m_shape.m_textStyleId, m_shape.m_aName);
 
   m_collector->collectShapesOrder(0, m_currentShapeLevel+2, m_shape.m_shapeList.getShapesOrder());
 
@@ -1275,7 +1277,7 @@ void libvisio::VSDParser::readPageProps(librevenge::RVNGInputStream *input)
     m_currentStencil->m_shadowOffsetX = m_shadowOffsetX;
     m_currentStencil->m_shadowOffsetY = m_shadowOffsetY;
   }
-  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, m_shadowOffsetX, m_shadowOffsetY, scale, drawingScaleUnit);
+  m_collector->collectPageProps(m_header.id, m_header.level, pageWidth, pageHeight, m_shadowOffsetX, m_shadowOffsetY, scale, drawingScaleUnit, 0, 0);
 }
 
 void libvisio::VSDParser::readShape(librevenge::RVNGInputStream *input)
@@ -2143,7 +2145,7 @@ void libvisio::VSDParser::readFillAndShadow(librevenge::RVNGInputStream *input)
     }
     m_shape.m_fillStyle.override(VSDOptionalFillStyle(colourFG, colourBG, fillPattern, fillFGTransparency,
                                                       fillBGTransparency, shadowFG, shadowPattern,
-                                                      shadowOffsetX, shadowOffsetY, -1, -1, -1));
+                                                      shadowOffsetX, shadowOffsetY, -1, -1, -1, 0, 0));
   }
 }
 

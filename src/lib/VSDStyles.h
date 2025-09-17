@@ -105,16 +105,18 @@ struct VSDOptionalFillStyle
   VSDOptionalFillStyle() :
     fgColour(), bgColour(), pattern(), fgTransparency(), bgTransparency(), shadowFgColour(),
     shadowPattern(), shadowOffsetX(), shadowOffsetY(), qsFillColour(), qsShadowColour(),
-    qsFillMatrix() {}
+    qsFillMatrix(), variationColorIndex(), variationStyleIndex() {}
   VSDOptionalFillStyle(const std::optional<Colour> &fgc, const std::optional<Colour> &bgc,
                        const std::optional<unsigned char> &p, const std::optional<double> &fga,
                        const std::optional<double> &bga, const std::optional<Colour> &sfgc,
                        const std::optional<unsigned char> &shp, const std::optional<double> &shX,
                        const std::optional<double> &shY, const std::optional<long> &qsFc,
-                       const std::optional<long> &qsSc, const std::optional<long> &qsFm) :
+                       const std::optional<long> &qsSc, const std::optional<long> &qsFm,
+                       const std::optional<unsigned> &vCIn, const std::optional<unsigned> &vSIn) :
     fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
     shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
-    qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm) {}
+    qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm), variationColorIndex(vCIn),
+    variationStyleIndex(vSIn) {}
   VSDOptionalFillStyle(const VSDOptionalFillStyle &style) = default;
   ~VSDOptionalFillStyle() {}
   VSDOptionalFillStyle &operator=(const VSDOptionalFillStyle &style) = default;
@@ -132,6 +134,8 @@ struct VSDOptionalFillStyle
     ASSIGN_OPTIONAL(style.fgColour, fgColour);
     ASSIGN_OPTIONAL(style.bgColour, bgColour);
     ASSIGN_OPTIONAL(style.shadowFgColour, shadowFgColour);
+    ASSIGN_OPTIONAL(style.variationColorIndex, variationColorIndex);
+    ASSIGN_OPTIONAL(style.variationStyleIndex, variationStyleIndex);
   }
 
   std::optional<Colour> fgColour;
@@ -146,6 +150,8 @@ struct VSDOptionalFillStyle
   std::optional<long> qsFillColour;
   std::optional<long> qsShadowColour;
   std::optional<long> qsFillMatrix;
+  std::optional<unsigned> variationColorIndex;
+  std::optional<unsigned> variationStyleIndex;
 };
 
 struct VSDFillStyle
@@ -153,13 +159,15 @@ struct VSDFillStyle
   VSDFillStyle()
     : fgColour(), bgColour(0xff, 0xff, 0xff, 0), pattern(0), fgTransparency(0),
       bgTransparency(0), shadowFgColour(),  shadowPattern(0), shadowOffsetX(0),
-      shadowOffsetY(0), qsFillColour(-1), qsShadowColour(-1), qsFillMatrix(-1) {}
+      shadowOffsetY(0), qsFillColour(100), qsShadowColour(100), qsFillMatrix(-1),
+      variationColorIndex(0), variationStyleIndex(0) {}
   VSDFillStyle(const Colour &fgc, const Colour &bgc, unsigned char p,
                double fga, double bga, const Colour &sfgc, unsigned char shp,
-               double shX, double shY, long qsFc, long qsSc, long qsFm)
+               double shX, double shY, long qsFc, long qsSc, long qsFm, unsigned vCIn, unsigned vSIn)
     : fgColour(fgc), bgColour(bgc), pattern(p), fgTransparency(fga), bgTransparency(bga),
       shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
-      qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm) {}
+      qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm), variationColorIndex(vCIn),
+      variationStyleIndex(vSIn) {}
   VSDFillStyle(const VSDFillStyle &style) = default;
   ~VSDFillStyle() {}
   VSDFillStyle &operator=(const VSDFillStyle &style) = default;
@@ -175,13 +183,15 @@ struct VSDFillStyle
     ASSIGN_OPTIONAL(style.qsFillColour, qsFillColour);
     ASSIGN_OPTIONAL(style.qsShadowColour, qsShadowColour);
     ASSIGN_OPTIONAL(style.qsFillMatrix, qsFillMatrix);
+    ASSIGN_OPTIONAL(style.variationColorIndex, variationColorIndex);
+    ASSIGN_OPTIONAL(style.variationStyleIndex, variationStyleIndex);
     if (theme)
     {
       // Quick Style Colour 100 is special. It is the default,
       // and it is not saved explicitely in the VSDX file.
-      ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.value_or(100)), fgColour);
-      ASSIGN_OPTIONAL(theme->getThemeColour(style.qsFillColour.value_or(100)), bgColour);
-      ASSIGN_OPTIONAL(theme->getThemeColour(style.qsShadowColour.value_or(100)), shadowFgColour);
+      ASSIGN_OPTIONAL(theme->getThemeColour(qsFillColour, variationColorIndex), fgColour);
+      ASSIGN_OPTIONAL(theme->getThemeColour(qsFillColour, variationColorIndex), bgColour);
+      ASSIGN_OPTIONAL(theme->getThemeColour(qsShadowColour, variationColorIndex), shadowFgColour);
       if (!!style.qsFillMatrix && style.qsFillMatrix.value() >= 0)
         ASSIGN_OPTIONAL(theme->getFillStyleColour(style.qsFillMatrix.value()), fgColour);
     }
@@ -202,6 +212,8 @@ struct VSDFillStyle
   long qsFillColour;
   long qsShadowColour;
   long qsFillMatrix;
+  unsigned variationColorIndex;
+  unsigned variationStyleIndex;
 };
 
 struct VSDOptionalCharStyle
