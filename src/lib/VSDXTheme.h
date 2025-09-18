@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include <optional>
+#include <array>
 #include <librevenge-stream/librevenge-stream.h>
 #include "VSDXMLHelper.h"
 
@@ -73,6 +74,13 @@ struct VSDXFontScheme
   VSDXFontScheme();
 };
 
+struct VSDXVariationStyleScheme
+{
+  std::array<std::array<unsigned, 4>, 4> m_varStyles;
+
+  VSDXVariationStyleScheme();
+};
+
 class VSDXTheme
 {
 public:
@@ -80,6 +88,7 @@ public:
   ~VSDXTheme();
   bool parse(librevenge::RVNGInputStream *input);
   std::optional<Colour> getThemeColour(unsigned value, unsigned variationIndex = 0) const;
+  std::optional<Colour> getStyleColour(unsigned value, unsigned variationIndex = 0) const;
   std::optional<Colour> getFillStyleColour(unsigned value) const;
 
 private:
@@ -93,6 +102,9 @@ private:
   bool readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr);
   void readVariationClrSchemeLst(xmlTextReaderPtr reader);
   void readVariationClrScheme(xmlTextReaderPtr reader, VSDXVariationClrScheme &varClrSch);
+  void readVariationStyleSchemeLst(xmlTextReaderPtr reader);
+  void readVariationStyleScheme(xmlTextReaderPtr reader, int idToken, VSDXVariationStyleScheme &vaStyleSch);
+  void readVarIdx(xmlTextReaderPtr reader, std::array<unsigned, 4>& varStyle);
   void readFontScheme(xmlTextReaderPtr reader);
   void readFont(xmlTextReaderPtr reader, int idToken, VSDXFont &font);
   bool readTypeFace(xmlTextReaderPtr reader, librevenge::RVNGString &typeFace);
@@ -106,6 +118,7 @@ private:
   VSDXClrScheme m_clrScheme;
   VSDXFontScheme m_fontScheme;
   std::vector<std::optional<Colour>> m_fillStyleLst;
+  std::vector<VSDXVariationStyleScheme> m_variationStyleSchemeLst;
 };
 
 } // namespace libvisio

@@ -61,10 +61,16 @@ libvisio::VSDXFontScheme::VSDXFontScheme()
 {
 }
 
+libvisio::VSDXVariationStyleScheme::VSDXVariationStyleScheme()
+  : m_varStyles()
+{
+}
+
 libvisio::VSDXTheme::VSDXTheme()
   : m_clrScheme(),
     m_fontScheme(),
-    m_fillStyleLst(std::vector<std::optional<libvisio::Colour>>(6))
+    m_fillStyleLst(std::vector<std::optional<libvisio::Colour>>(6)),
+    m_variationStyleSchemeLst()
 {
 }
 
@@ -105,6 +111,9 @@ bool libvisio::VSDXTheme::parse(librevenge::RVNGInputStream *input)
         break;
       case XML_A_FMTSCHEME:
         readFmtScheme(reader.get());
+        break;
+      case XML_VT_VARIATIONSTYLESCHEMELST:
+        readVariationStyleSchemeLst(reader.get());
         break;
       default:
         break;
@@ -492,6 +501,133 @@ std::optional<libvisio::Colour> libvisio::VSDXTheme::getThemeColour(unsigned val
     case 106:
     case 206:
       return m_clrScheme.m_variationClrSchemeLst[variationIndex].m_varColor7;
+    default:
+      break;
+    }
+  }
+  return std::optional<libvisio::Colour>();
+}
+
+void libvisio::VSDXTheme::readVariationStyleSchemeLst(xmlTextReaderPtr reader)
+{
+  VSD_DEBUG_MSG(("VSDXTheme::readVariationStyleSchemeLst\n"));
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  m_variationStyleSchemeLst.clear();
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::readVariationStyleSchemeLst: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_VT_VARIATIONSTYLESCHEME:
+    {
+      VSDXVariationStyleScheme vaStyleSch;
+      readVariationStyleScheme(reader, tokenId, vaStyleSch);
+      m_variationStyleSchemeLst.push_back(vaStyleSch);
+      break;
+    }
+    default:
+      break;
+    }
+  }
+  while ((XML_VT_VARIATIONCLRSCHEMELST != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXTheme::readVariationStyleScheme(xmlTextReaderPtr reader, int idToken, VSDXVariationStyleScheme &vaStyleSch)
+{
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  size_t iVNum = 0;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::readVariationStyleScheme: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+      case XML_VT_VARSTYLE:
+      {
+        if (vaStyleSch.m_varStyles.size() > iVNum)
+        {
+          readVarIdx(reader, vaStyleSch.m_varStyles[iVNum++]);
+        }
+        else
+        {
+          VSD_DEBUG_MSG(("Only four XML_VT_VARSTYLE can exists.\n"));
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+  while ((idToken != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXTheme::readVarIdx(xmlTextReaderPtr reader, std::array<unsigned, 4>& varStyle)
+{
+  if (XML_VT_VARSTYLE == getElementToken(reader))
+  {
+    // https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-vsdx/07c6a18a-16ec-4c36-942b-8c611dd3d140
+    const shared_ptr<xmlChar> valFillIdx(xmlTextReaderGetAttribute(reader, BAD_CAST("fillIdx")), xmlFree);
+    varStyle[0] = valFillIdx ? (unsigned)xmlStringToLong(valFillIdx) : MINUS_ONE;
+
+    const shared_ptr<xmlChar> valLineIdx(xmlTextReaderGetAttribute(reader, BAD_CAST("lineIdx")), xmlFree);
+    varStyle[1] = valLineIdx ? (unsigned)xmlStringToLong(valLineIdx) : MINUS_ONE;
+
+    const shared_ptr<xmlChar> valEffIdx(xmlTextReaderGetAttribute(reader, BAD_CAST("effectIdx")), xmlFree);
+    varStyle[2] = valEffIdx ? (unsigned)xmlStringToLong(valEffIdx) : MINUS_ONE;
+
+    const shared_ptr<xmlChar> valFontIdx(xmlTextReaderGetAttribute(reader, BAD_CAST("fontIdx")), xmlFree);
+    varStyle[3] = valFontIdx ? (unsigned)xmlStringToLong(valFontIdx) : MINUS_ONE;
+  }
+}
+
+std::optional<libvisio::Colour> libvisio::VSDXTheme::getStyleColour(unsigned value, unsigned variationIndex) const
+{
+  if (!m_variationStyleSchemeLst.empty())
+  {
+    // https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-vsdx/25689058-b1e7-4d3c-a833-0a4c7180f5f2
+    if (variationIndex >= m_variationStyleSchemeLst.size())
+      variationIndex = 0;
+    switch (value)
+    {
+    case 100:
+    case 200:
+    {
+      std::array<unsigned, 4> varStyle = m_variationStyleSchemeLst[variationIndex].m_varStyles[0];
+      return getFillStyleColour(varStyle[0]);
+    }
+    case 101:
+    case 201:
+    {
+      std::array<unsigned, 4> varStyle = m_variationStyleSchemeLst[variationIndex].m_varStyles[1];
+      return getFillStyleColour(varStyle[0]);
+    }
+    case 102:
+    case 202:
+    {
+      std::array<unsigned, 4> varStyle = m_variationStyleSchemeLst[variationIndex].m_varStyles[2];
+      return getFillStyleColour(varStyle[0]);
+    }
+    case 103:
+    case 203:
+    {
+      std::array<unsigned, 4> varStyle = m_variationStyleSchemeLst[variationIndex].m_varStyles[3];
+      return getFillStyleColour(varStyle[0]);
+    }
     default:
       break;
     }
