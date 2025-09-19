@@ -228,6 +228,12 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxImportDefaultFillColour);
   CPPUNIT_TEST(testVsdxQuickStyleFillMatrix);
   CPPUNIT_TEST(testVsdxQuickStyleFillStyle);
+  CPPUNIT_TEST(testVsdxFillStylesFromTheme1);
+  CPPUNIT_TEST(testVsdxFillStylesFromTheme2);
+  CPPUNIT_TEST(testVsdxFillStylesFromTheme3);
+  CPPUNIT_TEST(testVsdxFillStylesFromTheme4);
+  CPPUNIT_TEST(testVsdxFillStylesFromTheme5);
+
   CPPUNIT_TEST_SUITE_END();
 
   void testVsd6Textfields();
@@ -252,6 +258,12 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxImportDefaultFillColour();
   void testVsdxQuickStyleFillMatrix();
   void testVsdxQuickStyleFillStyle();
+
+  void testVsdxFillStylesFromTheme1();
+  void testVsdxFillStylesFromTheme2();
+  void testVsdxFillStylesFromTheme3();
+  void testVsdxFillStylesFromTheme4();
+  void testVsdxFillStylesFromTheme5();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -592,6 +604,41 @@ void ImportTest::testVsdxQuickStyleFillStyle()
   // - Actual  : #fec000
   m_doc = parse("qs-box.vsdx", m_buffer);
   assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#ffffff");
+}
+
+void ImportTest::testVsdxFillStylesFromTheme1()
+{
+  m_doc = parse("testfile1.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#000000");
+  assertXPath(m_doc, "/document/page/layer[2]//setStyle[2]", "fill-color", "#45b664");
+}
+
+void ImportTest::testVsdxFillStylesFromTheme2()
+{
+  m_doc = parse("testfile3.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#b43500");
+  assertXPath(m_doc, "/document/page/layer[2]//setStyle[2]", "fill-color", "#ffc000");
+  assertXPath(m_doc, "/document/page/layer[3]//setStyle[2]", "fill-color", "#000000");
+  assertXPath(m_doc, "/document/page/layer[4]//setStyle[2]", "fill-color", "#ffffff");
+}
+
+void ImportTest::testVsdxFillStylesFromTheme3()
+{
+  m_doc = parse("testfile4.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#000000");
+  assertXPath(m_doc, "/document/page/layer[2]//setStyle[2]", "fill-color", "#ffffff");
+}
+
+void ImportTest::testVsdxFillStylesFromTheme4()
+{
+  m_doc = parse("testfile5.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#ffffff");
+}
+
+void ImportTest::testVsdxFillStylesFromTheme5()
+{
+  m_doc = parse("office_varient4.vsdx", m_buffer);
+  assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#4372c4");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);
