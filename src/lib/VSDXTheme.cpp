@@ -69,7 +69,7 @@ libvisio::VSDXVariationStyleScheme::VSDXVariationStyleScheme()
 libvisio::VSDXTheme::VSDXTheme()
   : m_clrScheme(),
     m_fontScheme(),
-    m_fillStyleLst(std::vector<std::optional<libvisio::Colour>>(6)),
+    m_fillStyleLst(),
     m_variationStyleSchemeLst()
 {
 }
@@ -162,6 +162,51 @@ std::optional<libvisio::Colour> libvisio::VSDXTheme::readSysClr(xmlTextReaderPtr
       }
       catch (const XmlParserException &)
       {
+      }
+    }
+  }
+  return retVal;
+}
+
+std::optional<libvisio::Colour> libvisio::VSDXTheme::readSchemeClr(xmlTextReaderPtr reader)
+{
+  std::optional<libvisio::Colour> retVal;
+  if (XML_A_SCHEMECLR == getElementToken(reader))
+  {
+    const shared_ptr<xmlChar> val(xmlTextReaderGetAttribute(reader, BAD_CAST("val")), xmlFree);
+    if (val)
+    {
+      std::string aSchameName((const char *)val.get());
+      if (aSchameName == "dk1")
+        retVal = m_clrScheme.m_dk1;
+      else if (aSchameName == "lt1")
+        retVal = m_clrScheme.m_lt1;
+      else if (aSchameName == "dk2")
+        retVal = m_clrScheme.m_dk2;
+      else if (aSchameName == "lt2")
+        retVal = m_clrScheme.m_lt2;
+      else if (aSchameName == "accent1")
+        retVal = m_clrScheme.m_accent1;
+      else if (aSchameName == "accent2")
+        retVal = m_clrScheme.m_accent2;
+      else if (aSchameName == "accent3")
+        retVal = m_clrScheme.m_accent3;
+      else if (aSchameName == "accent4")
+        retVal = m_clrScheme.m_accent4;
+      else if (aSchameName == "accent5")
+        retVal = m_clrScheme.m_accent5;
+      else if (aSchameName == "accent6")
+        retVal = m_clrScheme.m_accent6;
+      else if (aSchameName == "hlink")
+        retVal = m_clrScheme.m_hlink;
+      else if (aSchameName == "folHlink")
+        retVal = m_clrScheme.m_folHlink;
+      else if (aSchameName == "bkgnd")
+        retVal = m_clrScheme.m_bkgnd;
+      else
+      {
+        //TODO: handle more color schames like phClr
+        VSD_DEBUG_MSG(("VSDXTheme::readSchemeClr: unknown name %s\n", val.get()));
       }
     }
   }
@@ -355,6 +400,9 @@ bool libvisio::VSDXTheme::readThemeColour(xmlTextReaderPtr reader, int idToken, 
       break;
     case XML_A_SYSCLR:
       colour = readSysClr(reader);
+      break;
+    case XML_A_SCHEMECLR:
+      colour = readSchemeClr(reader);
       break;
     default:
       break;
@@ -688,6 +736,7 @@ void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
   VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst\n"));
   int ret = xmlTextReaderRead(reader);
   int tokenId = getElementToken(reader);
+  m_fillStyleLst.fill(std::vector<std::optional<libvisio::Colour>>());
   if (XML_TOKEN_INVALID == tokenId)
   {
     VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst: unknown token %s\n", xmlTextReaderConstName(reader)));
@@ -705,13 +754,18 @@ void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
       {
         if (i < m_fillStyleLst.size())
         {
-          m_fillStyleLst[i] = colour;
+          m_fillStyleLst[i].push_back(colour);
         }
         else
         {
           VSD_DEBUG_MSG(("VSDXTheme::readFillStyleLst Error: Unable to add colour #%02x%02x%02x\n", colour.r, colour.g, colour.b));
         }
       }
+      break;
+    }
+    case XML_A_GRADFILL:
+    {
+      readGradFill(reader, i);
       break;
     }
     default:
@@ -730,11 +784,80 @@ void libvisio::VSDXTheme::readFillStyleLst(xmlTextReaderPtr reader)
   }
 }
 
+void libvisio::VSDXTheme::readGradFill(xmlTextReaderPtr reader, std::size_t nPos)
+{
+  VSD_DEBUG_MSG(("VSDXTheme::readGradFill\n"));
+  int ret = 1;
+  int tokenId = XML_TOKEN_INVALID;
+  int tokenType = -1;
+  do
+  {
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::readGradFill: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+    switch (tokenId)
+    {
+    case XML_A_GSLST:
+    {
+      readGradFillLst(reader, nPos);
+      break;
+    }
+    default:
+      break;
+    }
+  }
+  while ((XML_A_GRADFILL != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret);
+}
+
+void libvisio::VSDXTheme::readGradFillLst(xmlTextReaderPtr reader, std::size_t nPos)
+{
+  VSD_DEBUG_MSG(("VSDXTheme::readGradFillLst\n"));
+  int ret = xmlTextReaderRead(reader);
+  int tokenId = getElementToken(reader);
+  if (XML_TOKEN_INVALID == tokenId)
+  {
+    VSD_DEBUG_MSG(("VSDXTheme::readGradFillLst: unknown token %s\n", xmlTextReaderConstName(reader)));
+  }
+  int tokenType = xmlTextReaderNodeType(reader);
+  while ((XML_A_GSLST != tokenId || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret)
+  {
+    switch (tokenId)
+    {
+    case XML_A_GS:
+    {
+      Colour colour;
+      if (readThemeColour(reader, tokenId, colour))
+      {
+        if (nPos < m_fillStyleLst.size())
+          m_fillStyleLst[nPos].push_back(colour);
+        else
+          VSD_DEBUG_MSG(("VSDXTheme::readGradFillLst Error: Unable to add colour #%02x%02x%02x\n", colour.r, colour.g, colour.b));
+      }
+      break;
+    }
+    default:
+      break;
+    }
+    ret = xmlTextReaderRead(reader);
+    tokenId = getElementToken(reader);
+    if (XML_TOKEN_INVALID == tokenId)
+    {
+      VSD_DEBUG_MSG(("VSDXTheme::readGradFillLst: unknown token %s\n", xmlTextReaderConstName(reader)));
+    }
+    tokenType = xmlTextReaderNodeType(reader);
+  }
+}
+
 std::optional<libvisio::Colour> libvisio::VSDXTheme::getFillStyleColour(unsigned value) const
 {
-  if (value == 0 || value > m_fillStyleLst.size())
+  if (value == 0 || value > m_fillStyleLst.size() || m_fillStyleLst[value - 1].empty())
     return std::optional<libvisio::Colour>();
-  return m_fillStyleLst[value - 1];
+  // TODO: only the first colour is used until we support gradient fills
+  return m_fillStyleLst[value - 1].front();
 }
 
 /* vim:set shiftwidth=2 softtabstop=2 expandtab: */

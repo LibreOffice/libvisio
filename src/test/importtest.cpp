@@ -233,6 +233,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxFillStylesFromTheme3);
   CPPUNIT_TEST(testVsdxFillStylesFromTheme4);
   CPPUNIT_TEST(testVsdxFillStylesFromTheme5);
+  CPPUNIT_TEST(testVsdxFillStylesFromTheme6);
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -264,6 +265,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxFillStylesFromTheme3();
   void testVsdxFillStylesFromTheme4();
   void testVsdxFillStylesFromTheme5();
+  void testVsdxFillStylesFromTheme6();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -639,6 +641,16 @@ void ImportTest::testVsdxFillStylesFromTheme5()
 {
   m_doc = parse("office_varient4.vsdx", m_buffer);
   assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#4372c4");
+}
+
+void ImportTest::testVsdxFillStylesFromTheme6()
+{
+  m_doc = parse("testfile6.vsdx", m_buffer);
+  // The first shape still has a wrong fill.
+  // The expected value would be #4672c4, but we get #bdd0e9 instead.
+  //assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#4672c4");
+  assertXPath(m_doc, "/document/page/layer[2]//setStyle[2]", "fill-color", "#000000");
+  assertXPath(m_doc, "/document/page/layer[3]//setStyle[2]", "fill-color", "#feffff");
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);

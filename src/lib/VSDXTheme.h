@@ -90,6 +90,7 @@ public:
   std::optional<Colour> getThemeColour(unsigned value, unsigned variationIndex = 0) const;
   std::optional<Colour> getStyleColour(unsigned value, unsigned variationIndex = 0) const;
   std::optional<Colour> getFillStyleColour(unsigned value) const;
+  size_t getFillStyleLstSize() const { return m_fillStyleLst.size(); }
 
 private:
   VSDXTheme(const VSDXTheme &);
@@ -97,6 +98,7 @@ private:
 
   std::optional<Colour> readSrgbClr(xmlTextReaderPtr reader);
   std::optional<Colour> readSysClr(xmlTextReaderPtr reader);
+  std::optional<Colour> readSchemeClr(xmlTextReaderPtr reader);
 
   void readClrScheme(xmlTextReaderPtr reader);
   bool readThemeColour(xmlTextReaderPtr reader, int idToken, Colour &clr);
@@ -111,13 +113,15 @@ private:
   bool readTypeFace(xmlTextReaderPtr reader, int &script, librevenge::RVNGString &typeFace);
   void readFmtScheme(xmlTextReaderPtr reader);
   void readFillStyleLst(xmlTextReaderPtr reader);
+  void readGradFill(xmlTextReaderPtr reader, std::size_t nPos);
+  void readGradFillLst(xmlTextReaderPtr reader, std::size_t nPos);
 
   int getElementToken(xmlTextReaderPtr reader);
   void skipUnimplemented(xmlTextReaderPtr reader, int idToken);
 
   VSDXClrScheme m_clrScheme;
   VSDXFontScheme m_fontScheme;
-  std::vector<std::optional<Colour>> m_fillStyleLst;
+  std::array<std::vector<std::optional<Colour>>, 6> m_fillStyleLst;
   std::vector<VSDXVariationStyleScheme> m_variationStyleSchemeLst;
 };
 

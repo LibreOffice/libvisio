@@ -193,9 +193,13 @@ struct VSDFillStyle
       ASSIGN_OPTIONAL(theme->getThemeColour(qsFillColour, variationColorIndex), bgColour);
       ASSIGN_OPTIONAL(theme->getThemeColour(qsShadowColour, variationColorIndex), shadowFgColour);
       if (!!style.qsFillMatrix && style.qsFillMatrix.value() >= 0)
+      {
         ASSIGN_OPTIONAL(theme->getFillStyleColour(style.qsFillMatrix.value()), fgColour);
-      // Check fill style color from variationStyleScheme --> varStyle --> fillIdx
-      ASSIGN_OPTIONAL(theme->getStyleColour(qsFillColour, variationStyleIndex), fgColour);
+        if (style.qsFillMatrix.value() > static_cast<long>(theme->getFillStyleLstSize()))
+          ASSIGN_OPTIONAL(theme->getStyleColour(qsFillColour, variationStyleIndex), fgColour);
+      }
+      else
+        ASSIGN_OPTIONAL(theme->getStyleColour(qsFillColour, variationStyleIndex), fgColour);
     }
     ASSIGN_OPTIONAL(style.fgColour, fgColour);
     ASSIGN_OPTIONAL(style.bgColour, bgColour);
