@@ -1,4 +1,9 @@
+libvisio 0.1.10
+
+- More work on better handling of theme colors (tdf#168475)
+
 libvisio 0.1.9
+
 - Implement displaying Angle TextField (tdf#126292)
 - Correctly display Text Background for VSD 6 and 11 format (tdf#126292)
 - Better handling of theme colors (tdf#168475)
