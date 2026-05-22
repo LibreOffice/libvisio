@@ -236,6 +236,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxFillStylesFromTheme6);
 
   CPPUNIT_TEST(testVsdxPageSelfReferenceCycle);
+  CPPUNIT_TEST(testVsdxTabRowShortPrefix);
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -270,6 +271,7 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxFillStylesFromTheme6();
 
   void testVsdxPageSelfReferenceCycle();
+  void testVsdxTabRowShortPrefix();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -655,6 +657,25 @@ void ImportTest::testVsdxFillStylesFromTheme6()
   //assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#4672c4");
   assertXPath(m_doc, "/document/page/layer[2]//setStyle[2]", "fill-color", "#000000");
   assertXPath(m_doc, "/document/page/layer[3]//setStyle[2]", "fill-color", "#feffff");
+}
+
+// N="X" on <Position>/<Alignment> is shorter than the "Position"/"Alignment"
+// prefix the code skips with +8/+9 - must not read past the xmlChar buffer
+void ImportTest::testVsdxTabRowShortPrefix()
+{
+  librevenge::RVNGString path(TDOC "/tab-short-prefix.vsdx");
+  librevenge::RVNGFileStream input(path.cstr());
+  CPPUNIT_ASSERT(libvisio::VisioDocument::isSupported(&input));
+
+  xmlTextWriterPtr writer = xmlNewTextWriterMemory(m_buffer, 0);
+  CPPUNIT_ASSERT(writer);
+  xmlTextWriterStartDocument(writer, 0, 0, 0);
+  libvisio::XmlDrawingGenerator painter(writer);
+
+  (void)libvisio::VisioDocument::parse(&input, &painter);
+
+  xmlTextWriterEndDocument(writer);
+  xmlFreeTextWriter(writer);
 }
 
 // pages.xml.rels points at pages.xml - must not recurse forever

@@ -90,7 +90,8 @@ EXTRA_DIST = \
 	data/testfile4.vsdx \
 	data/testfile5.vsdx \
 	data/testfile6.vsdx \
-	data/recursion-cycle.vsdx
+	data/recursion-cycle.vsdx \
+	data/tab-short-prefix.vsdx
 
 # ImportTest::testVsdMetadataTitleUtf8 checks formatted date string
 AM_TESTS_ENVIRONMENT = TZ=UTC; export TZ;

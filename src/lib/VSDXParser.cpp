@@ -1455,7 +1455,7 @@ void libvisio::VSDXParser::readTabRow(xmlTextReaderPtr reader)
         if (XML_READER_TYPE_ELEMENT == tokenType)
         {
           const std::shared_ptr<xmlChar> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("N")), xmlFree);
-          if (stringValue)
+          if (stringValue && xmlStrlen(stringValue.get()) > 8)
           {
             unsigned idx = xmlStringToLong(stringValue.get()+8);
             ret = readDoubleData((*m_currentTabSet)[idx].m_position, reader);
@@ -1466,7 +1466,7 @@ void libvisio::VSDXParser::readTabRow(xmlTextReaderPtr reader)
         if (XML_READER_TYPE_ELEMENT == tokenType)
         {
           const std::shared_ptr<xmlChar> stringValue(xmlTextReaderGetAttribute(reader, BAD_CAST("N")), xmlFree);
-          if (stringValue)
+          if (stringValue && xmlStrlen(stringValue.get()) > 9)
           {
             unsigned idx = xmlStringToLong(stringValue.get()+9);
             ret = readByteData((*m_currentTabSet)[idx].m_alignment, reader);
