@@ -66,7 +66,11 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
   for (auto &segment : segments)
   {
     if (segment == "..")
-      normalizedSegments.pop_back();
+    {
+      // guard against a malformed Target with excess ".." segments
+      if (!normalizedSegments.empty())
+        normalizedSegments.pop_back();
+    }
     else if (segment != "." && !segment.empty())
       normalizedSegments.push_back(segment);
   }

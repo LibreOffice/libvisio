@@ -33,6 +33,7 @@ importtest_SOURCES = \
 unittest_CPPFLAGS = \
 	-I$(top_srcdir)/src/lib \
 	$(LIBVISIO_CXXFLAGS) \
+	$(REVENGE_STREAM_CFLAGS) \
 	$(CPPUNIT_CFLAGS) \
 	$(DEBUG_CXXFLAGS)
 
@@ -41,10 +42,12 @@ unittest_LDADD = \
 	$(top_builddir)/src/lib/libvisio-internal.la \
 	libtest_driver.la \
 	$(LIBVISIO_LIBS) \
+	$(REVENGE_STREAM_LIBS) \
 	$(CPPUNIT_LIBS)
 
 unittest_SOURCES = \
-	VSDInternalStreamTest.cpp
+	VSDInternalStreamTest.cpp \
+	VSDXMLHelperTest.cpp
 
 EXTRA_DIST = \
 	data/Visio11FormatLine.vsd \
