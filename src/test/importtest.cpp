@@ -235,6 +235,8 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST(testVsdxFillStylesFromTheme5);
   CPPUNIT_TEST(testVsdxFillStylesFromTheme6);
 
+  CPPUNIT_TEST(testVsdxPageSelfReferenceCycle);
+
   CPPUNIT_TEST_SUITE_END();
 
   void testVsd6Textfields();
@@ -266,6 +268,8 @@ class ImportTest : public CPPUNIT_NS::TestFixture
   void testVsdxFillStylesFromTheme4();
   void testVsdxFillStylesFromTheme5();
   void testVsdxFillStylesFromTheme6();
+
+  void testVsdxPageSelfReferenceCycle();
 
   xmlBufferPtr m_buffer;
   xmlDocPtr m_doc;
@@ -651,6 +655,24 @@ void ImportTest::testVsdxFillStylesFromTheme6()
   //assertXPath(m_doc, "/document/page/layer[1]//setStyle[2]", "fill-color", "#4672c4");
   assertXPath(m_doc, "/document/page/layer[2]//setStyle[2]", "fill-color", "#000000");
   assertXPath(m_doc, "/document/page/layer[3]//setStyle[2]", "fill-color", "#feffff");
+}
+
+// pages.xml.rels points at pages.xml - must not recurse forever
+void ImportTest::testVsdxPageSelfReferenceCycle()
+{
+  librevenge::RVNGString path(TDOC "/recursion-cycle.vsdx");
+  librevenge::RVNGFileStream input(path.cstr());
+  CPPUNIT_ASSERT(libvisio::VisioDocument::isSupported(&input));
+
+  xmlTextWriterPtr writer = xmlNewTextWriterMemory(m_buffer, 0);
+  CPPUNIT_ASSERT(writer);
+  xmlTextWriterStartDocument(writer, 0, 0, 0);
+  libvisio::XmlDrawingGenerator painter(writer);
+
+  (void)libvisio::VisioDocument::parse(&input, &painter);
+
+  xmlTextWriterEndDocument(writer);
+  xmlFreeTextWriter(writer);
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ImportTest);

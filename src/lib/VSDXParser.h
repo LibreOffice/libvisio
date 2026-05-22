@@ -10,6 +10,8 @@
 #ifndef __VSDXPARSER_H__
 #define __VSDXPARSER_H__
 
+#include <set>
+#include <string>
 #include <librevenge/librevenge.h>
 #include "VSDXTheme.h"
 #include "VSDXMLParserBase.h"
@@ -86,6 +88,8 @@ private:
   int m_currentDepth;
   VSDXRelationships *m_rels;
   VSDXTheme m_currentTheme;
+  // parsePage / parseMaster targets currently on the recursion stack
+  std::set<std::string> m_visitedParts;
 };
 
 } // namespace libvisio

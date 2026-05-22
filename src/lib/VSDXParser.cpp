@@ -335,15 +335,43 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
               std::string type = rel->getType();
               if (type == "http://schemas.microsoft.com/visio/2010/relationships/master")
               {
-                m_currentDepth += xmlTextReaderDepth(reader.get());
-                parseMaster(m_input, rel->getTarget().c_str());
-                m_currentDepth -= xmlTextReaderDepth(reader.get());
+                const std::string target = rel->getTarget();
+                const auto inserted = m_visitedParts.insert(target);
+                if (inserted.second)
+                {
+                  m_currentDepth += xmlTextReaderDepth(reader.get());
+                  try
+                  {
+                    parseMaster(m_input, target.c_str());
+                  }
+                  catch (...)
+                  {
+                    m_visitedParts.erase(inserted.first);
+                    throw;
+                  }
+                  m_currentDepth -= xmlTextReaderDepth(reader.get());
+                  m_visitedParts.erase(inserted.first);
+                }
               }
               else if (type == "http://schemas.microsoft.com/visio/2010/relationships/page")
               {
-                m_currentDepth += xmlTextReaderDepth(reader.get());
-                parsePage(m_input, rel->getTarget().c_str());
-                m_currentDepth -= xmlTextReaderDepth(reader.get());
+                const std::string target = rel->getTarget();
+                const auto inserted = m_visitedParts.insert(target);
+                if (inserted.second)
+                {
+                  m_currentDepth += xmlTextReaderDepth(reader.get());
+                  try
+                  {
+                    parsePage(m_input, target.c_str());
+                  }
+                  catch (...)
+                  {
+                    m_visitedParts.erase(inserted.first);
+                    throw;
+                  }
+                  m_currentDepth -= xmlTextReaderDepth(reader.get());
+                  m_visitedParts.erase(inserted.first);
+                }
               }
               else if (type == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
               {
