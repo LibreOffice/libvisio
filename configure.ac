@@ -7,7 +7,7 @@ AC_PREREQ([2.69])
 # ====================
 m4_define([libvisio_version_major],[0])
 m4_define([libvisio_version_minor],[1])
-m4_define([libvisio_version_micro],[11])
+m4_define([libvisio_version_micro],[12])
 m4_define([libvisio_version],[libvisio_version_major.libvisio_version_minor.libvisio_version_micro])
 
 # =============
