@@ -1,3 +1,7 @@
+libvisio 0.1.11
+
+- Memory safety fixes
+
 libvisio 0.1.10
 
 - More work on better handling of theme colors (tdf#168475)
