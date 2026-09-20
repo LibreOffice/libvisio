@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <string.h> // for memcpy
 #include <limits>
 #include <set>
@@ -2213,6 +2214,11 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned /* id */, unsigned l
   controlPoints.insert(controlPoints.begin(), std::pair<double, double>(m_originalX, m_originalY));
 
   std::vector<double> knotVector(kntVec);
+
+  // Bogus numbers that are not finite leave the vector in no order at all, just abandon it
+  for (double knot : knotVector)
+    if (!std::isfinite(knot))
+      return;
 
   // Ensure knots are sorted in non-decreasing order
   for (size_t i = 1; i < knotVector.size(); ++i)
