@@ -11,7 +11,6 @@
 
 #include <librevenge-stream/librevenge-stream.h>
 #include <locale.h>
-#include <cassert>
 #include <sstream>
 #include <string>
 #include <cmath>
@@ -183,12 +182,10 @@ bool libvisio::VSDParser::parseDocument(librevenge::RVNGInputStream *input, unsi
   try
   {
     handleStreams(input, VSD_TRAILER_STREAM, shift, 0, visited);
-    assert(visited.empty());
     return true;
   }
   catch (...)
   {
-    assert(visited.empty());
     return false;
   }
 }
@@ -358,20 +355,9 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     handleBlob(&tmpInput, shift, level+1);
     if ((ptr.Format >> 4) == 0x5 && ptr.Type != VSD_COLORS)
     {
-      const auto it = visited.insert(ptr.Offset);
-      if (it.second)
-      {
-        try
-        {
-          handleStreams(&tmpInput, ptr.Type, shift, level+1, visited);
-        }
-        catch (...)
-        {
-          visited.erase(it.first);
-          throw;
-        }
-        visited.erase(it.first);
-      }
+      // Each stream offset is handled once, however many pointers reach it.
+      if (visited.insert(ptr.Offset).second)
+        handleStreams(&tmpInput, ptr.Type, shift, level+1, visited);
     }
   }
   else if ((ptr.Format >> 4) == 0xd || (ptr.Format >> 4) == 0xc || (ptr.Format >> 4) == 0x8)
