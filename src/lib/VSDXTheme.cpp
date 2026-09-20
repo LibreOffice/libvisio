@@ -835,7 +835,9 @@ void libvisio::VSDXTheme::readGradFillLst(xmlTextReaderPtr reader, std::size_t n
         if (nPos < m_fillStyleLst.size())
           m_fillStyleLst[nPos].push_back(colour);
         else
+        {
           VSD_DEBUG_MSG(("VSDXTheme::readGradFillLst Error: Unable to add colour #%02x%02x%02x\n", colour.r, colour.g, colour.b));
+        }
       }
       break;
     }
