@@ -54,7 +54,8 @@ libvisio::VSDXParser::VSDXParser(librevenge::RVNGInputStream *input, librevenge:
     m_painter(painter),
     m_currentDepth(0),
     m_rels(nullptr),
-    m_currentTheme()
+    m_currentTheme(),
+    m_visitedParts()
 {
 }
 
