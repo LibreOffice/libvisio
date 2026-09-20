@@ -1339,7 +1339,9 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
   if (m_pageShapeOrder != m_documentPageShapeOrders.end() && !m_pageShapeOrder->empty() &&
       m_groupMemberships != m_groupMembershipsSequence.end())
   {
-    std::stack<std::pair<unsigned, VSDOutputElementList> > groupTextStack;
+    // The lists stay in m_pageOutputText until this function clears them, so the
+    // stack holds where each one is rather than a copy of it.
+    std::stack<std::pair<unsigned, const VSDOutputElementList *> > groupTextStack;
     for (unsigned int &iterList : *m_pageShapeOrder)
     {
       auto iterGroup = m_groupMemberships->find(iterList);
@@ -1347,7 +1349,8 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
       {
         while (!groupTextStack.empty())
         {
-          m_currentPage.append(groupTextStack.top().second);
+          if (groupTextStack.top().second)
+            m_currentPage.append(*groupTextStack.top().second);
           groupTextStack.pop();
         }
       }
@@ -1355,7 +1358,8 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
       {
         while (!groupTextStack.empty() && groupTextStack.top().first != iterGroup->second)
         {
-          m_currentPage.append(groupTextStack.top().second);
+          if (groupTextStack.top().second)
+            m_currentPage.append(*groupTextStack.top().second);
           groupTextStack.pop();
         }
       }
@@ -1366,13 +1370,14 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
         m_currentPage.append(iter->second);
       iter = m_pageOutputText.find(iterList);
       if (iter != m_pageOutputText.end())
-        groupTextStack.push(std::make_pair(iterList, iter->second));
+        groupTextStack.push(std::make_pair(iterList, &iter->second));
       else
-        groupTextStack.push(std::make_pair(iterList, VSDOutputElementList()));
+        groupTextStack.push(std::make_pair(iterList, nullptr));
     }
     while (!groupTextStack.empty())
     {
-      m_currentPage.append(groupTextStack.top().second);
+      if (groupTextStack.top().second)
+        m_currentPage.append(*groupTextStack.top().second);
       groupTextStack.pop();
     }
   }
