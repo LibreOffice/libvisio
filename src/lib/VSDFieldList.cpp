@@ -11,6 +11,7 @@
 
 #include <time.h>
 #include <cmath>
+#include <set>
 #include "VSDCollector.h"
 #include "libvisio_utils.h"
 
@@ -538,8 +539,12 @@ libvisio::VSDFieldList::~VSDFieldList()
 void libvisio::VSDFieldList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
+  std::set<unsigned> seen;
   for (unsigned int i : elementsOrder)
-    m_elementsOrder.push_back(i);
+  {
+    if (seen.insert(i).second)
+      m_elementsOrder.push_back(i);
+  }
 }
 
 void libvisio::VSDFieldList::addFieldList(unsigned id, unsigned level)
