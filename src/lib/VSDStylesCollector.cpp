@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <map>
+#include <set>
 
 libvisio::VSDStylesCollector::VSDStylesCollector(
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
@@ -447,6 +448,8 @@ void libvisio::VSDStylesCollector::endPage()
       }
     }
   }
+  std::set<unsigned> seen;
+  m_pageShapeOrder.remove_if([&seen](unsigned shapeId) { return !seen.insert(shapeId).second; });
   m_documentPageShapeOrders.push_back(m_pageShapeOrder);
 }
 
