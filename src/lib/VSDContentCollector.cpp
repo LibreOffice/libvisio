@@ -146,7 +146,8 @@ libvisio::VSDContentCollector::VSDContentCollector(
   m_backgroundPageID(MINUS_ONE), m_currentPageID(0), m_currentPage(), m_pages(), m_layerList(),
   m_splineControlPoints(), m_splineKnotVector(), m_splineX(0.0), m_splineY(0.0),
   m_splineLastKnot(0.0), m_splineDegree(0), m_splineLevel(0), m_currentShapeLevel(0),
-  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem(), m_tabSets(), m_documentTheme(nullptr), m_currentShapeType()
+  m_isBackgroundPage(false), m_currentLayerList(), m_currentLayerMem(), m_tabSets(), m_documentTheme(nullptr), m_currentShapeType(),
+  m_paraProps(), m_paraPropsStyle(nullptr), m_paraPropsTabSet(nullptr), m_spanProps(), m_spanPropsStyle(nullptr)
 {
 }
 
@@ -775,6 +776,11 @@ void libvisio::VSDContentCollector::_flushText()
   std::vector<unsigned char> sOutputVector;
   librevenge::RVNGString sOutputText;
 
+  // The kept property lists are found by the address of their format, which the formats of this
+  // text may reuse.
+  m_paraProps.reset();
+  m_spanProps.reset();
+
   // Unfortunately, we have to handle the unicode formats differently then the 8-bit formats
   if (m_currentText.m_format == VSD_TEXT_UTF8 || m_currentText.m_format == VSD_TEXT_UTF16)
   {
@@ -789,14 +795,6 @@ void libvisio::VSDContentCollector::_flushText()
       /* Any character will cause a paragraph to open if it is not yet opened. */
       if (!isParagraphOpened)
       {
-        librevenge::RVNGPropertyList paraProps;
-        _fillParagraphProperties(paraProps, *paraIt);
-
-        if (m_textBlockStyle.defaultTabStop > 0.0)
-          paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
-
-        _fillTabSet(paraProps, *tabIt);
-
         VSDBullet bullet;
         _bulletFromParaFormat(bullet, *paraIt);
 
@@ -818,9 +816,9 @@ void libvisio::VSDContentCollector::_flushText()
         }
 
         if (!currentBullet)
-          m_shapeOutputText->addOpenParagraph(paraProps);
+          m_shapeOutputText->addOpenParagraph(_getParagraphProperties(*paraIt, *tabIt));
         else
-          m_shapeOutputText->addOpenListElement(paraProps);
+          m_shapeOutputText->addOpenListElement(_getParagraphProperties(*paraIt, *tabIt));
         isParagraphOpened = true;
         isParagraphWithoutSpan = true;
       }
@@ -830,19 +828,7 @@ void libvisio::VSDContentCollector::_flushText()
        * also a paragraph without span at all. */
       if (!isSpanOpened && ((*(textIt()) != '\n') || isParagraphWithoutSpan))
       {
-        librevenge::RVNGPropertyList textProps;
-        _fillCharProperties(textProps, *charIt);
-
-        // TODO: In draw, text span background cannot be specified the same way as in writer span
-        if (m_textBlockStyle.isTextBkgndFilled)
-        {
-          textProps.insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
-#if 0
-          if (m_textBlockStyle.textBkgndColour.a)
-            textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, librevenge::RVNG_PERCENT);
-#endif
-        }
-        m_shapeOutputText->addOpenSpan(textProps);
+        m_shapeOutputText->addOpenSpan(_getSpanProperties(*charIt));
         isSpanOpened = true;
         isParagraphWithoutSpan = false;
       }
@@ -964,14 +950,6 @@ void libvisio::VSDContentCollector::_flushText()
       /* Any character will cause a paragraph to open if it is not yet opened. */
       if (!isParagraphOpened)
       {
-        librevenge::RVNGPropertyList paraProps;
-        _fillParagraphProperties(paraProps, *paraIt);
-
-        if (m_textBlockStyle.defaultTabStop > 0.0)
-          paraProps.insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
-
-        _fillTabSet(paraProps, *tabIt);
-
         VSDBullet bullet;
         _bulletFromParaFormat(bullet, *paraIt);
 
@@ -993,9 +971,9 @@ void libvisio::VSDContentCollector::_flushText()
         }
 
         if (!currentBullet)
-          m_shapeOutputText->addOpenParagraph(paraProps);
+          m_shapeOutputText->addOpenParagraph(_getParagraphProperties(*paraIt, *tabIt));
         else
-          m_shapeOutputText->addOpenListElement(paraProps);
+          m_shapeOutputText->addOpenListElement(_getParagraphProperties(*paraIt, *tabIt));
         isParagraphOpened = true;
         isParagraphWithoutSpan = true;
       }
@@ -1005,19 +983,7 @@ void libvisio::VSDContentCollector::_flushText()
        * also a paragraph without span at all. */
       if (!isSpanOpened && ((tmpBuffer[i] != (unsigned char)'\n' && tmpBuffer[i] != 0x0d && tmpBuffer[i] != 0x0e) || isParagraphWithoutSpan))
       {
-        librevenge::RVNGPropertyList textProps;
-        _fillCharProperties(textProps, *charIt);
-
-        // TODO: In draw, text span background cannot be specified the same way as in writer span
-        if (m_textBlockStyle.isTextBkgndFilled)
-        {
-          textProps.insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
-#if 0
-          if (m_textBlockStyle.textBkgndColour.a)
-            textProps.insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, librevenge::RVNG_PERCENT);
-#endif
-        }
-        m_shapeOutputText->addOpenSpan(textProps);
+        m_shapeOutputText->addOpenSpan(_getSpanProperties(*charIt));
         isSpanOpened = true;
         isParagraphWithoutSpan = false;
       }
@@ -1255,6 +1221,46 @@ void libvisio::VSDContentCollector::_fillParagraphProperties(librevenge::RVNGPro
   else
     propList.insert("fo:line-height", -style.spLine, librevenge::RVNG_PERCENT);
 
+}
+
+std::shared_ptr<const librevenge::RVNGPropertyList> libvisio::VSDContentCollector::_getParagraphProperties(const VSDParaStyle &style, const VSDTabSet &tabSet)
+{
+  if (!m_paraProps || m_paraPropsStyle != &style || m_paraPropsTabSet != &tabSet)
+  {
+    auto props = std::make_shared<librevenge::RVNGPropertyList>();
+    _fillParagraphProperties(*props, style);
+
+    if (m_textBlockStyle.defaultTabStop > 0.0)
+      props->insert("style:tab-stop-distance", m_textBlockStyle.defaultTabStop);
+
+    _fillTabSet(*props, tabSet);
+    m_paraProps = props;
+    m_paraPropsStyle = &style;
+    m_paraPropsTabSet = &tabSet;
+  }
+  return m_paraProps;
+}
+
+std::shared_ptr<const librevenge::RVNGPropertyList> libvisio::VSDContentCollector::_getSpanProperties(const VSDCharStyle &style)
+{
+  if (!m_spanProps || m_spanPropsStyle != &style)
+  {
+    auto props = std::make_shared<librevenge::RVNGPropertyList>();
+    _fillCharProperties(*props, style);
+
+    // TODO: In draw, text span background cannot be specified the same way as in writer span
+    if (m_textBlockStyle.isTextBkgndFilled)
+    {
+      props->insert("fo:background-color", getColourString(m_textBlockStyle.textBkgndColour));
+#if 0
+      if (m_textBlockStyle.textBkgndColour.a)
+        props->insert("fo:background-opacity", 1.0 - m_textBlockStyle.textBkgndColour.a/255.0, librevenge::RVNG_PERCENT);
+#endif
+    }
+    m_spanProps = props;
+    m_spanPropsStyle = &style;
+  }
+  return m_spanProps;
 }
 
 void libvisio::VSDContentCollector::_fillTabSet(librevenge::RVNGPropertyList &propList, const VSDTabSet &tabSet)

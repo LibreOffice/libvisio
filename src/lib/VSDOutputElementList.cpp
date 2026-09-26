@@ -130,7 +130,7 @@ private:
 class VSDOpenParagraphOutputElement : public VSDOutputElement
 {
 public:
-  VSDOpenParagraphOutputElement(const librevenge::RVNGPropertyList &propList);
+  VSDOpenParagraphOutputElement(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList);
   ~VSDOpenParagraphOutputElement() override {}
   void draw(librevenge::RVNGDrawingInterface *painter) override;
   VSDOutputElement *clone() override
@@ -138,7 +138,7 @@ public:
     return new VSDOpenParagraphOutputElement(m_propList);
   }
 private:
-  librevenge::RVNGPropertyList m_propList;
+  std::shared_ptr<const librevenge::RVNGPropertyList> m_propList;
 };
 
 
@@ -173,7 +173,7 @@ public:
 class VSDOpenSpanOutputElement : public VSDOutputElement
 {
 public:
-  VSDOpenSpanOutputElement(const librevenge::RVNGPropertyList &propList);
+  VSDOpenSpanOutputElement(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList);
   ~VSDOpenSpanOutputElement() override {}
   void draw(librevenge::RVNGDrawingInterface *painter) override;
   VSDOutputElement *clone() override
@@ -181,7 +181,7 @@ public:
     return new VSDOpenSpanOutputElement(m_propList);
   }
 private:
-  librevenge::RVNGPropertyList m_propList;
+  std::shared_ptr<const librevenge::RVNGPropertyList> m_propList;
 };
 
 
@@ -267,7 +267,7 @@ public:
 class VSDOpenListElementOutputElement : public VSDOutputElement
 {
 public:
-  VSDOpenListElementOutputElement(const librevenge::RVNGPropertyList &propList);
+  VSDOpenListElementOutputElement(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList);
   ~VSDOpenListElementOutputElement() override {}
   void draw(librevenge::RVNGDrawingInterface *painter) override;
   VSDOutputElement *clone() override
@@ -275,7 +275,7 @@ public:
     return new VSDOpenListElementOutputElement(m_propList);
   }
 private:
-  librevenge::RVNGPropertyList m_propList;
+  std::shared_ptr<const librevenge::RVNGPropertyList> m_propList;
 };
 
 
@@ -361,13 +361,13 @@ void libvisio::VSDStartTextObjectOutputElement::draw(librevenge::RVNGDrawingInte
     painter->startTextObject(m_propList);
 }
 
-libvisio::VSDOpenSpanOutputElement::VSDOpenSpanOutputElement(const librevenge::RVNGPropertyList &propList) :
+libvisio::VSDOpenSpanOutputElement::VSDOpenSpanOutputElement(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList) :
   m_propList(propList) {}
 
 void libvisio::VSDOpenSpanOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->openSpan(m_propList);
+    painter->openSpan(*m_propList);
 }
 
 
@@ -390,13 +390,13 @@ void libvisio::VSDEndLayerOutputElement::draw(librevenge::RVNGDrawingInterface *
 }
 
 
-libvisio::VSDOpenParagraphOutputElement::VSDOpenParagraphOutputElement(const librevenge::RVNGPropertyList &propList) :
+libvisio::VSDOpenParagraphOutputElement::VSDOpenParagraphOutputElement(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList) :
   m_propList(propList) {}
 
 void libvisio::VSDOpenParagraphOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->openParagraph(m_propList);
+    painter->openParagraph(*m_propList);
 }
 
 
@@ -452,13 +452,13 @@ void libvisio::VSDEndTextObjectOutputElement::draw(librevenge::RVNGDrawingInterf
 }
 
 
-libvisio::VSDOpenListElementOutputElement::VSDOpenListElementOutputElement(const librevenge::RVNGPropertyList &propList) :
+libvisio::VSDOpenListElementOutputElement::VSDOpenListElementOutputElement(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList) :
   m_propList(propList) {}
 
 void libvisio::VSDOpenListElementOutputElement::draw(librevenge::RVNGDrawingInterface *painter)
 {
   if (painter)
-    painter->openListElement(m_propList);
+    painter->openListElement(*m_propList);
 }
 
 
@@ -556,12 +556,12 @@ void libvisio::VSDOutputElementList::addStartTextObject(const librevenge::RVNGPr
   m_elements.push_back(std::make_unique<VSDStartTextObjectOutputElement>(propList));
 }
 
-void libvisio::VSDOutputElementList::addOpenParagraph(const librevenge::RVNGPropertyList &propList)
+void libvisio::VSDOutputElementList::addOpenParagraph(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList)
 {
   m_elements.push_back(std::make_unique<VSDOpenParagraphOutputElement>(propList));
 }
 
-void libvisio::VSDOutputElementList::addOpenSpan(const librevenge::RVNGPropertyList &propList)
+void libvisio::VSDOutputElementList::addOpenSpan(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList)
 {
   m_elements.push_back(std::make_unique<VSDOpenSpanOutputElement>(propList));
 }
@@ -606,7 +606,7 @@ void libvisio::VSDOutputElementList::addEndLayer()
   m_elements.push_back(std::make_unique<VSDEndLayerOutputElement>());
 }
 
-void libvisio::VSDOutputElementList::addOpenListElement(const librevenge::RVNGPropertyList &propList)
+void libvisio::VSDOutputElementList::addOpenListElement(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList)
 {
   m_elements.push_back(std::make_unique<VSDOpenListElementOutputElement>(propList));
 }

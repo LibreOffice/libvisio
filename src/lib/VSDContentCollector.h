@@ -232,6 +232,8 @@ private:
   void _fillParagraphProperties(librevenge::RVNGPropertyList &propList, const VSDParaStyle &style);
   void _fillTabSet(librevenge::RVNGPropertyList &propList, const VSDTabSet &tabSet);
   void _fillCharProperties(librevenge::RVNGPropertyList &propList, const VSDCharStyle &style);
+  std::shared_ptr<const librevenge::RVNGPropertyList> _getParagraphProperties(const VSDParaStyle &style, const VSDTabSet &tabSet);
+  std::shared_ptr<const librevenge::RVNGPropertyList> _getSpanProperties(const VSDCharStyle &style);
   void _convertToPath(const std::vector<librevenge::RVNGPropertyList> &segmentVector,
                       librevenge::RVNGPropertyListVector &path, double rounding);
 
@@ -331,6 +333,13 @@ private:
 
   const VSDXTheme *m_documentTheme;
   librevenge::RVNGString m_currentShapeType;
+
+  // The property lists made last in the text being flushed, and the formats they were made from
+  std::shared_ptr<const librevenge::RVNGPropertyList> m_paraProps;
+  const VSDParaStyle *m_paraPropsStyle;
+  const VSDTabSet *m_paraPropsTabSet;
+  std::shared_ptr<const librevenge::RVNGPropertyList> m_spanProps;
+  const VSDCharStyle *m_spanPropsStyle;
 };
 
 } // namespace libvisio

@@ -39,11 +39,11 @@ public:
   void addEndTextObject();
   void addOpenUnorderedListLevel(const librevenge::RVNGPropertyList &propList);
   void addCloseUnorderedListLevel();
-  void addOpenListElement(const librevenge::RVNGPropertyList &propList);
+  void addOpenListElement(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList);
   void addCloseListElement();
-  void addOpenParagraph(const librevenge::RVNGPropertyList &propList);
+  void addOpenParagraph(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList);
   void addCloseParagraph();
-  void addOpenSpan(const librevenge::RVNGPropertyList &propList);
+  void addOpenSpan(const std::shared_ptr<const librevenge::RVNGPropertyList> &propList);
   void addCloseSpan();
   void addInsertText(const librevenge::RVNGString &text);
   void addInsertLineBreak();
