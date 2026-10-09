@@ -16,8 +16,12 @@
 
 #include <librevenge-stream/librevenge-stream.h>
 
+#include "fuzzerlimits.hxx"
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
+  if (size > maxFuzzInputSize)
+    return 0;
   librevenge::RVNGStringStream input(data, size);
   librevenge::RVNGDummyDrawingGenerator generator;
   libvisio::VisioDocument::parse(&input, &generator);
