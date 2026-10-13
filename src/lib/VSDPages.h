@@ -23,7 +23,9 @@ public:
   VSDPage(const VSDPage &page);
   ~VSDPage();
   VSDPage &operator=(const VSDPage &page);
-  void append(const VSDOutputElementList &outputElements);
+  VSDPage(VSDPage &&page) = default;
+  VSDPage &operator=(VSDPage &&page) = default;
+  void append(VSDOutputElementList &&outputElements);
   void draw(librevenge::RVNGDrawingInterface *painter) const;
   double m_pageWidth, m_pageHeight;
   librevenge::RVNGString m_pageName;
@@ -36,8 +38,8 @@ class VSDPages
 public:
   VSDPages();
   ~VSDPages();
-  void addPage(const VSDPage &page);
-  void addBackgroundPage(const VSDPage &page);
+  void addPage(VSDPage &&page);
+  void addBackgroundPage(VSDPage &&page);
   void draw(librevenge::RVNGDrawingInterface *painter);
   void setMetaData(const librevenge::RVNGPropertyList &metaData);
 private:

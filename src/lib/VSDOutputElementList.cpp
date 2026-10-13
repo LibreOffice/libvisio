@@ -515,10 +515,15 @@ libvisio::VSDOutputElementList &libvisio::VSDOutputElementList::operator=(const 
   return *this;
 }
 
-void libvisio::VSDOutputElementList::append(const libvisio::VSDOutputElementList &elementList)
+libvisio::VSDOutputElementList::VSDOutputElementList(libvisio::VSDOutputElementList &&elementList) = default;
+
+libvisio::VSDOutputElementList &libvisio::VSDOutputElementList::operator=(libvisio::VSDOutputElementList &&elementList) = default;
+
+void libvisio::VSDOutputElementList::append(libvisio::VSDOutputElementList &&elementList)
 {
-  for (const auto &elem : elementList.m_elements)
-    m_elements.push_back(clone(elem));
+  for (auto &elem : elementList.m_elements)
+    m_elements.push_back(std::move(elem));
+  elementList.m_elements.clear();
 }
 
 libvisio::VSDOutputElementList::~VSDOutputElementList()

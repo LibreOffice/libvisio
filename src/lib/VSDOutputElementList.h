@@ -27,8 +27,10 @@ public:
   VSDOutputElementList();
   VSDOutputElementList(const VSDOutputElementList &elementList);
   VSDOutputElementList &operator=(const VSDOutputElementList &elementList);
+  VSDOutputElementList(VSDOutputElementList &&elementList);
+  VSDOutputElementList &operator=(VSDOutputElementList &&elementList);
   ~VSDOutputElementList();
-  void append(const VSDOutputElementList &elementList);
+  void append(VSDOutputElementList &&elementList);
   void draw(librevenge::RVNGDrawingInterface *painter) const;
   void addStyle(const librevenge::RVNGPropertyList &propList);
   void addPath(const librevenge::RVNGPropertyList &propList);

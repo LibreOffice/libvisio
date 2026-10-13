@@ -43,9 +43,9 @@ libvisio::VSDPage &libvisio::VSDPage::operator=(const libvisio::VSDPage &page)
   return *this;
 }
 
-void libvisio::VSDPage::append(const libvisio::VSDOutputElementList &outputElements)
+void libvisio::VSDPage::append(libvisio::VSDOutputElementList &&outputElements)
 {
-  m_pageElements.append(outputElements);
+  m_pageElements.append(std::move(outputElements));
 }
 
 void libvisio::VSDPage::draw(librevenge::RVNGDrawingInterface *painter) const
@@ -59,14 +59,15 @@ libvisio::VSDPages::VSDPages()
 {
 }
 
-void libvisio::VSDPages::addPage(const libvisio::VSDPage &page)
+void libvisio::VSDPages::addPage(libvisio::VSDPage &&page)
 {
-  m_pages.push_back(page);
+  m_pages.push_back(std::move(page));
 }
 
-void libvisio::VSDPages::addBackgroundPage(const libvisio::VSDPage &page)
+void libvisio::VSDPages::addBackgroundPage(libvisio::VSDPage &&page)
 {
-  m_backgroundPages[page.m_currentPageID] = page;
+  const unsigned pageID = page.m_currentPageID;
+  m_backgroundPages[pageID] = std::move(page);
 }
 
 void libvisio::VSDPages::setMetaData(const librevenge::RVNGPropertyList &metaData)

@@ -1341,7 +1341,7 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
   {
     // The lists stay in m_pageOutputText until this function clears them, so the
     // stack holds where each one is rather than a copy of it.
-    std::stack<std::pair<unsigned, const VSDOutputElementList *> > groupTextStack;
+    std::stack<std::pair<unsigned, VSDOutputElementList *> > groupTextStack;
     for (unsigned int &iterList : *m_pageShapeOrder)
     {
       auto iterGroup = m_groupMemberships->find(iterList);
@@ -1350,7 +1350,7 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
         while (!groupTextStack.empty())
         {
           if (groupTextStack.top().second)
-            m_currentPage.append(*groupTextStack.top().second);
+            m_currentPage.append(std::move(*groupTextStack.top().second));
           groupTextStack.pop();
         }
       }
@@ -1359,7 +1359,7 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
         while (!groupTextStack.empty() && groupTextStack.top().first != iterGroup->second)
         {
           if (groupTextStack.top().second)
-            m_currentPage.append(*groupTextStack.top().second);
+            m_currentPage.append(std::move(*groupTextStack.top().second));
           groupTextStack.pop();
         }
       }
@@ -1367,7 +1367,7 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
       std::map<unsigned, VSDOutputElementList>::iterator iter;
       iter = m_pageOutputDrawing.find(iterList);
       if (iter != m_pageOutputDrawing.end())
-        m_currentPage.append(iter->second);
+        m_currentPage.append(std::move(iter->second));
       iter = m_pageOutputText.find(iterList);
       if (iter != m_pageOutputText.end())
         groupTextStack.push(std::make_pair(iterList, &iter->second));
@@ -1377,7 +1377,7 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
     while (!groupTextStack.empty())
     {
       if (groupTextStack.top().second)
-        m_currentPage.append(*groupTextStack.top().second);
+        m_currentPage.append(std::move(*groupTextStack.top().second));
       groupTextStack.pop();
     }
   }
@@ -3657,9 +3657,9 @@ void libvisio::VSDContentCollector::endPage()
     if (m_currentPage.m_backgroundPageID == m_currentPage.m_currentPageID)
       m_currentPage.m_backgroundPageID = MINUS_ONE;
     if (m_isBackgroundPage)
-      m_pages.addBackgroundPage(m_currentPage);
+      m_pages.addBackgroundPage(std::move(m_currentPage));
     else
-      m_pages.addPage(m_currentPage);
+      m_pages.addPage(std::move(m_currentPage));
     m_isPageStarted = false;
     m_isBackgroundPage = false;
   }
