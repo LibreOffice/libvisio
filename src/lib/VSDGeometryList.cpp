@@ -13,6 +13,7 @@
 #include "libvisio_utils.h"
 
 #include <optional>
+#include <set>
 
 namespace libvisio
 {
@@ -898,8 +899,12 @@ void libvisio::VSDGeometryList::addRelQuadBezTo(unsigned id, unsigned level, con
 void libvisio::VSDGeometryList::setElementsOrder(const std::vector<unsigned> &elementsOrder)
 {
   m_elementsOrder.clear();
+  std::set<unsigned> seen;
   for (unsigned int i : elementsOrder)
-    m_elementsOrder.push_back(i);
+  {
+    if (seen.insert(i).second)
+      m_elementsOrder.push_back(i);
+  }
 }
 
 void libvisio::VSDGeometryList::handle(VSDCollector *collector) const
