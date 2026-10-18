@@ -2151,6 +2151,12 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
   if (!m_noLine)
     m_currentLineGeometry.reserve(VSD_NUM_POLYLINES_PER_KNOT * knotVector.size());
 
+  // The basis of a control point is zero unless one of the degree+1 knot spans from it holds the
+  // point, so with the knots in order only the control points just before the span of the point add
+  // anything.
+  bool const knotsInOrder = std::is_sorted(knotVector.begin(), knotVector.end());
+  size_t const numPoints = std::min(controlPoints.size(), weights.size());
+
   for (size_t i = 0; i < VSD_NUM_POLYLINES_PER_KNOT * knotVector.size(); i++)
   {
     librevenge::RVNGPropertyList node;
@@ -2159,10 +2165,25 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
     double x = 0;
     double y = 0;
     double denominator = LIBVISIO_EPSILON;
+    double const point = (double)i / (VSD_NUM_POLYLINES_PER_KNOT * knotVector.size());
 
-    for (unsigned p = 0; p < controlPoints.size() && p < weights.size(); p++)
+    size_t first = 0;
+    size_t last = numPoints;
+    if (knotsInOrder)
     {
-      double basis = _NURBSBasis(p, degree, (double)i / (VSD_NUM_POLYLINES_PER_KNOT * knotVector.size()), knotVector);
+      auto const span = size_t(std::upper_bound(knotVector.begin(), knotVector.end(), point) - knotVector.begin());
+      if (span == 0 || span == knotVector.size())
+        last = 0;
+      else
+      {
+        first = span - 1 > degree ? span - 1 - degree : 0;
+        last = std::min(last, span);
+      }
+    }
+
+    for (size_t p = first; p < last; p++)
+    {
+      double basis = _NURBSBasis(unsigned(p), degree, point, knotVector);
       x += basis * controlPoints[p].first * weights[p];
       y += basis * controlPoints[p].second * weights[p];
       denominator += weights[p] * basis;
