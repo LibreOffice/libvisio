@@ -2138,7 +2138,7 @@ double libvisio::VSDContentCollector::_NURBSBasis(unsigned knot, unsigned degree
   return basis;
 }
 
-#define VSD_NUM_POLYLINES_PER_KNOT 100
+#define VSD_NUM_POLYLINES_PER_KNOT_SPAN 100
 
 void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, const std::vector<std::pair<double, double> > &controlPoints,
                                                                const std::vector<double> &knotVector, const std::vector<double> &weights)
@@ -2146,10 +2146,19 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
   if (m_noShow)
     return;
 
+  // A repeated knot is a span of zero length, which adds no curve to sample
+  size_t numSpans = 0;
+  for (size_t i = 1; i < knotVector.size(); ++i)
+  {
+    if (fabs(knotVector[i] - knotVector[i - 1]) > LIBVISIO_EPSILON)
+      ++numSpans;
+  }
+  size_t const numSegments = VSD_NUM_POLYLINES_PER_KNOT_SPAN * std::max<size_t>(numSpans, 1);
+
   if (!m_noFill)
-    m_currentFillGeometry.reserve(VSD_NUM_POLYLINES_PER_KNOT * knotVector.size());
+    m_currentFillGeometry.reserve(numSegments);
   if (!m_noLine)
-    m_currentLineGeometry.reserve(VSD_NUM_POLYLINES_PER_KNOT * knotVector.size());
+    m_currentLineGeometry.reserve(numSegments);
 
   // The basis of a control point is zero unless one of the degree+1 knot spans from it holds the
   // point, so with the knots in order only the control points just before the span of the point add
@@ -2157,7 +2166,7 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
   bool const knotsInOrder = std::is_sorted(knotVector.begin(), knotVector.end());
   size_t const numPoints = std::min(controlPoints.size(), weights.size());
 
-  for (size_t i = 0; i < VSD_NUM_POLYLINES_PER_KNOT * knotVector.size(); i++)
+  for (size_t i = 0; i < numSegments; i++)
   {
     librevenge::RVNGPropertyList node;
 
@@ -2165,7 +2174,7 @@ void libvisio::VSDContentCollector::_generatePolylineFromNURBS(unsigned degree, 
     double x = 0;
     double y = 0;
     double denominator = LIBVISIO_EPSILON;
-    double const point = (double)i / (VSD_NUM_POLYLINES_PER_KNOT * knotVector.size());
+    double const point = (double)i / numSegments;
 
     size_t first = 0;
     size_t last = numPoints;
