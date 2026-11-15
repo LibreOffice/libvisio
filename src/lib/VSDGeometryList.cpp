@@ -111,7 +111,7 @@ class VSDNURBSTo1 : public VSDGeometryListElement
 public:
   VSDNURBSTo1(unsigned id, unsigned level, double x2, double y2, unsigned char xType, unsigned char yType, unsigned degree,
               std::vector<std::pair<double, double> > controlPoints, std::vector<double> knotVector, std::vector<double> weights) :
-    VSDGeometryListElement(id, level), m_x2(x2), m_y2(y2), m_xType(xType), m_yType(yType), m_degree(degree), m_controlPoints(controlPoints), m_knotVector(knotVector), m_weights(weights) {}
+    VSDGeometryListElement(id, level), m_x2(x2), m_y2(y2), m_xType(xType), m_yType(yType), m_degree(degree), m_controlPoints(std::move(controlPoints)), m_knotVector(std::move(knotVector)), m_weights(std::move(weights)) {}
   ~VSDNURBSTo1() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;
@@ -161,7 +161,7 @@ class VSDPolylineTo1 : public VSDGeometryListElement
 {
 public:
   VSDPolylineTo1(unsigned id, unsigned level, double x, double y, unsigned char xType, unsigned char yType, std::vector<std::pair<double, double> > points) :
-    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_xType(xType), m_yType(yType), m_points(points) {}
+    VSDGeometryListElement(id, level), m_x(x), m_y(y), m_xType(xType), m_yType(yType), m_points(std::move(points)) {}
   ~VSDPolylineTo1() override {}
   void handle(VSDCollector *collector) const override;
   VSDGeometryListElement *clone() override;

@@ -822,7 +822,7 @@ void libvisio::VSDParser::readNameIDX(librevenge::RVNGInputStream *input)
     if (iter != m_names.end())
       names[elementId] = iter->second;
   }
-  m_namesMapMap[m_header.level] = names;
+  m_namesMapMap[m_header.level] = std::move(names);
 }
 
 void libvisio::VSDParser::readNameIDX123(librevenge::RVNGInputStream *input)
@@ -837,7 +837,7 @@ void libvisio::VSDParser::readNameIDX123(librevenge::RVNGInputStream *input)
     if (iter != m_names.end())
       names[elementId] = iter->second;
   }
-  m_namesMapMap[m_header.level] = names;
+  m_namesMapMap[m_header.level] = std::move(names);
 
 }
 
@@ -1631,8 +1631,8 @@ void libvisio::VSDParser::readShapeData(librevenge::RVNGInputStream *input)
     PolylineData data;
     data.xType = xType;
     data.yType = yType;
-    data.points = points;
-    m_shape.m_polylineData[m_header.id] = data;
+    data.points = std::move(points);
+    m_shape.m_polylineData[m_header.id] = std::move(data);
   }
 
   // NURBS data
@@ -1668,10 +1668,10 @@ void libvisio::VSDParser::readShapeData(librevenge::RVNGInputStream *input)
     data.degree = degree;
     data.xType = xType;
     data.yType = yType;
-    data.knots = knotVector;
-    data.weights = weights;
-    data.points = controlPoints;
-    m_shape.m_nurbsData[m_header.id] = data;
+    data.knots = std::move(knotVector);
+    data.weights = std::move(weights);
+    data.points = std::move(controlPoints);
+    m_shape.m_nurbsData[m_header.id] = std::move(data);
   }
 }
 

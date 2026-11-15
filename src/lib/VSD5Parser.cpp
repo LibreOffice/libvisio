@@ -484,7 +484,7 @@ void libvisio::VSD5Parser::readNameIDX(librevenge::RVNGInputStream *input)
     if (iter != m_names.end())
       names[elementId] = iter->second;
   }
-  m_namesMapMap[m_header.level] = names;
+  m_namesMapMap[m_header.level] = std::move(names);
 }
 
 void libvisio::VSD5Parser::readMisc(librevenge::RVNGInputStream *input)

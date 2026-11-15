@@ -84,7 +84,7 @@ void libvisio::VSDXRelationship::rebaseTarget(const char *baseDir)
   }
 
   // VSD_DEBUG_MSG(("VSDXRelationship::rebaseTarget %s -> %s\n", m_target.c_str(), target.c_str()));
-  m_target = target;
+  m_target = std::move(target);
 }
 
 

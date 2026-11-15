@@ -2448,10 +2448,10 @@ void libvisio::VSDContentCollector::collectShapeData(unsigned id, unsigned level
   data.yType = yType;
   data.degree = degree;
   data.lastKnot = lastKnot;
-  data.points = controlPoints;
-  data.knots = knotVector;
-  data.weights = weights;
-  m_NURBSData[id] = data;
+  data.points = std::move(controlPoints);
+  data.knots = std::move(knotVector);
+  data.weights = std::move(weights);
+  m_NURBSData[id] = std::move(data);
 }
 
 /* Polyline shape data */
@@ -2461,8 +2461,8 @@ void libvisio::VSDContentCollector::collectShapeData(unsigned id, unsigned level
   PolylineData data;
   data.xType = xType;
   data.yType = yType;
-  data.points = points;
-  m_polylineData[id] = data;
+  data.points = std::move(points);
+  m_polylineData[id] = std::move(data);
 }
 
 void libvisio::VSDContentCollector::collectXFormData(unsigned level, const XForm &xform)
