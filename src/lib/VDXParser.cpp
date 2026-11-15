@@ -165,7 +165,7 @@ void libvisio::VDXParser::processXmlNode(xmlTextReaderPtr reader)
   case XML_SHAPES:
     if (XML_READER_TYPE_ELEMENT == tokenType)
     {
-      if (m_isShapeStarted)
+      if (m_isShapeStarted && !xmlTextReaderIsEmptyElement(reader))
       {
         m_shapeStack.push(m_shape);
         m_shapeLevelStack.push(m_currentShapeLevel);
