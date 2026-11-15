@@ -1342,6 +1342,8 @@ void libvisio::VSDContentCollector::_flushCurrentForeignData()
 
 void libvisio::VSDContentCollector::_flushCurrentPage()
 {
+  if (m_isShapeStarted)
+    _flushShape();
   if (m_pageShapeOrder != m_documentPageShapeOrders.end() && !m_pageShapeOrder->empty() &&
       m_groupMemberships != m_groupMembershipsSequence.end())
   {
@@ -1389,6 +1391,8 @@ void libvisio::VSDContentCollector::_flushCurrentPage()
   }
   m_pageOutputDrawing.clear();
   m_pageOutputText.clear();
+  m_shapeOutputDrawing = nullptr;
+  m_shapeOutputText = nullptr;
 }
 
 void libvisio::VSDContentCollector::collectDocumentTheme(const VSDXTheme *theme)
