@@ -1,3 +1,7 @@
+libvisio 0.1.12
+
+- Robustness fixes for malformed files
+
 libvisio 0.1.11
 
 - Memory safety fixes
