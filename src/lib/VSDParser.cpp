@@ -22,6 +22,14 @@
 #include "VSDStylesCollector.h"
 #include "VSDMetaData.h"
 
+namespace
+{
+
+// The level grows by two for each stream nested in another.
+const unsigned MAX_STREAM_LEVEL = 256;
+
+}
+
 libvisio::VSDParser::VSDParser(librevenge::RVNGInputStream *input, librevenge::RVNGDrawingInterface *painter, librevenge::RVNGInputStream *container)
   : m_input(input), m_painter(painter), m_container(container), m_header(), m_collector(nullptr), m_shapeList(), m_currentLevel(0),
     m_stencils(), m_currentStencil(nullptr), m_shape(), m_isStencilStarted(false), m_isInStyles(false),
@@ -356,7 +364,7 @@ void libvisio::VSDParser::handleStream(const Pointer &ptr, unsigned idx, unsigne
     if ((ptr.Format >> 4) == 0x5 && ptr.Type != VSD_COLORS)
     {
       // Each stream offset is handled once, however many pointers reach it.
-      if (visited.insert(ptr.Offset).second)
+      if (level < MAX_STREAM_LEVEL && visited.insert(ptr.Offset).second)
         handleStreams(&tmpInput, ptr.Type, shift, level+1, visited);
     }
   }
