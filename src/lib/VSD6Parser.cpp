@@ -363,21 +363,21 @@ void libvisio::VSD6Parser::readTextField(librevenge::RVNGInputStream *input)
       input->seek(1, librevenge::RVNG_SEEK_CUR);
       blockIdx = readU8(input);
       if (blockIdx != 2)
-        input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+        seekPast(input, inputPos, length);
       else
       {
         input->seek(1, librevenge::RVNG_SEEK_CUR);
         formatNumber = readU16(input);
         if (0x80 != readU8(input))
         {
-          input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+          seekPast(input, inputPos, length);
           blockIdx = 0;
         }
         else
         {
           if (0xc2 != readU8(input))
           {
-            input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+            seekPast(input, inputPos, length);
             blockIdx = 0;
           }
           else
@@ -441,7 +441,7 @@ void libvisio::VSD6Parser::readMisc(librevenge::RVNGInputStream *input)
         }
       }
     }
-    input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+    seekPast(input, inputPos, length);
   }
 }
 

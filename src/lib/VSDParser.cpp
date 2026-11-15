@@ -428,19 +428,17 @@ void libvisio::VSDParser::handleBlob(librevenge::RVNGInputStream *input, unsigne
 
 void libvisio::VSDParser::handleChunks(librevenge::RVNGInputStream *input, unsigned level)
 {
-  long endPos = 0;
-
   while (!input->isEnd())
   {
     if (!getChunkHeader(input))
       return;
     m_header.level += level;
-    endPos = m_header.dataLength+m_header.trailer+input->tell();
+    const unsigned long start = input->tell();
 
     _handleLevelChange(m_header.level);
     VSD_DEBUG_MSG(("VSDParser::handleChunks - parsing chunk type 0x%x\n", m_header.chunkType));
     handleChunk(input);
-    input->seek(endPos, librevenge::RVNG_SEEK_SET);
+    seekPast(input, start, static_cast<uint64_t>(m_header.dataLength) + m_header.trailer);
   }
 }
 
@@ -1367,6 +1365,8 @@ void libvisio::VSDParser::readNURBSTo(librevenge::RVNGInputStream *input)
          m_header.dataLength - chunkBytesRead > 4)
   {
     length = readU32(input);
+    if (!length)
+      break;
     input->seek(1, librevenge::RVNG_SEEK_CUR);
     cellRef = readU8(input);
     if (cellRef < 6)
@@ -2192,21 +2192,21 @@ void libvisio::VSDParser::readTextField(librevenge::RVNGInputStream *input)
       input->seek(1, librevenge::RVNG_SEEK_CUR);
       blockIdx = readU8(input);
       if (blockIdx != 2)
-        input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+        seekPast(input, inputPos, length);
       else
       {
         input->seek(1, librevenge::RVNG_SEEK_CUR);
         formatNumber = readU16(input);
         if (0x80 != readU8(input))
         {
-          input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+          seekPast(input, inputPos, length);
           blockIdx = 0;
         }
         else
         {
           if (0xc2 != readU8(input))
           {
-            input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+            seekPast(input, inputPos, length);
             blockIdx = 0;
           }
           else
@@ -2270,7 +2270,7 @@ void libvisio::VSDParser::readMisc(librevenge::RVNGInputStream *input)
         }
       }
     }
-    input->seek(inputPos + length, librevenge::RVNG_SEEK_SET);
+    seekPast(input, inputPos, length);
   }
 }
 

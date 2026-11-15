@@ -11,6 +11,7 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <limits>
 #include "VSDInternalStream.h"
 
 uint8_t libvisio::readU8(librevenge::RVNGInputStream *input)
@@ -105,6 +106,15 @@ const librevenge::RVNGString libvisio::getColourString(const Colour &c)
   librevenge::RVNGString sColour;
   sColour.sprintf("#%.2x%.2x%.2x", c.r, c.g, c.b);
   return sColour;
+}
+
+void libvisio::seekPast(librevenge::RVNGInputStream *const input, const unsigned long start, const uint64_t length)
+{
+  const uint64_t target = static_cast<uint64_t>(start) + length;
+  if (target > static_cast<uint64_t>(std::numeric_limits<long>::max()))
+    input->seek(0, librevenge::RVNG_SEEK_END);
+  else
+    input->seek(static_cast<long>(target), librevenge::RVNG_SEEK_SET);
 }
 
 unsigned long libvisio::getRemainingLength(librevenge::RVNGInputStream *const input)

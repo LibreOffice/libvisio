@@ -72,6 +72,9 @@ const librevenge::RVNGString getColourString(const Colour &c);
 
 unsigned long getRemainingLength(librevenge::RVNGInputStream *input);
 
+// Seek to start + length, or to the end when that is past what a long can hold.
+void seekPast(librevenge::RVNGInputStream *input, unsigned long start, uint64_t length);
+
 void appendUCS4(librevenge::RVNGString &text, UChar32 ucs4Character);
 
 void debugPrint(const char *format, ...) VSD_ATTRIBUTE_PRINTF(1, 2);
