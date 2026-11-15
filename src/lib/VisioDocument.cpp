@@ -53,7 +53,7 @@ static bool isBinaryVisioDocument(librevenge::RVNGInputStream *input) try
     docStream.reset(input->getSubStreamByName("VisioDocument"));
   }
   if (!docStream)
-    docStream.reset(input, libvisio::VSDDummyDeleter());
+    docStream = libvisio::makeUnownedStreamPtr(input);
 
   docStream->seek(0, librevenge::RVNG_SEEK_SET);
   unsigned char version = 0;
@@ -82,7 +82,7 @@ static bool parseBinaryVisioDocument(librevenge::RVNGInputStream *input, libreve
   if (input->isStructured())
     docStream.reset(input->getSubStreamByName("VisioDocument"));
   if (!docStream)
-    docStream.reset(input, libvisio::VSDDummyDeleter());
+    docStream = libvisio::makeUnownedStreamPtr(input);
 
   docStream->seek(0x1A, librevenge::RVNG_SEEK_SET);
 

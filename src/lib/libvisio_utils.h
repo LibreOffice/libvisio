@@ -48,10 +48,11 @@ namespace libvisio
 
 typedef std::shared_ptr<librevenge::RVNGInputStream> RVNGInputStreamPtr_t;
 
-struct VSDDummyDeleter
+// The result points at input but owns nothing, so the caller keeps input alive.
+inline RVNGInputStreamPtr_t makeUnownedStreamPtr(librevenge::RVNGInputStream *const input)
 {
-  void operator()(void *) {}
-};
+  return RVNGInputStreamPtr_t(RVNGInputStreamPtr_t(), input);
+}
 
 template<typename T>
 std::unique_ptr<T> clone(const std::unique_ptr<T> &other)
