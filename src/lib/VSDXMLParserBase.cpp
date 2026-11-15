@@ -65,9 +65,9 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
       {
         m_currentGeometryList->clear();
         m_shape.m_geometries.erase(ix);
-        m_currentGeometryList = nullptr;
       }
     }
+    m_currentGeometryList = nullptr;
     return;
   }
 
@@ -166,6 +166,7 @@ void libvisio::VSDXMLParserBase::readGeometry(xmlTextReaderPtr reader)
   while (((XML_GEOM != tokenId && XML_SECTION != tokenId) || XML_READER_TYPE_END_ELEMENT != tokenType) && 1 == ret && (!m_watcher || !m_watcher->isError()));
   if (ret == 1)
     m_currentGeometryList->addGeometry(0, level+1, noFill, noLine, noShow);
+  m_currentGeometryList = nullptr;
 }
 
 void libvisio::VSDXMLParserBase::readMoveTo(xmlTextReaderPtr reader)
