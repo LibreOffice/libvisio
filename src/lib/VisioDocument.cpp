@@ -108,6 +108,8 @@ static bool parseBinaryVisioDocument(librevenge::RVNGInputStream *input, libreve
     break;
   }
 
+  if (!parser)
+    return false;
   if (isStencilExtraction)
     return parser->extractStencils();
   else
