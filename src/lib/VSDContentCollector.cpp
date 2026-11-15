@@ -2357,11 +2357,11 @@ void libvisio::VSDContentCollector::collectNURBSTo(unsigned id, unsigned level, 
 
 void libvisio::VSDContentCollector::collectPolylineTo(unsigned /* id */, unsigned level, double x, double y, unsigned char xType, unsigned char yType, const std::vector<std::pair<double, double> > &points)
 {
+  std::vector<std::pair<double, double> > tmpPoints(points);
   _handleLevelChange(level);
 
   librevenge::RVNGPropertyList polyline;
-  std::vector<std::pair<double, double> > tmpPoints(points);
-  for (size_t i = 0; i< points.size(); i++)
+  for (size_t i = 0; i< tmpPoints.size(); i++)
   {
     polyline.clear();
     if (xType == 0)
