@@ -303,8 +303,6 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
   if (!input)
     return;
 
-  m_rels = &rels;
-
   XMLErrorWatcher watcher;
 
   auto reader = xmlReaderForStream(input, &watcher, false);
@@ -312,9 +310,11 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
     return;
 
   XMLErrorWatcher *oldWatcher = m_watcher;
+  VSDXRelationships *oldRels = m_rels;
   try
   {
     m_watcher = &watcher;
+    m_rels = &rels;
 
     int ret = xmlTextReaderRead(reader.get());
     while (1 == ret && !watcher.isError())
@@ -392,10 +392,12 @@ void libvisio::VSDXParser::processXmlDocument(librevenge::RVNGInputStream *input
     }
 
     m_watcher = oldWatcher;
+    m_rels = oldRels;
   }
   catch (...)
   {
     m_watcher = oldWatcher;
+    m_rels = oldRels;
     throw;
   }
 }
