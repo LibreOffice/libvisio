@@ -9,6 +9,9 @@
 
 #include "VSDPages.h"
 
+#include <set>
+#include <vector>
+
 #include "libvisio_utils.h"
 
 libvisio::VSDPage::VSDPage()
@@ -118,13 +121,19 @@ void libvisio::VSDPages::_drawWithBackground(librevenge::RVNGDrawingInterface *p
   if (!painter)
     return;
 
-  if (page.m_backgroundPageID != MINUS_ONE)
+  // Each page of the background chain is drawn once, the deepest background first.
+  std::vector<const VSDPage *> chain(1, &page);
+  std::set<const VSDPage *> visited(chain.begin(), chain.end());
+  for (const VSDPage *current = &page; current->m_backgroundPageID != MINUS_ONE;)
   {
-    auto iter = m_backgroundPages.find(page.m_backgroundPageID);
-    if (iter != m_backgroundPages.end())
-      _drawWithBackground(painter, iter->second);
+    auto iter = m_backgroundPages.find(current->m_backgroundPageID);
+    if (iter == m_backgroundPages.end() || !visited.insert(&iter->second).second)
+      break;
+    current = &iter->second;
+    chain.push_back(current);
   }
-  page.draw(painter);
+  for (auto iter = chain.rbegin(); iter != chain.rend(); ++iter)
+    (*iter)->draw(painter);
 }
 
 

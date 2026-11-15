@@ -3688,10 +3688,6 @@ void libvisio::VSDContentCollector::endPage()
   {
     _handleLevelChange(0);
     _flushCurrentPage();
-    // TODO: this check does not prevent two pages mutually referencing themselves
-    // as their background pages. Or even longer cycle of pages.
-    if (m_currentPage.m_backgroundPageID == m_currentPage.m_currentPageID)
-      m_currentPage.m_backgroundPageID = MINUS_ONE;
     if (m_isBackgroundPage)
       m_pages.addBackgroundPage(std::move(m_currentPage));
     else
