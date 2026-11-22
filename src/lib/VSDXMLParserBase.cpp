@@ -1255,7 +1255,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         long value = 0;
-        readLongData(value, reader);
+        ret = readLongData(value, reader);
         if (value &0x1)
           bold = true;
         else
@@ -1278,7 +1278,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         long value = 0;
-        readLongData(value, reader);
+        ret = readLongData(value, reader);
         switch (value)
         {
         case 1:
@@ -1300,7 +1300,7 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       if (XML_READER_TYPE_ELEMENT == tokenType)
       {
         long value = 0;
-        readLongData(value, reader);
+        ret = readLongData(value, reader);
         switch (value)
         {
         case 1:
@@ -1328,19 +1328,19 @@ void libvisio::VSDXMLParserBase::readCharIX(xmlTextReaderPtr reader)
       break;
     case XML_DBLUNDERLINE:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readBoolData(doubleunderline, reader);
+        ret = readBoolData(doubleunderline, reader);
       break;
     case XML_OVERLINE:
       break;
     case XML_STRIKETHRU:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readBoolData(strikeout, reader);
+        ret = readBoolData(strikeout, reader);
       break;
     case XML_HIGHLIGHT:
       break;
     case XML_DOUBLESTRIKETHROUGH:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readBoolData(doublestrikeout, reader);
+        ret = readBoolData(doublestrikeout, reader);
       break;
     default:
       break;
@@ -1486,7 +1486,7 @@ void libvisio::VSDXMLParserBase::readParaIX(xmlTextReaderPtr reader)
       break;
     case XML_FLAGS:
       if (XML_READER_TYPE_ELEMENT == tokenType)
-        readUnsignedData(flags, reader);
+        ret = readUnsignedData(flags, reader);
       break;
     case XML_BULLET:
       if (XML_READER_TYPE_ELEMENT == tokenType)
