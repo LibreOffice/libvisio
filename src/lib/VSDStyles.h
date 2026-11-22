@@ -32,9 +32,6 @@ struct VSDOptionalLineStyle
                        const std::optional<long> &qlm) :
     width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c), rounding(r),
     qsLineColour(qlc), qsLineMatrix(qlm) {}
-  VSDOptionalLineStyle(const VSDOptionalLineStyle &style) = default;
-  ~VSDOptionalLineStyle() {}
-  VSDOptionalLineStyle &operator=(const VSDOptionalLineStyle &style) = default;
   void override(const VSDOptionalLineStyle &style)
   {
     ASSIGN_OPTIONAL(style.width, width);
@@ -68,9 +65,6 @@ struct VSDLineStyle
                unsigned char em, unsigned char c, double r, long qlc, long qlm) :
     width(w), colour(col), pattern(p), startMarker(sm), endMarker(em), cap(c),
     rounding(r), qsLineColour(qlc), qsLineMatrix(qlm) {}
-  VSDLineStyle(const VSDLineStyle &style) = default;
-  ~VSDLineStyle() {}
-  VSDLineStyle &operator=(const VSDLineStyle &style) = default;
   void override(const VSDOptionalLineStyle &style, const VSDXTheme *theme)
   {
     ASSIGN_OPTIONAL(style.width, width);
@@ -117,9 +111,6 @@ struct VSDOptionalFillStyle
     shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
     qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm), variationColorIndex(vCIn),
     variationStyleIndex(vSIn) {}
-  VSDOptionalFillStyle(const VSDOptionalFillStyle &style) = default;
-  ~VSDOptionalFillStyle() {}
-  VSDOptionalFillStyle &operator=(const VSDOptionalFillStyle &style) = default;
   void override(const VSDOptionalFillStyle &style)
   {
     ASSIGN_OPTIONAL(style.pattern, pattern);
@@ -168,9 +159,6 @@ struct VSDFillStyle
       shadowFgColour(sfgc), shadowPattern(shp), shadowOffsetX(shX), shadowOffsetY(shY),
       qsFillColour(qsFc), qsShadowColour(qsSc), qsFillMatrix(qsFm), variationColorIndex(vCIn),
       variationStyleIndex(vSIn) {}
-  VSDFillStyle(const VSDFillStyle &style) = default;
-  ~VSDFillStyle() {}
-  VSDFillStyle &operator=(const VSDFillStyle &style) = default;
   void override(const VSDOptionalFillStyle &style, const VSDXTheme *theme)
   {
     ASSIGN_OPTIONAL(style.pattern, pattern);
@@ -241,9 +229,6 @@ struct VSDOptionalCharStyle
     underline(u), doubleunderline(du), strikeout(so), doublestrikeout(dso),
     allcaps(ac), initcaps(ic), smallcaps(sc), superscript(super),
     subscript(sub), scaleWidth(sw) {}
-  VSDOptionalCharStyle(const VSDOptionalCharStyle &style) = default;
-  ~VSDOptionalCharStyle() {}
-  VSDOptionalCharStyle &operator=(const VSDOptionalCharStyle &style) = default;
   void override(const VSDOptionalCharStyle &style)
   {
     ASSIGN_OPTIONAL(style.font, font);
@@ -296,9 +281,6 @@ struct VSDCharStyle
     underline(u), doubleunderline(du), strikeout(so), doublestrikeout(dso),
     allcaps(ac), initcaps(ic), smallcaps(sc), superscript(super),
     subscript(sub), scaleWidth(sw) {}
-  VSDCharStyle(const VSDCharStyle &style) = default;
-  ~VSDCharStyle() {}
-  VSDCharStyle &operator=(const VSDCharStyle &style) = default;
   void override(const VSDOptionalCharStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.font, font);
@@ -351,9 +333,6 @@ struct VSDOptionalParaStyle
     charCount(cc), indFirst(ifst), indLeft(il), indRight(ir), spLine(sl), spBefore(sb), spAfter(sa),
     align(a), bullet(b), bulletStr(bs), bulletFont(bf), bulletFontSize(bfs),
     textPosAfterBullet(tpab), flags(f) {}
-  VSDOptionalParaStyle(const VSDOptionalParaStyle &style) = default;
-  ~VSDOptionalParaStyle() {}
-  VSDOptionalParaStyle &operator=(const VSDOptionalParaStyle &style) = default;
   void override(const VSDOptionalParaStyle &style)
   {
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
@@ -397,9 +376,6 @@ struct VSDParaStyle
                const VSDName &bf, double bfs, double tpab, unsigned f) :
     charCount(cc), indFirst(ifst), indLeft(il), indRight(ir), spLine(sl), spBefore(sb), spAfter(sa), align(a),
     bullet(b), bulletStr(bs), bulletFont(bf), bulletFontSize(bfs), textPosAfterBullet(tpab), flags(f) {}
-  VSDParaStyle(const VSDParaStyle &style) = default;
-  ~VSDParaStyle() {}
-  VSDParaStyle &operator=(const VSDParaStyle &style) = default;
   void override(const VSDOptionalParaStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.indFirst, indFirst);
@@ -445,9 +421,6 @@ struct VSDOptionalTextBlockStyle
                             const std::optional<unsigned char> &td) :
     leftMargin(lm), rightMargin(rm), topMargin(tm), bottomMargin(bm), verticalAlign(va),
     isTextBkgndFilled(isBgFilled), textBkgndColour(bgClr), defaultTabStop(defTab), textDirection(td) {}
-  VSDOptionalTextBlockStyle(const VSDOptionalTextBlockStyle &style) = default;
-  ~VSDOptionalTextBlockStyle() {}
-  VSDOptionalTextBlockStyle &operator=(const VSDOptionalTextBlockStyle &style) = default;
   void override(const VSDOptionalTextBlockStyle &style)
   {
     ASSIGN_OPTIONAL(style.leftMargin, leftMargin);
@@ -481,9 +454,6 @@ struct VSDTextBlockStyle
                     bool isBgFilled, Colour bgClr, double defTab, unsigned char td) :
     leftMargin(lm), rightMargin(rm), topMargin(tm), bottomMargin(bm), verticalAlign(va),
     isTextBkgndFilled(isBgFilled), textBkgndColour(bgClr), defaultTabStop(defTab), textDirection(td) {}
-  VSDTextBlockStyle(const VSDTextBlockStyle &style) = default;
-  ~VSDTextBlockStyle() {}
-  VSDTextBlockStyle &operator=(const VSDTextBlockStyle &style) = default;
   void override(const VSDOptionalTextBlockStyle &style, const VSDXTheme * /* theme */)
   {
     ASSIGN_OPTIONAL(style.leftMargin, leftMargin);
