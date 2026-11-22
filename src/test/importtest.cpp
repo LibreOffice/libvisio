@@ -184,12 +184,12 @@ xmlDocPtr parse(const char *filename, xmlBufferPtr buffer)
 
   xmlTextWriterPtr writer = xmlNewTextWriterMemory(buffer, 0);
   CPPUNIT_ASSERT(writer);
-  xmlTextWriterStartDocument(writer, 0, 0, 0);
+  CPPUNIT_ASSERT(xmlTextWriterStartDocument(writer, 0, 0, 0) >= 0);
   libvisio::XmlDrawingGenerator painter(writer);
 
   CPPUNIT_ASSERT(libvisio::VisioDocument::parse(&input, &painter));
 
-  xmlTextWriterEndDocument(writer);
+  CPPUNIT_ASSERT(xmlTextWriterEndDocument(writer) >= 0);
   xmlFreeTextWriter(writer);
 
   // std::cerr << "XML is '" << (const char *)xmlBufferContent(buffer) << "'" << std::endl;
@@ -669,12 +669,12 @@ void ImportTest::testVsdxTabRowShortPrefix()
 
   xmlTextWriterPtr writer = xmlNewTextWriterMemory(m_buffer, 0);
   CPPUNIT_ASSERT(writer);
-  xmlTextWriterStartDocument(writer, 0, 0, 0);
+  CPPUNIT_ASSERT(xmlTextWriterStartDocument(writer, 0, 0, 0) >= 0);
   libvisio::XmlDrawingGenerator painter(writer);
 
   (void)libvisio::VisioDocument::parse(&input, &painter);
 
-  xmlTextWriterEndDocument(writer);
+  CPPUNIT_ASSERT(xmlTextWriterEndDocument(writer) >= 0);
   xmlFreeTextWriter(writer);
 }
 
@@ -687,12 +687,12 @@ void ImportTest::testVsdxPageSelfReferenceCycle()
 
   xmlTextWriterPtr writer = xmlNewTextWriterMemory(m_buffer, 0);
   CPPUNIT_ASSERT(writer);
-  xmlTextWriterStartDocument(writer, 0, 0, 0);
+  CPPUNIT_ASSERT(xmlTextWriterStartDocument(writer, 0, 0, 0) >= 0);
   libvisio::XmlDrawingGenerator painter(writer);
 
   (void)libvisio::VisioDocument::parse(&input, &painter);
 
-  xmlTextWriterEndDocument(writer);
+  CPPUNIT_ASSERT(xmlTextWriterEndDocument(writer) >= 0);
   xmlFreeTextWriter(writer);
 }
 
