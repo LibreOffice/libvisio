@@ -355,17 +355,7 @@ void libvisio::VSDContentCollector::_flushShape()
   }
 
   if (numPathElements > 1 && (numForeignElements || numTextElements))
-  {
-    librevenge::RVNGPropertyList propList;
-    if (shapeId && shapeId != MINUS_ONE)
-    {
-      librevenge::RVNGString stringId;
-      stringId.sprintf("id%u", shapeId);
-      propList.insert("draw:id", stringId);
-      shapeId = MINUS_ONE;
-    }
     m_shapeOutputDrawing->addStartLayer(librevenge::RVNGPropertyList());
-  }
   _flushCurrentPath(shapeId);
   if (numPathElements > 1 && (numForeignElements || numTextElements))
     m_shapeOutputDrawing->addEndLayer();
