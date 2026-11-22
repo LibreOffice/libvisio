@@ -14,7 +14,7 @@ namespace
 template<typename T>
 const T *get_ptr(const std::optional<T>& opt) noexcept
 {
-  return opt.has_value() ? std::addressof(opt.value()) : nullptr;
+  return opt.has_value() ? std::addressof(*opt) : nullptr;
 }
 }
 
