@@ -257,7 +257,7 @@ void libvisio::VSDParser::handleStreams(librevenge::RVNGInputStream *input, unsi
     }
     if (listSize <= 1)
       listSize = 0;
-    while (listSize--)
+    for (unsigned i = 0; i < listSize; ++i)
       pointerOrder.push_back(readU32(input));
   }
   catch (const EndOfStreamException &)
