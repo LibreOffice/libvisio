@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <utility>
 
 libvisio::VSDStylesCollector::VSDStylesCollector(
   std::vector<std::map<unsigned, XForm> > &groupXFormsSequence,
@@ -442,7 +443,7 @@ void libvisio::VSDStylesCollector::endPage()
       auto iter = m_groupShapeOrder.find(*j++);
       if (m_groupShapeOrder.end() != iter)
       {
-        m_pageShapeOrder.splice(j, iter->second, iter->second.begin(), iter->second.end());
+        m_pageShapeOrder.splice(j, std::move(iter->second));
         m_groupShapeOrder.erase(iter);
         changed = true;
       }
