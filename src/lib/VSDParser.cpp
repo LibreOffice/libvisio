@@ -2029,6 +2029,8 @@ void libvisio::VSDParser::readParaIX(librevenge::RVNGInputStream *input)
 
   while (remainingData >= 4 && (blockLength = readU32(input)))
   {
+    if (blockLength < 4 || blockLength > remainingData || blockLength > getRemainingLength(input) + 4)
+      break;
     long blockEnd = blockLength-4 + input->tell();
     unsigned char blockType = readU8(input);
     unsigned char blockIdx = readU8(input);
